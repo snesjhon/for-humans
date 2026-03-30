@@ -28,7 +28,9 @@ export const JOURNEY: Phase[] = [
         analogies: ['PostgreSQL vs SQLite as a bank vault vs a shoebox — both hold money, but only one is built for concurrent access'],
         fundamentalsSlug: 'postgresql-and-activerecord',
         fundamentalsBlurb: 'How PostgreSQL and ActiveRecord work together to store and retrieve data',
-        firstPass: [],
+        firstPass: [
+          { slug: 'configure-the-database', label: 'Configure the Database', relatedFundamentalsSlugs: ['postgresql-and-activerecord'] },
+        ],
         reinforce: [],
       },
       {
