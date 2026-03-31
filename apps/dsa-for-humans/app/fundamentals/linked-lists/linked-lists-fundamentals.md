@@ -71,13 +71,16 @@ The key discipline for deletion: only advance `prev` when you _keep_ a node. If 
 
 Remove all cars carrying cargo `3` from the train `1 → 3 → 3 → 4 → 5`:
 
-- sentinel → 1 → 3 → 3 → 4 → 5. Set `prev = sentinel`, `curr = node(1)`.
-- curr.val = 1 ≠ 3 → keep. `prev = node(1)`, `curr = node(3 first)`.
-- curr.val = 3 → remove. `prev.next = node(3 second)`. `curr = node(3 second)`. prev stays at node(1).
-- curr.val = 3 → remove. `prev.next = node(4)`. `curr = node(4)`. prev stays at node(1).
-- curr.val = 4 ≠ 3 → keep. `prev = node(4)`, `curr = node(5)`.
-- curr.val = 5 ≠ 3 → keep. `prev = node(5)`, `curr = null`.
-- Return `dummy.next = node(1)`. Result: `1 → 4 → 5`. ✓
+:::trace-ll
+[
+  {"nodes":[{"val":"D"},{"val":"1"},{"val":"3"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":0,"label":"prev","color":"green"},{"index":1,"label":"curr","color":"blue"}],"action":null,"label":"sentinel(D) → 1 → 3 → 3 → 4 → 5. prev=sentinel, curr=node(1). Target: remove all nodes with value 3."},
+  {"nodes":[{"val":"D"},{"val":"1"},{"val":"3"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":1,"label":"prev","color":"green"},{"index":2,"label":"curr","color":"blue"}],"action":null,"label":"curr.val=1 ≠ 3 → keep. Advance both: prev=node(1), curr=node(3 first)."},
+  {"nodes":[{"val":"D"},{"val":"1"},{"val":"3"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":1,"label":"prev","color":"green"},{"index":3,"label":"curr","color":"blue"}],"action":"rewire","label":"curr.val=3 → remove. prev.next = node(3 second). curr = node(3 second). prev stays at node(1)."},
+  {"nodes":[{"val":"D"},{"val":"1"},{"val":"3"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":1,"label":"prev","color":"green"},{"index":4,"label":"curr","color":"blue"}],"action":"rewire","label":"curr.val=3 → remove. prev.next = node(4). curr = node(4). prev stays at node(1)."},
+  {"nodes":[{"val":"D"},{"val":"1"},{"val":"3"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":4,"label":"prev","color":"green"},{"index":5,"label":"curr","color":"blue"}],"action":null,"label":"curr.val=4 ≠ 3 → keep. Advance both: prev=node(4), curr=node(5)."},
+  {"nodes":[{"val":"D"},{"val":"1"},{"val":"3"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":5,"label":"prev","color":"green"},{"index":6,"label":"curr","color":"blue"}],"action":"done","label":"curr.val=5 ≠ 3 → keep. curr advances to null — done. Return dummy.next = node(1). Result: 1 → 4 → 5. ✓"}
+]
+:::
 
 **The one thing to get right**
 
@@ -110,14 +113,6 @@ Two conductors board the locomotive together. Slow moves one car per step. Fast 
 **Cycle:** if the train loops, fast will eventually lap slow. They'll occupy the same car. If there's no loop, fast falls off the end without ever meeting slow.
 
 **Walking through it**
-
-Find the 2nd car from the end of `1 → 2 → 3 → 4 → 5` using N-apart pointers (N=2):
-
-- Advance lead 2 steps: lead = node(3). Trailer at node(1).
-- Advance both: lead = node(4), trailer = node(2).
-- Advance both: lead = node(5), trailer = node(3).
-- Advance both: lead = null, trailer = node(4).
-- Lead is null → stop. Trailer holds the 2nd car from the end: node(4), value 4. ✓
 
 :::trace-ll
 [
