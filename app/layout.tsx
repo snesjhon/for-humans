@@ -1,12 +1,15 @@
 import type { Metadata } from 'next';
 import { Newsreader, Plus_Jakarta_Sans } from 'next/font/google';
 import { SiteNav } from '@/components/ui';
+import { SignOutButton } from '@/components/ui/SignOutButton';
+import Link from 'next/link';
 import { getAllProblems } from '@/lib/dsa/content';
 import { getAllFundamentalsSlugs } from '@/lib/dsa/fundamentals';
 import { getAllScenarioSlugsFromDisk as getSdScenarios } from '@/lib/system-design/content';
 import { getAllFundamentalsSlugs as getSdFundamentals } from '@/lib/system-design/fundamentals';
 import { getAllScenarioSlugsFromDisk as getFsScenarios } from '@/lib/fullstack/content';
 import { getAllFundamentalsSlugs as getFsFundamentals } from '@/lib/fullstack/fundamentals';
+import { createClient } from '@/lib/supabase/server';
 import './globals.css';
 
 const newsreader = Newsreader({
@@ -29,13 +32,18 @@ export const metadata: Metadata = {
     'A structured learning platform for DSA, system design, and fullstack development.',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const availableProblemIds = getAllProblems().map((p) => p.id);
   const availableFundamentalsSlugs = getAllFundamentalsSlugs();
+
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   return (
     <html
@@ -54,6 +62,23 @@ export default function RootLayout({
           availableFullstackScenarioSlugs={getFsScenarios()}
           availableFullstackFundamentalsSlugs={getFsFundamentals()}
         />
+        <div
+          className="fixed bottom-0 left-0 z-50"
+          style={{ width: '260px' }}
+        >
+          {user ? (
+            <SignOutButton email={user.email ?? ''} />
+          ) : (
+            <div style={{ padding: '10px 16px', borderTop: '1px solid var(--border)' }}>
+              <Link
+                href="/login"
+                className="text-[0.75rem] text-[var(--fg-comment)] hover:text-[var(--fg)] transition-colors no-underline"
+              >
+                Sign in to track progress →
+              </Link>
+            </div>
+          )}
+        </div>
         <main className="w-full">{children}</main>
       </body>
     </html>

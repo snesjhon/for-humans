@@ -1,11 +1,14 @@
 import Link from 'next/link';
 import { JOURNEY, type JourneySection, type Phase } from '@/lib/dsa/journey';
 import { getAllProblems } from '@/lib/dsa/content';
+import { createClient } from '@/lib/supabase/server';
 import {
   PhaseTracker,
   PhaseBannerContent,
   StepGuideCard,
   PlaceholderGuideCard,
+  ProgressToggle,
+  SectionProgress,
   pColor,
   PageHero,
 } from '@/components/ui';
@@ -68,7 +71,7 @@ function buildPhaseGroups(): PhaseGroup[] {
   return groups;
 }
 
-export default function PathPage() {
+export default async function PathPage() {
   const allProblems = getAllProblems();
   const problemMap: PMap = Object.fromEntries(
     allProblems.map((p) => [p.id, p]),
@@ -78,6 +81,23 @@ export default function PathPage() {
   const totalSections = JOURNEY.reduce((acc, p) => acc + p.sections.length, 0);
 
   const phaseGroups = buildPhaseGroups();
+
+  // Fetch progress
+  const supabase = createClient();
+  const { data: progressRows } = await supabase
+    .from('progress')
+    .select('item_type, item_id');
+
+  const completedProblems = new Set(
+    progressRows
+      ?.filter((r: { item_type: string; item_id: string }) => r.item_type === 'problem')
+      .map((r: { item_type: string; item_id: string }) => r.item_id) ?? [],
+  );
+  const completedSections = new Set(
+    progressRows
+      ?.filter((r: { item_type: string; item_id: string }) => r.item_type === 'section')
+      .map((r: { item_type: string; item_id: string }) => r.item_id) ?? [],
+  );
 
   return (
     <>
@@ -126,28 +146,42 @@ export default function PathPage() {
                   const hasAnyProblems = hasNewProblems || hasRevisits;
                   const isLast = entryIdx === entries.length - 1;
 
+                  const firstPassItemIds = section.firstPass.map((p) => `dsa-${p.id}`);
+
                   return (
                     <div
                       key={section.id}
                       className="grid grid-cols-2 gap-7 items-start"
                       style={{ paddingBottom: isLast ? 24 : 48 }}
                     >
-                      {/* LEFT: Guide card */}
-                      {section.fundamentalsSlug ? (
-                        <StepGuideCard
-                          href={`/dsa/fundamentals/${section.fundamentalsSlug}`}
-                          label={section.label}
-                          hook={section.mentalModelHook}
-                          stepNum={stepLabel}
-                          color={accent}
+                      {/* LEFT: Guide card + section progress */}
+                      <div>
+                        {section.fundamentalsSlug ? (
+                          <StepGuideCard
+                            href={`/dsa/fundamentals/${section.fundamentalsSlug}`}
+                            label={section.label}
+                            hook={section.mentalModelHook}
+                            stepNum={stepLabel}
+                            color={accent}
+                          />
+                        ) : (
+                          <PlaceholderGuideCard
+                            label={section.label}
+                            hook={section.mentalModelHook}
+                            stepNum={stepLabel}
+                          />
+                        )}
+                        <SectionProgress
+                          sectionItemId={`dsa-section-${section.id}`}
+                          problemItemIds={firstPassItemIds}
+                          initialCompletedProblemIds={firstPassItemIds.filter((id) =>
+                            completedProblems.has(id),
+                          )}
+                          initialSectionCompleted={completedSections.has(
+                            `dsa-section-${section.id}`,
+                          )}
                         />
-                      ) : (
-                        <PlaceholderGuideCard
-                          label={section.label}
-                          hook={section.mentalModelHook}
-                          stepNum={stepLabel}
-                        />
-                      )}
+                      </div>
 
                       {/* RIGHT: Practice + revisit */}
                       <div className="pt-1">
@@ -165,20 +199,29 @@ export default function PathPage() {
                             {section.firstPass.map(({ id }) => {
                               const p = problemMap[id];
                               if (!p) return null;
+                              const itemId = `dsa-${id}`;
                               return (
-                                <Link
+                                <div
                                   key={id}
-                                  href={`/dsa/problems/${id}`}
-                                  className="problem-link flex items-baseline py-[5px]"
+                                  className="flex items-center gap-1 py-[5px]"
                                 >
-                                  <span className="shrink-0 w-5" />
-                                  <span className="shrink-0 min-w-[30px] font-mono text-[0.65rem] text-[var(--fg-gutter)]">
-                                    {id}
-                                  </span>
-                                  <span className="problem-title text-[0.875rem] leading-[1.3] text-[var(--fg-alt)]">
-                                    {p.title}
-                                  </span>
-                                </Link>
+                                  <ProgressToggle
+                                    itemType="problem"
+                                    itemId={itemId}
+                                    initialCompleted={completedProblems.has(itemId)}
+                                  />
+                                  <Link
+                                    href={`/dsa/problems/${id}`}
+                                    className="problem-link flex items-baseline"
+                                  >
+                                    <span className="shrink-0 min-w-[30px] font-mono text-[0.65rem] text-[var(--fg-gutter)]">
+                                      {id}
+                                    </span>
+                                    <span className="problem-title text-[0.875rem] leading-[1.3] text-[var(--fg-alt)]">
+                                      {p.title}
+                                    </span>
+                                  </Link>
+                                </div>
                               );
                             })}
                           </div>
@@ -192,22 +235,32 @@ export default function PathPage() {
                             {revisitIds.map((id) => {
                               const p = problemMap[id];
                               if (!p) return null;
+                              const itemId = `dsa-${id}`;
                               return (
-                                <Link
+                                <div
                                   key={`r-${id}`}
-                                  href={`/dsa/problems/${id}`}
-                                  className="problem-link flex items-baseline py-[5px]"
+                                  className="flex items-center gap-1 py-[5px]"
                                 >
-                                  <span className="text-xs shrink-0 w-5 leading-none text-[var(--orange)]">
-                                    ↩
-                                  </span>
-                                  <span className="shrink-0 min-w-[30px] font-mono text-[0.65rem] text-[var(--fg-gutter)]">
-                                    {id}
-                                  </span>
-                                  <span className="problem-title text-[0.875rem] leading-[1.3] text-[var(--fg-comment)]">
-                                    {p.title}
-                                  </span>
-                                </Link>
+                                  <ProgressToggle
+                                    itemType="problem"
+                                    itemId={itemId}
+                                    initialCompleted={completedProblems.has(itemId)}
+                                  />
+                                  <Link
+                                    href={`/dsa/problems/${id}`}
+                                    className="problem-link flex items-baseline"
+                                  >
+                                    <span className="text-xs shrink-0 w-5 leading-none text-[var(--orange)]">
+                                      ↩
+                                    </span>
+                                    <span className="shrink-0 min-w-[30px] font-mono text-[0.65rem] text-[var(--fg-gutter)]">
+                                      {id}
+                                    </span>
+                                    <span className="problem-title text-[0.875rem] leading-[1.3] text-[var(--fg-comment)]">
+                                      {p.title}
+                                    </span>
+                                  </Link>
+                                </div>
                               );
                             })}
                           </div>

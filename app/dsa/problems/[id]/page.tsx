@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -31,7 +33,7 @@ const DIFF_FG: Record<string, string> = {
 };
 import { extractHeadings } from '@/lib/dsa/headings';
 import MarkdownRenderer from '@/components/dsa/MarkdownRenderer';
-import { TableOfContents, PhaseColorSync, PageHero, PageLayout } from '@/components/ui';
+import { TableOfContents, PhaseColorSync, PageHero, PageLayout, ProgressToggleAsync } from '@/components/ui';
 
 interface Props {
   params: { id: string };
@@ -64,6 +66,13 @@ export default function ProblemPage({ params }: Props) {
     : undefined;
   const color = phase ? phaseColor(phase.number) : null;
   const difficulty = getDifficultyForProblem(params.id);
+
+  // Detect available steps from the problem directory
+  const problemDir = path.join(process.cwd(), 'app', 'dsa', 'problems', problem.slug);
+  const stepFiles = fs.readdirSync(problemDir).filter((f) => /^step\d+-problem\.ts$/.test(f));
+  const stepNumbers = stepFiles
+    .map((f) => parseInt(f.match(/^step(\d+)/)?.[1] ?? '0'))
+    .sort((a, b) => a - b);
 
   let prevProblem = null;
   let nextProblem = null;
@@ -118,6 +127,26 @@ export default function ProblemPage({ params }: Props) {
 
       <PageLayout accentColor={color} aside={<TableOfContents headings={headings} title="Contents" />}>
         <section className="space-y-8">
+            {/* Progress section */}
+            <div className="flex flex-col gap-2 p-4 rounded-lg border border-[var(--border)] bg-[var(--bg-alt)]">
+              <p className="font-mono text-[0.6rem] font-bold tracking-[0.09em] uppercase text-[var(--fg-gutter)] mb-1">
+                Your Progress
+              </p>
+              <ProgressToggleAsync
+                itemType="problem"
+                itemId={`dsa-${params.id}`}
+                label="Problem complete"
+              />
+              {stepNumbers.map((n) => (
+                <ProgressToggleAsync
+                  key={n}
+                  itemType="step"
+                  itemId={`dsa-${params.id}-step-${n}`}
+                  label={`Step ${n} complete`}
+                />
+              ))}
+            </div>
+
             {mentalModelContent ? (
               <MarkdownRenderer
                 content={mentalModelContent}
