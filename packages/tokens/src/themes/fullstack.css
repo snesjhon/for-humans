@@ -1,0 +1,57 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   Fullstack for Humans — Teal palette
+   Activated when data-app="fullstack" is set on <html>
+   ───────────────────────────────────────────────────────────────────────────── */
+[data-app="fullstack"] {
+  --active-phase-color: var(--green);
+
+  --bg: #f6faf8;
+  --bg-alt: #edf5f0;
+  --bg-highlight: #e0ede6;
+  --sel-bg: #c8e0d4;
+  --border: #ccddd4;
+  --border-dark: #a8c4b8;
+  --fg: #0e1a14;
+  --fg-alt: #2a4a38;
+  --fg-comment: #5a7a68;
+  --fg-gutter: #7a9a88;
+
+  --blue: #1a6b9a;
+  --link: #1a6b9a;
+  --green: #1a7a4a;
+  --orange: #c27520;
+  --red: #b81800;
+  --purple: #6040b0;
+  --cyan: #0d8080;
+
+  --blue-tint: rgba(26, 107, 154, 0.09);
+  --green-tint: rgba(26, 122, 74, 0.09);
+  --orange-tint: rgba(194, 117, 32, 0.10);
+  --purple-tint: rgba(96, 64, 176, 0.09);
+}
+
+[data-app="fullstack"].dark {
+  --bg: #0a1410;
+  --bg-alt: #101e18;
+  --bg-highlight: #162820;
+  --sel-bg: #1e3828;
+  --border: #1e3228;
+  --border-dark: #2a4438;
+  --fg: #ffffff;
+  --fg-alt: #b8d4c4;
+  --fg-comment: #6a9080;
+  --fg-gutter: #4a6858;
+
+  --blue: #4aa0d8;
+  --link: #4aa0d8;
+  --green: #3ab870;
+  --orange: #d4a030;
+  --red: #e05040;
+  --purple: #a080e0;
+  --cyan: #30c0c0;
+
+  --blue-tint: rgba(74, 160, 216, 0.12);
+  --green-tint: rgba(58, 184, 112, 0.12);
+  --orange-tint: rgba(212, 160, 48, 0.10);
+  --purple-tint: rgba(160, 128, 224, 0.12);
+}

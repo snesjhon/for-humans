@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 
 export interface NavLink {
   href: string;
@@ -15,6 +16,11 @@ export interface SiteHeaderProps {
   navLinks?: NavLink[];
 }
 
+export function isActivePath(pathname: string, href: string): boolean {
+  if (href === '/') return pathname === '/';
+  return pathname === href || pathname.startsWith(href + '/');
+}
+
 export function SiteHeader({
   title,
   homeHref = '/',
@@ -23,6 +29,7 @@ export function SiteHeader({
 }: SiteHeaderProps) {
   const [scrolled, setScrolled] = useState(false);
   const [dark, setDark] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     setDark(document.documentElement.classList.contains('dark'));
@@ -65,15 +72,28 @@ export function SiteHeader({
             </span>
           </Link>
 
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="text-sm transition-opacity hover:opacity-70 text-[var(--fg-comment)] no-underline"
-            >
-              {link.label}
-            </Link>
-          ))}
+          {navLinks.map((link) => {
+            const active = isActivePath(pathname, link.href);
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-sm no-underline transition-colors"
+                style={
+                  active
+                    ? {
+                        color: 'var(--active-phase-color)',
+                        borderBottom: '2px solid var(--active-phase-color)',
+                        paddingBottom: '2px',
+                        fontWeight: 500,
+                      }
+                    : { color: 'var(--fg-comment)' }
+                }
+              >
+                {link.label}
+              </Link>
+            );
+          })}
 
           <div className="ml-auto" />
 

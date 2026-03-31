@@ -1,7 +1,8 @@
 /* ─────────────────────────────────────────────────────────────────────────────
-   System Design for Humans — Bold palette (light default)
+   System Design for Humans — Bold palette
+   Activated when data-app="system-design" is set on <html>
    ───────────────────────────────────────────────────────────────────────────── */
-:root {
+[data-app="system-design"] {
   --active-phase-color: var(--blue);
 
   --bg: #ffffff;
@@ -20,21 +21,16 @@
   --green: #038051;
   --orange: #ffd000;
   --red: #c11400;
-  /* --purple intentionally same as --blue; SD has no trace visualizers so collision is acceptable */
   --purple: #004e89;
   --cyan: #f11250;
 
   --blue-tint: rgba(0, 78, 137, 0.09);
   --green-tint: rgba(3, 128, 81, 0.09);
   --orange-tint: rgba(255, 208, 0, 0.10);
-  /* --purple-tint intentionally same as --blue-tint */
   --purple-tint: rgba(0, 78, 137, 0.09);
-
-  /* Font variables are owned by next/font via className on <html> — do not set here */
 }
 
-/* Dark mode — .dark on <html> */
-.dark {
+[data-app="system-design"].dark {
   --bg: #060e0e;
   --bg-alt: #0e1a1a;
   --bg-highlight: #162424;
@@ -58,6 +54,4 @@
   --green-tint: rgba(26, 153, 64, 0.12);
   --orange-tint: rgba(255, 208, 0, 0.10);
   --purple-tint: rgba(74, 136, 216, 0.12);
-
-  /* Font variables are inherited from light mode class — no override needed */
 }

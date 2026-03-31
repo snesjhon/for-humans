@@ -3,11 +3,7 @@
   "private": true,
   "packageManager": "pnpm@10.32.1",
   "scripts": {
-    "dev:dsa": "pnpm --filter dsa-for-humans dev",
-    "dev:sd": "pnpm --filter system-design-for-humans dev",
-    "dev:fs": "pnpm --filter fullstack-design-for-humans dev",
-    "build:dsa": "pnpm --filter dsa-for-humans build",
-    "build:sd": "pnpm --filter system-design-for-humans build",
-    "build": "pnpm --filter './apps/*' build"
+    "dev": "pnpm --filter mental-systems dev",
+    "build": "pnpm --filter mental-systems build"
   }
 }

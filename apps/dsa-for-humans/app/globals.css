@@ -1,6 +1,0 @@
-@import '@for-humans/tokens/src/base.css';
-@import '@for-humans/tokens/src/themes/dsa.css';
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;

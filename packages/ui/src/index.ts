@@ -1,7 +1,7 @@
 export { default as MermaidChart } from './MermaidChart'
 export { default as TableOfContents } from './TableOfContents'
 export { PhaseTracker, PhaseColorSync } from './PhaseTracker'
-export { SiteHeader } from './SiteHeader'
+export { SiteHeader, isActivePath } from './SiteHeader'
 export type { SiteHeaderProps, NavLink } from './SiteHeader'
 export { default as MarkdownRenderer } from './MarkdownRenderer'
 export type { MarkdownRendererProps, BaseSegment } from './MarkdownRenderer'

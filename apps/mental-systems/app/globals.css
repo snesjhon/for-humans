@@ -1,0 +1,8 @@
+@import '@for-humans/tokens/src/base.css';
+@import '@for-humans/tokens/src/themes/dsa.css';
+@import '@for-humans/tokens/src/themes/system-design.css';
+@import '@for-humans/tokens/src/themes/fullstack.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
