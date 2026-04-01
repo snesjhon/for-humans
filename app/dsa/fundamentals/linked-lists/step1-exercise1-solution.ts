@@ -24,11 +24,11 @@ function countNodes(head: ListNode | null): number {
   return count;
 }
 
-test('empty train',       () => countNodes(null),              0);
-test('single car',        () => countNodes(buildList([1])),    1);
-test('three cars',        () => countNodes(buildList([1,2,3])), 3);
-test('five cars',         () => countNodes(buildList([1,2,3,4,5])), 5);
-test('two cars',          () => countNodes(buildList([7,8])),  2);
+test('empty train', () => countNodes(null), 0);
+test('single car', () => countNodes(buildList([1])), 1);
+test('three cars', () => countNodes(buildList([1, 2, 3])), 3);
+test('five cars', () => countNodes(buildList([1, 2, 3, 4, 5])), 5);
+test('two cars', () => countNodes(buildList([7, 8])), 2);
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function buildList(values: number[]): ListNode | null {
@@ -54,6 +54,8 @@ function test(desc: string, fn: () => unknown, expected: unknown): void {
   } catch (e) {
     if (e instanceof Error && e.message === 'not implemented') {
       console.log(`TODO  ${desc}`);
-    } else { throw e; }
+    } else {
+      throw e;
+    }
   }
 }

@@ -735,7 +735,6 @@ blockquote > p {
 .ps-label-sublabel {
   font-size: 13.5px;
   line-height: 1.6;
-  color: var(--fg-gutter);
 }
 .ps-label-arrow {
   color: var(--fg-gutter);
@@ -1092,6 +1091,186 @@ blockquote > p {
   background: var(--purple-tint);
   color: var(--purple);
   border: 1px solid var(--purple);
+}
+
+/* Stack / Queue Trace */
+.sq-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 1.25rem;
+}
+.sq-grid-item-queue {
+  grid-column: 1 / -1;
+}
+.sq-structure {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  padding: 0.9rem;
+}
+.sq-structure-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 0.85rem;
+}
+.sq-structure-title {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--fg);
+}
+.sq-structure-kind {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fg-gutter);
+}
+.sq-stack-shell,
+.sq-queue-shell {
+  min-height: 180px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.sq-stack-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.sq-stack-slot,
+.sq-queue-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.sq-pointer-row {
+  min-height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.sq-pointer-placeholder {
+  display: block;
+  min-width: 1px;
+  min-height: 1px;
+}
+.sq-queue-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.sq-queue-idx {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 10px;
+  color: var(--fg-gutter);
+  line-height: 1;
+}
+.dfh-trace-cell.sq-cell-muted {
+  background: var(--bg-alt);
+  border-color: var(--border);
+  color: var(--fg-alt);
+  opacity: 0.6;
+}
+.dfh-trace-cell.sq-cell-blue {
+  background: var(--blue-tint);
+  border-color: var(--blue);
+  color: var(--blue);
+}
+.dfh-trace-cell.sq-cell-orange {
+  background: var(--orange-tint);
+  border-color: var(--orange);
+  color: var(--orange);
+}
+.dfh-trace-cell.sq-cell-green {
+  background: var(--green-tint);
+  border-color: var(--green);
+  color: var(--green);
+}
+.dfh-trace-cell.sq-cell-purple {
+  background: var(--purple-tint);
+  border-color: var(--purple);
+  color: var(--purple);
+}
+.sq-empty {
+  min-width: 110px;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed var(--border);
+  border-radius: 6px;
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 12px;
+  font-style: italic;
+  color: var(--fg-gutter);
+}
+.sq-footnote {
+  margin-top: 0.85rem;
+  text-align: center;
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 10px;
+  color: var(--fg-gutter);
+}
+.dfh-ptr.sq-ptr-blue {
+  background: var(--blue-tint);
+  color: var(--blue);
+}
+.dfh-ptr.sq-ptr-orange {
+  background: var(--orange-tint);
+  color: var(--orange);
+}
+.dfh-ptr.sq-ptr-green {
+  background: var(--green-tint);
+  color: var(--green);
+}
+.dfh-ptr.sq-ptr-purple {
+  background: var(--purple-tint);
+  color: var(--purple);
+}
+.dfh-trace-badge.sq-badge-push,
+.dfh-trace-badge.sq-badge-enqueue {
+  background: var(--blue-tint);
+  color: var(--blue);
+  border: 1px solid var(--blue);
+}
+.dfh-trace-badge.sq-badge-pop,
+.dfh-trace-badge.sq-badge-dequeue {
+  background: var(--orange-tint);
+  color: var(--orange);
+  border: 1px solid var(--orange);
+}
+.dfh-trace-badge.sq-badge-peek {
+  background: var(--green-tint);
+  color: var(--green);
+  border: 1px solid var(--green);
+}
+.dfh-trace-badge.sq-badge-transfer {
+  background: var(--purple-tint);
+  color: var(--purple);
+  border: 1px solid var(--purple);
+}
+.dfh-trace-badge.sq-badge-done {
+  background: color-mix(in srgb, var(--cyan) 12%, var(--bg-alt));
+  color: var(--cyan);
+  border: 1px solid var(--cyan);
+}
+
+@media (max-width: 760px) {
+  .sq-grid {
+    grid-template-columns: 1fr;
+  }
+  .sq-grid-item-queue {
+    grid-column: auto;
+  }
 }
 
 /* =============================================================================

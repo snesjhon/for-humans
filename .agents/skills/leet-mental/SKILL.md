@@ -30,6 +30,7 @@ This skill creates mental model study guides that help understand algorithm conc
 
 ## Required Workflow
 
+0. **Trace preflight:** Identify the primary data structure that should drive the visualization, map it to `components/dsa/{DataStructure}Trace.tsx`, and verify that component exists before writing trace content
 1. Choose ONE powerful analogy and commit to it
 2. **Phase 1:** Write substantial analogy section explaining the mental model (NO CODE yet)
 3. **Phase 2:** Build the algorithm incrementally, translating analogy concepts to code
@@ -37,15 +38,23 @@ This skill creates mental model study guides that help understand algorithm conc
 5. Use mermaid charts for visualizations
 6. **MUST validate all mermaid charts** using the validation script
 7. Fix any validation errors before considering mental-model.md complete
-8. **Create step files and solution.ts** — one `stepN-problem.ts` + `stepN-solution.ts` pair per algorithm step, plus a complete `solution.ts`; insert `:::stackblitz` directives in `mental-model.md`; add **Tracing through an Example** table, **Common Misconceptions**, and **Complete Solution** plain code block at the bottom
+8. **Create step files and solution.ts** — one `stepN-problem.ts` + `stepN-solution.ts` pair per algorithm step, plus a complete `solution.ts`; insert `:::stackblitz` directives in `mental-model.md`; add **Common Misconceptions** and **Complete Solution** at the bottom
 9. **Validate step files** — run each in order; all must exit 0; `solution.ts` must print only PASS lines
 10. **Verify the problem is wired into journey.ts** — see "Step 10: Verify journey.ts" below
 11. **DO NOT create README.md or any other summary documents** - only create `mental-model.md`, step files, and `solution.ts`
 
+**Trace preflight rule:**
+
+- Pick the tracer based on the problem's primary data structure, not just the surface algorithm pattern
+- Resolve it to a component path in `components/dsa/{DataStructure}Trace.tsx`
+- Example: linked-list problems should use `components/dsa/LinkedListTrace.tsx`
+- If the needed tracer component does not exist yet, stop generation immediately and ask exactly: "Should we create the visualization component first"
+- Any new tracer component that gets created later should follow the same rubric as the existing DSA trace components
+
 **Validation command:**
 
 ```bash
-../../../.claude/skills/leet-mental/validate-mermaid.sh mental-model.md
+./validate-mermaid.sh mental-model.md
 ```
 
 **Step files run command:**
@@ -64,13 +73,13 @@ npx tsx solution.ts # Expected: PASS lines only
 3. **Stay in the analogy** - Never break character; keep all explanations using analogy terms
 4. **Build from ground up** - Start with the simplest case, show the pattern emerging
 5. **Focus on intuition, not math** - Avoid formulas and equations until after understanding
-6. **Use clear visualizations** - Leverage mermaid charts and tables
+6. **Use clear visualizations** - Leverage mermaid charts and trace components
 7. **Explain every piece** - Never assume understanding of any component
 8. **⭐ THEN BUILD CODE INCREMENTALLY** - After the mental model is solid, translate each analogy concept to code piece by piece
 
 ## Required Sections (in order)
 
-Every mental model MUST have these seven sections in this order:
+Every mental model MUST have these six sections in this order:
 
 ### 0. The Problem
 
@@ -104,7 +113,7 @@ Rich, multi-paragraph prose with these named subsections:
 
 > **Spacing rule:** If the algorithm has two passes (e.g. forward then backward), write two separate paragraphs — one per pass — with a blank line between them. Never describe both passes in a single paragraph. If a step introduces a new variable or changes direction, that's a paragraph break.
 
-**Block 2 — Concrete trace:** Open with "Take `[example]`." on its own line (blank line above it). Then embed the appropriate trace component (`:::trace-map`, `:::trace-lr`, `:::trace-ps`, or `:::trace`) to visualize the algorithm executing on that example. Choose the same component type you use in "Building the Algorithm" — the trace here is a compact preview; the one in the steps section is the full walkthrough. Always include a trace component here — never fall back to prose narration of each step.
+**Block 2 — Concrete trace:** Open with "Take `[example]`." on its own line (blank line above it). Then embed the trace block that maps to the verified component in `components/dsa/{DataStructure}Trace.tsx` to visualize the algorithm executing on that example. Choose the same data-structure-specific component you use in "Building the Algorithm" — the trace here is a compact preview; the one in the steps section is the full walkthrough. Always include a trace component here — never fall back to prose narration of each step.
 
 > **Never narrate the trace as prose.** "Position 0 writes 1 then `leftTally` becomes 1; position 1 writes 1 then `leftTally` becomes 2…" is unreadable. That content belongs in the trace component's `label` fields, not in a paragraph.
 
@@ -135,11 +144,13 @@ The number of steps beyond the minimum is determined by how many independently v
 **What belongs in each Step:**
 
 1. **Analogy prose** — explain the concept through the analogy. What is this step doing in the real-world metaphor? What question should the learner be asking themselves before they start coding?
-2. **Trace component** _(when the step has visualizable execution)_ — pick the right one for the data structure:
-   - `:::trace-map` — building a HashMap or Set (hash map / frequency counting problems)
-   - `:::trace-lr` — one or two pointers scanning a string or array (two-pointer, sliding window)
-   - `:::trace-ps` — two-pass prefix/suffix with a result array
-   - `:::trace` — read/write cursor compacting an array in-place
+2. **Trace component** _(when the step has visualizable execution)_ — pick the trace block by first choosing the primary data structure and verifying its backing component file in `components/dsa/{DataStructure}Trace.tsx`:
+   - `components/dsa/HashMapTrace.tsx` → `:::trace-map` — HashMap / Set building and lookups
+   - `components/dsa/TwoPointerTrace.tsx` → `:::trace-lr` — one or two pointers scanning a string or array
+   - `components/dsa/PrefixSuffixTrace.tsx` → `:::trace-ps` — two-pass prefix/suffix with a result array
+   - `components/dsa/ArrayTrace.tsx` → `:::trace` — read/write cursor compacting an array in-place
+   - `components/dsa/LinkedListTrace.tsx` → `:::trace-ll` — linked-list traversal, pointer rewiring, or cycle movement
+   - If the correct `components/dsa/{DataStructure}Trace.tsx` file does not exist, stop and ask: "Should we create the visualization component first"
 3. **StackBlitz embed** — where the learner actually writes the code and checks against the solution.
 4. **Gotchas block** — a `<details>` element immediately after the embed. Collapsed by default so the learner encounters it only after trying. Contains 2–4 analogy-vocabulary hints about the traps and non-obvious patterns specific to this step.
 
@@ -167,27 +178,7 @@ Gotchas block rules:
 
 **Mermaid charts do not belong inside algorithm steps.** A flowchart of the counting loop or scan logic embedded between prose and a StackBlitz embed breaks the step's focus and duplicates what the trace component already shows. Mermaid goes in a dedicated section after "Building the Algorithm" — see "## [Analogy] at a Glance" below.
 
-### 5. Tracing through an Example
-
-**A full-table trace of the complete algorithm on one concrete input.** This section appears after "Building the Algorithm" and gives the reader a scannable reference they can return to.
-
-Format: a markdown table with one row per loop iteration (or meaningful phase). Columns must include every key variable, the action taken, and the resulting state. Use analogy-based column names where possible.
-
-- Choose the most illustrative example — one with enough iterations to show all code paths (at least one duplicate hit and one new-title hit)
-- Show the initial state as a "Start" row before the loop
-- Show the final "Done" row with the return value
-- Column headers must name the variable AND its analogy role, e.g. `Reading Hand (i)` not just `i`
-- Every row must be complete — no blank cells
-
-Example structure (two-pointer problems):
-
-| Step  | Reading Hand (i) | nums[i] | Writing Hand (k) | Last Placed (nums[k-1]) | New Title? | Action     | Clean Section |
-| ----- | ---------------- | ------- | ---------------- | ----------------------- | ---------- | ---------- | ------------- |
-| Start | 1                | ...     | 1                | ...                     | —          | initialize | [...]         |
-| ...   |                  |         |                  |                         |            |            |               |
-| Done  | —                | —       | k                | —                       | —          | return k   | [...]         |
-
-### 6. Common Misconceptions
+### 5. Common Misconceptions
 
 **3–5 bullet points** covering the mistakes learners most often make with this problem or technique. Each bullet must:
 
@@ -203,11 +194,7 @@ Example structure:
 **"[Wrong belief]"** — [Why it's wrong in 1-2 sentences using the analogy]. [Correct version.]
 ```
 
-Place this section immediately after "Tracing through an Example" and before "Complete Solution".
-
-1. Introduce the concept for this step using the analogy — elaborate on the "what" and "why" with a concrete example or diagram. Cover any edge case that belongs here.
-2. Show the code for this step only (prior steps are locked in the step file).
-3. Insert the `:::stackblitz` directive immediately after the code block.
+Place this section immediately after "Building the Algorithm" (or any optional post-algorithm section like "[Analogy] at a Glance") and before "Complete Solution".
 
 After the final step, the reader has a complete working solution. If one key technique deserves deeper explanation (e.g., "the insertion trick", "the four-pointer dance"), add **one optional section** with multiple subsections — never multiple peer-level technique sections. That section must: (1) name and explain the technique, (2) show how it fits the analogy, (3) give a concrete code example. No checklists, no "ready for the solution?" prompts, no visualizing-the-N-pointers standalone sections.
 
@@ -346,7 +333,7 @@ Each step introduces one concept from the [analogy name], then a StackBlitz embe
 Walk through how it applies to a small concrete example using analogy terms.
 Raise the question the learner should answer before opening the editor.]
 
-[Trace component if pointer/cursor movement is involved — :::trace, :::trace-lr, or :::trace-ps]
+[Trace component if execution is visualizable — choose the fence that maps to the verified `components/dsa/{DataStructure}Trace.tsx` file, for example `:::trace`, `:::trace-lr`, `:::trace-ps`, `:::trace-map`, or `:::trace-ll`]
 
 [Typescript sketch ONLY if there is a structural question prose and trace cannot answer.
 If the step is "build a map" or "scan left to right," prose is sufficient — no sketch needed.]
@@ -377,7 +364,7 @@ After the StackBlitz embed the learner has a complete working solution.]
 ## [Optional: [Analogy Name] at a Glance]
 
 **Use this section for mermaid flowcharts that show the algorithm's overall decision structure.**
-Place it immediately after "Building the Algorithm" and before "Tracing through an Example."
+Place it immediately after "Building the Algorithm" and before "Common Misconceptions."
 This is where a flowchart of the counting loop, recursion shape, or state machine belongs —
 NOT inside individual algorithm steps.
 
@@ -429,11 +416,21 @@ This should be a SINGLE section — never multiple peer-level technique sections
 
 **Decision rule:** When visualizing *how code executes* (pointer movement, array mutation, cursor advancing), use a trace component. When visualizing *conceptual structure* (decision trees, recursion shape, algorithm topology), use mermaid. Never use mermaid to show step-by-step code execution — that's what trace components are for.
 
+**Tracer selection rule:** Always choose the trace by the problem's primary data structure and verify the backing file exists at `components/dsa/{DataStructure}Trace.tsx` before generating the markdown trace block. If the component is missing, stop and ask exactly: "Should we create the visualization component first"
+
 ---
 
 #### Trace Components (for step-by-step code execution)
 
-Three components are available. Each is a fenced block: open with `:::trace`, `:::trace-lr`, or `:::trace-ps`, place a JSON array, close with `:::`.
+Use the fenced block that maps to the verified tracer component. Current built-in mappings:
+
+- `components/dsa/ArrayTrace.tsx` → `:::trace`
+- `components/dsa/TwoPointerTrace.tsx` → `:::trace-lr`
+- `components/dsa/PrefixSuffixTrace.tsx` → `:::trace-ps`
+- `components/dsa/HashMapTrace.tsx` → `:::trace-map`
+- `components/dsa/LinkedListTrace.tsx` → `:::trace-ll`
+
+If the problem's best teaching visualization belongs to another data structure family and the matching `components/dsa/{DataStructure}Trace.tsx` file is missing, do not improvise with the wrong tracer. Stop and ask: "Should we create the visualization component first"
 
 **`:::trace-lr`** — Two-pointer / cursor scan over a sequence
 
@@ -536,6 +533,30 @@ Use when: a reader pointer scans forward while a writer pointer lags behind, com
 | `action` | `"keep" \| "skip" \| "done" \| null` | Disposition of the current element |
 | `label` | `string` | Step description |
 
+**`:::trace-ll`** — Linked-list pointer walk / rewiring trace
+
+Use when: the algorithm's core state lives in nodes and pointers, such as traversal, reversal, merge, fast/slow pointers, or cycle detection.
+
+````
+
+:::trace-ll
+[
+{"list": [1,2,3], "current": 1, "prev": 0, "next": 2, "action": "rewire", "label": "..."},
+...
+]
+:::
+
+````
+
+| Field | Type | Meaning |
+|-------|------|---------|
+| `list` | `(string\|number)[]` | Snapshot of the linked list values in order |
+| `current` | `number` | Active node index |
+| `prev` | `number` | Previous-pointer target index (`-1` when null) |
+| `next` | `number` | Next-pointer target index (`-1` when null) |
+| `action` | `"advance" \| "rewire" \| "split" \| "merge" \| "done" \| null` | Current pointer operation |
+| `label` | `string` | Analogy-based explanation of the step |
+
 ---
 
 #### Mermaid (for conceptual/mental structure only)
@@ -611,7 +632,7 @@ After creating a mental model with mermaid charts, you MUST validate them:
 
 ```bash
 # Run the validation script on your mental-model.md file
-../../../.claude/skills/leet-mental/validate-mermaid.sh mental-model.md
+./validate-mermaid.sh mental-model.md
 ```
 
 The script will:
@@ -713,7 +734,7 @@ const target = sum - k;
 
 ### Testing Your Mental Model
 
-Before considering a mental model complete, verify all four required sections are present and correct:
+Before considering a mental model complete, verify all required sections are present and correct:
 
 **Section 1 — The Analogy Intro**
 
@@ -726,9 +747,7 @@ Before considering a mental model complete, verify all four required sections ar
 
 **Section 4 — Building the Algorithm (Woven Steps)** 11. Does each step weave concept + trace component (where applicable) + StackBlitz embed together? No mermaid inside steps. Code sketch only if a structural question remains after prose + trace. 12. Is the :::stackblitz directive placed immediately after the trace component or sketch (if any) for each step? 13. By the final step, does the reader have a complete working solution? 14. **Code sketch check (CRITICAL):** For every code block above a `:::stackblitz` — could a learner copy it, paste it into the problem file, and pass the tests? If yes, it's implementation code, not a sketch. Replace the working logic with comments or pseudocode that convey the _shape_ without giving away the answer.
 
-**Section 5 — Tracing through an Example** 14. Is there a markdown table with one row per loop iteration (or meaningful phase)? 15. Does every column name include the variable AND its analogy role (e.g. `Reading Hand (i)` not just `i`)? 16. Are all code paths represented — at least one duplicate hit and one new-title hit? 17. Is there a "Start" row (initial state) and a "Done" row (return value)?
-
-**Section 6 — Common Misconceptions** 18. Are there 3–5 misconceptions, each stated as a natural-sounding wrong belief? 19. Is each explained using the analogy (not raw algorithm language)? 20. Does each end with the correct mental model?
+**Section 5 — Common Misconceptions** 14. Are there 3–5 misconceptions, each stated as a natural-sounding wrong belief? 15. Is each explained using the analogy (not raw algorithm language)? 16. Does each end with the correct mental model?
 
 **Complete Solution** 21. Does the Complete Solution use `:::stackblitz{file="solution.ts" step=M total=M solution="solution.ts"}` (same file and solution value so tabs are hidden)?
 
@@ -765,7 +784,8 @@ Before considering a mental model complete, verify all four required sections ar
 - ❌ **Showing working solution code in mental-model.md code blocks** — this is the single most common mistake; code blocks above `:::stackblitz` directives must be SKETCHES only (pseudocode, commented structure, shape of the logic). If a learner could copy your code block and pass the tests, you wrote implementation code instead of a sketch. The full working code lives exclusively in `stepN-solution.ts` and `solution.ts`.
 - ❌ **Adding a typescript code sketch by default** — sketches are off by default. Only add one if there is a specific structural question (loop shape, branching condition, return placement) that neither the prose nor a trace component answers. "Scan left to right and return the first match" does not need a sketch — that's just a for loop. The trace already showed it.
 - ❌ **Embedding mermaid charts inside algorithm steps** — a flowchart of the counting loop or scan logic between step prose and a StackBlitz embed breaks focus and duplicates what the trace shows. Mermaid belongs in a dedicated `## [Analogy] at a Glance` section placed after "Building the Algorithm." Inline in steps: prose + trace components only.
-- ❌ **Using mermaid to show step-by-step code execution** — cursor movement, pointer advancement, array mutation, and loop iterations belong in a `:::trace`, `:::trace-lr`, or `:::trace-ps` component. Mermaid is for conceptual structure: decision trees, recursion topology, algorithm phases.
+- ❌ **Using mermaid to show step-by-step code execution** — cursor movement, pointer advancement, array mutation, linked-list rewiring, and loop iterations belong in the trace block that maps to the verified `components/dsa/{DataStructure}Trace.tsx` component. Mermaid is for conceptual structure: decision trees, recursion topology, algorithm phases.
+- ❌ **Using the wrong tracer just because it already exists** — if the best visualization is for a linked list, use `components/dsa/LinkedListTrace.tsx` / `:::trace-ll`; if the right `components/dsa/{DataStructure}Trace.tsx` file has not been built yet, stop and ask: "Should we create the visualization component first"
 - ❌ **Writing "How I Think Through This" as a wall of text** — each algorithmic phase gets its own paragraph with a blank line between. Two passes = two paragraphs. Never run a forward pass and a backward pass together in one block. The concrete trace (Block 2) must use a trace component — never write out "position 0 writes X then `var` becomes Y; position 1…" as a prose sentence.
 - ❌ **Using `---` horizontal rules between every section** — `---` appears in exactly two places: immediately before `## Building the Algorithm` (signaling the shift from conceptual to hands-on) and immediately before `## Common Misconceptions` (signaling the shift to reference material). Everywhere else, sections flow directly into one another with no divider.
 - ❌ **Multiple peer-level technique sections** after the algorithm steps — if you need deeper explanation, use ONE section with subsections (what it is, how it fits the analogy, code), not separate `## The Reversal Technique`, `## The Four-Pointer Technique`, `## Visualizing the Four Pointers`, etc.
