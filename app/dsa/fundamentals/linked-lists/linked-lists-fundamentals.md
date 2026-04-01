@@ -42,10 +42,10 @@ Take `1 → 2 → 3 → 4 → 5` — finding the middle using fast and slow cond
 
 :::trace-ll
 [
-  {"nodes":[{"val":"1"},{"val":"2"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":0,"label":"slow","color":"blue"},{"index":0,"label":"fast","color":"orange"}],"action":null,"label":"Both slow and fast board at the locomotive, node(1)."},
-  {"nodes":[{"val":"1"},{"val":"2"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":1,"label":"slow","color":"blue"},{"index":2,"label":"fast","color":"orange"}],"action":null,"label":"Slow moves 1 car → node(2). Fast moves 2 cars → node(3)."},
-  {"nodes":[{"val":"1"},{"val":"2"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":2,"label":"slow","color":"blue"},{"index":4,"label":"fast","color":"orange"}],"action":null,"label":"Slow moves to node(3). Fast moves to node(5)."},
-  {"nodes":[{"val":"1"},{"val":"2"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":2,"label":"slow","color":"blue"},{"index":5,"label":"fast","color":"orange"}],"action":"done","label":"fast cannot take another double step — it falls to null. slow is at node(3): the middle car. ✓"}
+{"nodes":[{"val":"1"},{"val":"2"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":0,"label":"slow","color":"blue"},{"index":0,"label":"fast","color":"orange"}],"action":null,"label":"Both slow and fast board at the locomotive, node(1)."},
+{"nodes":[{"val":"1"},{"val":"2"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":1,"label":"slow","color":"blue"},{"index":2,"label":"fast","color":"orange"}],"action":null,"label":"Slow moves 1 car → node(2). Fast moves 2 cars → node(3)."},
+{"nodes":[{"val":"1"},{"val":"2"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":2,"label":"slow","color":"blue"},{"index":4,"label":"fast","color":"orange"}],"action":null,"label":"Slow moves to node(3). Fast moves to node(5)."},
+{"nodes":[{"val":"1"},{"val":"2"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":2,"label":"slow","color":"blue"},{"index":5,"label":"fast","color":"orange"}],"action":"done","label":"fast cannot take another double step — it falls to null. slow is at node(3): the middle car. ✓"}
 ]
 :::
 
@@ -61,30 +61,158 @@ Before you can restructure a linked list, you need to be comfortable walking it 
 
 **How to think about it**
 
-Traversal is a while loop: start at `head`, follow `.next` until you reach `null`. At each step you read the current value, check a condition, and decide whether to cut this coupling, keep it, or skip past.
+#### 1. The Basic Loop — Why Sentinels Matter
 
-The sentinel pattern wraps that loop: allocate a dummy node and set `dummy.next = head`. Now run your operations with `prev = dummy` and `curr = head`. When you find a node to remove, `prev.next = curr.next` — no special check for "is this the head?" When you're done, `dummy.next` is the new head.
+Traversal is a while loop: start at `head`, follow `.next` until you reach `null`. At each step you read the current value, check a condition, and decide whether to keep or remove.
 
-The key discipline for deletion: only advance `prev` when you _keep_ a node. If you remove a node and advance `prev`, the next deletion will have a broken predecessor reference.
+```typescript
+let prev = null;
+let curr = head;
 
-**Walking through it**
+while (curr !== null) {
+  if (shouldRemove(curr)) {
+    // Remove curr
+    if (prev === null) {
+      // Special case: removing the head
+      head = curr.next;
+    } else {
+      prev.next = curr.next;
+    }
+    curr = curr.next;
+  } else {
+    // Keep curr
+    prev = curr;
+    curr = curr.next;
+  }
+}
+```
 
-Remove all cars carrying cargo `3` from the train `1 → 3 → 3 → 4 → 5`:
+The problem: the first node has no predecessor (`prev = null`), so you need a special case. Every insertion and deletion must check "is this the head?" — and that branch-per-operation duplicates code and introduces bugs.
+
+#### 2. Sentinel Setup & Loop Structure
+
+The sentinel pattern eliminates the head special case entirely. Allocate a dummy node and set `dummy.next = head`. Now _every real node has a predecessor_ — the sentinel is the car before car one.
+
+```typescript
+const dummy = new ListNode(0);
+dummy.next = head;
+let prev = dummy;
+let curr = head;
+
+while (curr !== null) {
+  if (shouldRemove(curr)) {
+    // Remove curr
+    prev.next = curr.next; // No special case — same code for head and middle
+    curr = curr.next;
+  } else {
+    // Keep curr
+    prev = curr;
+    curr = curr.next;
+  }
+}
+
+return dummy.next; // Return the new head (skip the sentinel)
+```
+
+Now `prev` always has a valid `.next` to rewrite. The rest of the logic is identical whether you're at the head or deep in the list.
+
+#### 3. Insertion Pattern — Both Pointers Always Advance
+
+To insert a new node, find the position and splice it in. After insertion, both `prev` and `curr` advance to continue scanning.
+
+```typescript
+const dummy = new ListNode(0);
+dummy.next = head;
+let prev = dummy;
+let curr = head;
+
+while (curr !== null) {
+  if (curr.val >= targetValue) {
+    // Insert before curr
+    const newNode = new ListNode(targetValue);
+    prev.next = newNode;
+    newNode.next = curr;
+
+    // Continue scanning: both advance
+    prev = newNode;
+    curr = curr.next;
+  } else {
+    // Not yet at insertion point: advance both
+    prev = curr;
+    curr = curr.next;
+  }
+}
+```
+
+**Example trace:** Insert `4` into `1 → 3 → 5`:
 
 :::trace-ll
 [
-  {"nodes":[{"val":"D"},{"val":"1"},{"val":"3"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":0,"label":"prev","color":"green"},{"index":1,"label":"curr","color":"blue"}],"action":null,"label":"sentinel(D) → 1 → 3 → 3 → 4 → 5. prev=sentinel, curr=node(1). Target: remove all nodes with value 3."},
-  {"nodes":[{"val":"D"},{"val":"1"},{"val":"3"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":1,"label":"prev","color":"green"},{"index":2,"label":"curr","color":"blue"}],"action":null,"label":"curr.val=1 ≠ 3 → keep. Advance both: prev=node(1), curr=node(3 first)."},
-  {"nodes":[{"val":"D"},{"val":"1"},{"val":"3"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":1,"label":"prev","color":"green"},{"index":3,"label":"curr","color":"blue"}],"action":"rewire","label":"curr.val=3 → remove. prev.next = node(3 second). curr = node(3 second). prev stays at node(1)."},
-  {"nodes":[{"val":"D"},{"val":"1"},{"val":"3"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":1,"label":"prev","color":"green"},{"index":4,"label":"curr","color":"blue"}],"action":"rewire","label":"curr.val=3 → remove. prev.next = node(4). curr = node(4). prev stays at node(1)."},
-  {"nodes":[{"val":"D"},{"val":"1"},{"val":"3"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":4,"label":"prev","color":"green"},{"index":5,"label":"curr","color":"blue"}],"action":null,"label":"curr.val=4 ≠ 3 → keep. Advance both: prev=node(4), curr=node(5)."},
-  {"nodes":[{"val":"D"},{"val":"1"},{"val":"3"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":5,"label":"prev","color":"green"},{"index":6,"label":"curr","color":"blue"}],"action":"done","label":"curr.val=5 ≠ 3 → keep. curr advances to null — done. Return dummy.next = node(1). Result: 1 → 4 → 5. ✓"}
+{"nodes":[{"val":"D"},{"val":"1"},{"val":"3"},{"val":"5"}],"pointers":[{"index":0,"label":"prev","color":"green"},{"index":1,"label":"curr","color":"blue"}],"action":null,"label":"sentinel → 1 → 3 → 5. prev=sentinel, curr=node(1). Insert 4."},
+{"nodes":[{"val":"D"},{"val":"1"},{"val":"3"},{"val":"5"}],"pointers":[{"index":1,"label":"prev","color":"green"},{"index":2,"label":"curr","color":"blue"}],"action":null,"label":"curr.val=1 < 4 → keep scanning. Advance both: prev=node(1), curr=node(3)."},
+{"nodes":[{"val":"D"},{"val":"1"},{"val":"3"},{"val":"5"}],"pointers":[{"index":2,"label":"prev","color":"green"},{"index":3,"label":"curr","color":"blue"}],"label":"curr.val=3 < 4 → keep scanning. Advance both: prev=node(3), curr=node(5)."},
+{"nodes":[{"val":"D"},{"val":"1"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":2,"label":"prev","color":"green"},{"index":4,"label":"curr","color":"blue"}],"action":"rewire","label":"curr.val=5 >= 4 → insert. Create node(4). prev.next=node(4), node(4).next=node(5). Both advance: prev=node(4), curr=node(5)."},
+{"nodes":[{"val":"D"},{"val":"1"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":3,"label":"prev","color":"green"},{"index":5,"label":"curr","color":"blue"}],"action":"done","label":"curr=null → done. Result: 1 → 3 → 4 → 5. ✓"}
 ]
 :::
 
+Insertion is straightforward: whenever you move forward (insert or skip), advance both pointers.
+
+#### 4. Deletion Pattern — The Key Discipline
+
+Deletion is trickier. `prev` tracks the predecessor of the next candidate. After removal, do **not** advance `prev` — it must stay in place to be the predecessor of the next node you examine.
+
+**Correct pattern:**
+
+```typescript
+while (curr !== null) {
+  if (shouldRemove(curr)) {
+    // Remove curr: skip it, don't advance prev
+    prev.next = curr.next;
+    curr = curr.next;
+  } else {
+    // Keep curr: advance both
+    prev = curr;
+    curr = curr.next;
+  }
+}
+```
+
+**Example trace — Correct deletion:** Remove all `3`s from `1 → 3 → 3 → 4 → 5`:
+
+:::trace-ll
+[
+{"nodes":[{"val":"D"},{"val":"1"},{"val":"3"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":0,"label":"prev","color":"green"},{"index":1,"label":"curr","color":"blue"}],"action":null,"label":"sentinel(D) → 1 → 3 → 3 → 4 → 5. prev=sentinel, curr=node(1). Target: remove all nodes with value 3."},
+{"nodes":[{"val":"D"},{"val":"1"},{"val":"3"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":1,"label":"prev","color":"green"},{"index":2,"label":"curr","color":"blue"}],"action":null,"label":"curr.val=1 ≠ 3 → keep. Advance both: prev=node(1), curr=node(3 first)."},
+{"nodes":[{"val":"D"},{"val":"1"},{"val":"3"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":1,"label":"prev","color":"green"},{"index":3,"label":"curr","color":"blue"}],"action":"rewire","label":"curr.val=3 → remove. prev.next = node(3 second). curr = node(3 second). prev stays at node(1)."},
+{"nodes":[{"val":"D"},{"val":"1"},{"val":"3"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":1,"label":"prev","color":"green"},{"index":4,"label":"curr","color":"blue"}],"action":"rewire","label":"curr.val=3 → remove. prev.next = node(4). curr = node(4). prev stays at node(1)."},
+{"nodes":[{"val":"D"},{"val":"1"},{"val":"3"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":4,"label":"prev","color":"green"},{"index":5,"label":"curr","color":"blue"}],"action":null,"label":"curr.val=4 ≠ 3 → keep. Advance both: prev=node(4), curr=node(5)."},
+{"nodes":[{"val":"D"},{"val":"1"},{"val":"3"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":5,"label":"prev","color":"green"},{"index":6,"label":"curr","color":"blue"}],"action":"done","label":"curr.val=5 ≠ 3 → keep. curr advances to null — done. Return dummy.next = node(1). Result: 1 → 4 → 5. ✓"}
+]
+:::
+
+Now watch what happens if you break the rule. Suppose you mistakenly advanced `prev` after removing the first `3`:
+
+**Broken deletion — What happens if you advance `prev` after removal:**
+
+:::trace-ll
+[
+{"nodes":[{"val":"D"},{"val":"1"},{"val":"3"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":0,"label":"prev","color":"green"},{"index":1,"label":"curr","color":"blue"}],"action":null,"label":"Start: sentinel → 1 → 3 → 3 → 4 → 5. prev=sentinel, curr=node(1). Target: remove 3s."},
+{"nodes":[{"val":"D"},{"val":"1"},{"val":"3"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":1,"label":"prev","color":"green"},{"index":2,"label":"curr","color":"blue"}],"action":null,"label":"curr.val=1 ≠ 3 → keep. Advance both: prev=node(1), curr=node(3 first)."},
+{"nodes":[{"val":"D"},{"val":"1"},{"val":"3"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":1,"label":"prev","color":"green"},{"index":3,"label":"curr","color":"blue"}],"action":"rewire","label":"curr.val=3 → remove. prev.next = node(3 second). curr = node(3 second)."},
+{"nodes":[{"val":"D"},{"val":"1"},{"val":"3"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":2,"label":"prev","color":"red"},{"index":3,"label":"curr","color":"blue"}],"action":"rewire","label":"⚠️ BUG: Mistakenly advance prev to node(3 first). Now prev is sitting ON the node we just removed from the chain!"},
+{"nodes":[{"val":"D"},{"val":"1"},{"val":"3"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":2,"label":"prev","color":"red"},{"index":4,"label":"curr","color":"blue"}],"action":"rewire","label":"curr.val=3 → remove. Execute prev.next = node(4). But prev points to the orphaned node(3 first), so node(3 first).next is rewritten."},
+{"nodes":[{"val":"D"},{"val":"1"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":2,"label":"prev","color":"red"},{"index":5,"label":"curr","color":"blue"}],"action":"done","label":"⚠️ BROKEN: The orphaned node(3 first) is still in the chain! Result: sentinel → 1 → 3 (orphaned) → 4 → 5. ✗"}
+]
+:::
+
+**Why this breaks:** When you remove a node and then advance `prev` to it, `prev` is now sitting on a node that's no longer in the chain. The next removal relinks from that orphaned node, leaving it behind. `prev` must always point to a node still in the list.
+
+**The discipline:** Advance `prev` _only_ when you keep `curr`. After removal, `prev` stays in place because it must be the predecessor of the next node you examine.
+
 **The one thing to get right**
 
-When you delete a node, do not advance `prev`. `prev` is the predecessor of the next candidate. If you move it after a deletion, the next removal will leave a broken coupling in the middle of the list. Advance `prev` only when you decide to keep `curr`.
+In the deletion pattern, `prev` is the predecessor of the next candidate node. The moment you remove `curr`, `prev` is still the predecessor of whatever comes next — do not move it. Only advance `prev` when you decide to keep `curr`. Violating this leaves orphaned nodes stranded in the middle of the list.
 
 :::stackblitz{step=1 total=3 exercises="step1-exercise1-problem.ts,step1-exercise2-problem.ts,step1-exercise3-problem.ts" solutions="step1-exercise1-solution.ts,step1-exercise2-solution.ts,step1-exercise3-solution.ts"}
 
@@ -116,11 +244,11 @@ Two conductors board the locomotive together. Slow moves one car per step. Fast 
 
 :::trace-ll
 [
-  {"nodes":[{"val":"1"},{"val":"2"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":0,"label":"trailer","color":"blue"},{"index":0,"label":"lead","color":"orange"}],"action":null,"label":"N=2. Both start at head. lead will advance N=2 steps alone."},
-  {"nodes":[{"val":"1"},{"val":"2"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":0,"label":"trailer","color":"blue"},{"index":2,"label":"lead","color":"orange"}],"action":null,"label":"lead advanced 2 steps → node(3). trailer stays at node(1)."},
-  {"nodes":[{"val":"1"},{"val":"2"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":1,"label":"trailer","color":"blue"},{"index":3,"label":"lead","color":"orange"}],"action":null,"label":"Both advance: lead → node(4), trailer → node(2)."},
-  {"nodes":[{"val":"1"},{"val":"2"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":2,"label":"trailer","color":"blue"},{"index":4,"label":"lead","color":"orange"}],"action":null,"label":"Both advance: lead → node(5), trailer → node(3)."},
-  {"nodes":[{"val":"1"},{"val":"2"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":3,"label":"trailer","color":"blue"},{"index":5,"label":"lead","color":"orange"}],"action":"done","label":"Both advance: lead → null, trailer → node(4). lead is null → stop. trailer is the 2nd car from the end. ✓"}
+{"nodes":[{"val":"1"},{"val":"2"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":0,"label":"trailer","color":"blue"},{"index":0,"label":"lead","color":"orange"}],"action":null,"label":"N=2. Both start at head. lead will advance N=2 steps alone."},
+{"nodes":[{"val":"1"},{"val":"2"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":0,"label":"trailer","color":"blue"},{"index":2,"label":"lead","color":"orange"}],"action":null,"label":"lead advanced 2 steps → node(3). trailer stays at node(1)."},
+{"nodes":[{"val":"1"},{"val":"2"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":1,"label":"trailer","color":"blue"},{"index":3,"label":"lead","color":"orange"}],"action":null,"label":"Both advance: lead → node(4), trailer → node(2)."},
+{"nodes":[{"val":"1"},{"val":"2"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":2,"label":"trailer","color":"blue"},{"index":4,"label":"lead","color":"orange"}],"action":null,"label":"Both advance: lead → node(5), trailer → node(3)."},
+{"nodes":[{"val":"1"},{"val":"2"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":3,"label":"trailer","color":"blue"},{"index":5,"label":"lead","color":"orange"}],"action":"done","label":"Both advance: lead → null, trailer → node(4). lead is null → stop. trailer is the 2nd car from the end. ✓"}
 ]
 :::
 
@@ -153,6 +281,7 @@ To reverse the direction of a coupling, you need three cars in view simultaneous
 - `next` — the car ahead, which you **must save before you cut** the coupling.
 
 The atomic move:
+
 1. Save: `next = curr.next`.
 2. Rewire: `curr.next = prev`.
 3. Advance: `prev = curr; curr = next`.
@@ -167,12 +296,12 @@ Reverse `1 → 2 → 3 → 4 → 5`:
 
 :::trace-ll
 [
-  {"nodes":[{"val":"1"},{"val":"2"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":-1,"label":"prev","color":"green"},{"index":0,"label":"curr","color":"blue"}],"action":null,"label":"prev=null, curr=node(1). Save `next=node(2)`, rewire `1.next=null`."},
-  {"nodes":[{"val":"1"},{"val":"2"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":0,"label":"prev","color":"green"},{"index":1,"label":"curr","color":"blue"}],"action":"rewire","label":"Rewired: `1.next=null`. Advance: prev=node(1), curr=node(2). Save `next=node(3)`, rewire `2.next=node(1)`."},
-  {"nodes":[{"val":"1"},{"val":"2"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":1,"label":"prev","color":"green"},{"index":2,"label":"curr","color":"blue"}],"action":"rewire","label":"Rewired: `2.next=node(1)`. Advance: prev=node(2), curr=node(3). Save `next=node(4)`, rewire `3.next=node(2)`."},
-  {"nodes":[{"val":"1"},{"val":"2"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":2,"label":"prev","color":"green"},{"index":3,"label":"curr","color":"blue"}],"action":"rewire","label":"Rewired: `3.next=node(2)`. Advance: prev=node(3), curr=node(4). Save `next=node(5)`, rewire `4.next=node(3)`."},
-  {"nodes":[{"val":"1"},{"val":"2"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":3,"label":"prev","color":"green"},{"index":4,"label":"curr","color":"blue"}],"action":"rewire","label":"Rewired: `4.next=node(3)`. Advance: prev=node(4), curr=node(5). Save `next=null`, rewire `5.next=node(4)`."},
-  {"nodes":[{"val":"1"},{"val":"2"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":4,"label":"prev","color":"green"},{"index":5,"label":"curr","color":"blue"}],"action":"done","label":"curr=null — done. prev=node(5) is the new head. Result: 5→4→3→2→1 ✓"}
+{"nodes":[{"val":"1"},{"val":"2"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":-1,"label":"prev","color":"green"},{"index":0,"label":"curr","color":"blue"}],"action":null,"label":"prev=null, curr=node(1). Save `next=node(2)`, rewire `1.next=null`."},
+{"nodes":[{"val":"1"},{"val":"2"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":0,"label":"prev","color":"green"},{"index":1,"label":"curr","color":"blue"}],"action":"rewire","label":"Rewired: `1.next=null`. Advance: prev=node(1), curr=node(2). Save `next=node(3)`, rewire `2.next=node(1)`."},
+{"nodes":[{"val":"1"},{"val":"2"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":1,"label":"prev","color":"green"},{"index":2,"label":"curr","color":"blue"}],"action":"rewire","label":"Rewired: `2.next=node(1)`. Advance: prev=node(2), curr=node(3). Save `next=node(4)`, rewire `3.next=node(2)`."},
+{"nodes":[{"val":"1"},{"val":"2"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":2,"label":"prev","color":"green"},{"index":3,"label":"curr","color":"blue"}],"action":"rewire","label":"Rewired: `3.next=node(2)`. Advance: prev=node(3), curr=node(4). Save `next=node(5)`, rewire `4.next=node(3)`."},
+{"nodes":[{"val":"1"},{"val":"2"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":3,"label":"prev","color":"green"},{"index":4,"label":"curr","color":"blue"}],"action":"rewire","label":"Rewired: `4.next=node(3)`. Advance: prev=node(4), curr=node(5). Save `next=null`, rewire `5.next=node(4)`."},
+{"nodes":[{"val":"1"},{"val":"2"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":4,"label":"prev","color":"green"},{"index":5,"label":"curr","color":"blue"}],"action":"done","label":"curr=null — done. prev=node(5) is the new head. Result: 5→4→3→2→1 ✓"}
 ]
 :::
 
@@ -196,11 +325,11 @@ The +1 is the key insight. Without it, trailer lands on the node to delete — b
 
 :::trace-ll
 [
-  {"nodes":[{"val":"D"},{"val":"1"},{"val":"2"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":0,"label":"trailer","color":"blue"},{"index":0,"label":"lead","color":"orange"}],"action":null,"label":"N=2. Both start at sentinel (D). lead will advance N+1=3 steps alone."},
-  {"nodes":[{"val":"D"},{"val":"1"},{"val":"2"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":0,"label":"trailer","color":"blue"},{"index":3,"label":"lead","color":"orange"}],"action":null,"label":"lead advanced N+1=3 steps → node(3). trailer stays at sentinel."},
-  {"nodes":[{"val":"D"},{"val":"1"},{"val":"2"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":1,"label":"trailer","color":"blue"},{"index":4,"label":"lead","color":"orange"}],"action":null,"label":"Both advance: lead → node(4), trailer → node(1)."},
-  {"nodes":[{"val":"D"},{"val":"1"},{"val":"2"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":2,"label":"trailer","color":"blue"},{"index":5,"label":"lead","color":"orange"}],"action":null,"label":"Both advance: lead → node(5), trailer → node(2)."},
-  {"nodes":[{"val":"D"},{"val":"1"},{"val":"2"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":2,"label":"trailer","color":"blue"},{"index":6,"label":"lead","color":"orange"}],"action":"done","label":"Both advance: lead → null, trailer → node(2). trailer.next is node(4) — the 2nd from end. Rewire: `trailer.next = trailer.next.next`. ✓"}
+{"nodes":[{"val":"D"},{"val":"1"},{"val":"2"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":0,"label":"trailer","color":"blue"},{"index":0,"label":"lead","color":"orange"}],"action":null,"label":"N=2. Both start at sentinel (D). lead will advance N+1=3 steps alone."},
+{"nodes":[{"val":"D"},{"val":"1"},{"val":"2"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":0,"label":"trailer","color":"blue"},{"index":3,"label":"lead","color":"orange"}],"action":null,"label":"lead advanced N+1=3 steps → node(3). trailer stays at sentinel."},
+{"nodes":[{"val":"D"},{"val":"1"},{"val":"2"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":1,"label":"trailer","color":"blue"},{"index":4,"label":"lead","color":"orange"}],"action":null,"label":"Both advance: lead → node(4), trailer → node(1)."},
+{"nodes":[{"val":"D"},{"val":"1"},{"val":"2"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":2,"label":"trailer","color":"blue"},{"index":5,"label":"lead","color":"orange"}],"action":null,"label":"Both advance: lead → node(5), trailer → node(2)."},
+{"nodes":[{"val":"D"},{"val":"1"},{"val":"2"},{"val":"3"},{"val":"4"},{"val":"5"}],"pointers":[{"index":2,"label":"trailer","color":"blue"},{"index":6,"label":"lead","color":"orange"}],"action":"done","label":"Both advance: lead → null, trailer → node(2). trailer.next is node(4) — the 2nd from end. Rewire: `trailer.next = trailer.next.next`. ✓"}
 ]
 :::
 
@@ -252,15 +381,15 @@ graph TD
 
 ### Key Operations
 
-| Operation | Time | Space | Notes |
-|-----------|------|-------|-------|
-| Traverse to position k | O(k) | O(1) | No index-based access |
-| Find middle node | O(n) | O(1) | Fast/slow, single pass |
-| Detect cycle | O(n) | O(1) | Floyd's algorithm |
-| Find Nth from end | O(n) | O(1) | N-apart pointers, single pass |
-| Reverse full list | O(n) | O(1) | Three-pointer technique |
-| Reverse sublist of length k | O(k) | O(1) | Walk to start, then k reversal steps |
-| Merge two sorted lists | O(n+m) | O(1) | Sentinel + compare heads |
+| Operation                   | Time   | Space | Notes                                |
+| --------------------------- | ------ | ----- | ------------------------------------ |
+| Traverse to position k      | O(k)   | O(1)  | No index-based access                |
+| Find middle node            | O(n)   | O(1)  | Fast/slow, single pass               |
+| Detect cycle                | O(n)   | O(1)  | Floyd's algorithm                    |
+| Find Nth from end           | O(n)   | O(1)  | N-apart pointers, single pass        |
+| Reverse full list           | O(n)   | O(1)  | Three-pointer technique              |
+| Reverse sublist of length k | O(k)   | O(1)  | Walk to start, then k reversal steps |
+| Merge two sorted lists      | O(n+m) | O(1)  | Sentinel + compare heads             |
 
 ### Decision Tree
 
@@ -279,13 +408,13 @@ graph TD
 
 ### Recognition Signals
 
-| Problem keywords | Technique |
-|----------------|-----------|
+| Problem keywords                     | Technique                             |
+| ------------------------------------ | ------------------------------------- |
 | "reverse", "rotate", "reorder nodes" | In-place rewiring with prev/curr/next |
-| "cycle", "loop", "does it loop" | Fast/slow pointers (Floyd's) |
-| "middle node", "find the median" | Fast/slow pointers |
-| "Nth from end", "remove last N" | N-apart pointers + sentinel |
-| "merge", "delete by value", "insert" | Sentinel + prev/curr traversal |
+| "cycle", "loop", "does it loop"      | Fast/slow pointers (Floyd's)          |
+| "middle node", "find the median"     | Fast/slow pointers                    |
+| "Nth from end", "remove last N"      | N-apart pointers + sentinel           |
+| "merge", "delete by value", "insert" | Sentinel + prev/curr traversal        |
 
 **When NOT to use linked lists**: if your algorithm requires repeated random access by index — looking up position k more than once or twice — convert the list to an array first. The O(k) traversal cost compounds quickly when you need multiple random accesses, and an array gives O(1) access at O(n) upfront cost.
 
@@ -309,6 +438,7 @@ The sentinel holds junk cargo (typically 0). Returning it as the head of the res
 If you advance lead N steps (not N+1), trailer lands on the Nth node from end — the one to delete, not its predecessor. You cannot delete a node without its predecessor. The extra step is why it's N+1. Getting this wrong either deletes the wrong node or causes a null pointer error.
 
 **Edge cases to always test**:
+
 - Empty list (`null`)
 - Single node (`1 → null`)
 - Two-node list (`1 → 2 → null`)

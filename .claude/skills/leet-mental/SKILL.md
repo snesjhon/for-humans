@@ -235,7 +235,7 @@ This splits concept from code, forcing the reader to mentally reconnect them lat
 
 ✅ **Weave concept + code + embed at each step:**
 
-````markdown
+```markdown
 ## Building the Algorithm
 
 Each step introduces one concept from the analogy, then a StackBlitz embed to try it immediately.
@@ -244,12 +244,7 @@ Each step introduces one concept from the analogy, then a StackBlitz embed to tr
 
 [Explain the concept with a concrete example and diagram. Cover the edge case that
 motivates any scaffolding (e.g. the dummy node). Build the "why" before showing code.]
-
-```typescript
-// Code for step 1 only
-// Prior steps don't exist yet — this is the foundation
 ```
-````
 
 :::stackblitz{file="step1-problem.ts" step=1 total=N solution="step1-solution.ts"}
 
@@ -258,21 +253,12 @@ motivates any scaffolding (e.g. the dummy node). Build the "why" before showing 
 [Trace through the concrete example to show how this step works. The reader already
 understands step 1's code — now extend it with step 2's logic.]
 
-```typescript
-// Step 1 code already there (implied as locked)
-// Step 2 adds the new logic
-```
-
 :::stackblitz{file="step2-problem.ts" step=2 total=N solution="step2-solution.ts"}
 
 ### Step N: [Final Concept]
 
 [Close the loop — explain why the last piece is necessary. Cover any edge cases
 that apply here. After this embed, the reader has a complete working solution.]
-
-```typescript
-return result;
-```
 
 :::stackblitz{file="stepN-problem.ts" step=N total=N solution="stepN-solution.ts"}
 
@@ -420,16 +406,6 @@ This should be a SINGLE section — never multiple peer-level technique sections
 // Focused code example showing just this technique
 // Annotate with analogy terms
 ```
-
----
-
-## Tracing through an Example
-
-| Step  | [Reading Hand var] | [value] | [Writing Hand var] | [Last Placed] | New Title? | Action     | [State] |
-| ----- | ------------------ | ------- | ------------------ | ------------- | ---------- | ---------- | ------- |
-| Start | 1                  | ...     | 1                  | ...           | —          | initialize | [...]   |
-| ...   |                    |         |                    |               |            |            |         |
-| Done  | —                  | —       | k                  | —             | —          | return k   | [...]   |
 
 ---
 
