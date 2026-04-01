@@ -4,6 +4,15 @@ import { useEffect, useRef, useState } from 'react';
 import type { EditorView } from '@codemirror/view';
 import type { Transaction } from '@codemirror/state';
 import type { WebContainer } from '@webcontainer/api';
+import {
+  applyEditableSnippet,
+  buildDsaCodeStorageKey,
+  extractEditableSnippet,
+  normalizeDsaEditorContent,
+  parseStoredSnippet,
+  serializeStoredSnippet,
+  type DsaCodeBase,
+} from '@/lib/dsa/codePersistence';
 
 // Module-level refs populated by Effect 1 after imports resolve
 let _Transaction: typeof Transaction | null = null;
@@ -15,17 +24,29 @@ let _foldEffect: any = null;
 function foldHelpers(view: EditorView) {
   if (!_foldEffect) return;
   const doc = view.state.doc;
-  for (let n = 1; n <= doc.lines; n++) {
+  const helperLines: Array<{ from: number; to: number }> = [];
+
+  for (let n = 1; n <= doc.lines; n += 1) {
     const line = doc.line(n);
-    if (line.text.includes('─── Helpers')) {
-      if (line.to < doc.length) {
-        try {
-          view.dispatch({
-            effects: [_foldEffect.of({ from: line.to, to: doc.length })],
-          });
-        } catch {}
-      }
-      return;
+    if (
+      line.text.includes('─── Helpers') ||
+      line.text.includes('─── End Helpers')
+    ) {
+      helperLines.push({ from: line.from, to: line.to });
+    }
+  }
+
+  for (let i = 0; i < helperLines.length; i += 2) {
+    const start = helperLines[i];
+    const end = helperLines[i + 1];
+    const foldTo = end ? end.to : doc.length;
+
+    if (start.to < foldTo) {
+      try {
+        view.dispatch({
+          effects: [_foldEffect.of({ from: start.to, to: foldTo })],
+        });
+      } catch {}
     }
   }
 }
@@ -84,8 +105,8 @@ interface Props {
   tabs: Array<{ label: string; file: string }>;
   step: number;
   total: number;
-  problemSlug: string;
-  base?: string;
+  contentSlug: string;
+  base?: DsaCodeBase;
 }
 
 interface ExpandedLayout {
@@ -95,16 +116,12 @@ interface ExpandedLayout {
   height: number;
 }
 
-function lsKey(slug: string, file: string) {
-  return `dfh-code:${slug}:${file}`;
-}
-
 export default function WebContainerEmbed({
   tabs,
   step,
   total,
-  problemSlug,
-  base,
+  contentSlug,
+  base = 'problems',
 }: Props) {
   const [tabIdx, setTabIdx] = useState(0);
   const [code, setCode] = useState('');
@@ -125,6 +142,11 @@ export default function WebContainerEmbed({
   const codeRef = useRef('');
   const activeFileRef = useRef('');
   const isResettingRef = useRef(false);
+  const baseContentRef = useRef<Record<string, string>>({});
+  const saveTimeoutRef = useRef<Record<string, ReturnType<typeof setTimeout>>>(
+    {},
+  );
+  const currentRequestRef = useRef(0);
   const handleEditorEscapeRef = useRef<(() => void) | null>(null);
   const runCodeRef = useRef<() => void>(() => {});
 
@@ -135,6 +157,30 @@ export default function WebContainerEmbed({
 
   const activeFile = tabs[tabIdx]?.file ?? '';
   activeFileRef.current = activeFile;
+
+  function storageKey(file: string) {
+    return buildDsaCodeStorageKey(base, contentSlug, file);
+  }
+
+  async function syncSnippetToServer(file: string, snippet: string) {
+    const params = new URLSearchParams({
+      slug: contentSlug,
+      file,
+      base,
+    });
+
+    const response = await fetch(`/api/dsa/code-sync?${params.toString()}`, {
+      method: snippet.trim() ? 'PUT' : 'DELETE',
+      headers: snippet.trim()
+        ? { 'Content-Type': 'application/json' }
+        : undefined,
+      body: snippet.trim() ? JSON.stringify({ snippet }) : undefined,
+    });
+
+    if (!response.ok && response.status !== 401) {
+      throw new Error(`Code sync failed (${response.status})`);
+    }
+  }
 
   function measureExpandedLayout() {
     const root = rootRef.current;
@@ -183,25 +229,93 @@ export default function WebContainerEmbed({
 
   // Load file content when tab/file changes — sets code as reset trigger
   useEffect(() => {
+    const requestId = currentRequestRef.current + 1;
+    currentRequestRef.current = requestId;
     isResettingRef.current = true;
     setCode('');
     setOutput('');
     setStatus('idle');
     fetch(
-      `/dsa/api/step-file?slug=${encodeURIComponent(problemSlug)}&file=${encodeURIComponent(activeFile)}${base ? `&base=${encodeURIComponent(base)}` : ''}`,
+      `/dsa/api/step-file?slug=${encodeURIComponent(contentSlug)}&file=${encodeURIComponent(activeFile)}&base=${encodeURIComponent(base)}`,
     )
       .then((r) => r.json())
-      .then(({ content }) => {
-        isResettingRef.current = false;
-        if (content) {
-          const saved = localStorage.getItem(lsKey(problemSlug, activeFile));
-          setCode(saved || content);
+      .then(async ({ content }) => {
+        if (!content || currentRequestRef.current !== requestId) return;
+
+        const normalizedContent = normalizeDsaEditorContent(content);
+
+        baseContentRef.current[activeFile] = normalizedContent;
+        const localRecord = parseStoredSnippet(
+          localStorage.getItem(storageKey(activeFile)),
+        );
+
+        let remoteRecord: { snippet: string; updatedAt: string } | null = null;
+
+        try {
+          const params = new URLSearchParams({
+            slug: contentSlug,
+            file: activeFile,
+            base,
+          });
+          const response = await fetch(
+            `/api/dsa/code-sync?${params.toString()}`,
+            { cache: 'no-store' },
+          );
+          if (response.ok) {
+            const data = (await response.json()) as {
+              snippet: string | null;
+              updatedAt: string | null;
+            };
+            if (data.snippet && data.updatedAt) {
+              remoteRecord = {
+                snippet: data.snippet,
+                updatedAt: data.updatedAt,
+              };
+            }
+          }
+        } catch {}
+
+        const preferredRecord =
+          localRecord && remoteRecord
+            ? new Date(localRecord.updatedAt).getTime() >=
+              new Date(remoteRecord.updatedAt).getTime()
+              ? localRecord
+              : remoteRecord
+            : localRecord ?? remoteRecord;
+        setCode(
+          preferredRecord
+            ? applyEditableSnippet(normalizedContent, preferredRecord.snippet)
+            : normalizedContent,
+        );
+
+        try {
+          if (preferredRecord) {
+            localStorage.setItem(
+              storageKey(activeFile),
+              serializeStoredSnippet(preferredRecord),
+            );
+          } else {
+            localStorage.removeItem(storageKey(activeFile));
+          }
+        } catch {}
+
+        if (
+          localRecord &&
+          (!remoteRecord ||
+            (preferredRecord === localRecord &&
+              remoteRecord.snippet !== localRecord.snippet))
+        ) {
+          void syncSnippetToServer(activeFile, localRecord.snippet).catch(
+            () => {},
+          );
         }
       })
-      .catch(() => {
-        isResettingRef.current = false;
+      .finally(() => {
+        if (currentRequestRef.current === requestId) {
+          isResettingRef.current = false;
+        }
       });
-  }, [activeFile, problemSlug]);
+  }, [activeFile, base, contentSlug]);
 
   // Effect 1: Mount CodeMirror once
   useEffect(() => {
@@ -310,19 +424,42 @@ export default function WebContainerEmbed({
 
       const saveToStorage = EditorView.updateListener.of((update) => {
         if (update.docChanged && !isResettingRef.current) {
+          const file = activeFileRef.current;
+          const baseContent = baseContentRef.current[file];
+          if (!baseContent) return;
+
           const text = update.state.doc.toString();
+          const snippet = extractEditableSnippet(text);
+          const baseSnippet = extractEditableSnippet(baseContent);
+          const key = storageKey(file);
+          const existingTimeout = saveTimeoutRef.current[file];
+
+          if (existingTimeout) {
+            clearTimeout(existingTimeout);
+            delete saveTimeoutRef.current[file];
+          }
+
           try {
-            if (text.trim()) {
+            if (snippet.trim() && snippet !== baseSnippet) {
               localStorage.setItem(
-                lsKey(problemSlug, activeFileRef.current),
-                text,
+                key,
+                serializeStoredSnippet({
+                  snippet,
+                  updatedAt: new Date().toISOString(),
+                }),
               );
             } else {
-              localStorage.removeItem(
-                lsKey(problemSlug, activeFileRef.current),
-              );
+              localStorage.removeItem(key);
             }
           } catch {}
+
+          saveTimeoutRef.current[file] = setTimeout(() => {
+            void syncSnippetToServer(
+              file,
+              snippet !== baseSnippet ? snippet : '',
+            ).catch(() => {});
+            delete saveTimeoutRef.current[file];
+          }, 500);
         }
       });
 
@@ -344,7 +481,8 @@ export default function WebContainerEmbed({
       _Transaction = Transaction; // make available to Effect 2
       _foldEffect = foldEffect; // make available to foldHelpers
       handleEditorEscapeRef.current = () => {
-        Vim.handleKey(getCM(view), '<Esc>', 'user');
+        const cm = getCM(view);
+        if (cm) Vim.handleKey(cm, '<Esc>', 'user');
       };
 
       Vim.map('jj', '<Esc>', 'insert');
@@ -354,6 +492,10 @@ export default function WebContainerEmbed({
 
     return () => {
       cancelled = true;
+      Object.values(saveTimeoutRef.current).forEach((timeoutId) =>
+        clearTimeout(timeoutId),
+      );
+      saveTimeoutRef.current = {};
       handleEditorEscapeRef.current = null;
       viewRef.current?.destroy();
       viewRef.current = null;

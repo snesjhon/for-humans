@@ -260,7 +260,7 @@ export default function MarkdownRenderer({
               }
               step={s.step}
               total={s.total}
-              problemSlug={slug}
+              contentSlug={slug}
               base={fundamentalsSlug ? 'fundamentals' : undefined}
             />
           );
@@ -279,7 +279,7 @@ export default function MarkdownRenderer({
               tabs={tabs}
               step={s.step}
               total={s.total}
-              problemSlug={slug}
+              contentSlug={slug}
               base={fundamentalsSlug ? 'fundamentals' : undefined}
             />
           );
