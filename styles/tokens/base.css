@@ -208,6 +208,18 @@ blockquote > p {
   border-radius: 8px;
   overflow: hidden;
   margin: 1.5rem 0;
+  background: var(--bg-alt);
+  position: relative;
+  box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+  transition:
+    box-shadow 0.18s ease,
+    border-color 0.18s ease;
+}
+.dfh-wc.expanded {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 28px 80px rgba(15, 23, 42, 0.18);
 }
 .dfh-wc-header {
   display: flex;
@@ -250,15 +262,23 @@ blockquote > p {
 .dfh-wc-body {
   display: flex;
   flex-direction: column;
+  min-height: 0;
+  flex: 1;
 }
 .dfh-wc-editor {
   border-bottom: 1px solid var(--border);
+  min-height: 0;
+  flex: 1 1 auto;
 }
 .dfh-wc-editor .cm-editor {
   height: 400px;
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
   font-size: 0.875rem;
   line-height: 1.6;
+}
+.dfh-wc.expanded .dfh-wc-editor .cm-editor {
+  height: 100%;
+  min-height: 0;
 }
 .dfh-wc-editor .cm-editor.cm-focused {
   outline: none;
@@ -269,6 +289,8 @@ blockquote > p {
 .dfh-wc-toolbar {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   padding: 8px 12px;
   background: var(--bg-alt);
   border-bottom: 1px solid var(--border);
@@ -305,6 +327,38 @@ blockquote > p {
   border-radius: 0;
   padding: 0;
   box-shadow: none;
+}
+.dfh-wc-expand {
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  background: transparent;
+  color: var(--fg-alt);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  cursor: pointer;
+  transition:
+    color 0.15s,
+    border-color 0.15s,
+    background 0.15s;
+}
+.dfh-wc-expand:hover {
+  color: var(--fg);
+  background: var(--bg-highlight);
+}
+.dfh-wc-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  border: 0;
+  background: rgba(12, 18, 28, 0.18);
+  backdrop-filter: saturate(80%) blur(1.5px);
+  cursor: default;
+}
+.dfh-wc-expanded-open nav,
+.dfh-wc-expanded-open [data-dfh-page-aside] {
+  opacity: 0.28;
+  transition: opacity 0.18s ease;
 }
 .dfh-wc-output {
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;

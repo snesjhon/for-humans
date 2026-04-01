@@ -88,6 +88,13 @@ interface Props {
   base?: string;
 }
 
+interface ExpandedLayout {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+}
+
 function lsKey(slug: string, file: string) {
   return `dfh-code:${slug}:${file}`;
 }
@@ -105,13 +112,20 @@ export default function WebContainerEmbed({
   const [status, setStatus] = useState<
     'idle' | 'booting' | 'running' | 'done' | 'error'
   >('idle');
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [expandedLayout, setExpandedLayout] = useState<ExpandedLayout | null>(
+    null,
+  );
+  const [inlineHeight, setInlineHeight] = useState<number | null>(null);
 
   const processRef = useRef<any>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
   const codeRef = useRef('');
   const activeFileRef = useRef('');
   const isResettingRef = useRef(false);
+  const handleEditorEscapeRef = useRef<(() => void) | null>(null);
   const runCodeRef = useRef<() => void>(() => {});
 
   // Keep codeRef current on every render so Effect 1's async callback
@@ -122,11 +136,41 @@ export default function WebContainerEmbed({
   const activeFile = tabs[tabIdx]?.file ?? '';
   activeFileRef.current = activeFile;
 
+  function measureExpandedLayout() {
+    const root = rootRef.current;
+    if (!root || typeof window === 'undefined') return;
+
+    const pageLayout = root.closest('[data-dfh-page-layout]');
+    const mainColumn = pageLayout?.querySelector('[data-dfh-page-main]');
+
+    const horizontalMargin = window.innerWidth >= 1280 ? 24 : 16;
+    const left = mainColumn instanceof HTMLElement
+      ? mainColumn.getBoundingClientRect().left
+      : horizontalMargin;
+    const width = mainColumn instanceof HTMLElement
+      ? mainColumn.getBoundingClientRect().width
+      : window.innerWidth - horizontalMargin * 2;
+
+    setExpandedLayout({
+      left: Math.max(horizontalMargin, left),
+      top: 24,
+      width: Math.max(320, width),
+      height: Math.max(420, window.innerHeight - 48),
+    });
+    setInlineHeight(root.getBoundingClientRect().height);
+  }
+
   // Cmd/Ctrl+Enter to run — capture phase so vim never sees it first
   useEffect(() => {
     const el = editorRef.current;
     if (!el) return;
     const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        e.stopPropagation();
+        handleEditorEscapeRef.current?.();
+        return;
+      }
       if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
         e.preventDefault();
         e.stopPropagation();
@@ -170,7 +214,7 @@ export default function WebContainerEmbed({
         { Transaction },
         { HighlightStyle, syntaxHighlighting, foldEffect },
         { javascript },
-        { vim, Vim },
+        { vim, Vim, getCM },
         { tags },
       ] = await Promise.all([
         import('codemirror'),
@@ -261,10 +305,6 @@ export default function WebContainerEmbed({
             event.stopPropagation();
             event.preventDefault();
           }
-          if (event.key === 'Escape') {
-            event.stopPropagation();
-            event.preventDefault();
-          }
         },
       });
 
@@ -303,6 +343,9 @@ export default function WebContainerEmbed({
       viewRef.current = view;
       _Transaction = Transaction; // make available to Effect 2
       _foldEffect = foldEffect; // make available to foldHelpers
+      handleEditorEscapeRef.current = () => {
+        Vim.handleKey(getCM(view), '<Esc>', 'user');
+      };
 
       Vim.map('jj', '<Esc>', 'insert');
 
@@ -311,10 +354,41 @@ export default function WebContainerEmbed({
 
     return () => {
       cancelled = true;
+      handleEditorEscapeRef.current = null;
       viewRef.current?.destroy();
       viewRef.current = null;
     };
   }, []);
+
+  useEffect(() => {
+    if (!isExpanded) return;
+
+    measureExpandedLayout();
+    document.body.classList.add('dfh-wc-expanded-open');
+    document.body.style.overflow = 'hidden';
+
+    const handleResize = () => measureExpandedLayout();
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setIsExpanded(false);
+    };
+
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.classList.remove('dfh-wc-expanded-open');
+      document.body.style.overflow = '';
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isExpanded]);
+
+  useEffect(() => {
+    if (!isExpanded) {
+      setExpandedLayout(null);
+      setInlineHeight(null);
+    }
+  }, [isExpanded]);
 
   // Effect 2: Sync external code changes into the editor
   useEffect(() => {
@@ -366,63 +440,106 @@ export default function WebContainerEmbed({
   }
 
   const hasCode = !!(viewRef.current?.state.doc.length || code.length);
+  const rootStyle = isExpanded && expandedLayout
+    ? {
+        position: 'fixed' as const,
+        left: `${expandedLayout.left}px`,
+        top: `${expandedLayout.top}px`,
+        width: `${expandedLayout.width}px`,
+        height: `${expandedLayout.height}px`,
+        zIndex: 61,
+      }
+    : undefined;
+  const bodyStyle = isExpanded
+    ? { height: '100%', minHeight: expandedLayout?.height }
+    : undefined;
 
   return (
-    <div className="dfh-wc">
-      <div className="dfh-wc-header">
-        {tabs.length > 1 && (
-          <div className="dfh-wc-tabs">
-            {tabs.map((t, i) => (
-              <button
-                key={i}
-                type="button"
-                className={`dfh-wc-tab${tabIdx === i ? ' active' : ''}`}
-                onClick={() => setTabIdx(i)}
-              >
-                {t.label}
-              </button>
-            ))}
-          </div>
-        )}
-        {tabs.length > 1 && (
-          <span className="dfh-wc-step">
-            Step {step} of {total}
-          </span>
-        )}
-      </div>
-      <div className="dfh-wc-body">
-        <div ref={editorRef} className="dfh-wc-editor" />
-        <div className="dfh-wc-toolbar">
-          <button
-            type="button"
-            className="dfh-wc-run"
-            onClick={runCode}
-            disabled={status === 'booting' || status === 'running' || !hasCode}
-          >
-            {status === 'booting' ? (
-              '⏳ Installing…'
-            ) : status === 'running' ? (
-              '⏳ Running…'
-            ) : (
-              <>
-                Run{' '}
-                <kbd className="dfh-wc-kbd">
-                  {typeof navigator !== 'undefined' &&
-                  /Mac|iPhone|iPod|iPad/.test(navigator.platform)
-                    ? '⌘'
-                    : 'Ctrl'}
-                  ↵
-                </kbd>
-              </>
+    <>
+      {isExpanded && (
+        <button
+          type="button"
+          aria-label="Collapse editor"
+          className="dfh-wc-overlay"
+          onClick={() => setIsExpanded(false)}
+        />
+      )}
+      <div style={inlineHeight ? { minHeight: `${inlineHeight}px` } : undefined}>
+        <div
+          ref={rootRef}
+          className={`dfh-wc${isExpanded ? ' expanded' : ''}`}
+          style={rootStyle}
+        >
+          <div className="dfh-wc-header">
+            {tabs.length > 1 && (
+              <div className="dfh-wc-tabs">
+                {tabs.map((t, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    className={`dfh-wc-tab${tabIdx === i ? ' active' : ''}`}
+                    onClick={() => setTabIdx(i)}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
             )}
-          </button>
+            {tabs.length > 1 && (
+              <span className="dfh-wc-step">
+                Step {step} of {total}
+              </span>
+            )}
+          </div>
+          <div className="dfh-wc-body" style={bodyStyle}>
+            <div ref={editorRef} className="dfh-wc-editor" />
+            <div className="dfh-wc-toolbar">
+              <button
+                type="button"
+                className="dfh-wc-run"
+                onClick={runCode}
+                disabled={
+                  status === 'booting' || status === 'running' || !hasCode
+                }
+              >
+                {status === 'booting' ? (
+                  '⏳ Installing…'
+                ) : status === 'running' ? (
+                  '⏳ Running…'
+                ) : (
+                  <>
+                    Run{' '}
+                    <kbd className="dfh-wc-kbd">
+                      {typeof navigator !== 'undefined' &&
+                      /Mac|iPhone|iPod|iPad/.test(navigator.platform)
+                        ? '⌘'
+                        : 'Ctrl'}
+                      ↵
+                    </kbd>
+                  </>
+                )}
+              </button>
+              <button
+                type="button"
+                className="dfh-wc-expand"
+                onClick={() => {
+                  if (!isExpanded) measureExpandedLayout();
+                  setIsExpanded((prev) => !prev);
+                }}
+              >
+                {isExpanded ? 'Collapse' : 'Expand Editor'}
+              </button>
+            </div>
+            {output && (
+              <pre
+                className={`dfh-wc-output${status === 'error' ? ' error' : ''}`}
+              >
+                {output}
+              </pre>
+            )}
+          </div>
         </div>
-        {output && (
-          <pre className={`dfh-wc-output${status === 'error' ? ' error' : ''}`}>
-            {output}
-          </pre>
-        )}
       </div>
-    </div>
+    </>
   );
 }
