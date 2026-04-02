@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { pColor } from '../pathUtils';
+import styles from './PathComponents.module.css';
 
 // Minimal phase shape needed by path components
 export interface PathPhase {
@@ -115,7 +116,7 @@ export function StepGuideCard({
       </p>
       <Link
         href={href}
-        className="guide-btn self-start py-[7px] px-4 rounded-[6px] text-white text-[0.8rem] font-semibold tracking-[0.01em] no-underline inline-block"
+        className={`${styles.guideButton} self-start py-[7px] px-4 rounded-[6px] text-white text-[0.8rem] font-semibold tracking-[0.01em] no-underline inline-block`}
         style={{ background: color }}
       >
         Read the guide →

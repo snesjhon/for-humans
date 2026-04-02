@@ -1,0 +1,207 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 1.25rem;
+}
+
+.gridItemQueue {
+  grid-column: 1 / -1;
+}
+
+.structure {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  padding: 0.9rem;
+}
+
+.structureHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 0.85rem;
+}
+
+.structureTitle {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--fg);
+}
+
+.structureKind {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fg-gutter);
+}
+
+.stackShell,
+.queueShell {
+  min-height: 180px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.stackCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.stackSlot,
+.queueSlot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.pointerRow {
+  min-height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.pointerPlaceholder {
+  display: block;
+  min-width: 1px;
+  min-height: 1px;
+}
+
+.queueRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.queueIdx {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 10px;
+  color: var(--fg-gutter);
+  line-height: 1;
+}
+
+.cellMuted {
+  background: var(--bg-alt);
+  border-color: var(--border);
+  color: var(--fg-alt);
+  opacity: 0.6;
+}
+
+.cellBlue {
+  background: var(--blue-tint);
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.cellOrange {
+  background: var(--orange-tint);
+  border-color: var(--orange);
+  color: var(--orange);
+}
+
+.cellGreen {
+  background: var(--green-tint);
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.cellPurple {
+  background: var(--purple-tint);
+  border-color: var(--purple);
+  color: var(--purple);
+}
+
+.empty {
+  min-width: 110px;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed var(--border);
+  border-radius: 6px;
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 12px;
+  font-style: italic;
+  color: var(--fg-gutter);
+}
+
+.footnote {
+  margin-top: 0.85rem;
+  text-align: center;
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 10px;
+  color: var(--fg-gutter);
+}
+
+.ptrBlue {
+  background: var(--blue-tint);
+  color: var(--blue);
+}
+
+.ptrOrange {
+  background: var(--orange-tint);
+  color: var(--orange);
+}
+
+.ptrGreen {
+  background: var(--green-tint);
+  color: var(--green);
+}
+
+.ptrPurple {
+  background: var(--purple-tint);
+  color: var(--purple);
+}
+
+.badgePush,
+.badgeEnqueue {
+  background: var(--blue-tint);
+  color: var(--blue);
+  border: 1px solid var(--blue);
+}
+
+.badgePop,
+.badgeDequeue {
+  background: var(--orange-tint);
+  color: var(--orange);
+  border: 1px solid var(--orange);
+}
+
+.badgePeek {
+  background: var(--green-tint);
+  color: var(--green);
+  border: 1px solid var(--green);
+}
+
+.badgeTransfer {
+  background: var(--purple-tint);
+  color: var(--purple);
+  border: 1px solid var(--purple);
+}
+
+.badgeDone {
+  background: color-mix(in srgb, var(--cyan) 12%, var(--bg-alt));
+  color: var(--cyan);
+  border: 1px solid var(--cyan);
+}
+
+@media (max-width: 760px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .gridItemQueue {
+    grid-column: auto;
+  }
+}

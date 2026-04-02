@@ -1,4 +1,5 @@
 // Shared label rendering for all Trace components
+import styles from './TraceLabel.module.css';
 
 function parseLabel(raw: string): { subject: string | null; actions: string[] } {
   const colonAt = raw.indexOf(': ');
@@ -19,9 +20,9 @@ function RichTokens({ text }: { text: string }) {
   while ((m = TOKEN_RE.exec(text)) !== null) {
     if (m.index > last) nodes.push(text.slice(last, m.index));
     if (m[0] === '→') {
-      nodes.push(<span key={m.index} className="ps-label-arrow">→</span>);
+      nodes.push(<span key={m.index} className={styles.arrow}>→</span>);
     } else {
-      nodes.push(<code key={m.index} className="dfh-code-inline ps-label-code">{m[0].slice(1, -1)}</code>);
+      nodes.push(<code key={m.index} className={`dfh-code-inline ${styles.code}`}>{m[0].slice(1, -1)}</code>);
     }
     last = m.index + m[0].length;
   }
@@ -33,19 +34,19 @@ export function TraceLabel({ raw }: { raw: string }) {
   const [primary, ...extras] = raw.split('\n');
   const { subject, actions } = parseLabel(primary);
   return (
-    <div className="ps-label-block">
-      {subject && <div className="ps-label-context">{subject}</div>}
-      <div className="ps-label-actions">
+    <div className={styles.block}>
+      {subject && <div className={styles.context}>{subject}</div>}
+      <div className={styles.actions}>
         {actions.map((action, i) => (
-          <div key={i} className="ps-label-action-row">
+          <div key={i} className={styles.actionRow}>
             <RichTokens text={action} />
           </div>
         ))}
       </div>
       {extras.length > 0 && (
-        <div className="ps-label-extras">
+        <div className={styles.extras}>
           {extras.map((line, i) => (
-            <div key={i} className="ps-label-sublabel">
+            <div key={i} className={styles.sublabel}>
               <RichTokens text={line} />
             </div>
           ))}

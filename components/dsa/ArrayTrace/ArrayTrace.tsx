@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TraceLabel } from '../TraceLabel/TraceLabel';
+import shared from '../TraceShared/TraceShared.module.css';
 
 export interface TraceStep {
   array: number[];
@@ -23,53 +24,71 @@ function cellState(i: number, step: TraceStep): string {
   return 'unvisited';
 }
 
+const CELL_STYLES: Record<string, string> = {
+  confirmed: shared.confirmed,
+  'write-target': shared.writeTarget,
+  'reading-keep': shared.readingKeep,
+  'reading-skip': shared.readingSkip,
+  reading: shared.reading,
+  graveyard: shared.graveyard,
+  active: shared.active,
+  unvisited: shared.unvisited,
+  irrelevant: shared.irrelevant,
+};
+
+const BADGE_STYLES: Record<NonNullable<TraceStep['action']>, string> = {
+  keep: shared.actionKeep,
+  skip: shared.actionSkip,
+  done: shared.actionDone,
+};
+
 export default function ArrayTrace({ steps }: { steps: TraceStep[] }) {
   const [idx, setIdx] = useState(0);
   const step = steps[idx];
   const isDone = step.action === 'done';
 
   return (
-    <div className="dfh-trace">
+    <div className={shared.root}>
       {/* ── Topbar: legend (left) + nav (right) ── */}
-      <div className="dfh-trace-topbar">
-        <div className="dfh-trace-legend">
-          <span><span className="dfh-ptr reader">R</span> reader</span>
-          <span><span className="dfh-ptr writer">W</span> writer</span>
+      <div className={shared.topbar}>
+        <div className={shared.legend}>
+          <span><span className={`${shared.ptr} ${shared.reader}`}>R</span> reader</span>
+          <span><span className={`${shared.ptr} ${shared.writer}`}>W</span> writer</span>
         </div>
-        <div className="dfh-trace-nav">
-          <button className="dfh-trace-btn" disabled={idx === 0} onClick={() => setIdx(i => i - 1)}>← Prev</button>
-          <span className="dfh-trace-counter">{idx + 1} / {steps.length}</span>
-          <button className="dfh-trace-btn" disabled={idx === steps.length - 1} onClick={() => setIdx(i => i + 1)}>Next →</button>
+        <div className={shared.nav}>
+          <button className={shared.button} disabled={idx === 0} onClick={() => setIdx(i => i - 1)}>← Prev</button>
+          <span className={shared.counter}>{idx + 1} / {steps.length}</span>
+          <button className={shared.button} disabled={idx === steps.length - 1} onClick={() => setIdx(i => i + 1)}>Next →</button>
         </div>
       </div>
 
       {/* ── Body: visualization + badge + label ── */}
-      <div className="dfh-trace-body">
-        <div className="dfh-trace-array">
+      <div className={shared.body}>
+        <div className={shared.array}>
           {step.array.map((val, i) => {
             const state = cellState(i, step);
             const isReader = i === step.reader && !isDone;
             const isWriter = i === step.writer && !isDone;
             return (
-              <div key={i} className="dfh-trace-col">
-                <div className={`dfh-trace-cell ${state}`}>{val}</div>
-                <div className="dfh-trace-idx">{i}</div>
-                <div className="dfh-trace-ptrs">
-                  {isReader && isWriter && <span className="dfh-ptr both">R W</span>}
-                  {isReader && !isWriter && <span className="dfh-ptr reader">R</span>}
-                  {isWriter && !isReader && <span className="dfh-ptr writer">W</span>}
+              <div key={i} className={shared.col}>
+                <div className={`${shared.cell} ${CELL_STYLES[state]}`}>{val}</div>
+                <div className={shared.idx}>{i}</div>
+                <div className={shared.ptrs}>
+                  {isReader && isWriter && <span className={`${shared.ptr} ${shared.both}`}>R W</span>}
+                  {isReader && !isWriter && <span className={`${shared.ptr} ${shared.reader}`}>R</span>}
+                  {isWriter && !isReader && <span className={`${shared.ptr} ${shared.writer}`}>W</span>}
                 </div>
               </div>
             );
           })}
         </div>
 
-        <div className="dfh-trace-info">
+        <div className={shared.info}>
           <AnimatePresence mode="popLayout">
             {step.action && (
               <motion.span
                 key={step.action}
-                className={`dfh-trace-badge action-${step.action}`}
+                className={`${shared.badge} ${BADGE_STYLES[step.action]}`}
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}

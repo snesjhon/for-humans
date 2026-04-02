@@ -1,0 +1,22 @@
+.problemLink {
+  text-decoration: none;
+}
+
+.problemTitle {}
+
+.problemLink:hover .problemTitle {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--fg-gutter);
+}
+
+.guideButton {
+  transition:
+    opacity 150ms,
+    transform 120ms;
+}
+
+.guideButton:hover {
+  opacity: 0.82;
+  transform: translateX(3px);
+}

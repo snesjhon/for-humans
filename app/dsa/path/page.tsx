@@ -12,6 +12,7 @@ import {
   pColor,
   PageHero,
 } from '@/components/ui';
+import pathStyles from '@/components/ui/PathComponents/PathComponents.module.css';
 
 type PMap = Record<string, { title: string; hasMentalModel: boolean }>;
 
@@ -212,12 +213,12 @@ export default async function PathPage() {
                                   />
                                   <Link
                                     href={`/dsa/problems/${id}`}
-                                    className="problem-link flex items-baseline"
+                                    className={`${pathStyles.problemLink} flex items-baseline`}
                                   >
                                     <span className="shrink-0 min-w-[30px] font-mono text-[0.65rem] text-[var(--fg-gutter)]">
                                       {id}
                                     </span>
-                                    <span className="problem-title text-[0.875rem] leading-[1.3] text-[var(--fg-alt)]">
+                                    <span className={`${pathStyles.problemTitle} text-[0.875rem] leading-[1.3] text-[var(--fg-alt)]`}>
                                       {p.title}
                                     </span>
                                   </Link>
@@ -248,7 +249,7 @@ export default async function PathPage() {
                                   />
                                   <Link
                                     href={`/dsa/problems/${id}`}
-                                    className="problem-link flex items-baseline"
+                                    className={`${pathStyles.problemLink} flex items-baseline`}
                                   >
                                     <span className="text-xs shrink-0 w-5 leading-none text-[var(--orange)]">
                                       ↩
@@ -256,7 +257,7 @@ export default async function PathPage() {
                                     <span className="shrink-0 min-w-[30px] font-mono text-[0.65rem] text-[var(--fg-gutter)]">
                                       {id}
                                     </span>
-                                    <span className="problem-title text-[0.875rem] leading-[1.3] text-[var(--fg-comment)]">
+                                    <span className={`${pathStyles.problemTitle} text-[0.875rem] leading-[1.3] text-[var(--fg-comment)]`}>
                                       {p.title}
                                     </span>
                                   </Link>

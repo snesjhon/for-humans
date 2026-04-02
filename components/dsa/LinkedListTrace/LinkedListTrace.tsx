@@ -3,6 +3,8 @@
 import { Fragment, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TraceLabel } from '../TraceLabel/TraceLabel';
+import shared from '../TraceShared/TraceShared.module.css';
+import styles from './LinkedListTrace.module.css';
 
 export interface LinkedListStep {
   nodes: Array<{ val: string | number }>;
@@ -28,7 +30,7 @@ const colorCls = (color?: string): string => {
 function Arrow() {
   return (
     <svg
-      className="ll-arrow"
+      className={styles.arrow}
       width="28"
       height="20"
       viewBox="0 0 28 20"
@@ -46,6 +48,27 @@ function Arrow() {
     </svg>
   );
 }
+
+const POINTER_STYLES: Record<string, string> = {
+  blue: styles.ptrBlue,
+  orange: styles.ptrOrange,
+  green: styles.ptrGreen,
+  purple: styles.ptrPurple,
+};
+
+const NODE_STYLES: Record<string, string> = {
+  blue: styles.nodeBlue,
+  orange: styles.nodeOrange,
+  green: styles.nodeGreen,
+  purple: styles.nodePurple,
+};
+
+const BADGE_STYLES: Record<NonNullable<LinkedListStep['action']>, string> = {
+  rewire: styles.badgeRewire,
+  found: styles.badgeFound,
+  delete: styles.badgeDelete,
+  done: styles.badgeDone,
+};
 
 export default function LinkedListTrace({ steps }: { steps: LinkedListStep[] }) {
   const [idx, setIdx] = useState(0);
@@ -70,26 +93,26 @@ export default function LinkedListTrace({ steps }: { steps: LinkedListStep[] }) 
   };
 
   return (
-    <div className="dfh-trace">
+    <div className={shared.root}>
 
       {/* ── Topbar: legend (left) + nav (right) ── */}
-      <div className="dfh-trace-topbar">
-        <div className="dfh-trace-legend">
+      <div className={shared.topbar}>
+        <div className={shared.legend}>
           {legendPtrs.map(p => (
             <span key={p.label}>
-              <span className={`dfh-ptr ll-ptr-${colorCls(p.color)}`}>{p.label}</span>
+              <span className={`${shared.ptr} ${POINTER_STYLES[colorCls(p.color)]}`}>{p.label}</span>
             </span>
           ))}
         </div>
-        <div className="dfh-trace-nav">
+        <div className={shared.nav}>
           <button
-            className="dfh-trace-btn"
+            className={shared.button}
             disabled={idx === 0}
             onClick={() => setIdx(i => i - 1)}
           >← Prev</button>
-          <span className="dfh-trace-counter">{idx + 1} / {steps.length}</span>
+          <span className={shared.counter}>{idx + 1} / {steps.length}</span>
           <button
-            className="dfh-trace-btn"
+            className={shared.button}
             disabled={idx === steps.length - 1}
             onClick={() => setIdx(i => i + 1)}
           >Next →</button>
@@ -97,21 +120,21 @@ export default function LinkedListTrace({ steps }: { steps: LinkedListStep[] }) 
       </div>
 
       {/* ── Body: linked list + badge + label ── */}
-      <div className="dfh-trace-body">
-        <div className="ll-row">
+      <div className={shared.body}>
+        <div className={styles.row}>
 
           {/* Left null column — only rendered when a pointer is at index -1 */}
           {hasLeftNull && (
-            <div className="ll-col-unit">
-              <div className="ll-node-col">
-                <div className="ll-ptrs-above">
+            <div className={styles.colUnit}>
+              <div className={styles.nodeCol}>
+                <div className={styles.ptrsAbove}>
                   {leftNullPtrs.map((p, pi) => (
-                    <span key={pi} className={`dfh-ptr ll-ptr-${colorCls(p.color)}`}>
+                    <span key={pi} className={`${shared.ptr} ${POINTER_STYLES[colorCls(p.color)]}`}>
                       {p.label}
                     </span>
                   ))}
                 </div>
-                <div className="ll-null-box">null</div>
+                <div className={styles.nullBox}>null</div>
               </div>
               <Arrow />
             </div>
@@ -123,16 +146,16 @@ export default function LinkedListTrace({ steps }: { steps: LinkedListStep[] }) 
             const primaryColor = nodePtrs.length > 0 ? colorCls(nodePtrs[0].color) : null;
             return (
               <Fragment key={i}>
-                <div className="ll-col-unit">
-                  <div className="ll-node-col">
-                    <div className="ll-ptrs-above">
+                <div className={styles.colUnit}>
+                  <div className={styles.nodeCol}>
+                    <div className={styles.ptrsAbove}>
                       {nodePtrs.map((p, pi) => (
-                        <span key={pi} className={`dfh-ptr ll-ptr-${colorCls(p.color)}`}>
+                        <span key={pi} className={`${shared.ptr} ${POINTER_STYLES[colorCls(p.color)]}`}>
                           {p.label}
                         </span>
                       ))}
                     </div>
-                    <div className={`ll-node${primaryColor ? ` ll-node-${primaryColor}` : ''}`}>
+                    <div className={`${styles.node}${primaryColor ? ` ${NODE_STYLES[primaryColor]}` : ''}`}>
                       {node.val}
                     </div>
                   </div>
@@ -143,28 +166,28 @@ export default function LinkedListTrace({ steps }: { steps: LinkedListStep[] }) 
           })}
 
           {/* Null terminus */}
-          <div className="ll-col-unit">
-            <div className="ll-node-col">
-              <div className="ll-ptrs-above">
+          <div className={styles.colUnit}>
+            <div className={styles.nodeCol}>
+              <div className={styles.ptrsAbove}>
                 {nullTermPtrs.map((p, pi) => (
-                  <span key={pi} className={`dfh-ptr ll-ptr-${colorCls(p.color)}`}>
+                  <span key={pi} className={`${shared.ptr} ${POINTER_STYLES[colorCls(p.color)]}`}>
                     {p.label}
                   </span>
                 ))}
               </div>
-              <div className="ll-null-box">null</div>
+              <div className={styles.nullBox}>null</div>
             </div>
           </div>
 
         </div>
 
         {/* Badge + label */}
-        <div className="dfh-trace-info">
+        <div className={shared.info}>
           <AnimatePresence mode="popLayout">
             {step.action && (
               <motion.span
                 key={step.action}
-                className={`dfh-trace-badge ll-badge-${step.action}`}
+                className={`${shared.badge} ${BADGE_STYLES[step.action]}`}
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}

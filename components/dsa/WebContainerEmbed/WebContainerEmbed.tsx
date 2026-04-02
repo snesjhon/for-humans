@@ -6,6 +6,7 @@ import type { Transaction } from '@codemirror/state';
 import type { WebContainer } from '@webcontainer/api';
 import useSWRImmutable from 'swr/immutable';
 import { useSWRConfig } from 'swr';
+import styles from './WebContainerEmbed.module.css';
 import {
   applyEditableSnippet,
   buildDsaCodeStorageKey,
@@ -540,8 +541,21 @@ export default function WebContainerEmbed({
     if (!isExpanded) return;
 
     measureExpandedLayout();
-    document.body.classList.add('dfh-wc-expanded-open');
+    document.body.dataset.dfhWcExpandedOpen = 'true';
     document.body.style.overflow = 'hidden';
+    const dimmedElements = Array.from(
+      document.querySelectorAll('nav, [data-dfh-page-aside]'),
+    ).filter((node): node is HTMLElement => node instanceof HTMLElement);
+    const previousStyles = dimmedElements.map((element) => ({
+      element,
+      opacity: element.style.opacity,
+      transition: element.style.transition,
+    }));
+
+    dimmedElements.forEach((element) => {
+      element.style.opacity = '0.28';
+      element.style.transition = 'opacity 0.18s ease';
+    });
 
     const handleResize = () => measureExpandedLayout();
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -552,8 +566,12 @@ export default function WebContainerEmbed({
     window.addEventListener('keydown', handleKeyDown);
 
     return () => {
-      document.body.classList.remove('dfh-wc-expanded-open');
+      delete document.body.dataset.dfhWcExpandedOpen;
       document.body.style.overflow = '';
+      previousStyles.forEach(({ element, opacity, transition }) => {
+        element.style.opacity = opacity;
+        element.style.transition = transition;
+      });
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('keydown', handleKeyDown);
     };
@@ -682,24 +700,24 @@ export default function WebContainerEmbed({
         <button
           type="button"
           aria-label="Collapse editor"
-          className="dfh-wc-overlay"
+          className={styles.overlay}
           onClick={() => setIsExpanded(false)}
         />
       )}
       <div style={inlineHeight ? { minHeight: `${inlineHeight}px` } : undefined}>
         <div
           ref={rootRef}
-          className={`dfh-wc${isExpanded ? ' expanded' : ''}`}
+          className={`${styles.root}${isExpanded ? ` ${styles.expanded}` : ''}`}
           style={rootStyle}
         >
-          <div className="dfh-wc-header">
+          <div className={styles.header}>
             {tabs.length > 1 && (
-              <div className="dfh-wc-tabs">
+              <div className={styles.tabs}>
                 {tabs.map((t, i) => (
                   <button
                     key={i}
                     type="button"
-                    className={`dfh-wc-tab${tabIdx === i ? ' active' : ''}`}
+                    className={`${styles.tab}${tabIdx === i ? ` ${styles.tabActive}` : ''}`}
                     onClick={() => setTabIdx(i)}
                   >
                     {t.label}
@@ -708,17 +726,17 @@ export default function WebContainerEmbed({
               </div>
             )}
             {tabs.length > 1 && (
-              <span className="dfh-wc-step">
+              <span className={styles.step}>
                 Step {step} of {total}
               </span>
             )}
           </div>
-          <div className="dfh-wc-body">
-            <div ref={editorRef} className="dfh-wc-editor" />
-            <div className="dfh-wc-toolbar">
+          <div className={styles.body}>
+            <div ref={editorRef} className={styles.editor} />
+            <div className={styles.toolbar}>
               <button
                 type="button"
-                className="dfh-wc-run"
+                className={styles.runButton}
                 onClick={runCode}
                 disabled={
                   status === 'booting' || status === 'running' || !hasCode
@@ -731,7 +749,7 @@ export default function WebContainerEmbed({
                 ) : (
                   <>
                     Run{' '}
-                    <kbd className="dfh-wc-kbd">
+                    <kbd className={styles.kbd}>
                       {typeof navigator !== 'undefined' &&
                       /Mac|iPhone|iPod|iPad/.test(navigator.platform)
                         ? '⌘'
@@ -743,7 +761,7 @@ export default function WebContainerEmbed({
               </button>
               <button
                 type="button"
-                className="dfh-wc-expand"
+                className={styles.expandButton}
                 onClick={() => {
                   if (!isExpanded) measureExpandedLayout();
                   setIsExpanded((prev) => !prev);
@@ -754,7 +772,7 @@ export default function WebContainerEmbed({
             </div>
             {output && (
               <pre
-                className={`dfh-wc-output${status === 'error' ? ' error' : ''}`}
+                className={`${styles.output}${status === 'error' ? ` ${styles.outputError}` : ''}`}
               >
                 {output}
               </pre>

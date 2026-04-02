@@ -14,6 +14,7 @@ import {
   pColor,
   PageHero,
 } from '@/components/ui'
+import pathStyles from '@/components/ui/PathComponents/PathComponents.module.css'
 
 type SectionEntry = {
   section: JourneySection
@@ -219,10 +220,10 @@ export default async function PathPage() {
                                     />
                                     <Link
                                       href={`/fullstack/scenarios/${slug}`}
-                                      className="problem-link flex items-baseline"
+                                      className={`${pathStyles.problemLink} flex items-baseline`}
                                     >
                                       <span className="shrink-0 w-5" />
-                                      <span className="problem-title text-[0.875rem] leading-[1.3] text-[var(--fg-alt)]">
+                                      <span className={`${pathStyles.problemTitle} text-[0.875rem] leading-[1.3] text-[var(--fg-alt)]`}>
                                         {label}
                                       </span>
                                     </Link>
@@ -248,10 +249,10 @@ export default async function PathPage() {
                                     />
                                     <Link
                                       href={`/fullstack/scenarios/${slug}`}
-                                      className="problem-link flex items-baseline"
+                                      className={`${pathStyles.problemLink} flex items-baseline`}
                                     >
                                       <span className="text-xs shrink-0 w-5 leading-none text-[var(--orange)]">↩</span>
-                                      <span className="problem-title text-[0.875rem] leading-[1.3] text-[var(--fg-comment)]">
+                                      <span className={`${pathStyles.problemTitle} text-[0.875rem] leading-[1.3] text-[var(--fg-comment)]`}>
                                         {label}
                                       </span>
                                     </Link>

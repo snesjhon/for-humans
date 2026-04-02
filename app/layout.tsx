@@ -10,7 +10,7 @@ import { getAllFundamentalsSlugs as getSdFundamentals } from '@/lib/system-desig
 import { getAllScenarioSlugsFromDisk as getFsScenarios } from '@/lib/fullstack/content';
 import { getAllFundamentalsSlugs as getFsFundamentals } from '@/lib/fullstack/fundamentals';
 import { createClient } from '@/lib/supabase/server';
-import './globals.css';
+import '../styles/globals.css';
 
 const newsreader = Newsreader({
   subsets: ['latin'],

@@ -1,0 +1,57 @@
+.verified {
+  background: var(--green-tint);
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.left {
+  background: var(--blue-tint);
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.right {
+  background: var(--orange-tint);
+  border-color: var(--orange);
+  color: var(--orange);
+}
+
+.both {
+  background: var(--blue-tint);
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.unchecked {
+  background: var(--bg-alt);
+  border-color: var(--border);
+  color: var(--fg-alt);
+  opacity: 0.6;
+}
+
+.mismatch {
+  background: color-mix(in srgb, var(--red) 12%, var(--bg-alt));
+  border-color: var(--red);
+  color: var(--red);
+}
+
+.middle {
+  background: var(--purple-tint);
+  border-color: var(--purple);
+  color: var(--purple);
+}
+
+.leftPtr {
+  background: var(--blue-tint);
+  color: var(--blue);
+}
+
+.rightPtr {
+  background: var(--orange-tint);
+  color: var(--orange);
+}
+
+.bothPtr {
+  background: var(--blue-tint);
+  color: var(--blue);
+}

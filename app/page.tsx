@@ -9,7 +9,7 @@ import {
 import { CodeEditorMockup } from '@/components/dsa/homepage/CodeEditorMockup/CodeEditorMockup';
 import { TracerMockup } from '@/components/dsa/homepage/TracerMockup/TracerMockup';
 import { MentalModelMockup } from '@/components/dsa/homepage/MentalModelMockup/MentalModelMockup';
-import { AppTheme } from '@/components/AppTheme/AppTheme';
+import { AppTheme } from '@/components/ui/AppTheme/AppTheme';
 
 export default function HomePage() {
   const allProblems = getAllProblems();
@@ -41,9 +41,7 @@ export default function HomePage() {
             </span>
           </div>
 
-          <h1
-            className="font-display italic font-normal leading-none tracking-[-0.03em] mb-10 max-w-[860px] text-[var(--fg)] text-[clamp(3.5rem,7vw,4rem)]"
-          >
+          <h1 className="font-display italic font-normal leading-none tracking-[-0.03em] mb-10 max-w-[860px] text-[var(--fg)] text-[clamp(3.5rem,7vw,4rem)]">
             Learn DSA the way
             <br />
             it should be taught.

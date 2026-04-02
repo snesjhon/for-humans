@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TraceLabel } from '../TraceLabel/TraceLabel';
+import shared from '../TraceShared/TraceShared.module.css';
+import styles from './PrefixSuffixTrace.module.css';
 
 export interface PrefixSuffixStep {
   nums: number[];
@@ -31,6 +33,14 @@ function resultCellState(i: number, step: PrefixSuffixStep): string {
   return 'ps-filled';
 }
 
+const CELL_STYLES: Record<string, string> = {
+  'ps-empty': styles.empty,
+  'ps-filled': styles.filled,
+  'ps-active-fwd': styles.activeForward,
+  'ps-active-bwd': styles.activeBackward,
+  'ps-final': styles.final,
+};
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function PrefixSuffixTrace({ steps }: { steps: PrefixSuffixStep[] }) {
@@ -47,27 +57,33 @@ export default function PrefixSuffixTrace({ steps }: { steps: PrefixSuffixStep[]
   const isActive = (i: number) => i === step.currentI && step.currentI !== -1;
 
   return (
-    <div className="dfh-trace">
+    <div className={shared.root}>
       {/* ── Topbar: legend (left) + nav (right) ── */}
-      <div className="dfh-trace-topbar">
-        <div className="dfh-trace-legend">
-          <span className="ps-legend-fwd">■ prefix stored</span>
-          <span className="ps-legend-bwd">■ final value</span>
+      <div className={shared.topbar}>
+        <div className={shared.legend}>
+          <span className={styles.legendForward}>■ prefix stored</span>
+          <span className={styles.legendBackward}>■ final value</span>
         </div>
-        <div className="dfh-trace-nav">
-          <button className="dfh-trace-btn" disabled={idx === 0} onClick={() => setIdx(i => i - 1)}>← Prev</button>
-          <span className="dfh-trace-counter">{idx + 1} / {steps.length}</span>
-          <button className="dfh-trace-btn" disabled={idx === steps.length - 1} onClick={() => setIdx(i => i + 1)}>Next →</button>
+        <div className={shared.nav}>
+          <button className={shared.button} disabled={idx === 0} onClick={() => setIdx(i => i - 1)}>← Prev</button>
+          <span className={shared.counter}>{idx + 1} / {steps.length}</span>
+          <button className={shared.button} disabled={idx === steps.length - 1} onClick={() => setIdx(i => i + 1)}>Next →</button>
         </div>
       </div>
 
       {/* ── Body: pass badge + acc, then grid, then label ── */}
-      <div className="dfh-trace-body">
-        <div className="ps-header">
+      <div className={shared.body}>
+        <div className={styles.header}>
           <AnimatePresence mode="popLayout">
             <motion.span
               key={passBadge.label}
-              className={`dfh-trace-badge ${passBadge.cls}`}
+              className={`${shared.badge} ${
+                passBadge.cls === 'ps-fwd'
+                  ? styles.forwardBadge
+                  : passBadge.cls === 'ps-bwd'
+                    ? styles.backwardBadge
+                    : styles.doneBadge
+              }`}
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
@@ -78,13 +94,13 @@ export default function PrefixSuffixTrace({ steps }: { steps: PrefixSuffixStep[]
           </AnimatePresence>
 
           {step.accName && (
-            <span className="ps-acc">
-              <span className="ps-acc-name">{step.accName}</span>
-              <span className="ps-acc-eq">=</span>
+            <span className={styles.acc}>
+              <span className={styles.accName}>{step.accName}</span>
+              <span className={styles.accEq}>=</span>
               <AnimatePresence mode="wait">
                 <motion.span
                   key={step.accumulator}
-                  className="ps-acc-val"
+                  className={styles.accVal}
                   initial={{ opacity: 0, y: -4 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 4 }}
@@ -97,21 +113,21 @@ export default function PrefixSuffixTrace({ steps }: { steps: PrefixSuffixStep[]
           )}
         </div>
 
-        <div className="ps-grid">
-          <div className="ps-row-labels">
-            <span className="ps-row-label ps-cursor-spacer" />
-            <span className="ps-row-label">nums</span>
-            <span className="ps-row-label">result</span>
+        <div className={styles.grid}>
+          <div className={styles.rowLabels}>
+            <span className={`${styles.rowLabel} ${styles.cursorSpacer}`} />
+            <span className={styles.rowLabel}>nums</span>
+            <span className={styles.rowLabel}>result</span>
           </div>
-          <div className="ps-cols">
+          <div className={styles.cols}>
             {Array.from({ length: n }, (_, i) => (
-              <div key={i} className="ps-col">
-                <div className="ps-cursor-slot">
+              <div key={i} className={styles.col}>
+                <div className={styles.cursorSlot}>
                   <AnimatePresence>
                     {isActive(i) && (
                       <motion.span
                         key={`cursor-${i}`}
-                        className="ps-cursor-pin"
+                        className={styles.cursorPin}
                         initial={{ opacity: 0, scale: 0.5 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.5 }}
@@ -120,13 +136,13 @@ export default function PrefixSuffixTrace({ steps }: { steps: PrefixSuffixStep[]
                     )}
                   </AnimatePresence>
                 </div>
-                <div className={`dfh-trace-cell ps-nums-cell${isActive(i) ? ' ps-nums-active' : ''}`}>
+                <div className={`${shared.cell} ${styles.numsCell}${isActive(i) ? ` ${styles.numsActive}` : ''}`}>
                   {step.nums[i]}
                 </div>
-                <div className={`dfh-trace-cell ${resultCellState(i, step)}`}>
+                <div className={`${shared.cell} ${CELL_STYLES[resultCellState(i, step)]}`}>
                   {step.result[i]}
                 </div>
-                <div className="dfh-trace-idx">{i}</div>
+                <div className={shared.idx}>{i}</div>
               </div>
             ))}
           </div>

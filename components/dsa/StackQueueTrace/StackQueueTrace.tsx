@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TraceLabel } from '../TraceLabel/TraceLabel';
+import shared from '../TraceShared/TraceShared.module.css';
+import styles from './StackQueueTrace.module.css';
 
 type StructureColor = 'blue' | 'orange' | 'green' | 'purple';
 
@@ -55,8 +57,16 @@ function itemClass(
 ): string {
   const color = colorCls(structure.color);
   const active = structure.activeIndices?.includes(itemIndex);
-  if (active) return `sq-cell-${color}`;
-  return 'sq-cell-muted';
+  if (active) {
+    return color === 'blue'
+      ? styles.cellBlue
+      : color === 'orange'
+        ? styles.cellOrange
+        : color === 'green'
+          ? styles.cellGreen
+          : styles.cellPurple;
+  }
+  return styles.cellMuted;
 }
 
 function renderStack(structure: StackQueueStructure) {
@@ -66,37 +76,45 @@ function renderStack(structure: StackQueueStructure) {
   const orderedIndices = Array.from({ length: items.length }, (_, i) => topIndex - i);
 
   return (
-    <div className="sq-structure sq-structure-stack">
-      <div className="sq-structure-header">
-        <span className="sq-structure-title">{structure.label}</span>
-        <span className="sq-structure-kind">stack</span>
+    <div className={styles.structure}>
+      <div className={styles.structureHeader}>
+        <span className={styles.structureTitle}>{structure.label}</span>
+        <span className={styles.structureKind}>stack</span>
       </div>
 
-      <div className="sq-stack-shell">
+      <div className={styles.stackShell}>
         {items.length === 0 ? (
-          <div className="sq-empty">{structure.emptyLabel ?? 'empty'}</div>
+          <div className={styles.empty}>{structure.emptyLabel ?? 'empty'}</div>
         ) : (
-          <div className="sq-stack-col">
+          <div className={styles.stackCol}>
             {orderedIndices.map((itemIndex) => {
               const item = items[itemIndex];
               const itemPointers = pointers.filter((pointer) => pointer.index === itemIndex);
               const isTop = itemIndex === topIndex;
               return (
-                <div key={`${structure.label}-${itemIndex}`} className="sq-stack-slot">
-                  <div className="sq-pointer-row">
+                <div key={`${structure.label}-${itemIndex}`} className={styles.stackSlot}>
+                  <div className={styles.pointerRow}>
                     {itemPointers.map((pointer) => (
                       <span
                         key={`${structure.label}-${pointer.label}-${pointer.index}`}
-                        className={`dfh-ptr sq-ptr-${colorCls(structure.color)}`}
+                        className={`${shared.ptr} ${
+                          colorCls(structure.color) === 'blue'
+                            ? styles.ptrBlue
+                            : colorCls(structure.color) === 'orange'
+                              ? styles.ptrOrange
+                              : colorCls(structure.color) === 'green'
+                                ? styles.ptrGreen
+                                : styles.ptrPurple
+                        }`}
                       >
                         {pointer.label}
                       </span>
                     ))}
                     {isTop && itemPointers.length === 0 && (
-                      <span className="sq-pointer-placeholder" aria-hidden />
+                      <span className={styles.pointerPlaceholder} aria-hidden />
                     )}
                   </div>
-                  <div className={`dfh-trace-cell ${itemClass(structure, itemIndex)}`}>
+                  <div className={`${shared.cell} ${itemClass(structure, itemIndex)}`}>
                     {item}
                   </div>
                 </div>
@@ -106,7 +124,7 @@ function renderStack(structure: StackQueueStructure) {
         )}
       </div>
 
-      <div className="sq-footnote">bottom → top</div>
+      <div className={styles.footnote}>bottom → top</div>
     </div>
   );
 }
@@ -116,35 +134,43 @@ function renderQueue(structure: StackQueueStructure) {
   const pointers = structure.pointers ?? [];
 
   return (
-    <div className="sq-structure sq-structure-queue">
-      <div className="sq-structure-header">
-        <span className="sq-structure-title">{structure.label}</span>
-        <span className="sq-structure-kind">queue</span>
+    <div className={styles.structure}>
+      <div className={styles.structureHeader}>
+        <span className={styles.structureTitle}>{structure.label}</span>
+        <span className={styles.structureKind}>queue</span>
       </div>
 
-      <div className="sq-queue-shell">
+      <div className={styles.queueShell}>
         {items.length === 0 ? (
-          <div className="sq-empty">{structure.emptyLabel ?? 'empty'}</div>
+          <div className={styles.empty}>{structure.emptyLabel ?? 'empty'}</div>
         ) : (
-          <div className="sq-queue-row">
+          <div className={styles.queueRow}>
             {items.map((item, itemIndex) => {
               const itemPointers = pointers.filter((pointer) => pointer.index === itemIndex);
               return (
-                <div key={`${structure.label}-${itemIndex}`} className="sq-queue-slot">
-                  <div className="sq-pointer-row">
+                <div key={`${structure.label}-${itemIndex}`} className={styles.queueSlot}>
+                  <div className={styles.pointerRow}>
                     {itemPointers.map((pointer) => (
                       <span
                         key={`${structure.label}-${pointer.label}-${pointer.index}`}
-                        className={`dfh-ptr sq-ptr-${colorCls(structure.color)}`}
+                        className={`${shared.ptr} ${
+                          colorCls(structure.color) === 'blue'
+                            ? styles.ptrBlue
+                            : colorCls(structure.color) === 'orange'
+                              ? styles.ptrOrange
+                              : colorCls(structure.color) === 'green'
+                                ? styles.ptrGreen
+                                : styles.ptrPurple
+                        }`}
                       >
                         {pointer.label}
                       </span>
                     ))}
                   </div>
-                  <div className={`dfh-trace-cell ${itemClass(structure, itemIndex)}`}>
+                  <div className={`${shared.cell} ${itemClass(structure, itemIndex)}`}>
                     {item}
                   </div>
-                  <div className="sq-queue-idx">{itemIndex}</div>
+                  <div className={styles.queueIdx}>{itemIndex}</div>
                 </div>
               );
             })}
@@ -152,33 +178,54 @@ function renderQueue(structure: StackQueueStructure) {
         )}
       </div>
 
-      <div className="sq-footnote">front → back</div>
+      <div className={styles.footnote}>front → back</div>
     </div>
   );
 }
+
+function pointerColorClass(color?: StructureColor): string {
+  const resolved = colorCls(color);
+  return resolved === 'blue'
+    ? styles.ptrBlue
+    : resolved === 'orange'
+      ? styles.ptrOrange
+      : resolved === 'green'
+        ? styles.ptrGreen
+        : styles.ptrPurple;
+}
+
+const BADGE_STYLES: Record<NonNullable<StackQueueStep['action']>, string> = {
+  push: styles.badgePush,
+  pop: styles.badgePop,
+  peek: styles.badgePeek,
+  transfer: styles.badgeTransfer,
+  enqueue: styles.badgeEnqueue,
+  dequeue: styles.badgeDequeue,
+  done: styles.badgeDone,
+};
 
 export default function StackQueueTrace({ steps }: { steps: StackQueueStep[] }) {
   const [idx, setIdx] = useState(0);
   const step = steps[idx];
 
   return (
-    <div className="dfh-trace">
-      <div className="dfh-trace-topbar">
-        <div className="dfh-trace-legend">
-          <span><span className="dfh-ptr sq-ptr-blue">LIFO</span> stack order</span>
-          <span><span className="dfh-ptr sq-ptr-green">FIFO</span> queue order</span>
+    <div className={shared.root}>
+      <div className={shared.topbar}>
+        <div className={shared.legend}>
+          <span><span className={`${shared.ptr} ${styles.ptrBlue}`}>LIFO</span> stack order</span>
+          <span><span className={`${shared.ptr} ${styles.ptrGreen}`}>FIFO</span> queue order</span>
         </div>
-        <div className="dfh-trace-nav">
+        <div className={shared.nav}>
           <button
-            className="dfh-trace-btn"
+            className={shared.button}
             disabled={idx === 0}
             onClick={() => setIdx((i) => i - 1)}
           >
             ← Prev
           </button>
-          <span className="dfh-trace-counter">{idx + 1} / {steps.length}</span>
+          <span className={shared.counter}>{idx + 1} / {steps.length}</span>
           <button
-            className="dfh-trace-btn"
+            className={shared.button}
             disabled={idx === steps.length - 1}
             onClick={() => setIdx((i) => i + 1)}
           >
@@ -187,29 +234,29 @@ export default function StackQueueTrace({ steps }: { steps: StackQueueStep[] }) 
         </div>
       </div>
 
-      <div className="dfh-trace-body">
-        <div className="sq-grid">
+      <div className={shared.body}>
+        <div className={styles.grid}>
           {step.structures.map((structure) =>
             structure.kind === 'stack'
               ? (
-                <div key={structure.label} className="sq-grid-item sq-grid-item-stack">
+                <div key={structure.label}>
                   {renderStack(structure)}
                 </div>
               )
               : (
-                <div key={structure.label} className="sq-grid-item sq-grid-item-queue">
+                <div key={structure.label} className={styles.gridItemQueue}>
                   {renderQueue(structure)}
                 </div>
               ),
           )}
         </div>
 
-        <div className="dfh-trace-info">
+        <div className={shared.info}>
           <AnimatePresence mode="popLayout">
             {step.action && (
               <motion.span
                 key={step.action}
-                className={`dfh-trace-badge sq-badge-${step.action}`}
+                className={`${shared.badge} ${BADGE_STYLES[step.action]}`}
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}

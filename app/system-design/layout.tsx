@@ -1,4 +1,4 @@
-import { AppTheme } from '@/components/AppTheme/AppTheme';
+import { AppTheme } from '@/components/ui/AppTheme/AppTheme';
 
 export default function SystemDesignLayout({
   children,

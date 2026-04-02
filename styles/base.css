@@ -1,0 +1,177 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   @for-humans/tokens — base.css
+   Pico CSS in a named layer + shared typography, spacing, and component styles.
+   Import this first, then your app's theme file, then Tailwind directives.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Layer order: reset (lowest) → pico → unlayered (Tailwind + ours, highest).
+   "reset" not "base" — Tailwind hijacks @layer base and strips the wrapper.
+   The * border reset in @layer reset lets Pico's element rules override it. */
+@layer reset, pico;
+@import '@picocss/pico/css/pico.classless.min.css' layer(pico);
+
+@layer reset {
+  *,
+  ::before,
+  ::after {
+    box-sizing: border-box;
+    border-width: 0;
+    border-style: solid;
+    border-color: currentColor;
+  }
+}
+
+html {
+  margin: 0;
+  padding: 0;
+  font-size: 18px;
+  line-height: 1.9;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body, system-ui, sans-serif);
+  font-feature-settings:
+    'kern' 1,
+    'liga' 1;
+}
+
+/* ── Bridge our color tokens into Pico's variable names ──────────────────── */
+:root {
+  --pico-color: var(--fg-alt);
+  --pico-h1-color: var(--fg);
+  --pico-h2-color: var(--fg);
+  --pico-h3-color: var(--fg);
+  --pico-h4-color: var(--fg);
+  --pico-h5-color: var(--fg);
+  --pico-h6-color: var(--fg);
+  --pico-muted-color: var(--fg-comment);
+  --pico-muted-border-color: var(--border);
+  --pico-primary: var(--blue);
+  --pico-primary-hover: var(--blue);
+  --pico-background-color: var(--bg);
+  --pico-table-border-color: var(--border);
+  --pico-blockquote-border-color: var(--border);
+  --pico-code-background-color: var(--bg-highlight);
+  --pico-code-color: var(--purple);
+  --pico-font-family: var(--font-body), system-ui, sans-serif;
+}
+
+/* ── Reset Pico's container layout on landmarks (we use Tailwind for layout) */
+body > header,
+main,
+body > footer,
+section,
+article {
+  padding: 0;
+  max-width: none;
+  margin-block: 0;
+}
+
+blockquote > p {
+  margin-bottom: 0;
+}
+
+/* ── Code blocks ─────────────────────────────────────────────────────────── */
+.dfh-pre {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 0.875rem;
+  line-height: 1.65;
+  padding: 1.25rem 1.5rem;
+  border-radius: 0.75rem;
+  background: var(--bg-alt) !important;
+  border: 1px solid var(--border);
+  overflow-x: auto;
+  margin: 1.75rem 0;
+}
+.dfh-pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: inherit;
+  color: inherit;
+}
+.dfh-pre .hljs {
+  background: transparent !important;
+  padding: 0;
+}
+
+.dfh-code-inline {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 0.875em;
+  font-weight: 500;
+  padding: 0.15em 0.4em;
+  border-radius: 0.3rem;
+  background: var(--bg-highlight);
+  color: var(--purple);
+  border: 1px solid var(--border);
+}
+
+/* ── Table wrapper ────────────────────────────────────────────────────────── */
+.dfh-table-wrap {
+  overflow-x: auto;
+  margin: 1.75rem 0;
+  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+}
+
+/* =============================================================================
+   Cards / rows / buttons
+   ============================================================================= */
+.gl-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  transition:
+    border-color 150ms,
+    background 150ms;
+}
+.gl-card:hover {
+  border-color: var(--purple);
+  background: var(--bg-alt);
+}
+.gl-card-blue:hover {
+  border-color: var(--blue);
+}
+
+.gl-row {
+  transition: background 100ms;
+  border-radius: 0.375rem;
+}
+.gl-row:hover {
+  background: var(--bg-highlight);
+}
+
+.gl-btn-ghost {
+  border: 1px solid var(--border);
+  color: var(--fg-alt);
+  background: var(--bg-alt);
+  transition:
+    border-color 150ms,
+    color 150ms;
+}
+.gl-btn-ghost:hover {
+  border-color: var(--purple);
+  color: var(--purple);
+}
+
+/* =============================================================================
+   Scrollbar
+   ============================================================================= */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-alt);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--fg-gutter);
+}

@@ -1,0 +1,140 @@
+.row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  justify-content: center;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  margin-bottom: 1.25rem;
+  flex-wrap: nowrap;
+}
+
+.colUnit {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.nodeCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.ptrsAbove {
+  min-height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+}
+
+.node {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 17px;
+  font-weight: 700;
+  border: 2px solid var(--border);
+  background: var(--bg-alt);
+  color: var(--fg-alt);
+  flex-shrink: 0;
+  transition:
+    background 0.18s,
+    border-color 0.18s,
+    color 0.18s;
+}
+
+.nodeBlue {
+  background: var(--blue-tint);
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.nodeOrange {
+  background: var(--orange-tint);
+  border-color: var(--orange);
+  color: var(--orange);
+}
+
+.nodeGreen {
+  background: var(--green-tint);
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.nodePurple {
+  background: var(--purple-tint);
+  border-color: var(--purple);
+  color: var(--purple);
+}
+
+.nullBox {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 12px;
+  font-style: italic;
+  color: var(--fg-gutter);
+  border: 2px dashed var(--border);
+  background: transparent;
+  flex-shrink: 0;
+}
+
+.arrow {
+  color: var(--fg-gutter);
+  flex-shrink: 0;
+}
+
+.ptrBlue {
+  background: var(--blue-tint);
+  color: var(--blue);
+}
+
+.ptrOrange {
+  background: var(--orange-tint);
+  color: var(--orange);
+}
+
+.ptrGreen {
+  background: var(--green-tint);
+  color: var(--green);
+}
+
+.ptrPurple {
+  background: var(--purple-tint);
+  color: var(--purple);
+}
+
+.badgeRewire {
+  background: var(--orange-tint);
+  color: var(--orange);
+  border: 1px solid var(--orange);
+}
+
+.badgeFound {
+  background: var(--green-tint);
+  color: var(--green);
+  border: 1px solid var(--green);
+}
+
+.badgeDelete {
+  background: color-mix(in srgb, var(--red) 12%, var(--bg-alt));
+  color: var(--red);
+  border: 1px solid var(--red);
+}
+
+.badgeDone {
+  background: var(--purple-tint);
+  color: var(--purple);
+  border: 1px solid var(--purple);
+}

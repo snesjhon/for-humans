@@ -1,8 +1,0 @@
-@import '../styles/tokens/base.css';
-@import '../styles/tokens/themes/dsa.css';
-@import '../styles/tokens/themes/system-design.css';
-@import '../styles/tokens/themes/fullstack.css';
-
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
