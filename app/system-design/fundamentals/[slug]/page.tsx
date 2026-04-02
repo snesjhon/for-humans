@@ -13,7 +13,7 @@ import {
   PageLayout,
   PhaseColorSync,
 } from '@/components/ui';
-import MarkdownRenderer from '@/components/system-design/MarkdownRenderer';
+import MarkdownRenderer from '@/components/system-design/MarkdownRenderer/MarkdownRenderer';
 
 const PHASE_COLORS = [
   'var(--purple)',

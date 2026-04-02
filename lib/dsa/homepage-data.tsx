@@ -1,14 +1,14 @@
-import { VisualAssemblyLine } from '@/components/dsa/homepage/VisualAssemblyLine';
-import { VisualCardCatalog } from '@/components/dsa/homepage/VisualCardCatalog';
-import { VisualFileSystem } from '@/components/dsa/homepage/VisualFileSystem';
-import { VisualCityMap } from '@/components/dsa/homepage/VisualCityMap';
-import { VisualERTriage } from '@/components/dsa/homepage/VisualERTriage';
-import { VisualStampAlbum } from '@/components/dsa/homepage/VisualStampAlbum';
-import { VisualTwoInspectors } from '@/components/dsa/homepage/VisualTwoInspectors';
-import { VisualTwoMessengers } from '@/components/dsa/homepage/VisualTwoMessengers';
-import { VisualOdometer } from '@/components/dsa/homepage/VisualOdometer';
-import { VisualMountainClimber } from '@/components/dsa/homepage/VisualMountainClimber';
-import { VisualParkRanger } from '@/components/dsa/homepage/VisualParkRanger';
+import { VisualAssemblyLine } from '@/components/dsa/homepage/VisualAssemblyLine/VisualAssemblyLine';
+import { VisualCardCatalog } from '@/components/dsa/homepage/VisualCardCatalog/VisualCardCatalog';
+import { VisualFileSystem } from '@/components/dsa/homepage/VisualFileSystem/VisualFileSystem';
+import { VisualCityMap } from '@/components/dsa/homepage/VisualCityMap/VisualCityMap';
+import { VisualERTriage } from '@/components/dsa/homepage/VisualERTriage/VisualERTriage';
+import { VisualStampAlbum } from '@/components/dsa/homepage/VisualStampAlbum/VisualStampAlbum';
+import { VisualTwoInspectors } from '@/components/dsa/homepage/VisualTwoInspectors/VisualTwoInspectors';
+import { VisualTwoMessengers } from '@/components/dsa/homepage/VisualTwoMessengers/VisualTwoMessengers';
+import { VisualOdometer } from '@/components/dsa/homepage/VisualOdometer/VisualOdometer';
+import { VisualMountainClimber } from '@/components/dsa/homepage/VisualMountainClimber/VisualMountainClimber';
+import { VisualParkRanger } from '@/components/dsa/homepage/VisualParkRanger/VisualParkRanger';
 
 export const HOW_IT_WORKS = [
   {

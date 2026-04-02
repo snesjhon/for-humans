@@ -6,10 +6,10 @@ import {
   FUNDAMENTALS_DATA,
   MENTAL_MODELS_DATA,
 } from '@/lib/dsa/homepage-data';
-import { CodeEditorMockup } from '@/components/dsa/homepage/CodeEditorMockup';
-import { TracerMockup } from '@/components/dsa/homepage/TracerMockup';
-import { MentalModelMockup } from '@/components/dsa/homepage/MentalModelMockup';
-import { AppTheme } from '@/components/AppTheme';
+import { CodeEditorMockup } from '@/components/dsa/homepage/CodeEditorMockup/CodeEditorMockup';
+import { TracerMockup } from '@/components/dsa/homepage/TracerMockup/TracerMockup';
+import { MentalModelMockup } from '@/components/dsa/homepage/MentalModelMockup/MentalModelMockup';
+import { AppTheme } from '@/components/AppTheme/AppTheme';
 
 export default function HomePage() {
   const allProblems = getAllProblems();

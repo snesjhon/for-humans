@@ -17,7 +17,7 @@ import {
 } from '@/lib/dsa/fundamentals';
 import { extractHeadings } from '@/lib/dsa/headings';
 import { loadReferencedDsaCodeFiles } from '@/lib/dsa/stackblitz';
-import MarkdownRenderer from '@/components/dsa/MarkdownRenderer';
+import MarkdownRenderer from '@/components/dsa/MarkdownRenderer/MarkdownRenderer';
 import { TableOfContents, PhaseColorSync, PageHero, PageLayout } from '@/components/ui';
 
 interface Props {

@@ -4,8 +4,8 @@ import { loadScenario, getAllScenarioSlugsFromDisk } from '@/lib/fullstack/conte
 import { getScenarioBySlug } from '@/lib/fullstack/journey'
 import { extractHeadings } from '@/lib/fullstack/headings'
 import { TableOfContents, PageHero, PageLayout } from '@/components/ui'
-import MarkdownRenderer from '@/components/fullstack/MarkdownRenderer'
-import CheckWork from '@/components/fullstack/CheckWork'
+import MarkdownRenderer from '@/components/fullstack/MarkdownRenderer/MarkdownRenderer'
+import CheckWork from '@/components/fullstack/CheckWork/CheckWork'
 
 
 interface Props {

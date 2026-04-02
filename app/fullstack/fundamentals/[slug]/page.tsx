@@ -8,7 +8,7 @@ import {
 } from '@/lib/fullstack/fundamentals';
 import { extractHeadings } from '@/lib/fullstack/headings';
 import { TableOfContents, PageHero, PageLayout } from '@/components/ui';
-import MarkdownRenderer from '@/components/fullstack/MarkdownRenderer';
+import MarkdownRenderer from '@/components/fullstack/MarkdownRenderer/MarkdownRenderer';
 
 const PHASE_COLORS = [
   'var(--purple)',

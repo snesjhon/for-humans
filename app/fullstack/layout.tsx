@@ -1,4 +1,4 @@
-import { AppTheme } from '@/components/AppTheme';
+import { AppTheme } from '@/components/AppTheme/AppTheme';
 
 export default function FullstackLayout({
   children,
