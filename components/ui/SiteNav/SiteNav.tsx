@@ -9,19 +9,24 @@ import { JOURNEY as SD_JOURNEY } from '@/lib/system-design/journey';
 import { JOURNEY as FS_JOURNEY } from '@/lib/fullstack/journey';
 import { JourneyPanel } from '../JourneyPanel/JourneyPanel';
 import type { JourneyPanelPhase } from '../JourneyPanel/JourneyPanel';
+import { SignOutButton } from '../SignOutButton/SignOutButton';
 
 // ── DSA static lookups ────────────────────────────────────────────────────────
 
 const DSA_FUNDAMENTALS_TO_SECTION: Record<string, string> = {};
 const DSA_PROBLEM_TO_SECTION: Record<string, string> = {};
-const DSA_SECTION_REVISIT: Record<string, { ids: string[]; fromLabel: string }> = {};
+const DSA_SECTION_REVISIT: Record<
+  string,
+  { ids: string[]; fromLabel: string }
+> = {};
 
 let _dsaPrev: { reinforce: { id: string }[]; label: string } | null = null;
 for (const phase of DSA_JOURNEY) {
   for (const section of phase.sections) {
     if (section.fundamentalsSlug)
       DSA_FUNDAMENTALS_TO_SECTION[section.fundamentalsSlug] = section.id;
-    for (const p of section.firstPass) DSA_PROBLEM_TO_SECTION[p.id] = section.id;
+    for (const p of section.firstPass)
+      DSA_PROBLEM_TO_SECTION[p.id] = section.id;
     if (_dsaPrev && _dsaPrev.reinforce.length > 0) {
       DSA_SECTION_REVISIT[section.id] = {
         ids: _dsaPrev.reinforce.map((p) => p.id),
@@ -41,7 +46,8 @@ for (const phase of SD_JOURNEY) {
   for (const section of phase.sections) {
     if (section.fundamentalsSlug)
       SD_FUNDAMENTALS_TO_SECTION[section.fundamentalsSlug] = section.id;
-    for (const s of section.firstPass) SD_SCENARIO_TO_SECTION[s.slug] = section.id;
+    for (const s of section.firstPass)
+      SD_SCENARIO_TO_SECTION[s.slug] = section.id;
   }
 }
 
@@ -54,7 +60,8 @@ for (const phase of FS_JOURNEY) {
   for (const section of phase.sections) {
     if (section.fundamentalsSlug)
       FS_FUNDAMENTALS_TO_SECTION[section.fundamentalsSlug] = section.id;
-    for (const s of section.firstPass) FS_SCENARIO_TO_SECTION[s.slug] = section.id;
+    for (const s of section.firstPass)
+      FS_SCENARIO_TO_SECTION[s.slug] = section.id;
   }
 }
 
@@ -93,7 +100,10 @@ const SD_PHASES: JourneyPanelPhase[] = SD_JOURNEY.map((phase) => ({
     label: section.label,
     fundamentalsSlug: section.fundamentalsSlug,
     items: section.firstPass.map((s) => ({ key: s.slug, label: s.label })),
-    revisitItems: section.reinforce.map((s) => ({ key: s.slug, label: s.label })),
+    revisitItems: section.reinforce.map((s) => ({
+      key: s.slug,
+      label: s.label,
+    })),
   })),
 }));
 
@@ -106,7 +116,10 @@ const FS_PHASES: JourneyPanelPhase[] = FS_JOURNEY.map((phase) => ({
     label: section.label,
     fundamentalsSlug: section.fundamentalsSlug,
     items: section.firstPass.map((s) => ({ key: s.slug, label: s.label })),
-    revisitItems: section.reinforce.map((s) => ({ key: s.slug, label: s.label })),
+    revisitItems: section.reinforce.map((s) => ({
+      key: s.slug,
+      label: s.label,
+    })),
   })),
 }));
 
@@ -195,27 +208,33 @@ function AppHeader({
 
 // ── SiteNav ───────────────────────────────────────────────────────────────────
 
-export function SiteNav({
-  availableProblemIds: availableProblemIdsArr,
-  availableFundamentalsSlugs: availableDsaFundamentalsArr,
-  availableSystemDesignScenarioSlugs,
-  availableSystemDesignFundamentalsSlugs,
-  availableFullstackScenarioSlugs,
-  availableFullstackFundamentalsSlugs,
-}: {
+interface SiteNavProps {
   availableProblemIds: string[];
   availableFundamentalsSlugs: string[];
   availableSystemDesignScenarioSlugs: string[];
   availableSystemDesignFundamentalsSlugs: string[];
   availableFullstackScenarioSlugs: string[];
   availableFullstackFundamentalsSlugs: string[];
-}) {
+  email?: string;
+}
+
+export function SiteNav({
+  availableProblemIds: availableProblemIdsArr,
+  availableFundamentalsSlugs: availableDsaFundamentalsArr,
+  email,
+  // availableSystemDesignScenarioSlugs,
+  // availableSystemDesignFundamentalsSlugs,
+  // availableFullstackScenarioSlugs,
+  // availableFullstackFundamentalsSlugs,
+}: SiteNavProps) {
   const availableProblemIds = new Set(availableProblemIdsArr);
   const availableDsaFundamentals = new Set(availableDsaFundamentalsArr);
-  const availableSDScenarios = new Set(availableSystemDesignScenarioSlugs);
-  const availableSDFundamentals = new Set(availableSystemDesignFundamentalsSlugs);
-  const availableFSScenarios = new Set(availableFullstackScenarioSlugs);
-  const availableFSFundamentals = new Set(availableFullstackFundamentalsSlugs);
+  // const availableSDScenarios = new Set(availableSystemDesignScenarioSlugs);
+  // const availableSDFundamentals = new Set(
+  //   availableSystemDesignFundamentalsSlugs,
+  // );
+  // const availableFSScenarios = new Set(availableFullstackScenarioSlugs);
+  // const availableFSFundamentals = new Set(availableFullstackFundamentalsSlugs);
 
   const pathname = usePathname();
   const [dark, setDark] = useState(false);
@@ -257,7 +276,7 @@ export function SiteNav({
 
   return (
     <nav
-      className="fixed top-0 left-0 h-screen z-50 flex flex-col"
+      className="sticky top-0 left-0 h-screen z-50 flex flex-col"
       style={{
         width: '260px',
         borderRight: '1px solid var(--border)',
@@ -283,8 +302,14 @@ export function SiteNav({
       </div>
 
       {/* Accordion body — all headers flex-shrink:0, expanded content fills remaining space */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-
+      <div
+        style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+        }}
+      >
         {/* ── DSA ── */}
         <AppHeader
           label="DSA"
@@ -298,7 +323,9 @@ export function SiteNav({
               phases={DSA_PHASES}
               pathname={pathname}
               activeSectionId={dsaActiveSection(pathname)}
-              activeItemKey={pathname.match(/^\/dsa\/problems\/([^/]+)/)?.[1] ?? null}
+              activeItemKey={
+                pathname.match(/^\/dsa\/problems\/([^/]+)/)?.[1] ?? null
+              }
               activeFundamentalsSlug={
                 pathname.match(/^\/dsa\/fundamentals\/([^/]+)/)?.[1] ?? null
               }
@@ -311,81 +338,82 @@ export function SiteNav({
         )}
 
         {/* ── System Design ── */}
-        <AppHeader
-          label="System Design"
-          active={pathname.startsWith('/system-design')}
-          open={openApps.has('system-design')}
-          onToggle={() => toggleApp('system-design')}
-        />
-        {openApps.has('system-design') && (
-          <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
-            <JourneyPanel
-              phases={SD_PHASES}
-              pathname={pathname}
-              activeSectionId={sdActiveSection(pathname)}
-              activeItemKey={
-                pathname.match(/^\/system-design\/scenarios\/([^/]+)/)?.[1] ?? null
-              }
-              activeFundamentalsSlug={
-                pathname.match(/^\/system-design\/fundamentals\/([^/]+)/)?.[1] ?? null
-              }
-              availableItemKeys={availableSDScenarios}
-              availableFundamentalsSlugs={availableSDFundamentals}
-              getItemHref={(slug) => `/system-design/scenarios/${slug}`}
-              getFundamentalsHref={(slug) => `/system-design/fundamentals/${slug}`}
-            />
-          </div>
-        )}
+        {/* <AppHeader */}
+        {/*   label="System Design" */}
+        {/*   active={pathname.startsWith('/system-design')} */}
+        {/*   open={openApps.has('system-design')} */}
+        {/*   onToggle={() => toggleApp('system-design')} */}
+        {/* /> */}
+        {/* {openApps.has('system-design') && ( */}
+        {/*   <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}> */}
+        {/*     <JourneyPanel */}
+        {/*       phases={SD_PHASES} */}
+        {/*       pathname={pathname} */}
+        {/*       activeSectionId={sdActiveSection(pathname)} */}
+        {/*       activeItemKey={ */}
+        {/*         pathname.match(/^\/system-design\/scenarios\/([^/]+)/)?.[1] ?? null */}
+        {/*       } */}
+        {/*       activeFundamentalsSlug={ */}
+        {/*         pathname.match(/^\/system-design\/fundamentals\/([^/]+)/)?.[1] ?? null */}
+        {/*       } */}
+        {/*       availableItemKeys={availableSDScenarios} */}
+        {/*       availableFundamentalsSlugs={availableSDFundamentals} */}
+        {/*       getItemHref={(slug) => `/system-design/scenarios/${slug}`} */}
+        {/*       getFundamentalsHref={(slug) => `/system-design/fundamentals/${slug}`} */}
+        {/*     /> */}
+        {/*   </div> */}
+        {/* )} */}
 
         {/* ── Fullstack ── */}
-        <AppHeader
-          label="Fullstack"
-          active={pathname.startsWith('/fullstack')}
-          open={openApps.has('fullstack')}
-          onToggle={() => toggleApp('fullstack')}
-        />
-        {openApps.has('fullstack') && (
-          <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
-            <JourneyPanel
-              phases={FS_PHASES}
-              pathname={pathname}
-              activeSectionId={fsActiveSection(pathname)}
-              activeItemKey={
-                pathname.match(/^\/fullstack\/scenarios\/([^/]+)/)?.[1] ?? null
-              }
-              activeFundamentalsSlug={
-                pathname.match(/^\/fullstack\/fundamentals\/([^/]+)/)?.[1] ?? null
-              }
-              availableItemKeys={availableFSScenarios}
-              availableFundamentalsSlugs={availableFSFundamentals}
-              getItemHref={(slug) => `/fullstack/scenarios/${slug}`}
-              getFundamentalsHref={(slug) => `/fullstack/fundamentals/${slug}`}
-            />
-          </div>
-        )}
-
+        {/* <AppHeader */}
+        {/*   label="Fullstack" */}
+        {/*   active={pathname.startsWith('/fullstack')} */}
+        {/*   open={openApps.has('fullstack')} */}
+        {/*   onToggle={() => toggleApp('fullstack')} */}
+        {/* /> */}
+        {/* {openApps.has('fullstack') && ( */}
+        {/*   <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}> */}
+        {/*     <JourneyPanel */}
+        {/*       phases={FS_PHASES} */}
+        {/*       pathname={pathname} */}
+        {/*       activeSectionId={fsActiveSection(pathname)} */}
+        {/*       activeItemKey={ */}
+        {/*         pathname.match(/^\/fullstack\/scenarios\/([^/]+)/)?.[1] ?? null */}
+        {/*       } */}
+        {/*       activeFundamentalsSlug={ */}
+        {/*         pathname.match(/^\/fullstack\/fundamentals\/([^/]+)/)?.[1] ?? null */}
+        {/*       } */}
+        {/*       availableItemKeys={availableFSScenarios} */}
+        {/*       availableFundamentalsSlugs={availableFSFundamentals} */}
+        {/*       getItemHref={(slug) => `/fullstack/scenarios/${slug}`} */}
+        {/*       getFundamentalsHref={(slug) => `/fullstack/fundamentals/${slug}`} */}
+        {/*     /> */}
+        {/*   </div> */}
+        {/* )} */}
       </div>
 
-      {/* Dark mode toggle */}
-      <div
-        style={{
-          padding: '12px 16px',
-          borderTop: '1px solid var(--border)',
-          flexShrink: 0,
-        }}
-      >
-        <button
-          onClick={toggleDark}
-          aria-label="Toggle dark mode"
-          className="bg-transparent cursor-pointer text-[var(--fg-comment)] text-[14px] leading-none"
-          style={{
-            border: '1px solid var(--border)',
-            borderRadius: '6px',
-            padding: '4px 8px',
-          }}
-        >
-          {dark ? '☀' : '◑'}
-        </button>
+      <div className="flex px-2 py-4 justify-between border-t border-t-[var(--border)]">
+        <div>
+          <button
+            onClick={toggleDark}
+            aria-label="Toggle dark mode"
+            className="bg-transparent cursor-pointer text-[var(--fg-comment)] text-sm leading-none px-2 py-2"
+          >
+            {dark ? '☀' : '◑'}
+          </button>
+        </div>
+        {email ? (
+          <SignOutButton email={email ?? ''} />
+        ) : (
+          <div>
+            <Link
+              href="/login"
+              className="text-[0.75rem] text-[var(--fg-comment)] hover:text-[var(--fg)] transition-colors no-underline"
+            >
+              Sign in to track progress →
+            </Link>
+          </div>
+        )}
       </div>
     </nav>
   );

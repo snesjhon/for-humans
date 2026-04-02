@@ -50,36 +50,19 @@ export default async function RootLayout({
       lang="en"
       className={`${newsreader.variable} ${plusJakarta.variable}`}
     >
-      <body
-        className="min-h-screen bg-[var(--bg)] text-[var(--fg)]"
-        style={{ paddingLeft: '260px' }}
-      >
-        <SiteNav
-          availableProblemIds={availableProblemIds}
-          availableFundamentalsSlugs={availableFundamentalsSlugs}
-          availableSystemDesignScenarioSlugs={getSdScenarios()}
-          availableSystemDesignFundamentalsSlugs={getSdFundamentals()}
-          availableFullstackScenarioSlugs={getFsScenarios()}
-          availableFullstackFundamentalsSlugs={getFsFundamentals()}
-        />
-        <div
-          className="fixed bottom-0 left-0 z-50"
-          style={{ width: '260px' }}
-        >
-          {user ? (
-            <SignOutButton email={user.email ?? ''} />
-          ) : (
-            <div style={{ padding: '10px 16px', borderTop: '1px solid var(--border)' }}>
-              <Link
-                href="/login"
-                className="text-[0.75rem] text-[var(--fg-comment)] hover:text-[var(--fg)] transition-colors no-underline"
-              >
-                Sign in to track progress →
-              </Link>
-            </div>
-          )}
+      <body className="min-h-screen bg-[var(--bg)] text-[var(--fg)]">
+        <div className="grid grid-cols-[0.1fr_1fr]">
+          <SiteNav
+            availableProblemIds={availableProblemIds}
+            availableFundamentalsSlugs={availableFundamentalsSlugs}
+            availableSystemDesignScenarioSlugs={getSdScenarios()}
+            availableSystemDesignFundamentalsSlugs={getSdFundamentals()}
+            availableFullstackScenarioSlugs={getFsScenarios()}
+            availableFullstackFundamentalsSlugs={getFsFundamentals()}
+            email={user ? user.email : ''}
+          />
+          <main className="w-full">{children}</main>
         </div>
-        <main className="w-full">{children}</main>
       </body>
     </html>
   );
