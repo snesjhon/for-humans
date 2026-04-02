@@ -176,29 +176,17 @@ function AppHeader({
   return (
     <button
       onClick={onToggle}
-      className="w-full text-left focus:outline-none flex items-center transition-colors"
-      style={{
-        padding: '7px 16px',
-        fontSize: '0.825rem',
-        fontWeight: active ? 600 : 400,
-        color: active ? 'var(--active-phase-color)' : 'var(--fg-alt)',
-        background: 'transparent',
-        border: 'none',
-        cursor: 'pointer',
-        letterSpacing: active ? '-0.01em' : 'normal',
-        borderTop: '1px solid var(--border)',
-      }}
+      className={`flex w-full items-center border-none border-t border-t-[var(--border)] bg-transparent px-4 py-[7px] text-left text-[0.825rem] transition-colors focus:outline-none ${
+        active
+          ? 'font-semibold tracking-[-0.01em] text-[var(--active-phase-color)]'
+          : 'font-normal text-[var(--fg-alt)]'
+      }`}
     >
-      <span style={{ flex: 1 }}>{label}</span>
+      <span className="flex-1">{label}</span>
       <span
-        style={{
-          fontSize: '0.65rem',
-          color: 'var(--fg-gutter)',
-          flexShrink: 0,
-          transform: open ? 'rotate(180deg)' : 'rotate(0)',
-          transition: 'transform 200ms',
-          display: 'inline-block',
-        }}
+        className={`inline-block shrink-0 text-[0.65rem] text-[var(--fg-gutter)] transition-transform duration-200 ${
+          open ? 'rotate-180' : 'rotate-0'
+        }`}
       >
         ↓
       </span>
@@ -275,41 +263,18 @@ export function SiteNav({
   };
 
   return (
-    <nav
-      className="sticky top-0 left-0 h-screen z-50 flex flex-col"
-      style={{
-        width: '260px',
-        borderRight: '1px solid var(--border)',
-        background: 'var(--bg-alt)',
-      }}
-    >
+    <nav className="sticky left-0 top-0 z-50 flex h-screen w-[260px] flex-col border-r border-r-[var(--border)] bg-[var(--bg-alt)]">
       {/* Branding */}
-      <div
-        style={{
-          padding: '18px 16px 14px',
-          borderBottom: '1px solid var(--border)',
-          flexShrink: 0,
-        }}
-      >
+      <div className="shrink-0 border-b border-b-[var(--border)] px-4 pb-[14px] pt-[18px]">
         <Link href="/" className="no-underline block focus:outline-none">
-          <span
-            className="italic font-normal tracking-[-0.01em] text-[var(--fg)]"
-            style={{ fontFamily: 'var(--font-display)', fontSize: '1.05rem' }}
-          >
+          <span className="text-[1.05rem] italic font-normal tracking-[-0.01em] text-[var(--fg)] [font-family:var(--font-display)]">
             MentalSystems
           </span>
         </Link>
       </div>
 
       {/* Accordion body — all headers flex-shrink:0, expanded content fills remaining space */}
-      <div
-        style={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
-        }}
-      >
+      <div className="flex flex-1 flex-col overflow-hidden">
         {/* ── DSA ── */}
         <AppHeader
           label="DSA"
@@ -318,7 +283,7 @@ export function SiteNav({
           onToggle={() => toggleApp('dsa')}
         />
         {openApps.has('dsa') && (
-          <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
+          <div className="min-h-0 flex-1 overflow-y-auto">
             <JourneyPanel
               phases={DSA_PHASES}
               pathname={pathname}

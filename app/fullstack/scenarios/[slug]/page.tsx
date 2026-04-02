@@ -26,7 +26,7 @@ export default function ScenarioPage({ params }: Props) {
   if (!match) notFound()
 
   const { scenario, section, phase } = match
-  const color = ['var(--purple)', 'var(--blue)', 'var(--green)', 'var(--orange)', 'var(--cyan)'][(phase.number - 1) % 5]
+  const color = 'var(--primary)'
 
   const strippedBrief = content.brief.replace(/^#[^#].*\n+/, '').trimStart()
   const strippedWalkthrough = content.walkthrough

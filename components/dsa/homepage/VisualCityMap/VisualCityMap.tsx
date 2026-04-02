@@ -45,8 +45,8 @@ export function VisualCityMap() {
                 cx={x}
                 cy={y}
                 r="10"
-                fill="color-mix(in srgb, var(--blue) 10%, var(--bg))"
-                stroke="var(--blue)"
+                fill="var(--blue-tint)"
+                stroke="var(--primary)"
                 strokeWidth="1.5"
               />
               <text
@@ -56,7 +56,7 @@ export function VisualCityMap() {
                 fontFamily="ui-monospace, monospace"
                 fontSize="9"
                 fontWeight="700"
-                fill="var(--blue)"
+                fill="var(--primary)"
               >
                 {id}
               </text>

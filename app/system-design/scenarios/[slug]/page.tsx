@@ -3,22 +3,10 @@ import Link from 'next/link';
 import { loadScenario, getAllScenarioSlugsFromDisk } from '@/lib/system-design/content';
 import { getScenarioBySlug } from '@/lib/system-design/journey';
 import { extractHeadings } from '@/lib/system-design/headings';
-import {
-  PhaseColorSync,
-} from '@/components/ui/PhaseTracker/PhaseTracker';
 import TableOfContents from '@/components/ui/TableOfContents/TableOfContents';
 import { PageHero } from '@/components/ui/PageHero/PageHero';
 import { PageLayout } from '@/components/ui/PageLayout/PageLayout';
 import MarkdownRenderer from '@/components/system-design/MarkdownRenderer/MarkdownRenderer';
-
-const PHASE_COLORS = [
-  'var(--purple)',
-  'var(--blue)',
-  'var(--green)',
-  'var(--orange)',
-  'var(--cyan)',
-];
-const phaseColor = (n: number) => PHASE_COLORS[(n - 1) % PHASE_COLORS.length];
 
 interface Props {
   params: { slug: string };
@@ -36,7 +24,7 @@ export default function ScenarioPage({ params }: Props) {
   if (!match) notFound();
 
   const { scenario, section, phase } = match;
-  const color = phaseColor(phase.number);
+  const color = 'var(--primary)';
 
   // Strip leading h1 from brief and walkthrough
   const strippedBrief = content.brief.replace(/^#[^#].*\n+/, '').trimStart();
@@ -57,7 +45,6 @@ export default function ScenarioPage({ params }: Props) {
 
   return (
     <>
-      {color && <PhaseColorSync color={color} />}
       <PageHero>
         <p className="text-xs font-mono mb-2 text-[var(--fg-gutter)]">
           {section.label}

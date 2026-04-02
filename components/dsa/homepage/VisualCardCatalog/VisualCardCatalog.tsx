@@ -12,10 +12,10 @@ export function VisualCardCatalog() {
       {rows.map(({ k, v, bucket }, i) => (
         <div key={i} className="flex items-center gap-[5px]">
           <div
-            className="font-[ui-monospace,monospace] text-[0.65rem] text-[var(--orange)] rounded-[4px] px-[7px] py-[4px] whitespace-nowrap"
+            className="font-[ui-monospace,monospace] text-[0.65rem] text-[var(--primary)] rounded-[4px] px-[7px] py-[4px] whitespace-nowrap"
             style={{
-              background: 'color-mix(in srgb, var(--orange) 8%, var(--bg))',
-              border: '1px solid color-mix(in srgb, var(--orange) 25%, transparent)',
+              background: 'var(--primary-tint)',
+              border: '1px solid var(--primary)',
             }}
           >
             {k}
@@ -32,8 +32,8 @@ export function VisualCardCatalog() {
           <div
             className="font-[ui-monospace,monospace] text-[0.65rem] text-[#52b87a] rounded-[4px] px-[7px] py-[4px] flex-1 whitespace-nowrap overflow-hidden text-ellipsis"
             style={{
-              background: 'color-mix(in srgb, #52b87a 7%, var(--bg))',
-              border: '1px solid color-mix(in srgb, #52b87a 25%, transparent)',
+              background: 'var(--green-tint)',
+              border: '1px solid #52b87a',
             }}
           >
             {v}

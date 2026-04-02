@@ -7,8 +7,8 @@ export function VisualFileSystem() {
       {/* Root */}
       <div className="flex justify-center">
         <div
-          className="w-[44px] h-[36px] flex items-center justify-center border-2 border-[var(--purple)] rounded-[6px] font-[ui-monospace,monospace] text-[0.85rem] font-bold text-[var(--purple)]"
-          style={{ background: 'color-mix(in srgb, var(--purple) 12%, var(--bg))' }}
+          className="w-[44px] h-[36px] flex items-center justify-center border-2 border-[var(--primary)] rounded-[6px] font-[ui-monospace,monospace] text-[0.85rem] font-bold text-[var(--primary)]"
+          style={{ background: 'var(--primary-tint)' }}
         >
           15
         </div>
@@ -23,10 +23,10 @@ export function VisualFileSystem() {
         {[10, 20].map((n) => (
           <div
             key={n}
-            className="w-[40px] h-[32px] flex items-center justify-center rounded-[5px] font-[ui-monospace,monospace] text-[0.75rem] font-semibold text-[var(--purple)]"
+            className="w-[40px] h-[32px] flex items-center justify-center rounded-[5px] font-[ui-monospace,monospace] text-[0.75rem] font-semibold text-[var(--primary)]"
             style={{
-              border: '1.5px solid color-mix(in srgb, var(--purple) 45%, transparent)',
-              background: 'color-mix(in srgb, var(--purple) 7%, var(--bg))',
+              border: '1.5px solid var(--primary)',
+              background: 'var(--primary-tint)',
             }}
           >
             {n}

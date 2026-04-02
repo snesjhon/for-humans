@@ -31,7 +31,7 @@ export function VisualERTriage() {
                 justifyContent: 'center',
                 border: `2px solid ${colors[r][c]}`,
                 borderRadius: 6,
-                background: `color-mix(in srgb, ${colors[r][c]} 12%, var(--bg))`,
+                background: r === 0 ? 'var(--red-tint)' : 'var(--bg-alt)',
                 fontFamily: 'ui-monospace, monospace',
                 fontSize: fontSizes[r],
                 fontWeight: 700,

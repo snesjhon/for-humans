@@ -3,7 +3,9 @@
    Source: github.com/snesjhon/gitlab-nvim-theme
    ───────────────────────────────────────────────────────────────────────────── */
 :root {
-  --active-phase-color: var(--purple);
+  --primary: var(--purple);
+  --primary-tint: #ede8f8;
+  --active-phase-color: var(--primary);
 
   --bg: #fafaff;
   --bg-alt: #f0f0fa;
@@ -28,11 +30,14 @@
   --green-tint: #e6f4ec;
   --orange-tint: #fdf3e6;
   --purple-tint: #ede8f8;
-
+  --red-tint: #f7e7e4;
+  --cyan-tint: #e6f5f7;
 }
 
 /* GitLab Dark — .dark on <html> */
 .dark {
+  --primary: var(--purple);
+  --primary-tint: #2d2650;
   --bg: #28262b;
   --bg-alt: #222025;
   --bg-highlight: #312f35;
@@ -57,5 +62,6 @@
   --green-tint: #1f3828;
   --orange-tint: #342a12;
   --purple-tint: #2d2650;
-
+  --red-tint: #3a2321;
+  --cyan-tint: #163033;
 }

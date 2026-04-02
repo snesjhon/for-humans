@@ -50,10 +50,7 @@ export default async function LoginPage({
   return (
     <div className="min-h-screen flex items-center justify-center bg-[var(--bg)]">
       <div className="w-full max-w-sm px-8 py-10 border border-[var(--border)] rounded-xl bg-[var(--bg-alt)]">
-        <h1
-          className="text-3xl italic font-normal mb-2 text-[var(--fg)]"
-          style={{ fontFamily: 'var(--font-display)' }}
-        >
+        <h1 className="mb-2 text-3xl italic font-normal text-[var(--fg)] [font-family:var(--font-display)]">
           MentalSystems
         </h1>
         <p className="text-sm text-[var(--fg-gutter)] mb-8">

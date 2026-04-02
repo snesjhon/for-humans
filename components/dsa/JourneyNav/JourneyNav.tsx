@@ -3,8 +3,7 @@ import { JOURNEY, type JourneySection, type Phase } from '@/lib/dsa/journey'
 import { getAllProblems } from '@/lib/dsa/content'
 
 // Each step gets a unique accent color, cycling through the palette
-const STEP_COLORS = ['var(--purple)', 'var(--blue)', 'var(--green)', 'var(--orange)', 'var(--cyan)']
-const stepColor = (idx: number) => STEP_COLORS[idx % STEP_COLORS.length]
+const stepColor = (_idx: number) => 'var(--primary)'
 
 interface JourneyNavProps {
   activeProblemId?: string
@@ -59,7 +58,7 @@ function ProblemRow({ id, isActive, dimmed, activeColor, problemMap }: {
     <Link
       href={`/dsa/problems/${id}`}
       className="flex items-center gap-2 py-1 rounded px-1 -mx-1 transition-colors"
-      style={{ background: isActive ? `color-mix(in srgb, ${activeColor} 12%, var(--bg))` : 'transparent' }}
+      style={{ background: isActive ? 'var(--bg-alt)' : 'transparent' }}
     >
       <span
         className="w-1.5 h-1.5 rounded-full flex-shrink-0"
@@ -135,7 +134,7 @@ export default function JourneyNav({ activeProblemId, activeFundamentalsSlug }: 
                 className="px-3 pt-2.5 pb-2"
                 style={{
                   background: isCurrentSection
-                    ? `color-mix(in srgb, ${color} 10%, var(--bg))`
+                    ? 'var(--bg-alt)'
                     : 'var(--bg-alt)',
                 }}
               >

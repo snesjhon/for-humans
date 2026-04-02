@@ -72,7 +72,7 @@ export default function CheckWork({ slug }: Props) {
       <div className="mt-6 p-4 rounded-lg border border-[var(--border)] bg-[var(--bg-alt)]">
         <p className="text-sm text-[var(--fg-gutter)]">
           Set your chess app path in{' '}
-          <a href="/fullstack/settings" className="text-[var(--purple)]">Settings</a>{' '}
+          <a href="/fullstack/settings" className="text-[var(--primary)]">Settings</a>{' '}
           to enable work checking.
         </p>
       </div>
@@ -82,7 +82,7 @@ export default function CheckWork({ slug }: Props) {
   return (
     <div className="mt-6 space-y-3">
       {changesDetected && (
-        <div className="px-4 py-3 rounded-lg bg-[var(--purple-tint)] border border-[color-mix(in_srgb,var(--purple)_25%,transparent)] text-sm text-[var(--fg)]">
+        <div className="px-4 py-3 rounded-lg bg-[var(--primary-tint)] border border-[var(--primary)] text-sm text-[var(--fg)]">
           New changes detected — ready to check?
         </div>
       )}
@@ -90,7 +90,7 @@ export default function CheckWork({ slug }: Props) {
       <button
         onClick={handleCheck}
         disabled={checking}
-        className="w-full py-[8px] px-[20px] rounded-[6px] bg-[var(--purple)] text-white text-sm font-semibold border-0 cursor-pointer disabled:opacity-50"
+        className="w-full py-[8px] px-[20px] rounded-[6px] bg-[var(--primary)] text-white text-sm font-semibold border-0 cursor-pointer disabled:opacity-50"
       >
         {checking ? 'Checking…' : 'Check my work'}
       </button>

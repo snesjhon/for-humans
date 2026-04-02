@@ -64,7 +64,7 @@ export default function SettingsPage() {
             className="flex-1 py-[8px] px-[12px] rounded-[6px] border border-[var(--border)] bg-[var(--bg-alt)] text-[var(--fg)] text-[0.875rem]"
             onKeyDown={(e) => e.key === 'Enter' && handleSaveKey()}
           />
-          <button onClick={handleSaveKey} className="py-[8px] px-[20px] rounded-[6px] bg-[var(--purple)] text-white font-semibold text-[0.875rem] border-none cursor-pointer">
+          <button onClick={handleSaveKey} className="py-[8px] px-[20px] rounded-[6px] bg-[var(--primary)] text-white font-semibold text-[0.875rem] border-none cursor-pointer">
             {keySaved ? 'Saved!' : 'Save'}
           </button>
         </div>
@@ -89,7 +89,7 @@ export default function SettingsPage() {
             className="flex-1 py-[8px] px-[12px] rounded-[6px] border border-[var(--border)] bg-[var(--bg-alt)] text-[var(--fg)] text-[0.875rem] font-[ui-monospace,monospace]"
             onKeyDown={(e) => e.key === 'Enter' && handleSavePath()}
           />
-          <button onClick={handleSavePath} className="py-[8px] px-[20px] rounded-[6px] bg-[var(--purple)] text-white font-semibold text-[0.875rem] border-none cursor-pointer">
+          <button onClick={handleSavePath} className="py-[8px] px-[20px] rounded-[6px] bg-[var(--primary)] text-white font-semibold text-[0.875rem] border-none cursor-pointer">
             {pathSaved ? 'Saved!' : 'Save'}
           </button>
         </div>

@@ -50,13 +50,13 @@ body {
   --pico-h6-color: var(--fg);
   --pico-muted-color: var(--fg-comment);
   --pico-muted-border-color: var(--border);
-  --pico-primary: var(--blue);
-  --pico-primary-hover: var(--blue);
+  --pico-primary: var(--primary);
+  --pico-primary-hover: var(--primary);
   --pico-background-color: var(--bg);
   --pico-table-border-color: var(--border);
   --pico-blockquote-border-color: var(--border);
   --pico-code-background-color: var(--bg-highlight);
-  --pico-code-color: var(--purple);
+  --pico-code-color: var(--primary);
   --pico-font-family: var(--font-body), system-ui, sans-serif;
 }
 
@@ -106,7 +106,7 @@ blockquote > p {
   padding: 0.15em 0.4em;
   border-radius: 0.3rem;
   background: var(--bg-highlight);
-  color: var(--purple);
+  color: var(--primary);
   border: 1px solid var(--border);
 }
 
@@ -130,11 +130,11 @@ blockquote > p {
     background 150ms;
 }
 .gl-card:hover {
-  border-color: var(--purple);
+  border-color: var(--primary);
   background: var(--bg-alt);
 }
 .gl-card-blue:hover {
-  border-color: var(--blue);
+  border-color: var(--primary);
 }
 
 .gl-row {
@@ -154,8 +154,8 @@ blockquote > p {
     color 150ms;
 }
 .gl-btn-ghost:hover {
-  border-color: var(--purple);
-  color: var(--purple);
+  border-color: var(--primary);
+  color: var(--primary);
 }
 
 /* =============================================================================

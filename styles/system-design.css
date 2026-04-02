@@ -3,7 +3,9 @@
    Activated when data-app="system-design" is set on <html>
    ───────────────────────────────────────────────────────────────────────────── */
 [data-app="system-design"] {
-  --active-phase-color: var(--blue);
+  --primary: var(--blue);
+  --primary-tint: #dbe9f5;
+  --active-phase-color: var(--primary);
 
   --bg: #ffffff;
   --bg-alt: #f2f5f9;
@@ -28,9 +30,13 @@
   --green-tint: rgba(3, 128, 81, 0.09);
   --orange-tint: rgba(255, 208, 0, 0.10);
   --purple-tint: rgba(0, 78, 137, 0.09);
+  --red-tint: #f6e0dc;
+  --cyan-tint: #f9dbe5;
 }
 
 [data-app="system-design"].dark {
+  --primary: var(--blue);
+  --primary-tint: #1a2c45;
   --bg: #060e0e;
   --bg-alt: #0e1a1a;
   --bg-highlight: #162424;
@@ -54,4 +60,6 @@
   --green-tint: rgba(26, 153, 64, 0.12);
   --orange-tint: rgba(255, 208, 0, 0.10);
   --purple-tint: rgba(74, 136, 216, 0.12);
+  --red-tint: #341c1b;
+  --cyan-tint: #341826;
 }

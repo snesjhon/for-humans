@@ -17,26 +17,26 @@ export function VisualAssemblyLine() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              border: `1.5px solid ${i === W ? 'var(--blue)' : i === R ? 'var(--orange)' : i < W ? 'color-mix(in srgb, var(--blue) 40%, transparent)' : 'var(--border)'}`,
+              border: `1.5px solid ${i === W ? 'var(--primary)' : i === R ? 'var(--orange)' : i < W ? 'var(--primary)' : 'var(--border)'}`,
               borderRadius: 5,
               background:
                 i === W
-                  ? 'color-mix(in srgb, var(--blue) 14%, var(--bg))'
+                  ? 'var(--primary-tint)'
                   : i === R
-                    ? 'color-mix(in srgb, var(--orange) 10%, var(--bg))'
+                    ? 'var(--orange-tint)'
                     : i < W
-                      ? 'color-mix(in srgb, var(--blue) 7%, var(--bg))'
+                      ? 'var(--primary-tint)'
                       : 'var(--bg)',
               fontFamily: 'ui-monospace, monospace',
               fontSize: '0.875rem',
               fontWeight: i <= R ? 700 : 400,
               color:
                 i === W
-                  ? 'var(--blue)'
+                  ? 'var(--primary)'
                   : i === R
                     ? 'var(--orange)'
                     : i < W
-                      ? 'var(--blue)'
+                      ? 'var(--primary)'
                       : 'var(--fg-gutter)',
             }}
           >
@@ -52,7 +52,7 @@ export function VisualAssemblyLine() {
             style={{
               color:
                 i === W
-                  ? 'var(--blue)'
+                  ? 'var(--primary)'
                   : i === R
                     ? 'var(--orange)'
                     : 'transparent',
@@ -63,7 +63,7 @@ export function VisualAssemblyLine() {
         ))}
       </div>
       <div className="font-[ui-monospace,monospace] text-[0.56rem] text-[var(--fg-gutter)] mt-[4px] leading-[1.6]">
-        <span className="text-[var(--blue)] font-bold">W</span> places
+        <span className="text-[var(--primary)] font-bold">W</span> places
         keepers
         <br />
         <span className="text-[var(--orange)] font-bold">R</span>{' '}

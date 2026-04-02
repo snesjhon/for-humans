@@ -24,7 +24,7 @@ export function MentalModelMockup() {
       {/* analogy section */}
       <div className="pt-[18px] px-[18px] pb-0 flex-1">
         <div className="flex items-center gap-1.5 mb-[14px]">
-          <span className="font-[ui-monospace,monospace] text-[0.58rem] font-bold tracking-[0.1em] uppercase text-[var(--purple)]">
+          <span className="font-[ui-monospace,monospace] text-[0.58rem] font-bold tracking-[0.1em] uppercase text-[var(--primary)]">
             📖 The Stamp Collector&apos;s Album
           </span>
         </div>
@@ -35,8 +35,8 @@ export function MentalModelMockup() {
         </p>
         <div className="flex gap-1.5 mb-[18px]">
           {[
-            ['Hash Set', 'var(--purple)', 'var(--purple-tint)'],
-            ['O(n) time', 'var(--blue)', 'var(--blue-tint)'],
+            ['Hash Set', 'var(--primary)', 'var(--primary-tint)'],
+            ['O(n) time', 'var(--primary)', 'var(--primary-tint)'],
           ].map(([lbl, color, bg]) => (
             <span
               key={lbl}
@@ -62,22 +62,22 @@ export function MentalModelMockup() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              border: `1px solid ${i === 3 ? 'var(--purple)' : 'var(--border)'}`,
+              border: `1px solid ${i === 3 ? 'var(--primary)' : 'var(--border)'}`,
               borderRadius: 5,
               fontFamily: 'ui-monospace, monospace',
               fontSize: '0.8rem',
               fontWeight: 700,
               background:
                 i === 3
-                  ? 'color-mix(in srgb, var(--purple) 12%, var(--bg))'
+                  ? 'var(--primary-tint)'
                   : 'var(--bg)',
-              color: i === 3 ? 'var(--purple)' : 'var(--fg)',
+              color: i === 3 ? 'var(--primary)' : 'var(--fg)',
             }}
           >
             {n}
           </div>
         ))}
-        <span className="font-[ui-monospace,monospace] text-[0.65rem] text-[var(--purple)] ml-[6px]">
+        <span className="font-[ui-monospace,monospace] text-[0.65rem] text-[var(--primary)] ml-[6px]">
           ← duplicate detected
         </span>
       </div>

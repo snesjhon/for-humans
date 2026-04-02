@@ -3,7 +3,9 @@
    Activated when data-app="fullstack" is set on <html>
    ───────────────────────────────────────────────────────────────────────────── */
 [data-app="fullstack"] {
-  --active-phase-color: var(--green);
+  --primary: var(--green);
+  --primary-tint: #e8f3ec;
+  --active-phase-color: var(--primary);
 
   --bg: #f6faf8;
   --bg-alt: #edf5f0;
@@ -28,9 +30,13 @@
   --green-tint: rgba(26, 122, 74, 0.09);
   --orange-tint: rgba(194, 117, 32, 0.10);
   --purple-tint: rgba(96, 64, 176, 0.09);
+  --red-tint: #f5e3de;
+  --cyan-tint: #dff0f0;
 }
 
 [data-app="fullstack"].dark {
+  --primary: var(--green);
+  --primary-tint: #1a3325;
   --bg: #0a1410;
   --bg-alt: #101e18;
   --bg-highlight: #162820;
@@ -54,4 +60,6 @@
   --green-tint: rgba(58, 184, 112, 0.12);
   --orange-tint: rgba(212, 160, 48, 0.10);
   --purple-tint: rgba(160, 128, 224, 0.12);
+  --red-tint: #341f1b;
+  --cyan-tint: #163333;
 }

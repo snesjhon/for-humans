@@ -15,22 +15,22 @@ export function VisualTwoMessengers() {
           label: 'L →',
           vals: [1, 1, 2, 6],
           color: 'var(--orange)',
-          bg: 'color-mix(in srgb, var(--orange) 7%, var(--bg))',
-          border: 'color-mix(in srgb, var(--orange) 35%, transparent)',
+          bg: 'var(--orange-tint)',
+          border: 'var(--orange)',
         },
         {
           label: '← R',
           vals: [24, 12, 4, 1],
           color: 'var(--blue)',
-          bg: 'color-mix(in srgb, var(--blue) 7%, var(--bg))',
-          border: 'color-mix(in srgb, var(--blue) 35%, transparent)',
+          bg: 'var(--blue-tint)',
+          border: 'var(--blue)',
         },
         {
           label: 'out',
           vals: [24, 12, 8, 6],
           color: '#52b87a',
-          bg: 'color-mix(in srgb, #52b87a 7%, var(--bg))',
-          border: 'color-mix(in srgb, #52b87a 40%, transparent)',
+          bg: 'var(--green-tint)',
+          border: '#52b87a',
         },
       ].map(({ label, vals, color, bg, border }) => (
         <div

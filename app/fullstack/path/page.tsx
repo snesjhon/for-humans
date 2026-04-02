@@ -4,7 +4,6 @@ import { getAllFundamentalsSlugs } from '@/lib/fullstack/fundamentals'
 import { getAllScenarioSlugsFromDisk } from '@/lib/fullstack/content'
 import { createClient } from '@/lib/supabase/server'
 import type { JourneySection, Phase } from '@/lib/fullstack/types'
-import { PhaseTracker } from '@/components/ui/PhaseTracker/PhaseTracker'
 import {
   PathTOC,
   PhaseBannerContent,
@@ -113,11 +112,7 @@ export default async function PathPage() {
 
       <div className="relative">
         <aside
-          className="hidden lg:block absolute top-0 left-0 h-full pl-10 pt-10 w-[calc(314px+2.5rem)]"
-          style={{
-            background: 'color-mix(in srgb, var(--active-phase-color) 8%, var(--bg))',
-            transition: 'background 300ms ease',
-          }}
+          className="absolute left-0 top-0 hidden h-full w-[calc(314px+2.5rem)] bg-[var(--bg-alt)] pl-10 pt-10 transition-[background-color] duration-300 lg:block"
         >
           <div className="sticky top-20 max-h-[calc(100vh-5rem)] overflow-y-auto">
             <PathTOC phases={phaseGroups.map((g) => g.phase)} />
@@ -126,22 +121,12 @@ export default async function PathPage() {
 
         {phaseGroups.map(({ phase, entries }, groupIdx) => {
           const color = pColor(phase.number)
-          const nextColor =
-            groupIdx < phaseGroups.length - 1
-              ? pColor(phaseGroups[groupIdx + 1].phase.number)
-              : null
-
-          const zoneBg = nextColor
-            ? `linear-gradient(180deg,
-                color-mix(in srgb, ${color} 8%, var(--bg)) 0%,
-                color-mix(in srgb, ${color} 8%, var(--bg)) 60%,
-                color-mix(in srgb, ${nextColor} 4%, var(--bg)) 100%)`
-            : `color-mix(in srgb, ${color} 8%, var(--bg))`
+          void groupIdx
 
           const chapterLabel = String(phase.number).padStart(2, '0')
 
           return (
-            <div key={phase.number} id={`phase-zone-${phase.number}`} style={{ background: zoneBg }}>
+            <div key={phase.number} id={`phase-zone-${phase.number}`} className="bg-[var(--bg-alt)]">
               <div className="block lg:grid gap-12 px-10 lg:grid-cols-[0.3fr_minmax(250px,1fr)]">
                 <div className="hidden lg:block" />
                 <div className="min-w-0">
@@ -162,8 +147,9 @@ export default async function PathPage() {
                     return (
                       <div
                         key={section.id}
-                        className="grid grid-cols-2 gap-7 items-start"
-                        style={{ paddingBottom: isLast ? 24 : 48 }}
+                        className={`grid grid-cols-2 items-start gap-7 ${
+                          isLast ? 'pb-6' : 'pb-12'
+                        }`}
                       >
                         {/* LEFT: Guide card + section progress */}
                         <div>
@@ -198,15 +184,14 @@ export default async function PathPage() {
                         <div className="pt-1">
                           {!hasAnyScenarios && (
                             <p
-                              className="italic text-sm text-[var(--fg-gutter)] m-0"
-                              style={{ fontFamily: 'var(--font-display, inherit)' }}
+                              className="m-0 text-sm italic text-[var(--fg-gutter)] [font-family:var(--font-display)]"
                             >
                               Scenarios coming soon.
                             </p>
                           )}
 
                           {hasNewScenarios && (
-                            <div style={{ marginBottom: hasRevisits ? 20 : 0 }}>
+                            <div className={hasRevisits ? 'mb-5' : ''}>
                               <p className="font-mono text-[0.6rem] font-bold tracking-[0.09em] uppercase mb-2 text-[var(--fg-gutter)]">
                                 Practice
                               </p>

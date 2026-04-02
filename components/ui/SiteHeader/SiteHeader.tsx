@@ -47,15 +47,9 @@ export function SiteHeader({
 
   return (
     <header
-      className="sticky top-0 z-50"
-      style={{
-        background: scrolled
-          ? 'color-mix(in srgb, var(--active-phase-color) 9%, color-mix(in srgb, var(--bg) 87%, transparent))'
-          : 'transparent',
-        backdropFilter: scrolled ? 'blur(16px) saturate(1.3)' : 'none',
-        WebkitBackdropFilter: scrolled ? 'blur(16px) saturate(1.3)' : 'none',
-        transition: 'background 500ms ease',
-      }}
+      className={`sticky top-0 z-50 transition-[background-color] duration-500 ${
+        scrolled ? 'bg-[var(--bg)] backdrop-blur-[16px]' : 'bg-transparent'
+      }`}
     >
       <div className="relative">
         <nav className="w-full flex items-center gap-6 h-[68px] px-10">
@@ -64,10 +58,7 @@ export function SiteHeader({
             className="no-underline flex items-center gap-[10px] shrink-0 focus:outline-none"
           >
             {icon}
-            <span
-              className="italic font-normal text-[1.125rem] text-[var(--fg)] tracking-[-0.01em]"
-              style={{ fontFamily: 'var(--font-display)' }}
-            >
+            <span className="italic font-normal text-[1.125rem] text-[var(--fg)] tracking-[-0.01em] [font-family:var(--font-display)]">
               {title}
             </span>
           </Link>
@@ -78,17 +69,11 @@ export function SiteHeader({
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm no-underline transition-colors"
-                style={
+                className={`text-sm no-underline transition-colors ${
                   active
-                    ? {
-                        color: 'var(--active-phase-color)',
-                        borderBottom: '2px solid var(--active-phase-color)',
-                        paddingBottom: '2px',
-                        fontWeight: 500,
-                      }
-                    : { color: 'var(--fg-comment)' }
-                }
+                    ? 'border-b-2 border-b-[var(--primary)] pb-[2px] font-medium text-[var(--primary)]'
+                    : 'text-[var(--fg-comment)]'
+                }`}
               >
                 {link.label}
               </Link>
@@ -108,13 +93,9 @@ export function SiteHeader({
 
         <div
           aria-hidden="true"
-          className="absolute bottom-0 left-0 right-0 h-px pointer-events-none"
-          style={{
-            background:
-              'color-mix(in srgb, var(--active-phase-color) 30%, transparent)',
-            opacity: scrolled ? 1 : 0,
-            transition: 'opacity 450ms ease',
-          }}
+          className={`absolute bottom-0 left-0 right-0 h-px pointer-events-none bg-[var(--border-dark)] transition-opacity duration-[450ms] ${
+            scrolled ? 'opacity-100' : 'opacity-0'
+          }`}
         />
       </div>
     </header>

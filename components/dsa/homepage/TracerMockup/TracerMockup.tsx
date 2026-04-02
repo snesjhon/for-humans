@@ -12,13 +12,13 @@ export function TracerMockup() {
         className="px-4 py-[10px] flex items-center gap-3 border-b border-b-[var(--border)] bg-[var(--bg-alt)]"
       >
         <span
-          className="font-[ui-monospace,monospace] text-[0.58rem] tracking-[0.1em] text-[var(--purple)] font-bold uppercase px-2 py-[3px] rounded"
-          style={{ background: 'color-mix(in srgb, var(--purple) 14%, transparent)' }}
+          className="font-[ui-monospace,monospace] text-[0.58rem] tracking-[0.1em] text-[var(--primary)] font-bold uppercase px-2 py-[3px] rounded"
+          style={{ background: 'var(--primary-tint)' }}
         >
           FORWARD PASS
         </span>
         <span className="font-[ui-monospace,monospace] text-[0.7rem] text-[var(--fg-alt)]">
-          album = <strong className="text-[var(--purple)]">3</strong>
+          album = <strong className="text-[var(--primary)]">3</strong>
         </span>
       </div>
 
@@ -49,13 +49,13 @@ export function TracerMockup() {
                   {/* nums cell */}
                   <div
                     style={{
-                      border: `1px solid ${isActive ? 'var(--purple)' : 'var(--border)'}`,
+                      border: `1px solid ${isActive ? 'var(--primary)' : 'var(--border)'}`,
                       fontSize: '1rem',
                       fontFamily: 'ui-monospace, monospace',
                       background: isActive
-                        ? 'color-mix(in srgb, var(--purple) 12%, var(--bg))'
+                        ? 'var(--primary-tint)'
                         : 'var(--bg)',
-                      color: isActive ? 'var(--purple)' : 'var(--fg)',
+                      color: isActive ? 'var(--primary)' : 'var(--fg)',
                     }}
                     className="w-11 h-11 flex items-center justify-center rounded-md font-bold"
                   >
@@ -64,14 +64,14 @@ export function TracerMockup() {
                   {/* result cell */}
                   <div
                     style={{
-                      border: `1px solid ${isActive ? 'var(--purple)' : 'var(--border)'}`,
+                      border: `1px solid ${isActive ? 'var(--primary)' : 'var(--border)'}`,
                       fontFamily: 'ui-monospace, monospace',
                       fontSize: '1rem',
                       fontWeight: filled ? 700 : 400,
                       background: filled
-                        ? 'color-mix(in srgb, var(--purple) 8%, var(--bg))'
+                        ? 'var(--primary-tint)'
                         : isActive
-                          ? 'color-mix(in srgb, var(--purple) 12%, var(--bg))'
+                          ? 'var(--primary-tint)'
                           : 'var(--bg)',
                       color:
                         filled || isActive ? 'var(--fg)' : 'var(--fg-gutter)',
@@ -94,7 +94,7 @@ export function TracerMockup() {
           className="mt-[14px] px-3 py-[9px] rounded-md bg-[var(--bg-alt)] border border-[var(--border)]"
         >
           <p className="font-[ui-monospace,monospace] text-[0.72rem] text-[var(--fg-alt)] m-0 leading-[1.5]">
-            Stamp <strong className="text-[var(--purple)]">1</strong>: already
+            Stamp <strong className="text-[var(--primary)]">1</strong>: already
             in album! →{' '}
             <strong className="text-[var(--green)]">return true ✓</strong>
           </p>

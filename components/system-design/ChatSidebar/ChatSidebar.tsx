@@ -92,8 +92,8 @@ const userBubbleStyle: React.CSSProperties = {
   alignSelf: 'flex-end',
   padding: '10px 14px',
   borderRadius: '12px 12px 3px 12px',
-  background: 'var(--purple-tint)',
-  border: '1px solid color-mix(in srgb, var(--purple) 25%, transparent)',
+  background: 'var(--primary-tint)',
+  border: '1px solid var(--primary)',
   fontSize: '0.9375rem',
   color: 'var(--fg)',
   lineHeight: 1.6,
@@ -390,7 +390,7 @@ Shape:
             onClick={handleClose}
             className="fixed inset-0 z-[49]"
             style={{
-              background: 'color-mix(in srgb, var(--fg) 20%, transparent)',
+              background: 'var(--bg-highlight)',
             }}
           />
 
@@ -405,7 +405,7 @@ Shape:
             style={{
               width: drawOpen ? '100vw' : '420px',
               transition: 'width 0.3s ease',
-              boxShadow: '-4px 0 24px color-mix(in srgb, var(--fg) 8%, transparent)',
+              boxShadow: '-4px 0 24px rgba(0, 0, 0, 0.12)',
             }}
           >
             {/* Header */}
@@ -489,7 +489,7 @@ Shape:
                       disabled={busy || !canvasReady}
                       className="px-4 py-[7px] rounded-[6px] border-0 text-[0.8125rem] font-semibold"
                       style={{
-                        background: busy ? 'var(--bg-highlight)' : 'var(--purple)',
+                        background: busy ? 'var(--bg-highlight)' : 'var(--primary)',
                         color: busy ? 'var(--fg-gutter)' : 'white',
                         cursor: busy ? 'not-allowed' : 'pointer',
                       }}
@@ -508,7 +508,7 @@ Shape:
                 {summarizing && (
                   <div
                     className="absolute inset-0 flex items-center justify-center z-10"
-                    style={{ background: 'color-mix(in srgb, var(--bg) 85%, transparent)' }}
+                    style={{ background: 'var(--bg)' }}
                   >
                     <p className="text-[var(--fg-comment)] text-sm italic">Generating summary…</p>
                   </div>
@@ -543,7 +543,7 @@ Shape:
                     {summary.lookUp && (
                       <div
                         className="px-[14px] py-[10px] rounded-[6px] bg-[var(--blue-tint)]"
-                        style={{ border: '1px solid color-mix(in srgb, var(--blue) 20%, transparent)' }}
+                        style={{ border: '1px solid var(--primary)' }}
                       >
                         <p className="font-[ui-monospace,monospace] text-[0.65rem] font-bold tracking-[0.09em] uppercase text-[var(--blue)] mb-[0.375rem]">
                           One thing to look up
@@ -594,7 +594,7 @@ Shape:
                         <p className="m-0 text-[0.8125rem]" style={{ color: 'var(--red, #e06c75)' }}>
                           {error}{' '}
                           {error.includes('API key') && (
-                            <a href="/system-design/settings" className="text-[var(--purple)]">Go to Settings →</a>
+                            <a href="/system-design/settings" className="text-[var(--primary)]">Go to Settings →</a>
                           )}
                         </p>
                         {error.includes('Summary failed') && (
@@ -620,7 +620,7 @@ Shape:
                           <button
                             onClick={handleWrapUp}
                             disabled={busy}
-                            className="px-3 py-[5px] rounded-[5px] border-0 bg-[var(--blue)] text-white text-[0.8125rem] font-semibold"
+                            className="px-3 py-[5px] rounded-[5px] border-0 bg-[var(--primary)] text-white text-[0.8125rem] font-semibold"
                             style={{ cursor: busy ? 'not-allowed' : 'pointer' }}
                           >
                             Yes, wrap up
@@ -661,7 +661,7 @@ Shape:
                         disabled={busy || !input.trim()}
                         className="px-4 py-[7px] rounded-[6px] border-0 text-[0.8125rem] font-semibold whitespace-nowrap"
                         style={{
-                          background: busy || !input.trim() ? 'var(--bg-highlight)' : 'var(--purple)',
+                          background: busy || !input.trim() ? 'var(--bg-highlight)' : 'var(--primary)',
                           color: busy || !input.trim() ? 'var(--fg-gutter)' : 'white',
                           cursor: busy || !input.trim() ? 'not-allowed' : 'pointer',
                         }}

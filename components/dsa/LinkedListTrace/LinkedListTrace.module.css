@@ -128,7 +128,7 @@
 }
 
 .badgeDelete {
-  background: color-mix(in srgb, var(--red) 12%, var(--bg-alt));
+  background: var(--red-tint);
   color: var(--red);
   border: 1px solid var(--red);
 }

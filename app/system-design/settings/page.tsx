@@ -53,7 +53,7 @@ export default function SettingsPage() {
           className="flex-1 py-[8px] px-[12px] rounded-[6px] border border-[var(--border)] bg-[var(--bg-alt)] text-[var(--fg)] text-[0.875rem]"
           onKeyDown={e => e.key === 'Enter' && handleSave()}
         />
-        <button onClick={handleSave} className="py-[8px] px-[20px] rounded-[6px] bg-[var(--purple)] text-white font-semibold text-[0.875rem] border-none cursor-pointer">
+        <button onClick={handleSave} className="py-[8px] px-[20px] rounded-[6px] bg-[var(--primary)] text-white font-semibold text-[0.875rem] border-none cursor-pointer">
           {saved ? 'Saved!' : 'Save'}
         </button>
       </div>

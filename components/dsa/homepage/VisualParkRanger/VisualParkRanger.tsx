@@ -19,13 +19,13 @@ export function VisualParkRanger() {
                   key={c}
                   className="w-[28px] h-[28px] flex items-center justify-center rounded-[3px] text-[0.62rem]"
                   style={{
-                    border: `1px solid ${cell === 1 ? (isFlag ? 'var(--orange)' : '#52b87a') : 'color-mix(in srgb, var(--blue) 25%, transparent)'}`,
+                    border: `1px solid ${cell === 1 ? (isFlag ? 'var(--orange)' : '#52b87a') : 'var(--blue)'}`,
                     background:
                       cell === 1
                         ? isFlag
-                          ? 'color-mix(in srgb, var(--orange) 14%, var(--bg))'
-                          : 'color-mix(in srgb, #52b87a 10%, var(--bg))'
-                        : 'color-mix(in srgb, var(--blue) 7%, var(--bg))',
+                          ? 'var(--orange-tint)'
+                          : 'var(--green-tint)'
+                        : 'var(--blue-tint)',
                     color:
                       cell === 1
                         ? isFlag

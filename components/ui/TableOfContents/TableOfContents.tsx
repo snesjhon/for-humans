@@ -58,18 +58,15 @@ export default function TableOfContents({
             <a
               key={heading.id}
               href={`#${heading.id}`}
-              className="block text-xs leading-snug py-1.5 rounded-md transition-colors no-underline focus:outline-none"
-              style={{
-                paddingLeft: isH3 ? '1.5rem' : '0.5rem',
-                paddingRight: '0.5rem',
-                color: isActive
-                  ? 'var(--blue)'
+              className={`block rounded-md py-1.5 pr-2 text-xs leading-snug transition-colors no-underline focus:outline-none ${
+                isH3 ? 'pl-6' : 'pl-2'
+              } ${
+                isActive
+                  ? 'bg-[var(--primary-tint)] font-medium text-[var(--primary)]'
                   : isH3
-                    ? 'var(--fg-gutter)'
-                    : 'var(--fg-comment)',
-                background: isActive ? 'var(--blue-tint)' : 'transparent',
-                fontWeight: isActive ? '500' : '400',
-              }}
+                    ? 'text-[var(--fg-gutter)]'
+                    : 'text-[var(--fg-comment)]'
+              }`}
               onClick={(e) => {
                 e.preventDefault();
                 document

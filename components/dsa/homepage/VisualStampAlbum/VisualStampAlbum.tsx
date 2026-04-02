@@ -19,9 +19,9 @@ export function VisualStampAlbum() {
                 justifyContent: 'center',
                 gap: 2,
                 background: isDup
-                  ? 'color-mix(in srgb, #d94f4f 10%, var(--bg))'
+                  ? 'var(--red-tint)'
                   : isMounted
-                    ? 'color-mix(in srgb, var(--purple) 8%, var(--bg))'
+                    ? 'var(--primary-tint)'
                     : 'var(--bg)',
               }}
             >
@@ -33,7 +33,7 @@ export function VisualStampAlbum() {
                   color: isDup
                     ? '#d94f4f'
                     : isMounted
-                      ? 'var(--purple)'
+                      ? 'var(--primary)'
                       : 'var(--fg-gutter)',
                 }}
               >
@@ -42,7 +42,7 @@ export function VisualStampAlbum() {
               <span
                 style={{
                   fontSize: '0.5rem',
-                  color: isDup ? '#d94f4f' : 'var(--purple)',
+                  color: isDup ? '#d94f4f' : 'var(--primary)',
                 }}
               >
                 {isDup ? 'dup!' : '✓'}
@@ -58,7 +58,7 @@ export function VisualStampAlbum() {
       </div>
       <div className="font-[ui-monospace,monospace] text-[0.58rem] text-[var(--fg-gutter)]">
         album = {'{'}
-        <span className="text-[var(--purple)]">1, 2, 3</span>
+        <span className="text-[var(--primary)]">1, 2, 3</span>
         {'}'}
       </div>
     </div>

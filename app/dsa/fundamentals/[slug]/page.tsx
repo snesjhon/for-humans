@@ -1,13 +1,4 @@
 import { notFound } from 'next/navigation';
-
-const PHASE_COLORS = [
-  'var(--purple)',
-  'var(--blue)',
-  'var(--green)',
-  'var(--orange)',
-  'var(--cyan)',
-];
-const phaseColor = (n: number) => PHASE_COLORS[(n - 1) % PHASE_COLORS.length];
 import Link from 'next/link';
 import {
   getFundamentalsGuide,
@@ -18,7 +9,6 @@ import {
 import { extractHeadings } from '@/lib/dsa/headings';
 import { loadReferencedDsaCodeFiles } from '@/lib/dsa/stackblitz';
 import MarkdownRenderer from '@/components/dsa/MarkdownRenderer/MarkdownRenderer';
-import { PhaseColorSync } from '@/components/ui/PhaseTracker/PhaseTracker';
 import TableOfContents from '@/components/ui/TableOfContents/TableOfContents';
 import { PageHero } from '@/components/ui/PageHero/PageHero';
 import { PageLayout } from '@/components/ui/PageLayout/PageLayout';
@@ -39,7 +29,7 @@ export default function FundamentalsPage({ params }: Props) {
   const section = context?.section;
   const phase = context?.phase;
   const prereq = getPrecedingSection(params.slug);
-  const color = phase ? phaseColor(phase.number) : null;
+  const color = phase ? 'var(--primary)' : null;
   const headings = extractHeadings(guide.content);
   const codeFiles = loadReferencedDsaCodeFiles(
     guide.content,
@@ -49,7 +39,6 @@ export default function FundamentalsPage({ params }: Props) {
 
   return (
     <>
-      {color && <PhaseColorSync color={color} />}
       <PageHero>
           <h1 className="text-5xl leading-tight text-[var(--fg)] font-display mb-0">
             {section?.label ??
@@ -90,7 +79,7 @@ export default function FundamentalsPage({ params }: Props) {
                   }
                   className="inline-flex 
                   items-center gap-1.5 text-xs 
-                  font-medium px-3 py-1.5 rounded-lg transition-opacity hover:opacity-80 mt-2 bg-[var(--purple-tint)] text-[var(--purple)] no-underline border border-[var(--border)]"
+                  font-medium px-3 py-1.5 rounded-lg transition-opacity hover:opacity-80 mt-2 bg-[var(--primary-tint)] text-[var(--primary)] no-underline border border-[var(--primary)]"
                 >
                   {prereq.label} Fundamentals
                 </Link>
@@ -115,7 +104,7 @@ export default function FundamentalsPage({ params }: Props) {
               {section && section.firstPass.length > 0 && (
                 <Link
                   href={`/dsa/problems/${section.firstPass[0].id}`}
-                  className="text-sm px-4 py-2 rounded-lg font-medium transition-opacity hover:opacity-90 text-white bg-[var(--blue)]"
+                  className="text-sm px-4 py-2 rounded-lg font-medium transition-opacity hover:opacity-90 text-white bg-[var(--primary)]"
                 >
                   Start First Problem →
                 </Link>

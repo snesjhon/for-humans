@@ -7,22 +7,10 @@ import {
   getPrecedingSection,
 } from '@/lib/system-design/fundamentals';
 import { extractHeadings } from '@/lib/system-design/headings';
-import {
-  PhaseColorSync,
-} from '@/components/ui/PhaseTracker/PhaseTracker';
 import TableOfContents from '@/components/ui/TableOfContents/TableOfContents';
 import { PageHero } from '@/components/ui/PageHero/PageHero';
 import { PageLayout } from '@/components/ui/PageLayout/PageLayout';
 import MarkdownRenderer from '@/components/system-design/MarkdownRenderer/MarkdownRenderer';
-
-const PHASE_COLORS = [
-  'var(--purple)',
-  'var(--blue)',
-  'var(--green)',
-  'var(--orange)',
-  'var(--cyan)',
-];
-const phaseColor = (n: number) => PHASE_COLORS[(n - 1) % PHASE_COLORS.length];
 
 interface Props {
   params: { slug: string };
@@ -40,7 +28,7 @@ export default function FundamentalsPage({ params }: Props) {
   const section = context?.section;
   const phase = context?.phase;
   const prereq = getPrecedingSection(params.slug);
-  const color = phase ? phaseColor(phase.number) : null;
+  const color = phase ? 'var(--primary)' : null;
 
   // Strip the leading # h1 from the markdown so it doesn't duplicate the page header
   const strippedContent = guide.content.replace(/^#[^#].*\n+/, '').trimStart();
@@ -49,7 +37,6 @@ export default function FundamentalsPage({ params }: Props) {
 
   return (
     <>
-      {color && <PhaseColorSync color={color} />}
       <PageHero>
         <div className="flex items-center gap-2 mb-3">
           {phase && (
@@ -62,7 +49,7 @@ export default function FundamentalsPage({ params }: Props) {
           {section?.label ?? guide.title.replace(/\s*[–-]\s*Fundamentals/i, '')}
         </h1>
         {section && (
-          <p className="mt-3 text-lg italic leading-snug text-[var(--purple)]">
+          <p className="mt-3 text-lg italic leading-snug text-[var(--primary)]">
             &quot;{section.mentalModelHook}&quot;
           </p>
         )}
@@ -91,11 +78,7 @@ export default function FundamentalsPage({ params }: Props) {
                     ? `/fundamentals/${prereq.fundamentalsSlug}`
                     : '/path'
                 }
-                className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg transition-opacity hover:opacity-80 mt-2 bg-[var(--purple-tint)] text-[var(--purple)]"
-                style={{
-                  border:
-                    '1px solid color-mix(in srgb, var(--purple) 20%, transparent)',
-                }}
+                className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg transition-opacity hover:opacity-80 mt-2 bg-[var(--primary-tint)] text-[var(--primary)] border border-[var(--primary)]"
               >
                 {prereq.label} Fundamentals
               </Link>
@@ -124,7 +107,7 @@ export default function FundamentalsPage({ params }: Props) {
             {section && section.firstPass.length > 0 && (
               <Link
                 href={`/system-design/scenarios/${section.firstPass[0].slug}`}
-                className="text-sm px-4 py-2 rounded-lg font-medium transition-opacity hover:opacity-90 text-white bg-[var(--blue)]"
+                className="text-sm px-4 py-2 rounded-lg font-medium transition-opacity hover:opacity-90 text-white bg-[var(--primary)]"
               >
                 Start First Scenario →
               </Link>

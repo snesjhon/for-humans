@@ -86,25 +86,22 @@ export function JourneyPanel({
         )
 
         return (
-          <div key={phase.number}>
+          <div
+            key={phase.number}
+            className="[--phase-accent:var(--primary)]"
+            style={{ '--phase-accent': color } as React.CSSProperties}
+          >
             {/* Phase label */}
-            <div
-              style={{
-                padding: '10px 16px 4px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-              }}
-            >
-              <span style={{ fontSize: '0.75rem', lineHeight: 1 }}>
+            <div className="flex items-center gap-1.5 px-4 pb-1 pt-[10px]">
+              <span className="text-[0.75rem] leading-none">
                 {phase.emoji}
               </span>
               <span
-                className="font-mono font-bold tracking-widest uppercase"
-                style={{
-                  fontSize: '0.58rem',
-                  color: hasActiveSectionInPhase ? color : 'var(--fg-gutter)',
-                }}
+                className={`font-mono text-[0.58rem] font-bold uppercase tracking-widest ${
+                  hasActiveSectionInPhase
+                    ? 'text-[var(--phase-accent)]'
+                    : 'text-[var(--fg-gutter)]'
+                }`}
               >
                 {phase.label}
               </span>
@@ -126,33 +123,19 @@ export function JourneyPanel({
                 <div key={section.id}>
                   <button
                     onClick={() => toggleSection(section.id)}
-                    className="w-full text-left focus:outline-none flex items-center justify-between"
-                    style={{
-                      padding: '6px 16px',
-                      fontSize: '0.775rem',
-                      fontWeight: isThisActive ? 600 : 400,
-                      color: sectionColor ?? 'var(--fg-alt)',
-                      background: isThisActive
-                        ? `color-mix(in srgb, ${color} 8%, transparent)`
-                        : 'transparent',
-                      border: 'none',
-                      cursor: 'pointer',
-                      transition: 'background 150ms, color 150ms',
-                      lineHeight: 1.4,
-                    }}
+                    className={`flex w-full items-center justify-between border-none bg-transparent px-4 py-[6px] text-left text-[0.775rem] leading-[1.4] transition-[background,color] duration-150 focus:outline-none ${
+                      isThisActive
+                        ? 'bg-[var(--bg-alt)] font-semibold text-[var(--phase-accent)]'
+                        : 'font-normal text-[var(--fg-alt)]'
+                    }`}
                   >
-                    <span style={{ flex: 1, minWidth: 0, paddingRight: '6px' }}>
+                    <span className="min-w-0 flex-1 pr-1.5">
                       {section.label}
                     </span>
                     <span
-                      style={{
-                        fontSize: '0.65rem',
-                        color: 'var(--fg-gutter)',
-                        flexShrink: 0,
-                        transform: isExpanded ? 'rotate(180deg)' : 'rotate(0)',
-                        transition: 'transform 200ms',
-                        display: 'inline-block',
-                      }}
+                      className={`inline-block shrink-0 text-[0.65rem] text-[var(--fg-gutter)] transition-transform duration-200 ${
+                        isExpanded ? 'rotate-180' : 'rotate-0'
+                      }`}
                     >
                       ↓
                     </span>
@@ -160,11 +143,7 @@ export function JourneyPanel({
 
                   {isExpanded && (
                     <div
-                      style={{
-                        borderLeft: `2px solid color-mix(in srgb, ${color} 25%, var(--border))`,
-                        marginLeft: '20px',
-                        marginBottom: '4px',
-                      }}
+                      className="mb-1 ml-5 border-l-2 border-l-[var(--phase-accent)]"
                     >
                       {/* Fundamentals guide link */}
                       {section.fundamentalsSlug &&
@@ -176,19 +155,13 @@ export function JourneyPanel({
                             <Link
                               ref={isFundActive ? activeItemRef : null}
                               href={getFundamentalsHref(section.fundamentalsSlug!)}
-                              className="no-underline flex items-center gap-2 focus:outline-none"
-                              style={{
-                                padding: '6px 10px',
-                                fontSize: '0.75rem',
-                                color: isFundActive ? color : 'var(--fg-comment)',
-                                fontWeight: isFundActive ? 600 : 400,
-                                background: isFundActive
-                                  ? `color-mix(in srgb, ${color} 10%, transparent)`
-                                  : 'transparent',
-                                transition: 'color 150ms, background 150ms',
-                              }}
+                              className={`flex items-center gap-2 px-[10px] py-[6px] text-[0.75rem] no-underline transition-[color,background] duration-150 focus:outline-none ${
+                                isFundActive
+                                  ? 'bg-[var(--bg-alt)] font-semibold text-[var(--phase-accent)]'
+                                  : 'font-normal text-[var(--fg-comment)]'
+                              }`}
                             >
-                              <span style={{ fontSize: '0.7rem', flexShrink: 0 }}>
+                              <span className="shrink-0 text-[0.7rem]">
                                 📖
                               </span>
                               <span>Guide</span>
@@ -204,37 +177,24 @@ export function JourneyPanel({
                             key={item.key}
                             ref={isActive ? activeItemRef : null}
                             href={getItemHref(item.key)}
-                            className="no-underline flex items-baseline gap-2 focus:outline-none"
-                            style={{
-                              padding: '6px 10px',
-                              fontSize: '0.75rem',
-                              color: isActive ? color : 'var(--fg-comment)',
-                              fontWeight: isActive ? 600 : 400,
-                              background: isActive
-                                ? `color-mix(in srgb, ${color} 10%, transparent)`
-                                : 'transparent',
-                              transition: 'color 150ms, background 150ms',
-                            }}
+                            className={`flex items-baseline gap-2 px-[10px] py-[6px] text-[0.75rem] no-underline transition-[color,background] duration-150 focus:outline-none ${
+                              isActive
+                                ? 'bg-[var(--bg-alt)] font-semibold text-[var(--phase-accent)]'
+                                : 'font-normal text-[var(--fg-comment)]'
+                            }`}
                           >
                             {item.prefix && (
                               <span
-                                className="font-mono shrink-0"
-                                style={{
-                                  fontSize: '0.6rem',
-                                  color: isActive ? color : 'var(--fg-gutter)',
-                                  minWidth: '26px',
-                                }}
+                                className={`min-w-[26px] shrink-0 font-mono text-[0.6rem] ${
+                                  isActive
+                                    ? 'text-[var(--phase-accent)]'
+                                    : 'text-[var(--fg-gutter)]'
+                                }`}
                               >
                                 {item.prefix}
                               </span>
                             )}
-                            <span
-                              style={{
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                whiteSpace: 'nowrap',
-                              }}
-                            >
+                            <span className="overflow-hidden text-ellipsis whitespace-nowrap">
                               {item.label}
                             </span>
                           </Link>
@@ -244,17 +204,7 @@ export function JourneyPanel({
                       {/* Revisit items */}
                       {availableRevisits.length > 0 && (
                         <>
-                          <div
-                            style={{
-                              padding: '8px 10px 3px',
-                              fontSize: '0.58rem',
-                              fontWeight: 700,
-                              letterSpacing: '0.08em',
-                              textTransform: 'uppercase',
-                              color: 'var(--orange)',
-                              fontFamily: 'var(--font-body)',
-                            }}
-                          >
+                          <div className="px-[10px] pb-[3px] pt-2 text-[0.58rem] font-bold uppercase tracking-[0.08em] text-[var(--orange)] [font-family:var(--font-body)]">
                             Also revisit
                           </div>
                           {availableRevisits.map((item) => {
@@ -264,46 +214,27 @@ export function JourneyPanel({
                                 key={item.key}
                                 ref={isActive ? activeItemRef : null}
                                 href={getItemHref(item.key)}
-                                className="no-underline flex items-baseline gap-1.5 focus:outline-none"
-                                style={{
-                                  padding: '6px 10px',
-                                  fontSize: '0.75rem',
-                                  color: isActive ? color : 'var(--fg-comment)',
-                                  fontWeight: isActive ? 600 : 400,
-                                  background: isActive
-                                    ? `color-mix(in srgb, ${color} 10%, transparent)`
-                                    : 'transparent',
-                                  transition: 'color 150ms, background 150ms',
-                                }}
+                                className={`flex items-baseline gap-1.5 px-[10px] py-[6px] text-[0.75rem] no-underline transition-[color,background] duration-150 focus:outline-none ${
+                                  isActive
+                                    ? 'bg-[var(--bg-alt)] font-semibold text-[var(--phase-accent)]'
+                                    : 'font-normal text-[var(--fg-comment)]'
+                                }`}
                               >
-                                <span
-                                  style={{
-                                    fontSize: '0.65rem',
-                                    color: 'var(--orange)',
-                                    flexShrink: 0,
-                                  }}
-                                >
+                                <span className="shrink-0 text-[0.65rem] text-[var(--orange)]">
                                   ↩
                                 </span>
                                 {item.prefix && (
                                   <span
-                                    className="font-mono shrink-0"
-                                    style={{
-                                      fontSize: '0.6rem',
-                                      color: isActive ? color : 'var(--fg-gutter)',
-                                      minWidth: '26px',
-                                    }}
+                                    className={`min-w-[26px] shrink-0 font-mono text-[0.6rem] ${
+                                      isActive
+                                        ? 'text-[var(--phase-accent)]'
+                                        : 'text-[var(--fg-gutter)]'
+                                    }`}
                                   >
                                     {item.prefix}
                                   </span>
                                 )}
-                                <span
-                                  style={{
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                    whiteSpace: 'nowrap',
-                                  }}
-                                >
+                                <span className="overflow-hidden text-ellipsis whitespace-nowrap">
                                   {item.label}
                                 </span>
                               </Link>

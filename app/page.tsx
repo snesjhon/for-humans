@@ -21,21 +21,11 @@ export default function HomePage() {
   return (
     <>
       <AppTheme app="dsa" />
-      <section
-        className="-mt-28 pb-28"
-        style={{
-          background:
-            'linear-gradient(150deg, color-mix(in srgb, var(--purple) 10%, var(--bg)) 0%, color-mix(in srgb, var(--blue) 6%, var(--bg)) 50%, var(--bg) 90%)',
-        }}
-      >
+      <section className="-mt-28 bg-[var(--bg-alt)] pb-28">
         <div className="max-w-[1152px] mx-auto pt-[118px] px-6">
           <div className="mb-8">
             <span
-              className="font-mono text-[0.68rem] font-bold tracking-[0.12em] uppercase inline-block bg-white/60 py-[5px] px-[14px] rounded-full text-[var(--purple)]"
-              style={{
-                border:
-                  '1px solid color-mix(in srgb, var(--purple) 22%, transparent)',
-              }}
+              className="font-mono text-[0.68rem] font-bold tracking-[0.12em] uppercase inline-block py-[5px] px-[14px] rounded-full text-[var(--primary)] bg-[var(--bg)] border border-[var(--primary)]"
             >
               A structured learning path
             </span>
@@ -51,7 +41,7 @@ export default function HomePage() {
             <p className="text-md leading-[1.75] m-0 text-[var(--fg-alt)]">
               Most DSA study is backwards — grinding problems until solutions
               stick by accident. This path builds{' '}
-              <strong className="font-bold text-[var(--purple)]">
+              <strong className="font-bold text-[var(--primary)]">
                 mental models first
               </strong>
               . Understand the <em>why</em> before writing a line of code.
@@ -69,24 +59,21 @@ export default function HomePage() {
                 {
                   value: String(totalPhases),
                   label: 'phases',
-                  color: 'var(--orange)',
+                  color: 'var(--primary)',
                 },
                 {
                   value: String(totalSections),
                   label: 'mental models',
-                  color: 'var(--purple)',
+                  color: 'var(--primary)',
                 },
                 {
                   value: String(totalProblems),
                   label: 'problems',
-                  color: 'var(--blue)',
+                  color: 'var(--primary)',
                 },
               ].map(({ value, label, color }) => (
                 <div key={label} className="flex items-baseline gap-[6px]">
-                  <span
-                    className="font-display italic font-normal text-[3.25rem] leading-none tracking-[-0.04em]"
-                    style={{ color }}
-                  >
+                  <span className="font-display italic font-normal text-[3.25rem] leading-none tracking-[-0.04em] text-[var(--primary)]">
                     {value}
                   </span>
                   <span className="text-[0.8125rem] font-medium text-[var(--fg-gutter)]">
@@ -98,7 +85,7 @@ export default function HomePage() {
             <div className="ml-auto">
               <Link
                 href="/dsa/path"
-                className="py-[11px] px-7 rounded-[7px] font-semibold text-[0.9375rem] text-white no-underline bg-[var(--blue)]"
+                className="py-[11px] px-7 rounded-[7px] font-semibold text-[0.9375rem] text-white no-underline bg-[var(--primary)]"
               >
                 Start the learning path →
               </Link>
@@ -125,7 +112,7 @@ export default function HomePage() {
             </p>
           </div>
           <div className="py-10 pl-10">
-            <div className="font-mono text-[0.62rem] font-bold tracking-[0.1em] uppercase mb-4 text-[var(--purple)]">
+            <div className="font-mono text-[0.62rem] font-bold tracking-[0.1em] uppercase mb-4 text-[var(--primary)]">
               This path
             </div>
             <h2 className="font-display italic font-normal text-[1.625rem] leading-[1.2] tracking-[-0.02em] mb-[14px] text-[var(--fg)]">
@@ -151,7 +138,7 @@ export default function HomePage() {
                   Step 1
                 </span>
                 <span className="w-6 h-px inline-block bg-[var(--border)]" />
-                <span className="font-mono text-[0.62rem] font-bold tracking-[0.1em] uppercase text-[var(--blue)]">
+                <span className="font-mono text-[0.62rem] font-bold tracking-[0.1em] uppercase text-[var(--primary)]">
                   Build the foundation
                 </span>
               </div>
@@ -177,15 +164,11 @@ export default function HomePage() {
               ({ slug, name, analogy, excerpt, tags, accent, Visual }, idx) => (
                 <div
                   key={slug}
-                  className="flex flex-row overflow-hidden rounded-[0.875rem] border border-[var(--border)] bg-[var(--bg)]"
-                  style={{ gridColumn: idx === 4 ? '1 / -1' : undefined }}
+                  className={`flex flex-row overflow-hidden rounded-[0.875rem] border border-[var(--border)] bg-[var(--bg)] ${
+                    idx === 4 ? 'col-span-2' : ''
+                  }`}
                 >
-                  <div
-                    className="w-[220px] shrink-0 flex items-center justify-center border-r border-r-[var(--border)]"
-                    style={{
-                      background: `color-mix(in srgb, ${accent} 5%, var(--bg-alt))`,
-                    }}
-                  >
+                  <div className="flex w-[220px] shrink-0 items-center justify-center border-r border-r-[var(--border)] bg-[var(--primary-tint)]">
                     <Visual />
                   </div>
                   <div className="flex-1 py-7 px-8 flex flex-col justify-between min-h-[180px]">
@@ -196,10 +179,7 @@ export default function HomePage() {
                       <div className="text-[1.0625rem] font-bold mb-[6px] leading-[1.25] text-[var(--fg)]">
                         {name}
                       </div>
-                      <div
-                        className="font-display italic font-normal text-[1.25rem] leading-[1.15] tracking-[-0.02em] mb-[14px]"
-                        style={{ color: accent }}
-                      >
+                      <div className="mb-[14px] font-display text-[1.25rem] italic font-normal leading-[1.15] tracking-[-0.02em] text-[var(--primary)]">
                         {analogy}
                       </div>
                       <p className="text-[0.9rem] leading-[1.75] m-0 text-[var(--fg-comment)]">
@@ -234,7 +214,7 @@ export default function HomePage() {
                   Step 2
                 </span>
                 <span className="w-6 h-px inline-block bg-[var(--border)]" />
-                <span className="font-mono text-[0.62rem] font-bold tracking-[0.1em] uppercase text-[var(--purple)]">
+                <span className="font-mono text-[0.62rem] font-bold tracking-[0.1em] uppercase text-[var(--primary)]">
                   Apply the foundation
                 </span>
               </div>
@@ -272,12 +252,7 @@ export default function HomePage() {
                   key={id}
                   className="overflow-hidden rounded-[0.875rem] flex flex-col transition-shadow duration-[150ms] border border-[var(--border)] bg-[var(--bg)]"
                 >
-                  <div
-                    className="min-h-[128px] border-b border-b-[var(--border)]"
-                    style={{
-                      background: `color-mix(in srgb, ${accent} 5%, var(--bg-alt))`,
-                    }}
-                  >
+                  <div className="min-h-[128px] border-b border-b-[var(--border)] bg-[var(--primary-tint)]">
                     <Visual />
                   </div>
                   <div className="pt-[14px] px-4 pb-4 flex-1 flex flex-col">
@@ -290,19 +265,18 @@ export default function HomePage() {
                         {name}
                       </span>
                       <span
-                        className="font-mono ml-auto text-[0.5rem] font-bold tracking-[0.08em] uppercase py-[2px] px-[6px] rounded-[3px] shrink-0"
-                        style={{
-                          color: diffColor,
-                          background: `color-mix(in srgb, ${diffColor} 12%, transparent)`,
-                        }}
+                        className={`font-mono ml-auto shrink-0 rounded-[3px] px-[6px] py-[2px] text-[0.5rem] font-bold uppercase tracking-[0.08em] ${
+                          difficulty === 'Easy'
+                            ? 'bg-[var(--green-tint)] text-[var(--green)]'
+                            : difficulty === 'Medium'
+                              ? 'bg-[var(--orange-tint)] text-[var(--orange)]'
+                              : 'bg-[var(--red-tint)] text-[var(--red)]'
+                        }`}
                       >
                         {difficulty}
                       </span>
                     </div>
-                    <div
-                      className="font-display italic font-normal text-[1.0625rem] leading-[1.2] tracking-[-0.01em] mb-2"
-                      style={{ color: accent }}
-                    >
+                    <div className="mb-2 font-display text-[1.0625rem] italic font-normal leading-[1.2] tracking-[-0.01em] text-[var(--primary)]">
                       {analogy}
                     </div>
                     <p className="text-[0.8125rem] leading-[1.7] mb-3 flex-1 text-[var(--fg-comment)]">
@@ -341,7 +315,7 @@ export default function HomePage() {
           <div className="grid gap-x-14 gap-y-10 mb-10 items-center grid-cols-[1.1fr_0.9fr]">
             <TracerMockup />
             <div>
-              <div className="font-mono text-[0.6rem] font-bold tracking-[0.1em] uppercase mb-3 text-[var(--purple)]">
+              <div className="font-mono text-[0.6rem] font-bold tracking-[0.1em] uppercase mb-3 text-[var(--primary)]">
                 Visual Tracers
               </div>
               <h3 className="font-display italic font-normal text-[1.75rem] leading-[1.15] tracking-[-0.025em] mb-[14px] text-[var(--fg)]">
@@ -363,7 +337,7 @@ export default function HomePage() {
             <div>
               <CodeEditorMockup />
               <div className="pt-5 px-1 pb-0">
-                <div className="font-mono text-[0.6rem] font-bold tracking-[0.1em] uppercase mb-2 text-[var(--blue)]">
+                <div className="font-mono text-[0.6rem] font-bold tracking-[0.1em] uppercase mb-2 text-[var(--primary)]">
                   Step-by-Step Building
                 </div>
                 <h3 className="font-display italic font-normal text-[1.375rem] leading-[1.2] tracking-[-0.02em] mb-[10px] text-[var(--fg)]">
@@ -380,7 +354,7 @@ export default function HomePage() {
             <div>
               <MentalModelMockup />
               <div className="pt-5 px-1 pb-0">
-                <div className="font-mono text-[0.6rem] font-bold tracking-[0.1em] uppercase mb-2 text-[var(--orange)]">
+                <div className="font-mono text-[0.6rem] font-bold tracking-[0.1em] uppercase mb-2 text-[var(--primary)]">
                   Mental Models
                 </div>
                 <h3 className="font-display italic font-normal text-[1.375rem] leading-[1.2] tracking-[-0.02em] mb-[10px] text-[var(--fg)]">
@@ -412,27 +386,17 @@ export default function HomePage() {
             {HOW_IT_WORKS.map(({ step, heading, body, color }, i) => (
               <div
                 key={step}
-                className="py-10 px-9"
-                style={{
-                  background: `color-mix(in srgb, ${color} 7%, var(--bg))`,
-                  borderRight: i < 2 ? '1px solid var(--border)' : 'none',
-                }}
+                className={`bg-[var(--bg-alt)] px-9 py-10 ${
+                  i < 2 ? 'border-r border-r-[var(--border)]' : ''
+                }`}
               >
-                <div
-                  className="font-display italic font-normal text-[3.25rem] leading-none tracking-[-0.05em] mb-[18px] select-none"
-                  style={{
-                    color: `color-mix(in srgb, ${color} 30%, var(--bg))`,
-                  }}
-                >
+                <div className="mb-[18px] select-none font-display text-[3.25rem] italic font-normal leading-none tracking-[-0.05em] text-[var(--border-dark)]">
                   {step}
                 </div>
                 <div className="font-bold text-[1.0625rem] leading-[1.25] mb-3 text-[var(--fg)]">
                   {heading}
                 </div>
-                <div
-                  className="w-9 h-[3px] mb-[14px] rounded-[2px]"
-                  style={{ background: color }}
-                />
+                <div className="mb-[14px] h-[3px] w-9 rounded-[2px] bg-[var(--primary)]" />
                 <p className="text-[0.9375rem] leading-[1.75] m-0 text-[var(--fg-alt)]">
                   {body}
                 </p>
@@ -443,13 +407,7 @@ export default function HomePage() {
       </section>
 
       {/* ── BOTTOM CTA ──────────────────────────────────────────────────────── */}
-      <section
-        className="border-t border-t-[var(--border)]"
-        style={{
-          background:
-            'linear-gradient(170deg, color-mix(in srgb, var(--blue) 7%, var(--bg)) 0%, var(--bg) 60%)',
-        }}
-      >
+      <section className="border-t border-t-[var(--border)] bg-[var(--bg-alt)]">
         <div className="max-w-[1152px] mx-auto px-6 pt-[72px] pb-[80px] flex items-end justify-between gap-10 flex-wrap">
           <div>
             <h2 className="font-display italic font-normal text-[2.5rem] leading-[1.1] tracking-[-0.03em] mb-3 max-w-[520px] text-[var(--fg)]">
@@ -462,7 +420,7 @@ export default function HomePage() {
           </div>
           <Link
             href="/dsa/path"
-            className="py-[13px] px-8 rounded-[7px] font-semibold text-base text-white no-underline shrink-0 bg-[var(--blue)]"
+            className="py-[13px] px-8 rounded-[7px] font-semibold text-base text-white no-underline shrink-0 bg-[var(--primary)]"
           >
             View the path →
           </Link>

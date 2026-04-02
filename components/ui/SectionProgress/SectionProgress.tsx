@@ -46,17 +46,14 @@ export function SectionProgress({
         onClick={handleSectionToggle}
         disabled={isPending}
         aria-label={sectionDone ? 'Mark section incomplete' : 'Mark section complete'}
-        className="shrink-0 w-4 h-4 rounded border transition-colors cursor-pointer bg-transparent flex items-center justify-center"
-        style={{
-          borderColor: sectionDone ? 'var(--green)' : 'var(--border)',
-          background: sectionDone
-            ? 'color-mix(in srgb, var(--green) 15%, transparent)'
-            : 'transparent',
-          opacity: isPending ? 0.5 : 1,
-        }}
+        className={`shrink-0 flex h-4 w-4 items-center justify-center rounded border bg-transparent transition-colors ${
+          sectionDone
+            ? 'border-[var(--green)] bg-[var(--green-tint)]'
+            : 'border-[var(--border)]'
+        } ${isPending ? 'opacity-50' : 'opacity-100'}`}
       >
         {sectionDone && (
-          <span className="text-[8px] leading-none" style={{ color: 'var(--green)' }}>
+          <span className="text-[8px] leading-none text-[var(--green)]">
             ✓
           </span>
         )}

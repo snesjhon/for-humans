@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { JOURNEY, type JourneySection, type Phase } from '@/lib/dsa/journey';
 import { getAllProblems } from '@/lib/dsa/content';
 import { createClient } from '@/lib/supabase/server';
-import { PhaseTracker } from '@/components/ui/PhaseTracker/PhaseTracker';
 import {
   PhaseBannerContent,
   StepGuideCard,
@@ -111,25 +110,11 @@ export default async function PathPage() {
       <div>
         {phaseGroups.map(({ phase, entries }, groupIdx) => {
           const color = pColor(phase.number);
-          const nextColor =
-            groupIdx < phaseGroups.length - 1
-              ? pColor(phaseGroups[groupIdx + 1].phase.number)
-              : null;
+          void groupIdx;
           const chapterLabel = String(phase.number).padStart(2, '0');
 
-          const zoneBg = nextColor
-            ? `linear-gradient(180deg,
-                color-mix(in srgb, ${color} 8%, var(--bg)) 0%,
-                color-mix(in srgb, ${color} 8%, var(--bg)) 60%,
-                color-mix(in srgb, ${nextColor} 4%, var(--bg)) 100%)`
-            : `color-mix(in srgb, ${color} 8%, var(--bg))`;
-
           return (
-            <div
-              key={phase.number}
-              id={`phase-zone-${phase.number}`}
-              style={{ background: zoneBg }}
-            >
+            <div key={phase.number} id={`phase-zone-${phase.number}`} className="bg-[var(--bg-alt)]">
               <div className="px-10">
                 <PhaseBannerContent
                   phase={phase}
@@ -152,8 +137,9 @@ export default async function PathPage() {
                   return (
                     <div
                       key={section.id}
-                      className="grid grid-cols-2 gap-7 items-start"
-                      style={{ paddingBottom: isLast ? 24 : 48 }}
+                      className={`grid grid-cols-2 items-start gap-7 ${
+                        isLast ? 'pb-6' : 'pb-12'
+                      }`}
                     >
                       {/* LEFT: Guide card + section progress */}
                       <div>
@@ -193,7 +179,7 @@ export default async function PathPage() {
                         )}
 
                         {hasNewProblems && (
-                          <div style={{ marginBottom: hasRevisits ? 20 : 0 }}>
+                          <div className={hasRevisits ? 'mb-5' : ''}>
                             <p className="font-mono text-[0.6rem] font-bold tracking-[0.09em] uppercase mb-2 text-[var(--fg-gutter)]">
                               Practice
                             </p>

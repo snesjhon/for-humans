@@ -7,15 +7,9 @@ interface PageLayoutProps {
 }
 
 export function PageLayout({ aside, children, accentColor }: PageLayoutProps) {
+  void accentColor;
   return (
-    <div
-      data-dfh-page-layout
-      style={{
-        background: accentColor
-          ? `color-mix(in srgb, ${accentColor} 8%, var(--bg))`
-          : 'var(--bg)',
-      }}
-    >
+    <div data-dfh-page-layout className="bg-[var(--bg)]">
       <div className="block xl:grid items-start gap-12 pr-8 py-10 xl:grid-cols-[1fr_220px]">
         <div data-dfh-page-main className="min-w-0 pl-24">
           {children}

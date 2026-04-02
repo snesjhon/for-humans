@@ -12,19 +12,10 @@ import {
   getPhaseForSection,
   getDifficultyForProblem,
 } from '@/lib/dsa/journey';
-
-const PHASE_COLORS = [
-  'var(--purple)',
-  'var(--blue)',
-  'var(--green)',
-  'var(--orange)',
-  'var(--cyan)',
-];
-const phaseColor = (n: number) => PHASE_COLORS[(n - 1) % PHASE_COLORS.length];
 const DIFF_BG: Record<string, string> = {
   easy: 'var(--green-tint)',
   medium: 'var(--orange-tint)',
-  hard: 'color-mix(in srgb, var(--red) 12%, var(--bg))',
+  hard: 'var(--red-tint)',
 };
 const DIFF_FG: Record<string, string> = {
   easy: 'var(--green)',
@@ -34,7 +25,6 @@ const DIFF_FG: Record<string, string> = {
 import { extractHeadings } from '@/lib/dsa/headings';
 import { loadReferencedDsaCodeFiles } from '@/lib/dsa/stackblitz';
 import MarkdownRenderer from '@/components/dsa/MarkdownRenderer/MarkdownRenderer';
-import { PhaseColorSync } from '@/components/ui/PhaseTracker/PhaseTracker';
 import TableOfContents from '@/components/ui/TableOfContents/TableOfContents';
 import { PageHero } from '@/components/ui/PageHero/PageHero';
 import { PageLayout } from '@/components/ui/PageLayout/PageLayout';
@@ -73,7 +63,7 @@ export default function ProblemPage({ params }: Props) {
   const phase = primarySection
     ? getPhaseForSection(primarySection.id)
     : undefined;
-  const color = phase ? phaseColor(phase.number) : null;
+  const color = phase ? 'var(--primary)' : null;
   const difficulty = getDifficultyForProblem(params.id);
 
   // Detect available steps from the problem directory
@@ -102,7 +92,6 @@ export default function ProblemPage({ params }: Props) {
 
   return (
     <>
-      {color && <PhaseColorSync color={color} />}
       <PageHero>
           <h1 className="text-5xl font-display leading-tight text-[var(--fg)] mb-0">
             {problem.title}

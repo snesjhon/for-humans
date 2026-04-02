@@ -191,7 +191,7 @@
 }
 
 .badgeDone {
-  background: color-mix(in srgb, var(--cyan) 12%, var(--bg-alt));
+  background: var(--cyan-tint);
   color: var(--cyan);
   border: 1px solid var(--cyan);
 }

@@ -16,16 +16,16 @@ export function VisualTwoInspectors() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              border: `1.5px solid ${i === L || i === R ? 'var(--blue)' : 'var(--border)'}`,
+              border: `1.5px solid ${i === L || i === R ? 'var(--primary)' : 'var(--border)'}`,
               borderRadius: 4,
               fontFamily: 'ui-monospace, monospace',
               fontSize: '0.72rem',
               fontWeight: i === L || i === R ? 700 : 400,
               background:
                 i === L || i === R
-                  ? 'color-mix(in srgb, var(--blue) 12%, var(--bg))'
+                  ? 'var(--primary-tint)'
                   : 'var(--bg)',
-              color: i === L || i === R ? 'var(--blue)' : 'var(--fg-alt)',
+              color: i === L || i === R ? 'var(--primary)' : 'var(--fg-alt)',
             }}
           >
             {c}
@@ -38,7 +38,7 @@ export function VisualTwoInspectors() {
         {chars.map((_, i) => (
           <div
             key={i}
-            className="w-[27px] text-center font-[ui-monospace,monospace] text-[0.5rem] text-[var(--blue)] font-bold"
+            className="w-[27px] text-center font-[ui-monospace,monospace] text-[0.5rem] text-[var(--primary)] font-bold"
           >
             {i === L ? 'L' : i === R ? 'R' : ''}
           </div>
