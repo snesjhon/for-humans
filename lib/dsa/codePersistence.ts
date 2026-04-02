@@ -8,6 +8,8 @@ export interface DsaCodeSnippetRecord {
 const STORAGE_VERSION = 2
 const HARNESS_LINE_PATTERNS = [
   /^\/\/\s*Tests\b/,
+  /^\/\/\s*---Tests\b/,
+  /^\/\/\s*───\s*Tests\b/,
   /^test\(/,
   /^runTest\(/,
   /^runCase\(/,

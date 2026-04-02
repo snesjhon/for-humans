@@ -12,8 +12,9 @@ function twoSum(nums: number[], target: number): number[] {
   throw new Error('not implemented');
 }
 
-// Tests
+// ---Tests
 test('finds pair', () => twoSum([2, 7], 9), [0, 1]);
+// ---End Tests
 `
 
 const linkedListProblemFile = `// =============================================================================
@@ -56,7 +57,7 @@ describe('dsa code persistence', () => {
     )
 
     expect(rebuilt).toContain('return [0, 1];')
-    expect(rebuilt).toContain("// Tests\ntest('finds pair'")
+    expect(rebuilt).toContain("// ---Tests\ntest('finds pair'")
     expect(rebuilt.startsWith('// =============================================================================')).toBe(true)
   })
 

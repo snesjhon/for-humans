@@ -23,27 +23,33 @@ let _Transaction: typeof Transaction | null = null;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let _foldEffect: any = null;
 
-// Auto-fold helper blocks marked in the source file
-function foldHelpers(view: EditorView) {
+const FOLDABLE_BLOCK_MARKERS = [
+  '---Helpers',
+  '---End Helpers',
+  '─── Helpers',
+  '─── End Helpers',
+  '---Tests',
+  '---End Tests',
+  '─── Tests',
+  '─── End Tests',
+];
+
+// Auto-fold helper and test blocks marked in the source file
+function foldMarkedBlocks(view: EditorView) {
   if (!_foldEffect) return;
   const doc = view.state.doc;
-  const helperLines: Array<{ from: number; to: number }> = [];
+  const markerLines: Array<{ from: number; to: number }> = [];
 
   for (let n = 1; n <= doc.lines; n += 1) {
     const line = doc.line(n);
-    if (
-      line.text.includes('---Helpers') ||
-      line.text.includes('---End Helpers') ||
-      line.text.includes('─── Helpers') ||
-      line.text.includes('─── End Helpers')
-    ) {
-      helperLines.push({ from: line.from, to: line.to });
+    if (FOLDABLE_BLOCK_MARKERS.some((marker) => line.text.includes(marker))) {
+      markerLines.push({ from: line.from, to: line.to });
     }
   }
 
-  for (let i = 0; i < helperLines.length; i += 2) {
-    const start = helperLines[i];
-    const end = helperLines[i + 1];
+  for (let i = 0; i < markerLines.length; i += 2) {
+    const start = markerLines[i];
+    const end = markerLines[i + 1];
     const foldTo = end ? end.to : doc.length;
 
     if (start.to < foldTo) {
@@ -518,7 +524,7 @@ export default function WebContainerEmbed({
 
       viewRef.current = view;
       _Transaction = Transaction; // make available to Effect 2
-      _foldEffect = foldEffect; // make available to foldHelpers
+      _foldEffect = foldEffect; // make available to foldMarkedBlocks
       handleEditorEscapeRef.current = () => {
         const cm = getCM(view);
         if (cm) Vim.handleKey(cm, '<Esc>', 'user');
@@ -526,7 +532,7 @@ export default function WebContainerEmbed({
 
       Vim.map('jj', '<Esc>', 'insert');
 
-      foldHelpers(view);
+      foldMarkedBlocks(view);
     })();
 
     return () => {
@@ -607,7 +613,7 @@ export default function WebContainerEmbed({
       changes: { from: 0, to: current.length, insert: code },
       annotations: _Transaction.addToHistory.of(false),
     });
-    foldHelpers(view);
+    foldMarkedBlocks(view);
   }, [code]);
 
   async function runCode() {

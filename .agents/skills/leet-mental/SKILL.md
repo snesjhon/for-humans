@@ -1,9 +1,11 @@
 ---
 name: leet-mental
-description: Generate mental model study guides for LeetCode problems with strong analogies
+description: Deprecated legacy skill for LeetCode mental model generation; prefer dsa-problem, which orchestrates dsa-intuition and dsa-build-algorithm
 ---
 
 # Mental Model Building for LeetCode Problems
+
+Deprecated: use `dsa-problem` for new work. It delegates narrative generation to `dsa-intuition` and algorithm scaffolding to `dsa-build-algorithm`.
 
 ## Purpose
 
