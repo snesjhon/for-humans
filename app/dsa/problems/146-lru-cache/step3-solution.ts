@@ -1,8 +1,8 @@
 // =============================================================================
-// 146. LRU Cache — Step 2 of 6 Solution
+// 146. LRU Cache — Step 3 of 6 Solution
 // =============================================================================
-// Goal: Add the removal move so one box can leave the shelf and its warmer
-// and colder neighbors reconnect directly.
+// Goal: Add the insertion move so a new or reheated box clips in right after
+// the hot gate.
 
 // ---Helpers
 
@@ -38,40 +38,31 @@ class LRUCache {
     warmerBox.colder = colderBox;
     colderBox.warmer = warmerBox;
   }
+
+  private addBoxToHotShelf(box: ShelfNode): void {
+    const firstWarmBox = this.hotGate.colder!;
+    box.warmer = this.hotGate;
+    box.colder = firstWarmBox;
+    this.hotGate.colder = box;
+    firstWarmBox.warmer = box;
+  }
 }
 
-runCase('removeBox reconnects the gates when the only real box leaves', () => {
+runCase('addBoxToHotShelf clips the first box between the gates', () => {
   const cache = new LRUCache(2) as any;
   const box = new ShelfNode(1, 10);
-  cache.hotGate.colder = box;
-  box.warmer = cache.hotGate;
-  box.colder = cache.coldGate;
-  cache.coldGate.warmer = box;
-
-  cache.removeBox(box);
-
+  cache.addBoxToHotShelf(box);
   return snapshot(cache);
-}, ['HOT', 'COLD']);
+}, ['HOT', '1:10', 'COLD']);
 
-runCase('removeBox reconnects warmer and colder real neighbors', () => {
-  const cache = new LRUCache(3) as any;
+runCase('new hot boxes always insert right after the hot gate', () => {
+  const cache = new LRUCache(2) as any;
   const first = new ShelfNode(1, 10);
-  const middle = new ShelfNode(2, 20);
-  const last = new ShelfNode(3, 30);
-
-  cache.hotGate.colder = first;
-  first.warmer = cache.hotGate;
-  first.colder = middle;
-  middle.warmer = first;
-  middle.colder = last;
-  last.warmer = middle;
-  last.colder = cache.coldGate;
-  cache.coldGate.warmer = last;
-
-  cache.removeBox(middle);
-
+  const second = new ShelfNode(2, 20);
+  cache.addBoxToHotShelf(first);
+  cache.addBoxToHotShelf(second);
   return snapshot(cache);
-}, ['HOT', '1:10', '3:30', 'COLD']);
+}, ['HOT', '2:20', '1:10', 'COLD']);
 
 function snapshot(cache: any): string[] {
   const labels: string[] = ['HOT'];

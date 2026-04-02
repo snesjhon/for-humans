@@ -1,8 +1,8 @@
 // =============================================================================
-// 146. LRU Cache — Step 2 of 6 Solution
+// 146. LRU Cache — Step 5 of 6
 // =============================================================================
-// Goal: Add the removal move so one box can leave the shelf and its warmer
-// and colder neighbors reconnect directly.
+// Goal: Build put so an existing label updates and reheats the same box, while
+// a new label creates a fresh hot box. Do not evict yet.
 
 // ---Helpers
 
@@ -38,40 +38,50 @@ class LRUCache {
     warmerBox.colder = colderBox;
     colderBox.warmer = warmerBox;
   }
+
+  private addBoxToHotShelf(box: ShelfNode): void {
+    const firstWarmBox = this.hotGate.colder!;
+    box.warmer = this.hotGate;
+    box.colder = firstWarmBox;
+    this.hotGate.colder = box;
+    firstWarmBox.warmer = box;
+  }
+
+  get(key: number): number {
+    const box = this.boxesByLabel.get(key);
+    if (!box) return -1;
+
+    this.removeBox(box);
+    this.addBoxToHotShelf(box);
+    return box.value;
+  }
+
+  put(key: number, value: number): void {
+    throw new Error('not implemented');
+  }
 }
 
-runCase('removeBox reconnects the gates when the only real box leaves', () => {
-  const cache = new LRUCache(2) as any;
-  const box = new ShelfNode(1, 10);
-  cache.hotGate.colder = box;
-  box.warmer = cache.hotGate;
-  box.colder = cache.coldGate;
-  cache.coldGate.warmer = box;
+runCase('put stores a new label so it can be read back later', () => {
+  const cache = new LRUCache(3);
+  cache.put(1, 10);
+  return cache.get(1);
+}, 10);
 
-  cache.removeBox(box);
+runCase('put on an existing label updates the value and keeps it hot', () => {
+  const cache = new LRUCache(3);
+  cache.put(1, 10);
+  cache.put(2, 20);
+  cache.put(1, 15);
+  return [cache.get(1), cache.get(2)];
+}, [15, 20]);
 
+runCase('new labels are clipped onto the hot end', () => {
+  const cache = new LRUCache(4);
+  cache.put(1, 10);
+  cache.put(2, 20);
+  cache.put(3, 30);
   return snapshot(cache);
-}, ['HOT', 'COLD']);
-
-runCase('removeBox reconnects warmer and colder real neighbors', () => {
-  const cache = new LRUCache(3) as any;
-  const first = new ShelfNode(1, 10);
-  const middle = new ShelfNode(2, 20);
-  const last = new ShelfNode(3, 30);
-
-  cache.hotGate.colder = first;
-  first.warmer = cache.hotGate;
-  first.colder = middle;
-  middle.warmer = first;
-  middle.colder = last;
-  last.warmer = middle;
-  last.colder = cache.coldGate;
-  cache.coldGate.warmer = last;
-
-  cache.removeBox(middle);
-
-  return snapshot(cache);
-}, ['HOT', '1:10', '3:30', 'COLD']);
+}, ['HOT', '3:30', '2:20', '1:10', 'COLD']);
 
 function snapshot(cache: any): string[] {
   const labels: string[] = ['HOT'];

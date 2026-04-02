@@ -25,7 +25,8 @@ export async function middleware(request: NextRequest) {
     },
   )
 
-  // Refresh session — required by @supabase/ssr
+  // Only auth-aware routes use this middleware now, so session refresh stays
+  // off the public browsing path.
   await supabase.auth.getUser()
 
   // Site is public — no auth required to browse
@@ -34,6 +35,10 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/login',
+    '/auth/callback',
+    '/api/:path*',
+    '/fullstack/settings',
+    '/system-design/settings',
   ],
 }

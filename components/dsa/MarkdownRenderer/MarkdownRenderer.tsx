@@ -1,21 +1,43 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import BaseMarkdownRenderer, {
   type BaseSegment,
 } from '@/components/ui/MarkdownRenderer/MarkdownRenderer';
-import WebContainerEmbed from '../WebContainerEmbed/WebContainerEmbed';
-import ArrayTrace from '../ArrayTrace/ArrayTrace';
 import type { TraceStep } from '../ArrayTrace/ArrayTrace';
-import TwoPointerTrace from '../TwoPointerTrace/TwoPointerTrace';
 import type { TwoPointerStep } from '../TwoPointerTrace/TwoPointerTrace';
-import PrefixSuffixTrace from '../PrefixSuffixTrace/PrefixSuffixTrace';
 import type { PrefixSuffixStep } from '../PrefixSuffixTrace/PrefixSuffixTrace';
-import HashMapTrace from '../HashMapTrace/HashMapTrace';
 import type { HashMapStep } from '../HashMapTrace/HashMapTrace';
-import LinkedListTrace from '../LinkedListTrace/LinkedListTrace';
 import type { LinkedListStep } from '../LinkedListTrace/LinkedListTrace';
-import StackQueueTrace from '../StackQueueTrace/StackQueueTrace';
+import type { DoublyLinkedListStep } from '../DoublyLinkedListTrace/DoublyLinkedListTrace';
 import type { StackQueueStep } from '../StackQueueTrace/StackQueueTrace';
+
+const WebContainerEmbed = dynamic(
+  () => import('../WebContainerEmbed/WebContainerEmbed'),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="rounded-lg border border-[var(--border)] bg-[var(--bg-alt)] p-4 text-sm text-[var(--fg-gutter)]">
+        Loading editor...
+      </div>
+    ),
+  },
+);
+const ArrayTrace = dynamic(() => import('../ArrayTrace/ArrayTrace'));
+const TwoPointerTrace = dynamic(() => import('../TwoPointerTrace/TwoPointerTrace'));
+const PrefixSuffixTrace = dynamic(
+  () => import('../PrefixSuffixTrace/PrefixSuffixTrace'),
+);
+const HashMapTrace = dynamic(() => import('../HashMapTrace/HashMapTrace'));
+const LinkedListTrace = dynamic(
+  () => import('../LinkedListTrace/LinkedListTrace'),
+);
+const DoublyLinkedListTrace = dynamic(
+  () => import('../DoublyLinkedListTrace/DoublyLinkedListTrace'),
+);
+const StackQueueTrace = dynamic(
+  () => import('../StackQueueTrace/StackQueueTrace'),
+);
 
 interface MarkdownRendererProps {
   content: string;
@@ -42,6 +64,10 @@ type TraceMapSegment = BaseSegment & {
 type TraceLLSegment = BaseSegment & {
   type: 'trace-ll';
   steps: LinkedListStep[];
+};
+type TraceDLLSegment = BaseSegment & {
+  type: 'trace-dll';
+  steps: DoublyLinkedListStep[];
 };
 type TraceSQSegment = BaseSegment & {
   type: 'trace-sq';
@@ -72,6 +98,7 @@ function splitTrace(segments: BaseSegment[]): BaseSegment[] {
       | 'trace-ps'
       | 'trace-map'
       | 'trace-ll'
+      | 'trace-dll'
       | 'trace-sq';
   }> = [
     { fence: /^:::trace\r?\n([\s\S]*?)\r?\n:::[ \t]*$/gm, type: 'trace' },
@@ -82,6 +109,7 @@ function splitTrace(segments: BaseSegment[]): BaseSegment[] {
       type: 'trace-map',
     },
     { fence: /^:::trace-ll\r?\n([\s\S]*?)\r?\n:::[ \t]*$/gm, type: 'trace-ll' },
+    { fence: /^:::trace-dll\r?\n([\s\S]*?)\r?\n:::[ \t]*$/gm, type: 'trace-dll' },
     { fence: /^:::trace-sq\r?\n([\s\S]*?)\r?\n:::[ \t]*$/gm, type: 'trace-sq' },
   ];
 
@@ -97,7 +125,14 @@ function splitTrace(segments: BaseSegment[]): BaseSegment[] {
       index: number;
       length: number;
       json: string;
-      type: 'trace' | 'trace-lr' | 'trace-ps' | 'trace-map' | 'trace-ll' | 'trace-sq';
+      type:
+        | 'trace'
+        | 'trace-lr'
+        | 'trace-ps'
+        | 'trace-map'
+        | 'trace-ll'
+        | 'trace-dll'
+        | 'trace-sq';
     };
     const matches: RawMatch[] = [];
     for (const { fence, type } of configs) {
@@ -245,6 +280,13 @@ export default function MarkdownRenderer({
         if (seg.type === 'trace-ll')
           return (
             <LinkedListTrace key={i} steps={(seg as TraceLLSegment).steps} />
+          );
+        if (seg.type === 'trace-dll')
+          return (
+            <DoublyLinkedListTrace
+              key={i}
+              steps={(seg as TraceDLLSegment).steps}
+            />
           );
         if (seg.type === 'trace-sq')
           return (

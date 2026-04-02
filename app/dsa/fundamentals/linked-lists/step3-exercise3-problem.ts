@@ -1,5 +1,5 @@
 // =============================================================================
-// Linked Lists — Level 3, Exercise 3: The Palindrome Test
+// Linked Lists — Level 4, Exercise 3: The Palindrome Test
 // =============================================================================
 // Goal: Combine fast/slow pointers and in-place reversal to check symmetry.
 //

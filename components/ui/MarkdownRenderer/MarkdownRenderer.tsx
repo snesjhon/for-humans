@@ -1,11 +1,18 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeRaw from 'rehype-raw';
 import 'highlight.js/styles/atom-one-light.css';
-import MermaidChart from '../MermaidChart/MermaidChart';
+
+const MermaidChart = dynamic(() => import('../MermaidChart/MermaidChart'), {
+  ssr: false,
+  loading: () => (
+    <div className="my-7 text-sm text-[var(--fg-gutter)]">Loading chart...</div>
+  ),
+});
 
 export interface BaseSegment {
   type: string;

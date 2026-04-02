@@ -1,5 +1,5 @@
 // =============================================================================
-// Linked Lists — Level 2, Exercise 2: Even or Odd Convoy? — SOLUTION
+// Linked Lists — Level 3, Exercise 2: Even or Odd Convoy? — SOLUTION
 // =============================================================================
 // Goal: Use fast/slow pointers to determine the parity of the train's length.
 //

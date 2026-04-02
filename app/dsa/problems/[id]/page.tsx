@@ -1,5 +1,7 @@
 import fs from 'fs';
 import path from 'path';
+import { cache } from 'react';
+import dynamic from 'next/dynamic';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -23,17 +25,42 @@ const DIFF_FG: Record<string, string> = {
   hard: 'var(--red)',
 };
 import { extractHeadings } from '@/lib/dsa/headings';
-import { loadReferencedDsaCodeFiles } from '@/lib/dsa/stackblitz';
+import {
+  collectStackBlitzFiles,
+  loadReferencedDsaCodeFiles,
+} from '@/lib/dsa/stackblitz';
 import MarkdownRenderer from '@/components/dsa/MarkdownRenderer/MarkdownRenderer';
 import TableOfContents from '@/components/ui/TableOfContents/TableOfContents';
 import { PageHero } from '@/components/ui/PageHero/PageHero';
 import { PageLayout } from '@/components/ui/PageLayout/PageLayout';
-import { ProgressToggleAsync } from '@/components/ui/ProgressToggleAsync/ProgressToggleAsync';
-import { ProgressProvider } from '@/components/ui/ProgressProvider/ProgressProvider';
+
+const ProblemProgressPanel = dynamic(
+  () => import('@/components/dsa/ProblemProgressPanel/ProblemProgressPanel'),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex flex-col gap-2 rounded-lg border border-[var(--border)] bg-[var(--bg-alt)] p-4">
+        <p className="mb-1 font-mono text-[0.6rem] font-bold uppercase tracking-[0.09em] text-[var(--fg-gutter)]">
+          Your Progress
+        </p>
+        <p className="text-sm text-[var(--fg-gutter)]">Loading progress...</p>
+      </div>
+    ),
+  },
+);
 
 interface Props {
   params: { id: string };
 }
+
+const getStepNumbers = cache((problemSlug: string) => {
+  const problemDir = path.join(process.cwd(), 'app', 'dsa', 'problems', problemSlug);
+  return fs
+    .readdirSync(problemDir)
+    .filter((f) => /^step\d+-problem\.ts$/.test(f))
+    .map((f) => parseInt(f.match(/^step(\d+)/)?.[1] ?? '0'))
+    .sort((a, b) => a - b);
+});
 
 export function generateStaticParams() {
   return getAllProblems().map((p) => ({ id: p.id }));
@@ -51,8 +78,13 @@ export default function ProblemPage({ params }: Props) {
   const mentalModelContent = rawContent
     ? rawContent.replace(/^#[^\n]*\n+/, '')
     : null;
+  const hasStackBlitzEmbeds = mentalModelContent
+    ? collectStackBlitzFiles(mentalModelContent).length > 0
+    : false;
   const codeFiles = mentalModelContent
-    ? loadReferencedDsaCodeFiles(mentalModelContent, problem.slug, 'problems')
+    ? hasStackBlitzEmbeds
+      ? loadReferencedDsaCodeFiles(mentalModelContent, problem.slug, 'problems')
+      : undefined
     : undefined;
 
   const headings = mentalModelContent
@@ -66,12 +98,7 @@ export default function ProblemPage({ params }: Props) {
   const color = phase ? 'var(--primary)' : null;
   const difficulty = getDifficultyForProblem(params.id);
 
-  // Detect available steps from the problem directory
-  const problemDir = path.join(process.cwd(), 'app', 'dsa', 'problems', problem.slug);
-  const stepFiles = fs.readdirSync(problemDir).filter((f) => /^step\d+-problem\.ts$/.test(f));
-  const stepNumbers = stepFiles
-    .map((f) => parseInt(f.match(/^step(\d+)/)?.[1] ?? '0'))
-    .sort((a, b) => a - b);
+  const stepNumbers = getStepNumbers(problem.slug);
 
   let prevProblem = null;
   let nextProblem = null;
@@ -125,35 +152,10 @@ export default function ProblemPage({ params }: Props) {
 
       <PageLayout accentColor={color} aside={<TableOfContents headings={headings} title="Contents" />}>
         <section className="space-y-8">
-            {/* Progress section */}
-            <ProgressProvider
-              items={[
-                { itemType: 'problem', itemId: `dsa-${params.id}` },
-                ...stepNumbers.map((n) => ({
-                  itemType: 'step' as const,
-                  itemId: `dsa-${params.id}-step-${n}`,
-                })),
-              ]}
-            >
-              <div className="flex flex-col gap-2 p-4 rounded-lg border border-[var(--border)] bg-[var(--bg-alt)]">
-                <p className="font-mono text-[0.6rem] font-bold tracking-[0.09em] uppercase text-[var(--fg-gutter)] mb-1">
-                  Your Progress
-                </p>
-                <ProgressToggleAsync
-                  itemType="problem"
-                  itemId={`dsa-${params.id}`}
-                  label="Problem complete"
-                />
-                {stepNumbers.map((n) => (
-                  <ProgressToggleAsync
-                    key={n}
-                    itemType="step"
-                    itemId={`dsa-${params.id}-step-${n}`}
-                    label={`Step ${n} complete`}
-                  />
-                ))}
-              </div>
-            </ProgressProvider>
+            <ProblemProgressPanel
+              problemId={params.id}
+              stepNumbers={stepNumbers}
+            />
 
             {mentalModelContent ? (
               <MarkdownRenderer

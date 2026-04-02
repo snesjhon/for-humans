@@ -1,8 +1,8 @@
 // =============================================================================
-// 146. LRU Cache — Step 2 of 2
+// 146. LRU Cache — Step 2 of 6
 // =============================================================================
-// Goal: Reheat every touched box and evict the coldest box when the shelf
-// overflows.
+// Goal: Add the removal move so one box can leave the shelf and its warmer
+// and colder neighbors reconnect directly.
 
 // ---Helpers
 
@@ -33,75 +33,55 @@ class LRUCache {
   }
 
   private removeBox(box: ShelfNode): void {
-    const warmerBox = box.warmer!;
-    const colderBox = box.colder!;
-    warmerBox.colder = colderBox;
-    colderBox.warmer = warmerBox;
-  }
-
-  private addBoxToHotShelf(box: ShelfNode): void {
-    const firstWarmBox = this.hotGate.colder!;
-    box.warmer = this.hotGate;
-    box.colder = firstWarmBox;
-    this.hotGate.colder = box;
-    firstWarmBox.warmer = box;
-  }
-
-  get(key: number): number {
-    const box = this.boxesByLabel.get(key);
-    if (!box) return -1;
-
-    this.removeBox(box);
-    this.addBoxToHotShelf(box);
-    return box.value;
-  }
-
-  put(key: number, value: number): void {
-    const existingBox = this.boxesByLabel.get(key);
-
-    if (existingBox) {
-      existingBox.value = value;
-      this.removeBox(existingBox);
-      this.addBoxToHotShelf(existingBox);
-      return;
-    }
-
-    const freshBox = new ShelfNode(key, value);
-    this.boxesByLabel.set(key, freshBox);
-    this.addBoxToHotShelf(freshBox);
-
     throw new Error('not implemented');
   }
 }
 
-runCase('example sequence from the prompt', () => {
-  const cache = new LRUCache(2);
-  cache.put(1, 1);
-  cache.put(2, 2);
-  const firstRead = cache.get(1);
-  cache.put(3, 3);
-  const secondRead = cache.get(2);
-  cache.put(4, 4);
-  return [firstRead, secondRead, cache.get(1), cache.get(3), cache.get(4)];
-}, [1, -1, -1, 3, 4]);
+runCase('removeBox reconnects the gates when the only real box leaves', () => {
+  const cache = new LRUCache(2) as any;
+  const box = new ShelfNode(1, 10);
+  cache.hotGate.colder = box;
+  box.warmer = cache.hotGate;
+  box.colder = cache.coldGate;
+  cache.coldGate.warmer = box;
 
-runCase('updating an existing label keeps it hot', () => {
-  const cache = new LRUCache(2);
-  cache.put(2, 1);
-  cache.put(2, 2);
-  cache.put(1, 1);
-  cache.put(4, 1);
-  return [cache.get(2), cache.get(1), cache.get(4)];
-}, [-1, 1, 1]);
+  cache.removeBox(box);
 
-runCase('a get can change the later eviction target', () => {
-  const cache = new LRUCache(2);
-  cache.put(1, 10);
-  cache.put(2, 20);
-  cache.get(1);
-  cache.put(3, 30);
-  return [cache.get(1), cache.get(2), cache.get(3)];
-}, [10, -1, 30]);
+  return snapshot(cache);
+}, ['HOT', 'COLD']);
+
+runCase('removeBox reconnects warmer and colder real neighbors', () => {
+  const cache = new LRUCache(3) as any;
+  const first = new ShelfNode(1, 10);
+  const middle = new ShelfNode(2, 20);
+  const last = new ShelfNode(3, 30);
+
+  cache.hotGate.colder = first;
+  first.warmer = cache.hotGate;
+  first.colder = middle;
+  middle.warmer = first;
+  middle.colder = last;
+  last.warmer = middle;
+  last.colder = cache.coldGate;
+  cache.coldGate.warmer = last;
+
+  cache.removeBox(middle);
+
+  return snapshot(cache);
+}, ['HOT', '1:10', '3:30', 'COLD']);
+
+function snapshot(cache: any): string[] {
+  const labels: string[] = ['HOT'];
+  let node = cache.hotGate.colder;
+
+  while (node && node !== cache.coldGate) {
+    labels.push(`${node.key}:${node.value}`);
+    node = node.colder;
+  }
+
+  labels.push('COLD');
+  return labels;
+}
 
 function runCase(desc: string, fn: () => unknown, expected: unknown): void {
   try {

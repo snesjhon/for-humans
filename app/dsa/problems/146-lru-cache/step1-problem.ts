@@ -1,86 +1,70 @@
 // =============================================================================
-// 146. LRU Cache — Step 1 of 2
+// 146. LRU Cache — Step 1 of 6
 // =============================================================================
-// Goal: Build the shelf rails and the ledger so boxes can be inserted,
-// updated, and found without ever scanning the row.
-
-// ---Helpers
+// Goal: Build the shelf box and the empty cache scaffold so the workshop has
+// a ledger(boxesByLabel), a hotGate, a coldGate, and open space between them.
 
 class ShelfNode {
-  key: number;
-  value: number;
-  warmer: ShelfNode | null = null;
-  colder: ShelfNode | null = null;
-
   constructor(key: number, value: number) {
-    this.key = key;
-    this.value = value;
+    throw new Error('not implemented');
   }
 }
-
-// ---End Helpers
 
 class LRUCache {
-  private readonly capacity: number;
-  private readonly boxesByLabel = new Map<number, ShelfNode>();
-  private readonly hotGate = new ShelfNode(-1, -1);
-  private readonly coldGate = new ShelfNode(-1, -1);
-
   constructor(capacity: number) {
-    this.capacity = capacity;
-    this.hotGate.colder = this.coldGate;
-    this.coldGate.warmer = this.hotGate;
-  }
-
-  private removeBox(box: ShelfNode): void {
-    const warmerBox = box.warmer!;
-    const colderBox = box.colder!;
-    warmerBox.colder = colderBox;
-    colderBox.warmer = warmerBox;
-  }
-
-  private addBoxToHotShelf(box: ShelfNode): void {
-    const firstWarmBox = this.hotGate.colder!;
-    box.warmer = this.hotGate;
-    box.colder = firstWarmBox;
-    this.hotGate.colder = box;
-    firstWarmBox.warmer = box;
-  }
-
-  get(key: number): number {
-    throw new Error('not implemented');
-  }
-
-  put(key: number, value: number): void {
     throw new Error('not implemented');
   }
 }
 
-runCase('missing label returns -1', () => {
-  const cache = new LRUCache(2);
-  return cache.get(99);
-}, -1);
+runCase(
+  'constructor stores the key and value on a shelf box',
+  () => {
+    const box = new ShelfNode(7, 70);
+    return [box.key, box.value];
+  },
+  [7, 70],
+);
 
-runCase('new box can be read back while under capacity', () => {
-  const cache = new LRUCache(2);
-  cache.put(1, 10);
-  return cache.get(1);
-}, 10);
+runCase(
+  'new boxes start detached from any neighbors',
+  () => {
+    const box = new ShelfNode(7, 70);
+    return [box.warmer, box.colder];
+  },
+  [null, null],
+);
 
-runCase('updating the same label changes the stored value', () => {
-  const cache = new LRUCache(2);
-  cache.put(1, 10);
-  cache.put(1, 15);
-  return cache.get(1);
-}, 15);
+runCase(
+  'cache stores the declared capacity',
+  () => {
+    const cache = new LRUCache(3) as any;
+    return cache.capacity;
+  },
+  3,
+);
 
-runCase('multiple labels can coexist while shelf has room', () => {
-  const cache = new LRUCache(3);
-  cache.put(1, 10);
-  cache.put(2, 20);
-  return [cache.get(1), cache.get(2)];
-}, [10, 20]);
+runCase(
+  'empty shelf starts with hot gate connected to cold gate',
+  () => {
+    const cache = new LRUCache(2) as any;
+    return [
+      cache.hotGate.colder === cache.coldGate,
+      cache.coldGate.warmer === cache.hotGate,
+    ];
+  },
+  [true, true],
+);
 
+runCase(
+  'ledger starts empty before any real boxes arrive',
+  () => {
+    const cache = new LRUCache(5) as any;
+    return cache.boxesByLabel.size;
+  },
+  0,
+);
+
+// ---Helpers
 function runCase(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();
@@ -98,3 +82,4 @@ function runCase(desc: string, fn: () => unknown, expected: unknown): void {
     }
   }
 }
+// ---End Helpers

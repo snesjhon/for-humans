@@ -1,5 +1,5 @@
 // =============================================================================
-// Linked Lists — Level 2, Exercise 3: The Third Car from the End — SOLUTION
+// Linked Lists — Level 3, Exercise 3: The Third Car from the End — SOLUTION
 // =============================================================================
 // Goal: Practice the N-apart pointer technique with a fixed gap of 3.
 //

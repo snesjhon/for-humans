@@ -1,8 +1,8 @@
 // =============================================================================
-// 146. LRU Cache — Step 2 of 6 Solution
+// 146. LRU Cache — Step 4 of 6
 // =============================================================================
-// Goal: Add the removal move so one box can leave the shelf and its warmer
-// and colder neighbors reconnect directly.
+// Goal: Build get so the ledger can find a box in O(1) and every successful
+// read reheats that box onto the hot end.
 
 // ---Helpers
 
@@ -38,40 +38,46 @@ class LRUCache {
     warmerBox.colder = colderBox;
     colderBox.warmer = warmerBox;
   }
+
+  private addBoxToHotShelf(box: ShelfNode): void {
+    const firstWarmBox = this.hotGate.colder!;
+    box.warmer = this.hotGate;
+    box.colder = firstWarmBox;
+    this.hotGate.colder = box;
+    firstWarmBox.warmer = box;
+  }
+
+  get(key: number): number {
+    throw new Error('not implemented');
+  }
 }
 
-runCase('removeBox reconnects the gates when the only real box leaves', () => {
+runCase('missing label returns -1', () => {
+  const cache = new LRUCache(2);
+  return cache.get(99);
+}, -1);
+
+runCase('successful get returns the value for that label', () => {
   const cache = new LRUCache(2) as any;
   const box = new ShelfNode(1, 10);
-  cache.hotGate.colder = box;
-  box.warmer = cache.hotGate;
-  box.colder = cache.coldGate;
-  cache.coldGate.warmer = box;
+  cache.boxesByLabel.set(1, box);
+  cache.addBoxToHotShelf(box);
+  return cache.get(1);
+}, 10);
 
-  cache.removeBox(box);
+runCase('successful get reheats the box onto the hot end', () => {
+  const cache = new LRUCache(2) as any;
+  const older = new ShelfNode(1, 10);
+  const newer = new ShelfNode(2, 20);
+  cache.boxesByLabel.set(1, older);
+  cache.boxesByLabel.set(2, newer);
+  cache.addBoxToHotShelf(older);
+  cache.addBoxToHotShelf(newer);
 
-  return snapshot(cache);
-}, ['HOT', 'COLD']);
-
-runCase('removeBox reconnects warmer and colder real neighbors', () => {
-  const cache = new LRUCache(3) as any;
-  const first = new ShelfNode(1, 10);
-  const middle = new ShelfNode(2, 20);
-  const last = new ShelfNode(3, 30);
-
-  cache.hotGate.colder = first;
-  first.warmer = cache.hotGate;
-  first.colder = middle;
-  middle.warmer = first;
-  middle.colder = last;
-  last.warmer = middle;
-  last.colder = cache.coldGate;
-  cache.coldGate.warmer = last;
-
-  cache.removeBox(middle);
+  cache.get(older.key);
 
   return snapshot(cache);
-}, ['HOT', '1:10', '3:30', 'COLD']);
+}, ['HOT', '1:10', '2:20', 'COLD']);
 
 function snapshot(cache: any): string[] {
   const labels: string[] = ['HOT'];

@@ -5,11 +5,10 @@ import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { JOURNEY as DSA_JOURNEY } from '@/lib/dsa/journey';
 import { PROBLEM_TITLES } from '@/lib/dsa/titles';
-import { JOURNEY as SD_JOURNEY } from '@/lib/system-design/journey';
-import { JOURNEY as FS_JOURNEY } from '@/lib/fullstack/journey';
 import { JourneyPanel } from '../JourneyPanel/JourneyPanel';
 import type { JourneyPanelPhase } from '../JourneyPanel/JourneyPanel';
 import { SignOutButton } from '../SignOutButton/SignOutButton';
+import { createClient } from '@/lib/supabase/client';
 
 // ── DSA static lookups ────────────────────────────────────────────────────────
 
@@ -34,34 +33,6 @@ for (const phase of DSA_JOURNEY) {
       };
     }
     _dsaPrev = section;
-  }
-}
-
-// ── System Design static lookups ──────────────────────────────────────────────
-
-const SD_FUNDAMENTALS_TO_SECTION: Record<string, string> = {};
-const SD_SCENARIO_TO_SECTION: Record<string, string> = {};
-
-for (const phase of SD_JOURNEY) {
-  for (const section of phase.sections) {
-    if (section.fundamentalsSlug)
-      SD_FUNDAMENTALS_TO_SECTION[section.fundamentalsSlug] = section.id;
-    for (const s of section.firstPass)
-      SD_SCENARIO_TO_SECTION[s.slug] = section.id;
-  }
-}
-
-// ── Fullstack static lookups ──────────────────────────────────────────────────
-
-const FS_FUNDAMENTALS_TO_SECTION: Record<string, string> = {};
-const FS_SCENARIO_TO_SECTION: Record<string, string> = {};
-
-for (const phase of FS_JOURNEY) {
-  for (const section of phase.sections) {
-    if (section.fundamentalsSlug)
-      FS_FUNDAMENTALS_TO_SECTION[section.fundamentalsSlug] = section.id;
-    for (const s of section.firstPass)
-      FS_SCENARIO_TO_SECTION[s.slug] = section.id;
   }
 }
 
@@ -91,38 +62,6 @@ const DSA_PHASES: JourneyPanelPhase[] = DSA_JOURNEY.map((phase) => ({
   }),
 }));
 
-const SD_PHASES: JourneyPanelPhase[] = SD_JOURNEY.map((phase) => ({
-  number: phase.number,
-  label: phase.label,
-  emoji: phase.emoji,
-  sections: phase.sections.map((section) => ({
-    id: section.id,
-    label: section.label,
-    fundamentalsSlug: section.fundamentalsSlug,
-    items: section.firstPass.map((s) => ({ key: s.slug, label: s.label })),
-    revisitItems: section.reinforce.map((s) => ({
-      key: s.slug,
-      label: s.label,
-    })),
-  })),
-}));
-
-const FS_PHASES: JourneyPanelPhase[] = FS_JOURNEY.map((phase) => ({
-  number: phase.number,
-  label: phase.label,
-  emoji: phase.emoji,
-  sections: phase.sections.map((section) => ({
-    id: section.id,
-    label: section.label,
-    fundamentalsSlug: section.fundamentalsSlug,
-    items: section.firstPass.map((s) => ({ key: s.slug, label: s.label })),
-    revisitItems: section.reinforce.map((s) => ({
-      key: s.slug,
-      label: s.label,
-    })),
-  })),
-}));
-
 // ── Active state helpers ──────────────────────────────────────────────────────
 
 function dsaActiveSection(path: string): string | null {
@@ -133,30 +72,10 @@ function dsaActiveSection(path: string): string | null {
   return null;
 }
 
-function sdActiveSection(path: string): string | null {
-  const fund = path.match(/^\/system-design\/fundamentals\/([^/]+)/)?.[1];
-  if (fund) return SD_FUNDAMENTALS_TO_SECTION[fund] ?? null;
-  const scen = path.match(/^\/system-design\/scenarios\/([^/]+)/)?.[1];
-  if (scen) return SD_SCENARIO_TO_SECTION[scen] ?? null;
-  return null;
-}
-
-function fsActiveSection(path: string): string | null {
-  const fund = path.match(/^\/fullstack\/fundamentals\/([^/]+)/)?.[1];
-  if (fund) return FS_FUNDAMENTALS_TO_SECTION[fund] ?? null;
-  const scen = path.match(/^\/fullstack\/scenarios\/([^/]+)/)?.[1];
-  if (scen) return FS_SCENARIO_TO_SECTION[scen] ?? null;
-  return null;
-}
-
-// ── App key ───────────────────────────────────────────────────────────────────
-
-type AppKey = 'dsa' | 'system-design' | 'fullstack';
+type AppKey = 'dsa';
 
 function appFromPath(path: string): AppKey | null {
   if (path.startsWith('/dsa')) return 'dsa';
-  if (path.startsWith('/system-design')) return 'system-design';
-  if (path.startsWith('/fullstack')) return 'fullstack';
   return null;
 }
 
@@ -199,33 +118,19 @@ function AppHeader({
 interface SiteNavProps {
   availableProblemIds: string[];
   availableFundamentalsSlugs: string[];
-  availableSystemDesignScenarioSlugs: string[];
-  availableSystemDesignFundamentalsSlugs: string[];
-  availableFullstackScenarioSlugs: string[];
-  availableFullstackFundamentalsSlugs: string[];
-  email?: string;
 }
 
 export function SiteNav({
   availableProblemIds: availableProblemIdsArr,
   availableFundamentalsSlugs: availableDsaFundamentalsArr,
-  email,
-  // availableSystemDesignScenarioSlugs,
-  // availableSystemDesignFundamentalsSlugs,
-  // availableFullstackScenarioSlugs,
-  // availableFullstackFundamentalsSlugs,
 }: SiteNavProps) {
   const availableProblemIds = new Set(availableProblemIdsArr);
   const availableDsaFundamentals = new Set(availableDsaFundamentalsArr);
-  // const availableSDScenarios = new Set(availableSystemDesignScenarioSlugs);
-  // const availableSDFundamentals = new Set(
-  //   availableSystemDesignFundamentalsSlugs,
-  // );
-  // const availableFSScenarios = new Set(availableFullstackScenarioSlugs);
-  // const availableFSFundamentals = new Set(availableFullstackFundamentalsSlugs);
 
   const pathname = usePathname();
   const [dark, setDark] = useState(false);
+  const [email, setEmail] = useState('');
+  const [authResolved, setAuthResolved] = useState(false);
   const [openApps, setOpenApps] = useState<Set<AppKey>>(() => {
     const app = appFromPath(pathname);
     return app ? new Set([app]) : new Set();
@@ -233,6 +138,26 @@ export function SiteNav({
 
   useEffect(() => {
     setDark(document.documentElement.classList.contains('dark'));
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadUser() {
+      const supabase = createClient();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (cancelled) return;
+      setEmail(session?.user.email ?? '');
+      setAuthResolved(true);
+    }
+
+    loadUser();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Auto-open the current app's section when navigating
@@ -301,60 +226,6 @@ export function SiteNav({
             />
           </div>
         )}
-
-        {/* ── System Design ── */}
-        {/* <AppHeader */}
-        {/*   label="System Design" */}
-        {/*   active={pathname.startsWith('/system-design')} */}
-        {/*   open={openApps.has('system-design')} */}
-        {/*   onToggle={() => toggleApp('system-design')} */}
-        {/* /> */}
-        {/* {openApps.has('system-design') && ( */}
-        {/*   <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}> */}
-        {/*     <JourneyPanel */}
-        {/*       phases={SD_PHASES} */}
-        {/*       pathname={pathname} */}
-        {/*       activeSectionId={sdActiveSection(pathname)} */}
-        {/*       activeItemKey={ */}
-        {/*         pathname.match(/^\/system-design\/scenarios\/([^/]+)/)?.[1] ?? null */}
-        {/*       } */}
-        {/*       activeFundamentalsSlug={ */}
-        {/*         pathname.match(/^\/system-design\/fundamentals\/([^/]+)/)?.[1] ?? null */}
-        {/*       } */}
-        {/*       availableItemKeys={availableSDScenarios} */}
-        {/*       availableFundamentalsSlugs={availableSDFundamentals} */}
-        {/*       getItemHref={(slug) => `/system-design/scenarios/${slug}`} */}
-        {/*       getFundamentalsHref={(slug) => `/system-design/fundamentals/${slug}`} */}
-        {/*     /> */}
-        {/*   </div> */}
-        {/* )} */}
-
-        {/* ── Fullstack ── */}
-        {/* <AppHeader */}
-        {/*   label="Fullstack" */}
-        {/*   active={pathname.startsWith('/fullstack')} */}
-        {/*   open={openApps.has('fullstack')} */}
-        {/*   onToggle={() => toggleApp('fullstack')} */}
-        {/* /> */}
-        {/* {openApps.has('fullstack') && ( */}
-        {/*   <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}> */}
-        {/*     <JourneyPanel */}
-        {/*       phases={FS_PHASES} */}
-        {/*       pathname={pathname} */}
-        {/*       activeSectionId={fsActiveSection(pathname)} */}
-        {/*       activeItemKey={ */}
-        {/*         pathname.match(/^\/fullstack\/scenarios\/([^/]+)/)?.[1] ?? null */}
-        {/*       } */}
-        {/*       activeFundamentalsSlug={ */}
-        {/*         pathname.match(/^\/fullstack\/fundamentals\/([^/]+)/)?.[1] ?? null */}
-        {/*       } */}
-        {/*       availableItemKeys={availableFSScenarios} */}
-        {/*       availableFundamentalsSlugs={availableFSFundamentals} */}
-        {/*       getItemHref={(slug) => `/fullstack/scenarios/${slug}`} */}
-        {/*       getFundamentalsHref={(slug) => `/fullstack/fundamentals/${slug}`} */}
-        {/*     /> */}
-        {/*   </div> */}
-        {/* )} */}
       </div>
 
       <div className="flex px-2 py-4 justify-between border-t border-t-[var(--border)]">
@@ -369,7 +240,7 @@ export function SiteNav({
         </div>
         {email ? (
           <SignOutButton email={email ?? ''} />
-        ) : (
+        ) : authResolved ? (
           <div>
             <Link
               href="/login"
@@ -377,6 +248,10 @@ export function SiteNav({
             >
               Sign in to track progress →
             </Link>
+          </div>
+        ) : (
+          <div className="text-[0.75rem] text-[var(--fg-gutter)]">
+            Checking sign-in...
           </div>
         )}
       </div>

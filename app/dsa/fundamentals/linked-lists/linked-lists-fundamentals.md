@@ -1,14 +1,16 @@
 ## 1. Overview
 
-Linked lists are chains of nodes connected by pointers — each node holds a value and a reference to the next node in the sequence. Unlike arrays, there is no index-based access. To reach the fifth node you walk through nodes one, two, three, and four.
+Linked lists are chains of nodes connected by pointers. In a **singly linked list**, each node holds a value and a reference to the next node in the sequence. In a **doubly linked list**, each node also keeps a reference back to the previous node. Unlike arrays, there is no index-based access. To reach the fifth node you walk through nodes one, two, three, and four.
 
-You already know how to think with pointers moving forward through a sequence from [Arrays & Strings](/fundamentals/arrays-strings). Linked lists use the same forward-scanning intuition, but instead of incrementing an index you follow `.next` — and instead of writing to a slot you rewire a pointer.
+You already know how to think with pointers moving forward through a sequence from [Arrays & Strings](/fundamentals/arrays-strings). Linked lists use the same forward-scanning intuition, but instead of incrementing an index you follow pointers like `.next` or `.prev` — and instead of writing to a slot you rewire a connection between nodes.
 
-This guide covers the three building blocks: the **sentinel node** (eliminating head-special-case bugs), **fast and slow pointers** (finding midpoints and detecting cycles in a single pass), and **in-place pointer rewiring** (reversing and restructuring sections of a list without extra memory).
+This guide covers four building blocks: **node topology** (singly vs doubly linked structure), the **sentinel node** (eliminating head-special-case bugs), **fast and slow pointers** (finding midpoints and detecting cycles in a single pass), and **in-place pointer rewiring** (reversing and restructuring sections of a list without extra memory).
 
 ## 2. Core Concept & Mental Model
 
-Picture a freight train winding through the countryside. Each car is a node: it holds cargo (the value) and has a single coupling at the back connecting it to the car ahead (the `.next` pointer). The locomotive at the front is the head. The last car has no forward coupling — its `.next` is null.
+Picture a freight train winding through the countryside. Each car is a node. In the simplest version, every car has a single coupling at the back connecting it to the car ahead: that is a **singly linked list** and the coupling is `.next`. In a **doubly linked list**, each car also has a backward coupling to the car behind: `.prev`.
+
+The locomotive at the front is the head. The last car has no forward coupling — its `.next` is null. In a doubly linked train, the first real car also has no backward coupling unless you deliberately attach a sentinel in front of it.
 
 There is no way to jump to car seven directly. You board the locomotive and walk forward, car by car, until you reach the one you need.
 
@@ -20,7 +22,11 @@ You stand at the locomotive. You can read the cargo of the car you're in (`node.
 
 #### Three Techniques on the Train
 
+**The node topology** is the first decision. In a singly linked list, each car knows only the car ahead. That is enough for forward traversal, cycle detection, reversal, and many interview problems. In a doubly linked list, each car knows both neighbors. That costs one extra pointer per node, but it lets you remove a known node or move it between positions in O(1) because you can rewire both sides directly. This is the pattern behind structures like an LRU cache.
+
 **The sentinel car** is a dummy locomotive you attach at the very front before starting work — it has no real cargo but gives you a fixed anchor. With the sentinel in place, every real car has a predecessor, including the very first one. Insert and delete operations look identical regardless of which car you're touching. When you finish, unhook the sentinel and return `sentinel.next` as the new head of the train.
+
+In doubly linked lists, it is common to use **two sentinels**: one at the hot/front end and one at the cold/back end. Then every real node always has something on both sides, so insertions and removals near the ends look exactly like insertions and removals in the middle.
 
 **The advance guard** is a pair of conductors. Both start at the locomotive at the same moment. The slow conductor moves one car per step. The fast conductor moves two. After k steps, slow is at position k and fast is at position 2k. When fast can no longer take a full two-car step (the train has ended), slow is at the midpoint. If the train loops — if a coupling somewhere at the back leads to an earlier car — fast will eventually lap slow and they'll occupy the same car.
 
@@ -30,9 +36,13 @@ You stand at the locomotive. You can read the cargo of the car you're in (`node.
 
 Linked lists have no random access, so positional information must come from _relative movement_ rather than index arithmetic. The advance guard extracts position — middle, Nth from end — from speed differences without needing a count. Rewiring pointers beats allocating new nodes because you work with the couplings that already exist. The sentinel eliminates the boundary condition where the head node has no predecessor.
 
+The topology matters because it determines what operations are cheap. Singly linked lists are ideal when all motion is forward and you only need the predecessor because you are carrying it in a local variable. Doubly linked lists are worth the extra pointer when nodes need to detach and reattach from the middle frequently without searching for their predecessor first.
+
 ### How I Think Through This
 
-When I see a linked list problem, the first thing I ask is: _am I trying to find something in the list, or rearrange it?_
+When I see a linked list problem, the first thing I ask is: _what node topology do I have, and am I trying to find something or rearrange it?_
+
+If the problem gives me a normal interview `ListNode` with only `.next`, I know I am in singly linked list land. That means I can walk forward, reverse chains, run fast/slow pointers, and delete only if I am also carrying the predecessor. If the problem gives me both `.next` and `.prev`, or talks about moving known nodes to the front/back in O(1), then I switch mental models: this is a doubly linked list problem.
 
 If **finding** — middle, Nth from end, cycle — I reach for fast and slow pointers. The two conductors start at the locomotive and the speed difference does the positioning work for me. If there's a cycle, they'll meet. If there isn't, fast falls off the end and slow is at the midpoint.
 
@@ -253,17 +263,85 @@ Now watch what happens if you break the rule. Suppose you mistakenly advanced `p
 
 In the deletion pattern, `prev` is the predecessor of the next candidate node. The moment you remove `curr`, `prev` is still the predecessor of whatever comes next — do not move it. Only advance `prev` when you decide to keep `curr`. Violating this leaves orphaned nodes stranded in the middle of the list.
 
-:::stackblitz{step=1 total=3 exercises="step1-exercise1-problem.ts,step1-exercise2-problem.ts,step1-exercise3-problem.ts" solutions="step1-exercise1-solution.ts,step1-exercise2-solution.ts,step1-exercise3-solution.ts"}
+:::stackblitz{step=1 total=4 exercises="step1-exercise1-problem.ts,step1-exercise2-problem.ts,step1-exercise3-problem.ts" solutions="step1-exercise1-solution.ts,step1-exercise2-solution.ts,step1-exercise3-solution.ts"}
 
 > **Mental anchor**: The sentinel is the car before car one. With it, every real car has a predecessor — no head-special-case branches, ever.
 
 **→ Bridge to Level 2**
 
-Traversal with a sentinel handles insertion and deletion cleanly. But some problems need positional information — the middle, the Nth car from the end — without knowing how long the train is. A single pointer can't extract that information without counting first. Fast and slow pointers replace the need for a count.
+Singly linked lists teach you how to carry the predecessor from outside the node. But another class of problems gives you the exact node and asks you to detach it or move it in O(1). That is where doubly linked lists become the right tool.
 
 ---
 
-### Level 2: Fast & Slow Pointers
+### Level 2: Doubly Linked Lists & Paired Sentinels
+
+#### **Why this level matters**
+
+Singly linked lists are enough for most traversal problems, but they are the wrong tool when the operation is "given this exact node, remove it from the middle" or "move this exact node to the front." In a singly linked list, a node does not know its predecessor, so you cannot detach it in O(1) unless you already carried that predecessor with you. A doubly linked list fixes that by storing both neighbors directly on the node.
+
+This level matters because it is the pattern behind deques, browser history, undo/redo style navigation, and LRU cache internals. The main idea is not "walk the list." It is "rewire around a known node locally."
+
+#### **How to think about it**
+
+In a **singly linked list**, each node knows only what comes after it:
+
+- `node.next`
+
+That means if you are standing on node `B`, you cannot remove it unless you also know node `A` from outside the node.
+
+In a **doubly linked list**, each node knows both neighbors:
+
+- `node.prev`
+- `node.next`
+
+So if you are given node `B`, you can detach it immediately:
+
+```typescript
+node.prev!.next = node.next;
+node.next!.prev = node.prev;
+```
+
+That is the first primitive move.
+
+The second primitive move is insertion after a known anchor:
+
+```typescript
+const oldNext = anchor.next!;
+anchor.next = node;
+node.prev = anchor;
+node.next = oldNext;
+oldNext.prev = node;
+```
+
+Once you have those two moves, "move node to front" becomes: detach it, then insert it after the front sentinel.
+
+This is also where **paired sentinels** matter. In a doubly linked list, it is common to place one sentinel at the front and one at the back. Then every real node always has a node on both sides. That removes edge cases at the ends for both deletion and insertion.
+
+#### **Walking through it**
+
+:::trace-ll
+[
+{"nodes":[{"val":"H"},{"val":"A"},{"val":"B"},{"val":"C"},{"val":"T"}],"pointers":[{"index":2,"label":"node","color":"blue"},{"index":1,"label":"prev","color":"green"},{"index":3,"label":"next","color":"orange"}],"action":null,"label":"With paired sentinels, node(B) always has both neighbors available."},
+{"nodes":[{"val":"H"},{"val":"A"},{"val":"B"},{"val":"C"},{"val":"T"}],"pointers":[{"index":2,"label":"node","color":"blue"}],"action":"rewire","label":"Detach B by rewiring A.next = C and C.prev = A. No scan from the front is needed."},
+{"nodes":[{"val":"H"},{"val":"B"},{"val":"A"},{"val":"C"},{"val":"T"}],"pointers":[{"index":1,"label":"recent","color":"green"}],"action":"rewire","label":"To move a known node to the front, insert it right after the front sentinel. This is the same detach + insert pattern used by LRU caches."}
+]
+:::
+
+**The one thing to get right**
+
+A doubly linked list only works if every insertion and deletion updates **both directions**. Forgetting one side creates a half-broken chain: forward traversal might still work while backward traversal is corrupted. Every local move must leave `prev` and `next` consistent on both neighbors.
+
+:::stackblitz{step=2 total=4 exercises="doubly-linked-exercise1-problem.ts,doubly-linked-exercise2-problem.ts,doubly-linked-exercise3-problem.ts" solutions="doubly-linked-exercise1-solution.ts,doubly-linked-exercise2-solution.ts,doubly-linked-exercise3-solution.ts"}
+
+> **Mental anchor**: In a doubly linked list, a known node can detach itself because it already knows both neighbors.
+
+**→ Bridge to Level 3**
+
+Doubly linked lists solve local detach-and-insert problems. But some linked list problems are still about extracting positional information in a single pass: middle, Nth from end, and cycles. For those, fast and slow pointers are still the right tool.
+
+---
+
+### Level 3: Fast & Slow Pointers
 
 #### **Why this level matters**
 
@@ -295,17 +373,17 @@ Two conductors board the locomotive together. Slow moves one car per step. Fast 
 
 The safe loop guard for fast/slow is `while (fast !== null && fast.next !== null)`. Without both conditions, accessing `fast.next.next` inside the loop will crash when `fast.next` is null — which happens on the step where fast reaches the last node of an odd-length list. Both null checks are required, every time.
 
-:::stackblitz{step=2 total=3 exercises="step2-exercise1-problem.ts,step2-exercise2-problem.ts,step2-exercise3-problem.ts" solutions="step2-exercise1-solution.ts,step2-exercise2-solution.ts,step2-exercise3-solution.ts"}
+:::stackblitz{step=3 total=4 exercises="step2-exercise1-problem.ts,step2-exercise2-problem.ts,step2-exercise3-problem.ts" solutions="step2-exercise1-solution.ts,step2-exercise2-solution.ts,step2-exercise3-solution.ts"}
 
 > **Mental anchor**: Slow walks one car, fast walks two. When fast is done, slow is at the middle. If fast laps slow, the train loops.
 
-**→ Bridge to Level 3**
+**→ Bridge to Level 4**
 
 Fast and slow pointers navigate the train without touching a single coupling. But the hardest linked list problems ask you to rewire the couplings — reversing a section and reattaching it to the rest. That requires the three-step reversal move: save, rewire, advance.
 
 ---
 
-### Level 3: In-Place Pointer Rewiring
+### Level 4: In-Place Pointer Rewiring
 
 **Why this level matters**
 
@@ -348,7 +426,7 @@ Reverse `1 → 2 → 3 → 4 → 5`:
 
 Save `next` _before_ `curr.next = prev`. The moment you execute `curr.next = prev`, the only forward pointer to the rest of the train is overwritten. If `next` was not saved, the rest of the list is unreachable and unrecoverable. The order is always: save, then rewire, then advance. No exceptions, no shortcuts.
 
-:::stackblitz{step=3 total=3 exercises="step3-exercise1-problem.ts,step3-exercise2-problem.ts,step3-exercise3-problem.ts" solutions="step3-exercise1-solution.ts,step3-exercise2-solution.ts,step3-exercise3-solution.ts"}
+:::stackblitz{step=4 total=4 exercises="step3-exercise1-problem.ts,step3-exercise2-problem.ts,step3-exercise3-problem.ts" solutions="step3-exercise1-solution.ts,step3-exercise2-solution.ts,step3-exercise3-solution.ts"}
 
 > **Mental anchor**: Save the next coupling before you cut it. The order is always save → rewire → advance. One step out of order and you lose the rest of the train.
 
@@ -405,17 +483,21 @@ graph LR
 graph TD
     LL[Linked Lists] --> Nav[Navigation]
     LL --> Rst[Restructuring]
+    LL --> Dll[Doubly Linked List Topology]
     Nav --> SN[Sentinel Node]
     Nav --> FSP[Fast and Slow Pointers]
     SN --> SN1[dummy.next = head]
     SN --> SN2[return dummy.next when done]
     FSP --> FSP1[slow moves 1 step, fast moves 2 steps]
     FSP --> FSP2[middle, cycle, Nth from end]
+    Dll --> Dll1[node knows prev and next]
+    Dll --> Dll2[detach or move known node in O(1)]
     Rst --> IPR[In-Place Rewiring]
     IPR --> IPR1[save next before rewiring curr.next]
     IPR --> IPR2[prev tracks the new head]
     Rst --> SN
     Rst --> FSP
+    Rst --> Dll
 ```
 
 ### Key Operations
@@ -429,15 +511,19 @@ graph TD
 | Reverse full list           | O(n)   | O(1)  | Three-pointer technique              |
 | Reverse sublist of length k | O(k)   | O(1)  | Walk to start, then k reversal steps |
 | Merge two sorted lists      | O(n+m) | O(1)  | Sentinel + compare heads             |
+| Remove known node in DLL    | O(1)   | O(1)  | Requires `prev` and `next` pointers  |
+| Move known node to front    | O(1)   | O(1)  | Doubly linked list + sentinels       |
 
 ### Decision Tree
 
 ```mermaid
 graph TD
     Q[Linked list problem] --> Q1{Rearrange the structure?}
-    Q1 -->|Yes| Q2{Reverse a segment?}
-    Q2 -->|Yes| IPR[In-place rewiring: save, rewire, advance]
-    Q2 -->|No| SNR[Sentinel + pointer reattachment]
+    Q1 -->|Yes| Q2{Given a known node to detach or move?}
+    Q2 -->|Yes| DLL[Doubly linked list: local prev/next rewiring]
+    Q2 -->|No| Q4{Reverse a segment?}
+    Q4 -->|Yes| IPR[In-place rewiring: save, rewire, advance]
+    Q4 -->|No| SNR[Sentinel + pointer reattachment]
     Q1 -->|No| Q3{Find position without knowing length?}
     Q3 -->|Middle or median| FSM[Fast/slow: stop when fast ends]
     Q3 -->|Nth from end| NAP[N-apart pointers in lockstep]
@@ -454,6 +540,7 @@ graph TD
 | "middle node", "find the median"     | Fast/slow pointers                    |
 | "Nth from end", "remove last N"      | N-apart pointers + sentinel           |
 | "merge", "delete by value", "insert" | Sentinel + prev/curr traversal        |
+| "move this node to front/back", "delete known node in O(1)" | Doubly linked list + paired sentinels |
 
 **When NOT to use linked lists**: if your algorithm requires repeated random access by index — looking up position k more than once or twice — convert the list to an array first. The O(k) traversal cost compounds quickly when you need multiple random accesses, and an array gives O(1) access at O(n) upfront cost.
 
@@ -466,6 +553,9 @@ graph TD
 
 **Advancing `prev` after a deletion.**
 In the sentinel + delete pattern, `prev` is the predecessor of the next candidate. Advancing it after removing a node means the next removal will have a broken predecessor and leave an orphan. Advance `prev` only when keeping `curr`.
+
+**Updating only one side of a doubly linked list.**
+If you set `prev.next` but forget `next.prev` (or vice versa), the chain is only half rewired. Forward traversal might look correct while backward traversal is corrupt. Doubly linked list operations must update both directions every time.
 
 **Missing one of the two null guards on fast.**
 `while (fast && fast.next)` — both are required. `fast.next.next` inside the loop assumes `fast.next` exists. On an odd-length list, fast lands on the last node; `fast.next` is null and `fast.next.next` will throw.

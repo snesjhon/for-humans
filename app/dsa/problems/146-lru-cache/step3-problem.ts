@@ -1,8 +1,10 @@
 // =============================================================================
-// 146. LRU Cache — Step 1 of 6 Solution
+// 146. LRU Cache — Step 3 of 6
 // =============================================================================
-// Goal: Build the shelf box and the empty cache scaffold so the workshop has
-// a ledger(boxesByLabel), a hotGate, a coldGate, and open space between them.
+// Goal: Add the insertion move so a new or reheated box clips in right after
+// the hot gate.
+
+// ---Helpers
 
 class ShelfNode {
   key: number;
@@ -16,6 +18,8 @@ class ShelfNode {
   }
 }
 
+// ---End Helpers
+
 class LRUCache {
   private readonly capacity: number;
   private readonly boxesByLabel = new Map<number, ShelfNode>();
@@ -27,57 +31,48 @@ class LRUCache {
     this.hotGate.colder = this.coldGate;
     this.coldGate.warmer = this.hotGate;
   }
+
+  private removeBox(box: ShelfNode): void {
+    const warmerBox = box.warmer!;
+    const colderBox = box.colder!;
+    warmerBox.colder = colderBox;
+    colderBox.warmer = warmerBox;
+  }
+
+  private addBoxToHotShelf(box: ShelfNode): void {
+    throw new Error('not implemented');
+  }
 }
 
-runCase(
-  'constructor stores the key and value on a shelf box',
-  () => {
-    const box = new ShelfNode(7, 70);
-    return [box.key, box.value];
-  },
-  [7, 70],
-);
+runCase('addBoxToHotShelf clips the first box between the gates', () => {
+  const cache = new LRUCache(2) as any;
+  const box = new ShelfNode(1, 10);
+  cache.addBoxToHotShelf(box);
+  return snapshot(cache);
+}, ['HOT', '1:10', 'COLD']);
 
-runCase(
-  'new boxes start detached from any neighbors',
-  () => {
-    const box = new ShelfNode(7, 70);
-    return [box.warmer, box.colder];
-  },
-  [null, null],
-);
+runCase('new hot boxes always insert right after the hot gate', () => {
+  const cache = new LRUCache(2) as any;
+  const first = new ShelfNode(1, 10);
+  const second = new ShelfNode(2, 20);
+  cache.addBoxToHotShelf(first);
+  cache.addBoxToHotShelf(second);
+  return snapshot(cache);
+}, ['HOT', '2:20', '1:10', 'COLD']);
 
-runCase(
-  'cache stores the declared capacity',
-  () => {
-    const cache = new LRUCache(3) as any;
-    return cache.capacity;
-  },
-  3,
-);
+function snapshot(cache: any): string[] {
+  const labels: string[] = ['HOT'];
+  let node = cache.hotGate.colder;
 
-runCase(
-  'empty shelf starts with hot gate connected to cold gate',
-  () => {
-    const cache = new LRUCache(2) as any;
-    return [
-      cache.hotGate.colder === cache.coldGate,
-      cache.coldGate.warmer === cache.hotGate,
-    ];
-  },
-  [true, true],
-);
+  while (node && node !== cache.coldGate) {
+    labels.push(`${node.key}:${node.value}`);
+    node = node.colder;
+  }
 
-runCase(
-  'ledger starts empty before any real boxes arrive',
-  () => {
-    const cache = new LRUCache(5) as any;
-    return cache.boxesByLabel.size;
-  },
-  0,
-);
+  labels.push('COLD');
+  return labels;
+}
 
-// ---Helpers
 function runCase(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();
@@ -95,4 +90,3 @@ function runCase(desc: string, fn: () => unknown, expected: unknown): void {
     }
   }
 }
-// ---End Helpers

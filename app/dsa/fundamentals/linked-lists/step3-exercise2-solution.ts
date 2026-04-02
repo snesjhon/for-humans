@@ -1,5 +1,5 @@
 // =============================================================================
-// Linked Lists — Level 3, Exercise 2: Reverse from a Position — SOLUTION
+// Linked Lists — Level 4, Exercise 2: Reverse from a Position — SOLUTION
 // =============================================================================
 // Goal: Combine sentinel-based walking with in-place reversal of a suffix.
 //

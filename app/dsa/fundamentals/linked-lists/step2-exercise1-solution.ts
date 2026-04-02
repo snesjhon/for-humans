@@ -1,5 +1,5 @@
 // =============================================================================
-// Linked Lists — Level 2, Exercise 1: Find the Center Car — SOLUTION
+// Linked Lists — Level 3, Exercise 1: Find the Center Car — SOLUTION
 // =============================================================================
 // Goal: Practice the fast/slow pointer technique by finding the middle node.
 //
