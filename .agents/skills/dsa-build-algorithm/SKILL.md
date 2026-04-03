@@ -79,6 +79,9 @@ Use these additional rules:
 - when an algorithm seems indivisible, look for a setup/gate phase and an expansion/computation phase
 - step 1 tests should usually pass on empty or structurally simple cases that do not require later logic
 - if a later step needs extra setup, variables, loop headers, or pointer movement that the learner has not built yet, add another step instead of silently inserting that scaffolding
+- treat setup as real learner-owned progress: local variables, result arrays, stacks, pointers, loop headers, and traversal state are not free author scaffolding
+- default to more steps when needed so the learner builds the function from the first line instead of inheriting a half-written algorithm
+- if step 1 would need prewritten algorithm structure to make sense, the decomposition is wrong; introduce an earlier step
 
 ### Step 2: Write `## Building the Algorithm`
 
@@ -115,6 +118,8 @@ Create:
 Rules:
 
 - `step1-problem.ts` starts from a blank body with `throw new Error('not implemented')`
+- `step1-solution.ts` should be the smallest meaningful slice of the final algorithm that makes the step 1 tests pass
+- build the function from the first line outward; do not prefill algorithm structure ahead of the learner
 - later problem files lock prior steps and expose only the next learner-owned chunk as `throw new Error('not implemented')`
 - each file is self-contained
 - generated step files and `solution.ts` are self-executing scripts, not modules; do not add `export {}` or any other module marker just to satisfy TypeScript
@@ -129,6 +134,9 @@ Rules:
 - do not prefill bridge scaffolding between steps; if step N+1 needs new local variables, traversal state, a loop header, or another structural setup that was not built in step N, that setup must become its own learner step
 - the diff from `stepN-problem.ts` to `stepN+1-problem.ts` should reflect only previously completed learner code becoming locked plus one new TODO-owned chunk, not hidden author-added progress
 - if you catch yourself inserting code before the new `throw new Error('not implemented')` and that code was not already learner-built in the prior step, the step boundary is wrong
+- never pre-seed a problem file with result arrays, stacks, maps, counters, loop headers, pointer initialization, or traversal direction unless those exact lines were learned in an earlier step
+- for many array/string algorithms, expect one or more early setup steps before the main loop logic exists
+- a valid step sequence should read like this: blank function -> first structural line(s) -> next structural line(s) -> loop/traversal shell -> core loop behavior -> final answer wiring
 - if a local helper type would collide with a global DOM type such as `Node`, rename the local helper type instead of turning the file into a module
 
 ### Step 4: Design Cumulative Tests
@@ -146,6 +154,7 @@ Avoid these failure modes:
 
 - step tests that secretly depend on future logic
 - a step 1 scaffold that already gives away the real implementation shape
+- a step 2 or step 3 scaffold that suddenly inserts setup the learner never wrote
 - brute-force step 1 followed by optimized step 2
 - tests that validate the wrong concept for the declared step title
 - adding hidden scaffolding in a later problem file so the learner skips an intermediate construction step
@@ -206,5 +215,7 @@ The build phase is complete only if:
 - each step has its own visualization
 - no standalone `Tracing through an Example` section exists
 - no `stepN-problem.ts` introduces new non-helper scaffolding that the learner did not build in an earlier step
+- the first executable problem file is literally a blank function body with only `throw new Error('not implemented')`
+- each later executable problem file grows the function only by previously learned lines plus one new learner-owned chunk
 - generated files remain plain self-executing scripts with no module marker workaround
 - generated files omit top-of-file decorative titles and keep only the `Goal:` comment plus relevant hints
