@@ -11,7 +11,7 @@ import { loadReferencedDsaCodeFiles } from '@/lib/dsa/stackblitz';
 import MarkdownRenderer from '@/components/dsa/MarkdownRenderer/MarkdownRenderer';
 import TableOfContents from '@/components/ui/TableOfContents/TableOfContents';
 import { PageHero } from '@/components/ui/PageHero/PageHero';
-import { PageLayout } from '@/components/ui/PageLayout/PageLayout';
+import { DsaPageLayout } from '@/components/ui/DsaPageLayout/DsaPageLayout';
 
 interface Props {
   params: { slug: string };
@@ -29,7 +29,6 @@ export default function FundamentalsPage({ params }: Props) {
   const section = context?.section;
   const phase = context?.phase;
   const prereq = getPrecedingSection(params.slug);
-  const color = phase ? 'var(--primary)' : null;
   const headings = extractHeadings(guide.content);
   const codeFiles = loadReferencedDsaCodeFiles(
     guide.content,
@@ -38,8 +37,9 @@ export default function FundamentalsPage({ params }: Props) {
   );
 
   return (
-    <>
-      <PageHero>
+    <DsaPageLayout
+      hero={
+        <PageHero>
           <h1 className="text-5xl leading-tight text-[var(--fg)] font-display mb-0">
             {section?.label ??
               guide.title.replace(/\s*[–-]\s*Fundamentals/i, '')}
@@ -60,58 +60,56 @@ export default function FundamentalsPage({ params }: Props) {
               Fundamentals
             </mark>
           </div>
-      </PageHero>
-
-      <PageLayout accentColor={color} aside={<TableOfContents headings={headings} title="Contents" />}>
-          <section className="space-y-8 py-2">
-            <div className="rounded-xl p-5 bg-[var(--bg-alt)] border border-[var(--border)]">
-              <p className="text-sm mb-1 text-[var(--fg-alt)]">
-                <span className="font-semibold text-[var(--fg)]">
-                  Prerequisites:
-                </span>
-              </p>
-              {prereq ? (
-                <Link
-                  href={
-                    prereq.fundamentalsSlug
-                      ? `/fundamentals/${prereq.fundamentalsSlug}`
-                      : '/'
-                  }
-                  className="inline-flex 
-                  items-center gap-1.5 text-xs 
-                  font-medium px-3 py-1.5 rounded-lg transition-opacity hover:opacity-80 mt-2 bg-[var(--primary-tint)] text-[var(--primary)] no-underline border border-[var(--primary)]"
-                >
-                  {prereq.label} Fundamentals
-                </Link>
-              ) : (
-                <p className="text-sm italic mt-1 text-[var(--fg-comment)] mb-0">
-                  None — this is the starting point of the path.
-                </p>
-              )}
-            </div>
-            <MarkdownRenderer
-              content={guide.content}
-              fundamentalsSlug={params.slug}
-              codeFiles={codeFiles}
-            />
-            <div className="flex items-center justify-between pt-8 border-t border-t-[var(--border)]">
-              <Link
-                href="/"
-                className="text-sm transition-opacity hover:opacity-70 text-[var(--fg-comment)]"
-              >
-                ← Back to Learning Path
-              </Link>
-              {section && section.firstPass.length > 0 && (
-                <Link
-                  href={`/dsa/problems/${section.firstPass[0].id}`}
-                  className="text-sm px-4 py-2 rounded-lg font-medium transition-opacity hover:opacity-90 text-white bg-[var(--primary)]"
-                >
-                  Start First Problem →
-                </Link>
-              )}
-            </div>
-          </section>
-      </PageLayout>
-    </>
+        </PageHero>
+      }
+      aside={<TableOfContents headings={headings} title="Contents" />}
+    >
+      <section className="space-y-8 py-2">
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-alt)] p-5">
+          <p className="mb-1 text-sm text-[var(--fg-alt)]">
+            <span className="font-semibold text-[var(--fg)]">
+              Prerequisites:
+            </span>
+          </p>
+          {prereq ? (
+            <Link
+              href={
+                prereq.fundamentalsSlug
+                  ? `/fundamentals/${prereq.fundamentalsSlug}`
+                  : '/'
+              }
+              className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-[var(--primary)] bg-[var(--primary-tint)] px-3 py-1.5 text-xs font-medium text-[var(--primary)] transition-opacity no-underline hover:opacity-80"
+            >
+              {prereq.label} Fundamentals
+            </Link>
+          ) : (
+            <p className="mb-0 mt-1 text-sm italic text-[var(--fg-comment)]">
+              None — this is the starting point of the path.
+            </p>
+          )}
+        </div>
+        <MarkdownRenderer
+          content={guide.content}
+          fundamentalsSlug={params.slug}
+          codeFiles={codeFiles}
+        />
+        <div className="flex items-center justify-between border-t border-t-[var(--border)] pt-8">
+          <Link
+            href="/"
+            className="text-sm text-[var(--fg-comment)] transition-opacity hover:opacity-70"
+          >
+            ← Back to Learning Path
+          </Link>
+          {section && section.firstPass.length > 0 && (
+            <Link
+              href={`/dsa/problems/${section.firstPass[0].id}`}
+              className="rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90"
+            >
+              Start First Problem →
+            </Link>
+          )}
+        </div>
+      </section>
+    </DsaPageLayout>
   );
 }

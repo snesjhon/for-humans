@@ -115,14 +115,34 @@
 .connector {
   color: var(--fg-gutter);
   flex-shrink: 0;
+  width: 112px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 3px 0 1px;
 }
 
 .connectorLabel {
-  fill: currentColor;
   font-size: 8px;
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
   font-weight: 700;
   letter-spacing: 0.02em;
+}
+
+.connectorLane {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.connectorLaneReverse {
+  justify-content: flex-end;
+}
+
+.connectorIcon {
+  width: 74px;
+  height: 14px;
+  flex-shrink: 0;
 }
 
 .nodeTag {

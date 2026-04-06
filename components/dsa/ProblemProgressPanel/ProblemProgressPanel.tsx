@@ -21,7 +21,7 @@ export default function ProblemProgressPanel({
 
   useEffect(() => {
     let cancelled = false;
-    let timerId: number | null = null;
+    let timerId: ReturnType<typeof globalThis.setTimeout> | null = null;
     let idleId: number | null = null;
 
     const start = () => {
@@ -31,12 +31,12 @@ export default function ProblemProgressPanel({
     if ('requestIdleCallback' in window) {
       idleId = window.requestIdleCallback(start, { timeout: 250 });
     } else {
-      timerId = window.setTimeout(start, 150);
+      timerId = globalThis.setTimeout(start, 150);
     }
 
     return () => {
       cancelled = true;
-      if (timerId !== null) window.clearTimeout(timerId);
+      if (timerId !== null) globalThis.clearTimeout(timerId);
       if (idleId !== null && 'cancelIdleCallback' in window) {
         window.cancelIdleCallback(idleId);
       }
@@ -67,24 +67,26 @@ export default function ProblemProgressPanel({
 
   if (!resolved) {
     return (
-      <div className="flex flex-col gap-2 rounded-lg border border-[var(--border)] bg-[var(--bg-alt)] p-4">
-        <p className="mb-1 font-mono text-[0.6rem] font-bold uppercase tracking-[0.09em] text-[var(--fg-gutter)]">
+      <div>
+        <p className="mb-4 text-xs font-semibold text-[var(--fg)]">
           Your Progress
         </p>
-        <p className="text-sm text-[var(--fg-gutter)]">Loading progress...</p>
+        <p className="text-xs leading-relaxed text-[var(--fg-comment)]">
+          Loading progress...
+        </p>
       </div>
     );
   }
 
   if (!hasSession) {
     return (
-      <div className="flex flex-col gap-2 rounded-lg border border-[var(--border)] bg-[var(--bg-alt)] p-4">
-        <p className="mb-1 font-mono text-[0.6rem] font-bold uppercase tracking-[0.09em] text-[var(--fg-gutter)]">
+      <div>
+        <p className="mb-4 text-xs font-semibold text-[var(--fg)]">
           Your Progress
         </p>
         <Link
           href={`/login?next=${encodeURIComponent(`/dsa/problems/${problemId}`)}`}
-          className="text-sm text-[var(--fg-comment)] transition-colors no-underline hover:text-[var(--fg)]"
+          className="text-xs leading-relaxed text-[var(--fg-comment)] transition-colors no-underline hover:text-[var(--fg)]"
         >
           Sign in to track progress →
         </Link>
@@ -102,23 +104,25 @@ export default function ProblemProgressPanel({
         })),
       ]}
     >
-      <div className="flex flex-col gap-2 rounded-lg border border-[var(--border)] bg-[var(--bg-alt)] p-4">
-        <p className="mb-1 font-mono text-[0.6rem] font-bold uppercase tracking-[0.09em] text-[var(--fg-gutter)]">
+      <div>
+        <p className="mb-4 text-xs font-semibold text-[var(--fg)]">
           Your Progress
         </p>
-        <ProgressToggleAsync
-          itemType="problem"
-          itemId={`dsa-${problemId}`}
-          label="Problem complete"
-        />
-        {stepNumbers.map((n) => (
+        <div className="space-y-0.5">
           <ProgressToggleAsync
-            key={n}
-            itemType="step"
-            itemId={`dsa-${problemId}-step-${n}`}
-            label={`Step ${n} complete`}
+            itemType="problem"
+            itemId={`dsa-${problemId}`}
+            label="Problem complete"
           />
-        ))}
+          {stepNumbers.map((n) => (
+            <ProgressToggleAsync
+              key={n}
+              itemType="step"
+              itemId={`dsa-${problemId}-step-${n}`}
+              label={`Step ${n} complete`}
+            />
+          ))}
+        </div>
       </div>
     </ProgressProvider>
   );

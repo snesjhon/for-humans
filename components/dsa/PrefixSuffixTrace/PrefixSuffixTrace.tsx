@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { TraceLabel } from '../TraceLabel/TraceLabel';
 import shared from '../TraceShared/TraceShared.module.css';
 import styles from './PrefixSuffixTrace.module.css';
@@ -65,9 +66,15 @@ export default function PrefixSuffixTrace({ steps }: { steps: PrefixSuffixStep[]
           <span className={styles.legendBackward}>■ final value</span>
         </div>
         <div className={shared.nav}>
-          <button className={shared.button} disabled={idx === 0} onClick={() => setIdx(i => i - 1)}>← Prev</button>
+          <button className={shared.button} disabled={idx === 0} onClick={() => setIdx(i => i - 1)}>
+            <ChevronLeft aria-hidden="true" className="h-3.5 w-3.5" />
+            Prev
+          </button>
           <span className={shared.counter}>{idx + 1} / {steps.length}</span>
-          <button className={shared.button} disabled={idx === steps.length - 1} onClick={() => setIdx(i => i + 1)}>Next →</button>
+          <button className={shared.button} disabled={idx === steps.length - 1} onClick={() => setIdx(i => i + 1)}>
+            Next
+            <ChevronRight aria-hidden="true" className="h-3.5 w-3.5" />
+          </button>
         </div>
       </div>
 

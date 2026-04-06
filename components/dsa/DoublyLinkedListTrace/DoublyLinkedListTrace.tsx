@@ -2,6 +2,7 @@
 
 import { Fragment, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronLeft, ChevronRight, MoveLeft, MoveRight } from 'lucide-react';
 import { TraceLabel } from '../TraceLabel/TraceLabel';
 import shared from '../TraceShared/TraceShared.module.css';
 import styles from './DoublyLinkedListTrace.module.css';
@@ -38,37 +39,16 @@ function tagClassName(color?: string) {
 
 function BidirectionalConnector() {
   return (
-    <svg
-      className={styles.connector}
-      width="112"
-      height="42"
-      viewBox="0 0 112 42"
-      fill="none"
-      aria-hidden
-    >
-      <line x1="4" y1="12" x2="92" y2="12" stroke="currentColor" strokeWidth="1.5" />
-      <path
-        d="M88 8 L96 12 L88 16"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <line x1="108" y1="30" x2="20" y2="30" stroke="currentColor" strokeWidth="1.5" />
-      <path
-        d="M24 26 L16 30 L24 34"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <text x="48" y="9" textAnchor="middle" className={styles.connectorLabel}>
-        colder
-      </text>
-      <text x="64" y="27" textAnchor="middle" className={styles.connectorLabel}>
-        warmer
-      </text>
-    </svg>
+    <div className={styles.connector} aria-hidden="true">
+      <div className={styles.connectorLane}>
+        <MoveRight className={styles.connectorIcon} strokeWidth={1.75} />
+        <span className={styles.connectorLabel}>colder</span>
+      </div>
+      <div className={`${styles.connectorLane} ${styles.connectorLaneReverse}`}>
+        <MoveLeft className={styles.connectorIcon} strokeWidth={1.75} />
+        <span className={styles.connectorLabel}>warmer</span>
+      </div>
+    </div>
   );
 }
 
@@ -116,7 +96,8 @@ export default function DoublyLinkedListTrace({
             disabled={idx === 0}
             onClick={() => setIdx((i) => i - 1)}
           >
-            ← Prev
+            <ChevronLeft aria-hidden="true" className="h-3.5 w-3.5" />
+            Prev
           </button>
           <span className={shared.counter}>
             {idx + 1} / {steps.length}
@@ -126,7 +107,8 @@ export default function DoublyLinkedListTrace({
             disabled={idx === steps.length - 1}
             onClick={() => setIdx((i) => i + 1)}
           >
-            Next →
+            Next
+            <ChevronRight aria-hidden="true" className="h-3.5 w-3.5" />
           </button>
         </div>
       </div>

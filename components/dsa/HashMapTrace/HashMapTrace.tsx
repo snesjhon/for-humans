@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
+import { ChevronLeft, ChevronRight, MoveRight } from 'lucide-react';
 import { TraceLabel } from '../TraceLabel/TraceLabel';
 import shared from '../TraceShared/TraceShared.module.css';
 import styles from './HashMapTrace.module.css';
@@ -58,9 +59,15 @@ export default function HashMapTrace({ steps }: { steps: HashMapStep[] }) {
           <span><span className={`${shared.ptr} ${styles.ptrCurrent}`}>i</span> current</span>
         </div>
         <div className={shared.nav}>
-          <button className={shared.button} disabled={idx === 0} onClick={() => setIdx(i => i - 1)}>← Prev</button>
+          <button className={shared.button} disabled={idx === 0} onClick={() => setIdx(i => i - 1)}>
+            <ChevronLeft aria-hidden="true" className="h-3.5 w-3.5" />
+            Prev
+          </button>
           <span className={shared.counter}>{idx + 1} / {steps.length}</span>
-          <button className={shared.button} disabled={idx === steps.length - 1} onClick={() => setIdx(i => i + 1)}>Next →</button>
+          <button className={shared.button} disabled={idx === steps.length - 1} onClick={() => setIdx(i => i + 1)}>
+            Next
+            <ChevronRight aria-hidden="true" className="h-3.5 w-3.5" />
+          </button>
         </div>
       </div>
 
@@ -130,7 +137,7 @@ export default function HashMapTrace({ steps }: { steps: HashMapStep[] }) {
                       <span className={styles.entryKey}>{String(key)}</span>
                       {value !== null && (
                         <>
-                          <span className={styles.entryArrow}>→</span>
+                          <MoveRight aria-hidden="true" className={styles.entryArrow} strokeWidth={1.9} />
                           <span className={styles.entryVal}>{String(value)}</span>
                         </>
                       )}

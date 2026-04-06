@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { Circle, CircleCheck } from 'lucide-react'
 import { getApiKey } from '@/lib/fullstack/apiKey'
 import { getProjectPath } from '@/lib/fullstack/projectPath'
 
@@ -103,7 +104,7 @@ export default function CheckWork({ slug }: Props) {
               <ul className="space-y-1">
                 {result.covered.map((item, i) => (
                   <li key={i} className="flex gap-2 text-[var(--fg-alt)]">
-                    <span className="text-[var(--green)] shrink-0">✓</span>
+                    <CircleCheck className="mt-0.5 h-4 w-4 shrink-0 stroke-[2.2] text-[var(--green)]" />
                     {item}
                   </li>
                 ))}
@@ -117,7 +118,7 @@ export default function CheckWork({ slug }: Props) {
               <ul className="space-y-1">
                 {result.missed.map((item, i) => (
                   <li key={i} className="flex gap-2 text-[var(--fg-alt)]">
-                    <span className="text-[var(--orange)] shrink-0">○</span>
+                    <Circle className="mt-0.5 h-4 w-4 shrink-0 stroke-2 text-[var(--orange)]" />
                     {item}
                   </li>
                 ))}

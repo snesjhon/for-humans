@@ -1,67 +1,73 @@
 /* ─────────────────────────────────────────────────────────────────────────────
-   DSA for Humans — GitLab Light (default)
-   Source: github.com/snesjhon/gitlab-nvim-theme
+   DSA for Humans — Soft Hints
+   fafafa page bg, white cards, color only in accents/icons/badges
    ───────────────────────────────────────────────────────────────────────────── */
 :root {
-  --primary: var(--purple);
-  --primary-tint: #ede8f8;
+  --primary: var(--blue);
+  --primary-tint: #eaedff;
   --active-phase-color: var(--primary);
 
-  --bg: #fafaff;
-  --bg-alt: #f0f0fa;
-  --bg-highlight: #efeffc;
-  --sel-bg: #e2def8;
-  --border: #d0d0e8;
-  --border-dark: #b0b0d8;
-  --fg: #303030;
-  --fg-alt: #585870;
-  --fg-comment: #7878a8;
-  --fg-gutter: #a0a0c0;
+  --bg: #ffffff;
+  --bg-alt: #f5f5f5;
+  --bg-highlight: #eeeeee;
+  --sel-bg: #dce0ff;
+  --border: #eeeeee;
+  --border-dark: #dddddd;
+  --fg: #1a1a1a;
+  --fg-alt: #555555;
+  --fg-comment: #888888;
+  --fg-gutter: #bbbbbb;
 
-  --blue: #006cd8;
-  --link: #165390;
-  --green: #0a7f3d;
-  --orange: #af551d;
-  --red: #a31700;
-  --purple: #583cac;
-  --cyan: #00798a;
+  --blue: #4c68e3;
+  --link: #4c68e3;
+  --code-fg: #2236b0;
+  --green: #1a8a44;
+  --orange: #cc4400;
+  --red: #cc1100;
+  --purple: #5533cc;
+  --teal: #2a7c72;
+  --cyan: #0088aa;
 
-  --blue-tint: #e8f0fd;
-  --green-tint: #e6f4ec;
-  --orange-tint: #fdf3e6;
-  --purple-tint: #ede8f8;
-  --red-tint: #f7e7e4;
-  --cyan-tint: #e6f5f7;
+  --blue-tint: #eaedff;
+  --green-tint: #e2f5e8;
+  --orange-tint: #fff0e8;
+  --purple-tint: #f0e8ff;
+  --red-tint: #ffe8e6;
+  --teal-tint: #e6f5f3;
+  --cyan-tint: #e0f4f8;
 }
 
-/* GitLab Dark — .dark on <html> */
+/* Dark — .dark on <html> */
 .dark {
-  --primary: var(--purple);
-  --primary-tint: #2d2650;
-  --bg: #28262b;
-  --bg-alt: #222025;
-  --bg-highlight: #312f35;
-  --sel-bg: #5d5277;
-  --border: #3e3c42;
-  --border-dark: #555560;
-  --fg: #ffffff;
-  --fg-alt: #aeada8;
-  --fg-comment: #8b7aa0;
-  --fg-gutter: #666666;
+  --primary: var(--teal);
+  --primary-tint: #0d2e2a;
+  --bg: #141414;
+  --bg-alt: #1c1c1c;
+  --bg-highlight: #242424;
+  --sel-bg: #0d3330;
+  --border: #2e2e2e;
+  --border-dark: #3a3a3a;
+  --fg: #f0f0f0;
+  --fg-alt: #aaaaaa;
+  --fg-comment: #777777;
+  --fg-gutter: #444444;
 
-  --blue: #7fb6ed;
-  --link: #bfa5c0;
-  --green: #52b87a;
-  --orange: #d99530;
-  --red: #f57f6c;
-  --purple: #ad95e9;
-  --cyan: #32c5d2;
-  --pink: #f88aaf;
+  --blue: #4488ee;
+  --link: #4488ee;
+  --code-fg: #8fa8f5;
+  --green: #33bb66;
+  --orange: #ff6622;
+  --red: #ff4422;
+  --purple: #aa66ff;
+  --teal: #33aa99;
+  --cyan: #22ccdd;
+  --pink: #ff55aa;
 
-  --blue-tint: #1a2838;
-  --green-tint: #1f3828;
-  --orange-tint: #342a12;
-  --purple-tint: #2d2650;
-  --red-tint: #3a2321;
-  --cyan-tint: #163033;
+  --blue-tint: #0d2244;
+  --green-tint: #0d3320;
+  --orange-tint: #331500;
+  --purple-tint: #1a0044;
+  --red-tint: #330800;
+  --teal-tint: #0d2e2a;
+  --cyan-tint: #003344;
 }

@@ -39,7 +39,13 @@ export default async function RootLayout({
       className={`${newsreader.variable} ${plusJakarta.variable}`}
     >
       <body className="min-h-screen bg-[var(--bg)] text-[var(--fg)]">
-        <div className="grid grid-cols-[0.1fr_1fr]">
+        <div
+          className="grid"
+          style={{
+            gridTemplateColumns: 'var(--sidebar-w, 260px) 1fr',
+            transition: 'grid-template-columns 200ms ease',
+          }}
+        >
           <SiteNav
             availableProblemIds={availableProblemIds}
             availableFundamentalsSlugs={availableFundamentalsSlugs}

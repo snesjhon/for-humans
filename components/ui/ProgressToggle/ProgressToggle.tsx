@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
+import { Circle, CircleCheck } from 'lucide-react'
 import { toggleProgress, type ItemType } from '@/lib/progress/actions'
 
 interface Props {
@@ -12,6 +13,7 @@ interface Props {
 export function ProgressToggle({ itemType, itemId, initialCompleted }: Props) {
   const [completed, setCompleted] = useState(initialCompleted)
   const [isPending, startTransition] = useTransition()
+  const Icon = completed ? CircleCheck : Circle
 
   function handleToggle() {
     const wasCompleted = completed
@@ -30,17 +32,12 @@ export function ProgressToggle({ itemType, itemId, initialCompleted }: Props) {
       onClick={handleToggle}
       disabled={isPending}
       aria-label={completed ? 'Mark incomplete' : 'Mark complete'}
-      className={`shrink-0 flex h-5 w-5 items-center justify-center rounded border bg-transparent transition-colors ${
-        completed
-          ? 'border-[var(--green)] bg-[var(--green-tint)]'
-          : 'border-[var(--border)]'
-      } ${isPending ? 'opacity-50' : 'opacity-100'}`}
+      className={`shrink-0 bg-transparent p-0 transition-opacity ${isPending ? 'opacity-50' : 'opacity-100'}`}
     >
-      {completed && (
-        <span className="text-[10px] leading-none text-[var(--green)]">
-          ✓
-        </span>
-      )}
+      <Icon
+        aria-hidden="true"
+        className={`${completed ? 'icon-circle-check text-[var(--green)]' : 'icon-circle text-[var(--border)]'}`}
+      />
     </button>
   )
 }

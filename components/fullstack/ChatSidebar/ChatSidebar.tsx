@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import ReactMarkdown from 'react-markdown'
+import { CircleCheck } from 'lucide-react'
 import { getApiKey } from '@/lib/fullstack/apiKey'
 import Anthropic from '@anthropic-ai/sdk'
 import { stripWrapToken } from '@/lib/fullstack/chat'
@@ -449,7 +450,8 @@ Shape:
                   cursor: busy ? 'not-allowed' : 'pointer',
                 }}
               >
-                ✓ Wrap Up
+                <CircleCheck className="h-3.5 w-3.5 stroke-[2.2]" />
+                Wrap Up
               </button>
               <button
                 onClick={handleClose}

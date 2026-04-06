@@ -93,6 +93,8 @@
 .arrow {
   color: var(--fg-gutter);
   flex-shrink: 0;
+  width: 28px;
+  height: 20px;
 }
 
 .ptrBlue {

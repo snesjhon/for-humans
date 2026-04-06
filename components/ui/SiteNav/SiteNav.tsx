@@ -3,12 +3,11 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
+import { ChevronDown, ChevronLeft, ChevronRight, Moon, Sun } from 'lucide-react';
 import { JOURNEY as DSA_JOURNEY } from '@/lib/dsa/journey';
 import { PROBLEM_TITLES } from '@/lib/dsa/titles';
 import { JourneyPanel } from '../JourneyPanel/JourneyPanel';
 import type { JourneyPanelPhase } from '../JourneyPanel/JourneyPanel';
-import { SignOutButton } from '../SignOutButton/SignOutButton';
-import { createClient } from '@/lib/supabase/client';
 
 // ── DSA static lookups ────────────────────────────────────────────────────────
 
@@ -72,6 +71,18 @@ function dsaActiveSection(path: string): string | null {
   return null;
 }
 
+function sectionIcon(label: string): string {
+  const words = label
+    .replace(/[^a-zA-Z0-9 ]/g, '')
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (words.length === 0) return '?';
+  if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
+  return (words[0][0] + words[1][0]).toUpperCase();
+}
+
 type AppKey = 'dsa';
 
 function appFromPath(path: string): AppKey | null {
@@ -102,13 +113,12 @@ function AppHeader({
       }`}
     >
       <span className="flex-1">{label}</span>
-      <span
-        className={`inline-block shrink-0 text-[0.65rem] text-[var(--fg-gutter)] transition-transform duration-200 ${
+      <ChevronDown
+        aria-hidden="true"
+        className={`h-3.5 w-3.5 shrink-0 text-[var(--fg-gutter)] transition-transform duration-200 ${
           open ? 'rotate-180' : 'rotate-0'
         }`}
-      >
-        ↓
-      </span>
+      />
     </button>
   );
 }
@@ -129,8 +139,7 @@ export function SiteNav({
 
   const pathname = usePathname();
   const [dark, setDark] = useState(false);
-  const [email, setEmail] = useState('');
-  const [authResolved, setAuthResolved] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
   const [openApps, setOpenApps] = useState<Set<AppKey>>(() => {
     const app = appFromPath(pathname);
     return app ? new Set([app]) : new Set();
@@ -141,23 +150,12 @@ export function SiteNav({
   }, []);
 
   useEffect(() => {
-    let cancelled = false;
-
-    async function loadUser() {
-      const supabase = createClient();
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      if (cancelled) return;
-      setEmail(session?.user.email ?? '');
-      setAuthResolved(true);
-    }
-
-    loadUser();
-    return () => {
-      cancelled = true;
-    };
+    const saved = localStorage.getItem('sidebar-collapsed') === 'true';
+    setCollapsed(saved);
+    document.documentElement.style.setProperty(
+      '--sidebar-w',
+      saved ? '44px' : '260px',
+    );
   }, []);
 
   // Auto-open the current app's section when navigating
@@ -187,8 +185,77 @@ export function SiteNav({
     setDark(next);
   };
 
+  const toggleCollapsed = () => {
+    const next = !collapsed;
+    setCollapsed(next);
+    localStorage.setItem('sidebar-collapsed', String(next));
+    document.documentElement.style.setProperty(
+      '--sidebar-w',
+      next ? '44px' : '260px',
+    );
+  };
+
+  const activeSectionId = dsaActiveSection(pathname);
+
+  if (collapsed) {
+    return (
+      <nav className="sticky left-0 top-0 z-50 flex h-screen w-[44px] flex-col border-r border-r-[var(--border)] bg-white dark:bg-[var(--bg-alt)]">
+        <div className="flex shrink-0 items-center justify-center border-b border-b-[var(--border)] py-[18px]">
+          <span className="text-[0.85rem] italic font-normal text-[var(--fg)] [font-family:var(--font-display)]">
+            M
+          </span>
+        </div>
+
+        <div className="flex flex-1 flex-col overflow-y-auto py-2">
+          {DSA_PHASES.map((phase) =>
+            phase.sections.map((section) => {
+              const isActive = activeSectionId === section.id;
+              return (
+                <button
+                  key={section.id}
+                  title={section.label}
+                  onClick={toggleCollapsed}
+                  className={`flex w-full cursor-pointer items-center justify-center border-none bg-transparent py-[6px] transition-colors focus:outline-none ${
+                    isActive
+                      ? 'font-bold text-[var(--primary)]'
+                      : 'text-[var(--fg-gutter)] hover:text-[var(--fg)]'
+                  }`}
+                >
+                  <span className="text-[0.6rem] font-mono font-bold leading-none">
+                    {sectionIcon(section.label)}
+                  </span>
+                </button>
+              );
+            }),
+          )}
+        </div>
+
+        <div className="flex shrink-0 flex-col items-center gap-2 border-t border-t-[var(--border)] py-3">
+          <button
+            onClick={toggleDark}
+            aria-label="Toggle dark mode"
+            className="cursor-pointer bg-transparent px-2 py-1 text-[var(--fg-comment)]"
+          >
+            {dark ? (
+              <Sun aria-hidden="true" className="h-4 w-4" />
+            ) : (
+              <Moon aria-hidden="true" className="h-4 w-4" />
+            )}
+          </button>
+          <button
+            onClick={toggleCollapsed}
+            aria-label="Expand sidebar"
+            className="cursor-pointer rounded border border-[var(--border)] bg-transparent px-1.5 py-1 text-[0.65rem] leading-none text-[var(--fg-gutter)] hover:text-[var(--fg)] focus:outline-none"
+          >
+            <ChevronRight aria-hidden="true" className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      </nav>
+    );
+  }
+
   return (
-    <nav className="sticky left-0 top-0 z-50 flex h-screen w-[260px] flex-col border-r border-r-[var(--border)] bg-[var(--bg-alt)]">
+    <nav className="sticky left-0 top-0 z-50 flex h-screen w-full flex-col border-r border-r-[var(--border)] bg-white dark:bg-[var(--bg-alt)]">
       {/* Branding */}
       <div className="shrink-0 border-b border-b-[var(--border)] px-4 pb-[14px] pt-[18px]">
         <Link href="/" className="no-underline block focus:outline-none">
@@ -209,13 +276,13 @@ export function SiteNav({
         />
         {openApps.has('dsa') && (
           <div className="min-h-0 flex-1 overflow-y-auto">
-            <JourneyPanel
-              phases={DSA_PHASES}
-              pathname={pathname}
-              activeSectionId={dsaActiveSection(pathname)}
-              activeItemKey={
-                pathname.match(/^\/dsa\/problems\/([^/]+)/)?.[1] ?? null
-              }
+          <JourneyPanel
+            phases={DSA_PHASES}
+            pathname={pathname}
+            activeSectionId={activeSectionId}
+            activeItemKey={
+              pathname.match(/^\/dsa\/problems\/([^/]+)/)?.[1] ?? null
+            }
               activeFundamentalsSlug={
                 pathname.match(/^\/dsa\/fundamentals\/([^/]+)/)?.[1] ?? null
               }
@@ -228,32 +295,25 @@ export function SiteNav({
         )}
       </div>
 
-      <div className="flex px-2 py-4 justify-between border-t border-t-[var(--border)]">
-        <div>
-          <button
-            onClick={toggleDark}
-            aria-label="Toggle dark mode"
-            className="bg-transparent cursor-pointer text-[var(--fg-comment)] text-sm leading-none px-2 py-2"
-          >
-            {dark ? '☀' : '◑'}
-          </button>
-        </div>
-        {email ? (
-          <SignOutButton email={email ?? ''} />
-        ) : authResolved ? (
-          <div>
-            <Link
-              href="/login"
-              className="text-[0.75rem] text-[var(--fg-comment)] hover:text-[var(--fg)] transition-colors no-underline"
-            >
-              Sign in to track progress →
-            </Link>
-          </div>
-        ) : (
-          <div className="text-[0.75rem] text-[var(--fg-gutter)]">
-            Checking sign-in...
-          </div>
-        )}
+      <div className="flex shrink-0 items-center justify-between border-t border-t-[var(--border)] px-3 py-3">
+        <button
+          onClick={toggleDark}
+          aria-label="Toggle dark mode"
+          className="cursor-pointer bg-transparent px-1 py-1 text-[var(--fg-comment)]"
+        >
+          {dark ? (
+            <Sun aria-hidden="true" className="h-4 w-4" />
+          ) : (
+            <Moon aria-hidden="true" className="h-4 w-4" />
+          )}
+        </button>
+        <button
+          onClick={toggleCollapsed}
+          aria-label="Collapse sidebar"
+          className="cursor-pointer rounded border border-[var(--border)] bg-transparent px-1.5 py-1 text-[0.65rem] leading-none text-[var(--fg-gutter)] hover:text-[var(--fg)] focus:outline-none"
+        >
+          <ChevronLeft aria-hidden="true" className="h-3.5 w-3.5" />
+        </button>
       </div>
     </nav>
   );

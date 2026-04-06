@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/PathComponents/PathComponents';
 import { ProgressToggle } from '@/components/ui/ProgressToggle/ProgressToggle';
 import { SectionProgress } from '@/components/ui/SectionProgress/SectionProgress';
+import { PhaseTracker } from '@/components/ui/PhaseTracker/PhaseTracker';
 import { pColor } from '@/components/ui/pathUtils';
 import { PageHero } from '@/components/ui/PageHero/PageHero';
 import pathStyles from '@/components/ui/PathComponents/PathComponents.module.css';

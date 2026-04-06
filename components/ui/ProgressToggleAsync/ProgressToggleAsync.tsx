@@ -2,6 +2,7 @@
 
 import { useTransition } from 'react'
 import { useProgress } from '../ProgressProvider/ProgressProvider'
+import { ProgressMark } from '../ProgressMark/ProgressMark'
 import type { ItemType } from '@/lib/progress/actions'
 
 interface Props {
@@ -24,25 +25,21 @@ export function ProgressToggleAsync({ itemType, itemId, label }: Props) {
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-start gap-2 rounded-md px-2 py-1 transition-colors hover:bg-[var(--bg-alt)]">
       <button
         onClick={handleToggle}
         disabled={isPending || loading}
         aria-label={completed ? 'Mark incomplete' : 'Mark complete'}
-        className={`shrink-0 flex h-5 w-5 items-center justify-center rounded border bg-transparent transition-colors ${
-          completed
-            ? 'border-[var(--green)] bg-[var(--green-tint)]'
-            : 'border-[var(--border)]'
-        } ${isPending || loading ? 'opacity-50' : 'opacity-100'}`}
+        className={`mt-0.5 appearance-none rounded border-0 bg-transparent p-0 shadow-none focus:outline-none ${isPending || loading ? 'opacity-50' : 'opacity-100'}`}
       >
-        {completed && (
-          <span className="text-[10px] leading-none text-[var(--green)]">
-            ✓
-          </span>
-        )}
+        <ProgressMark completed={completed} />
       </button>
       {label && (
-        <span className={`text-sm text-[var(--fg-comment)] ${loading ? 'opacity-30' : 'opacity-100'}`}>
+        <span
+          className={`text-xs leading-snug text-[var(--fg-comment)] ${
+            loading ? 'opacity-30' : 'opacity-100'
+          }`}
+        >
           {label}
         </span>
       )}

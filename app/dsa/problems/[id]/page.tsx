@@ -32,7 +32,7 @@ import {
 import MarkdownRenderer from '@/components/dsa/MarkdownRenderer/MarkdownRenderer';
 import TableOfContents from '@/components/ui/TableOfContents/TableOfContents';
 import { PageHero } from '@/components/ui/PageHero/PageHero';
-import { PageLayout } from '@/components/ui/PageLayout/PageLayout';
+import { DsaPageLayout } from '@/components/ui/DsaPageLayout/DsaPageLayout';
 
 const ProblemProgressPanel = dynamic(
   () => import('@/components/dsa/ProblemProgressPanel/ProblemProgressPanel'),
@@ -95,7 +95,6 @@ export default function ProblemPage({ params }: Props) {
   const phase = primarySection
     ? getPhaseForSection(primarySection.id)
     : undefined;
-  const color = phase ? 'var(--primary)' : null;
   const difficulty = getDifficultyForProblem(params.id);
 
   const stepNumbers = getStepNumbers(problem.slug);
@@ -118,8 +117,9 @@ export default function ProblemPage({ params }: Props) {
   }
 
   return (
-    <>
-      <PageHero>
+    <DsaPageLayout
+      hero={
+        <PageHero>
           <h1 className="text-5xl font-display leading-tight text-[var(--fg)] mb-0">
             {problem.title}
           </h1>
@@ -148,51 +148,49 @@ export default function ProblemPage({ params }: Props) {
               </mark>
             )}
           </div>
-      </PageHero>
-
-      <PageLayout accentColor={color} aside={<TableOfContents headings={headings} title="Contents" />}>
+        </PageHero>
+      }
+      progress={
+        <ProblemProgressPanel problemId={params.id} stepNumbers={stepNumbers} />
+      }
+      aside={<TableOfContents headings={headings} title="Contents" />}
+    >
         <section className="space-y-8">
-            <ProblemProgressPanel
-              problemId={params.id}
-              stepNumbers={stepNumbers}
+          {mentalModelContent ? (
+            <MarkdownRenderer
+              content={mentalModelContent}
+              problemSlug={problem.slug}
+              codeFiles={codeFiles}
             />
+          ) : (
+            <p className="text-base text-[var(--fg-gutter)]">
+              Mental model coming soon.
+            </p>
+          )}
 
-            {mentalModelContent ? (
-              <MarkdownRenderer
-                content={mentalModelContent}
-                problemSlug={problem.slug}
-                codeFiles={codeFiles}
-              />
+          <div className="flex items-center justify-between border-t border-t-[var(--border)] pt-6">
+            {prevProblem ? (
+              <Link
+                href={`/dsa/problems/${prevProblem.id}`}
+                className="flex items-center gap-2 text-sm text-[var(--fg-comment)] transition-opacity hover:opacity-70"
+              >
+                ← {prevProblem.id}. {prevProblem.title}
+              </Link>
             ) : (
-              <p className="text-base text-[var(--fg-gutter)]">
-                Mental model coming soon.
-              </p>
+              <div />
             )}
-
-            <div className="flex items-center justify-between pt-6 border-t border-t-[var(--border)]">
-              {prevProblem ? (
-                <Link
-                  href={`/dsa/problems/${prevProblem.id}`}
-                  className="flex items-center gap-2 text-sm transition-opacity hover:opacity-70 text-[var(--fg-comment)]"
-                >
-                  ← {prevProblem.id}. {prevProblem.title}
-                </Link>
-              ) : (
-                <div />
-              )}
-              {nextProblem ? (
-                <Link
-                  href={`/dsa/problems/${nextProblem.id}`}
-                  className="flex items-center gap-2 text-sm transition-opacity hover:opacity-70 text-[var(--fg-comment)]"
-                >
-                  {nextProblem.id}. {nextProblem.title} →
-                </Link>
-              ) : (
-                <div />
-              )}
-            </div>
+            {nextProblem ? (
+              <Link
+                href={`/dsa/problems/${nextProblem.id}`}
+                className="flex items-center gap-2 text-sm text-[var(--fg-comment)] transition-opacity hover:opacity-70"
+              >
+                {nextProblem.id}. {nextProblem.title} →
+              </Link>
+            ) : (
+              <div />
+            )}
+          </div>
         </section>
-      </PageLayout>
-    </>
+    </DsaPageLayout>
   );
 }

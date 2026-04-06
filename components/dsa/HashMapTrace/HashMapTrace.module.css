@@ -108,7 +108,9 @@
 
 .entryArrow {
   color: var(--fg-gutter);
-  font-size: 11px;
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
 }
 
 .entryVal {

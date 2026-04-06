@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
+import { Circle, CircleCheck } from 'lucide-react'
 import { toggleProgress } from '@/lib/progress/actions'
 
 interface Props {
@@ -22,6 +23,7 @@ export function SectionProgress({
 
   const [sectionDone, setSectionDone] = useState(initialSectionCompleted)
   const [isPending, startTransition] = useTransition()
+  const Icon = sectionDone ? CircleCheck : Circle
 
   function handleSectionToggle() {
     const wasDone = sectionDone
@@ -46,17 +48,12 @@ export function SectionProgress({
         onClick={handleSectionToggle}
         disabled={isPending}
         aria-label={sectionDone ? 'Mark section incomplete' : 'Mark section complete'}
-        className={`shrink-0 flex h-4 w-4 items-center justify-center rounded border bg-transparent transition-colors ${
-          sectionDone
-            ? 'border-[var(--green)] bg-[var(--green-tint)]'
-            : 'border-[var(--border)]'
-        } ${isPending ? 'opacity-50' : 'opacity-100'}`}
+        className={`shrink-0 bg-transparent p-0 transition-opacity ${isPending ? 'opacity-50' : 'opacity-100'}`}
       >
-        {sectionDone && (
-          <span className="text-[8px] leading-none text-[var(--green)]">
-            ✓
-          </span>
-        )}
+        <Icon
+          aria-hidden="true"
+          className={sectionDone ? 'icon-circle-check text-[var(--green)]' : 'icon-circle text-[var(--border)]'}
+        />
       </button>
     </div>
   )
