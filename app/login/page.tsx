@@ -48,17 +48,17 @@ export default async function LoginPage({
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[var(--ctp-bg-pane)]">
-      <div className="w-full max-w-sm px-8 py-10 border border-[var(--ctp-surface)] rounded-xl bg-[var(--ctp-bg-pane-secondary)]">
-        <h1 className="mb-2 text-3xl italic font-normal text-[var(--ctp-text-body)] [font-family:var(--font-display)]">
+    <div className="min-h-screen flex items-center justify-center bg-[var(--ms-bg-pane)]">
+      <div className="w-full max-w-sm px-8 py-10 border border-[var(--ms-surface)] rounded-xl bg-[var(--ms-bg-pane-secondary)]">
+        <h1 className="mb-2 text-3xl italic font-normal text-[var(--ms-text-body)] [font-family:var(--font-display)]">
           MentalSystems
         </h1>
-        <p className="text-sm text-[var(--ctp-text-faint)] mb-8">
+        <p className="text-sm text-[var(--ms-text-faint)] mb-8">
           Sign in to track your progress.
         </p>
 
         {searchParams.error && (
-          <p className="text-sm text-[var(--ctp-red)] mb-4">
+          <p className="text-sm text-[var(--ms-red)] mb-4">
             Sign in failed. Please try again.
           </p>
         )}
@@ -67,7 +67,7 @@ export default async function LoginPage({
           <form action={signInWithGitHub}>
             <button
               type="submit"
-              className="w-full py-2.5 px-4 rounded-lg border border-[var(--ctp-surface)] bg-[var(--ctp-bg-pane)] text-[var(--ctp-text-body)] text-sm font-medium hover:bg-[var(--ctp-bg-pane-tertiary)] transition-colors cursor-pointer"
+              className="w-full py-2.5 px-4 rounded-lg border border-[var(--ms-surface)] bg-[var(--ms-bg-pane)] text-[var(--ms-text-body)] text-sm font-medium hover:bg-[var(--ms-bg-pane-tertiary)] transition-colors cursor-pointer"
             >
               Continue with GitHub
             </button>
@@ -76,7 +76,7 @@ export default async function LoginPage({
           <form action={signInWithGoogle}>
             <button
               type="submit"
-              className="w-full py-2.5 px-4 rounded-lg border border-[var(--ctp-surface)] bg-[var(--ctp-bg-pane)] text-[var(--ctp-text-body)] text-sm font-medium hover:bg-[var(--ctp-bg-pane-tertiary)] transition-colors cursor-pointer"
+              className="w-full py-2.5 px-4 rounded-lg border border-[var(--ms-surface)] bg-[var(--ms-bg-pane)] text-[var(--ms-text-body)] text-sm font-medium hover:bg-[var(--ms-bg-pane-tertiary)] transition-colors cursor-pointer"
             >
               Continue with Google
             </button>

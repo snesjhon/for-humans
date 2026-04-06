@@ -16,7 +16,7 @@ export function VisualCityMap() {
   ];
   return (
     <div className="pt-[22px] px-[14px] pb-[14px] w-full flex flex-col gap-2">
-      <div className="font-[ui-monospace,monospace] text-[0.52rem] text-[var(--ctp-text-faint)] tracking-[0.06em] uppercase">
+      <div className="font-[ui-monospace,monospace] text-[0.52rem] text-[var(--ms-text-faint)] tracking-[0.06em] uppercase">
         city road map
       </div>
       <div className="relative h-[130px]">
@@ -34,7 +34,7 @@ export function VisualCityMap() {
                 y1={na.y}
                 x2={nb.x}
                 y2={nb.y}
-                stroke="var(--ctp-surface)"
+                stroke="var(--ms-surface)"
                 strokeWidth="1.5"
               />
             );
@@ -45,8 +45,8 @@ export function VisualCityMap() {
                 cx={x}
                 cy={y}
                 r="10"
-                fill="var(--ctp-blue-surface)"
-                stroke="var(--ctp-blue)"
+                fill="var(--ms-blue-surface)"
+                stroke="var(--ms-blue)"
                 strokeWidth="1.5"
               />
               <text
@@ -56,7 +56,7 @@ export function VisualCityMap() {
                 fontFamily="ui-monospace, monospace"
                 fontSize="9"
                 fontWeight="700"
-                fill="var(--ctp-blue)"
+                fill="var(--ms-blue)"
               >
                 {id}
               </text>
@@ -64,7 +64,7 @@ export function VisualCityMap() {
           ))}
         </svg>
       </div>
-      <div className="font-[ui-monospace,monospace] text-[0.55rem] text-[var(--ctp-text-faint)]">
+      <div className="font-[ui-monospace,monospace] text-[0.55rem] text-[var(--ms-text-faint)]">
         nodes + edges · visited set
       </div>
     </div>

@@ -15,14 +15,14 @@ import {
   getDifficultyForProblem,
 } from '@/lib/dsa/journey';
 const DIFF_BG: Record<string, string> = {
-  easy: 'var(--ctp-green-surface)',
-  medium: 'var(--ctp-peach-surface)',
-  hard: 'var(--ctp-red-surface)',
+  easy: 'var(--ms-green-surface)',
+  medium: 'var(--ms-peach-surface)',
+  hard: 'var(--ms-red-surface)',
 };
 const DIFF_FG: Record<string, string> = {
-  easy: 'var(--ctp-green)',
-  medium: 'var(--ctp-peach)',
-  hard: 'var(--ctp-red)',
+  easy: 'var(--ms-green)',
+  medium: 'var(--ms-peach)',
+  hard: 'var(--ms-red)',
 };
 import { extractHeadings } from '@/lib/dsa/headings';
 import {
@@ -39,11 +39,11 @@ const ProblemProgressPanel = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex flex-col gap-2 rounded-lg border border-[var(--ctp-surface)] bg-[var(--ctp-bg-pane-secondary)] p-4">
-        <p className="mb-1 font-mono text-[0.6rem] font-bold uppercase tracking-[0.09em] text-[var(--ctp-text-faint)]">
+      <div className="flex flex-col gap-2 rounded-lg border border-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)] p-4">
+        <p className="mb-1 font-mono text-[0.6rem] font-bold uppercase tracking-[0.09em] text-[var(--ms-text-faint)]">
           Your Progress
         </p>
-        <p className="text-sm text-[var(--ctp-text-faint)]">
+        <p className="text-sm text-[var(--ms-text-faint)]">
           Loading progress...
         </p>
       </div>
@@ -128,25 +128,25 @@ export default function ProblemPage({ params }: Props) {
     <DsaPageLayout
       hero={
         <PageHero>
-          <h1 className="text-5xl font-display leading-tight text-[var(--ctp-text-body)] mb-0">
+          <h1 className="text-5xl font-display leading-tight text-[var(--ms-text-body)] mb-0">
             {problem.title}
           </h1>
           {primarySection && (
-            <p className="text-lg italic leading-snug text-[var(--ctp-mauve)] mb-6">
+            <p className="text-lg italic leading-snug text-[var(--ms-mauve)] mb-6">
               &ldquo;{primarySection.mentalModelHook}&rdquo;
             </p>
           )}
 
           <div className="flex items-center gap-2">
             {phase && (
-              <mark className="text-xs bg-transparent border border-[var(--ctp-surface)] rounded text-[var(--ctp-text-muted)]">
+              <mark className="text-xs bg-transparent border border-[var(--ms-surface)] rounded text-[var(--ms-text-muted)]">
                 {phase.emoji} {phase.label}
               </mark>
             )}
 
             {difficulty && (
               <mark
-                className="text-xs  border border-[var(--ctp-surface)] rounded"
+                className="text-xs  border border-[var(--ms-surface)] rounded"
                 style={{
                   background: DIFF_BG[difficulty],
                   color: DIFF_FG[difficulty],
@@ -171,16 +171,16 @@ export default function ProblemPage({ params }: Props) {
             codeFiles={codeFiles}
           />
         ) : (
-          <p className="text-base text-[var(--ctp-text-faint)]">
+          <p className="text-base text-[var(--ms-text-faint)]">
             Mental model coming soon.
           </p>
         )}
 
-        <div className="flex items-center justify-between border-t border-t-[var(--ctp-surface)] pt-6">
+        <div className="flex items-center justify-between border-t border-t-[var(--ms-surface)] pt-6">
           {prevProblem ? (
             <Link
               href={`/dsa/problems/${prevProblem.id}`}
-              className="flex items-center gap-2 text-sm text-[var(--ctp-text-subtle)] transition-opacity hover:opacity-70"
+              className="flex items-center gap-2 text-sm text-[var(--ms-text-subtle)] transition-opacity hover:opacity-70"
             >
               ← {prevProblem.id}. {prevProblem.title}
             </Link>
@@ -190,7 +190,7 @@ export default function ProblemPage({ params }: Props) {
           {nextProblem ? (
             <Link
               href={`/dsa/problems/${nextProblem.id}`}
-              className="flex items-center gap-2 text-sm text-[var(--ctp-text-subtle)] transition-opacity hover:opacity-70"
+              className="flex items-center gap-2 text-sm text-[var(--ms-text-subtle)] transition-opacity hover:opacity-70"
             >
               {nextProblem.id}. {nextProblem.title} →
             </Link>

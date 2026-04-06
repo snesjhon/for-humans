@@ -56,15 +56,15 @@ export function UserAvatarDropdown() {
   }
 
   if (!resolved) {
-    return <div className="h-[41px] border-b border-b-[var(--ctp-surface)]" />;
+    return <div className="h-[41px] border-b border-b-[var(--ms-surface)]" />;
   }
 
   if (!email) {
     return (
-      <div className="flex items-center border-b border-b-[var(--ctp-surface)] px-3 py-2.5">
+      <div className="flex items-center border-b border-b-[var(--ms-surface)] px-3 py-2.5">
         <Link
           href="/login"
-          className="text-[0.75rem] text-[var(--ctp-text-subtle)] transition-colors no-underline hover:text-[var(--ctp-text-body)]"
+          className="text-[0.75rem] text-[var(--ms-text-subtle)] transition-colors no-underline hover:text-[var(--ms-text-body)]"
         >
           Sign in to track progress →
         </Link>
@@ -77,20 +77,20 @@ export function UserAvatarDropdown() {
   return (
     <div
       ref={dropdownRef}
-      className="relative border-b border-b-[var(--ctp-surface)]"
+      className="relative border-b border-b-[var(--ms-surface)]"
     >
       <button
         onClick={() => setOpen((value) => !value)}
-        className="flex w-full cursor-pointer items-center gap-2 border-none bg-transparent px-3 py-2 transition-colors hover:bg-[var(--ctp-bg-pane-secondary)] focus:outline-none"
+        className="flex w-full cursor-pointer items-center gap-2 border-none bg-transparent px-3 py-2 transition-colors hover:bg-[var(--ms-bg-pane-secondary)] focus:outline-none"
       >
-        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--ctp-blue)] text-[0.65rem] font-bold text-white">
+        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--ms-blue)] text-[0.65rem] font-bold text-white">
           {initial}
         </span>
-        <span className="min-w-0 flex-1 truncate text-left text-[0.72rem] text-[var(--ctp-text-subtle)]">
+        <span className="min-w-0 flex-1 truncate text-left text-[0.72rem] text-[var(--ms-text-subtle)]">
           {email}
         </span>
         <span
-          className={`text-[0.6rem] text-[var(--ctp-text-faint)] transition-transform duration-150 ${
+          className={`text-[0.6rem] text-[var(--ms-text-faint)] transition-transform duration-150 ${
             open ? 'rotate-180' : ''
           }`}
         >
@@ -99,10 +99,10 @@ export function UserAvatarDropdown() {
       </button>
 
       {open && (
-        <div className="absolute left-0 right-0 top-full z-50 border border-[var(--ctp-surface)] bg-[var(--ctp-bg-pane)] shadow-md">
+        <div className="absolute left-0 right-0 top-full z-50 border border-[var(--ms-surface)] bg-[var(--ms-bg-pane)] shadow-md">
           <button
             onClick={handleSignOut}
-            className="flex w-full cursor-pointer items-center border-none bg-transparent px-3 py-2 text-left text-[0.75rem] text-[var(--ctp-text-subtle)] transition-colors hover:bg-[var(--ctp-bg-pane-secondary)] hover:text-[var(--ctp-text-body)] focus:outline-none"
+            className="flex w-full cursor-pointer items-center border-none bg-transparent px-3 py-2 text-left text-[0.75rem] text-[var(--ms-text-subtle)] transition-colors hover:bg-[var(--ms-bg-pane-secondary)] hover:text-[var(--ms-text-body)] focus:outline-none"
           >
             Sign out
           </button>

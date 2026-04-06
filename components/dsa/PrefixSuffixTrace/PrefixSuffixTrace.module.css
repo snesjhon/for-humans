@@ -6,21 +6,21 @@
 }
 
 .forwardBadge {
-  background: var(--ctp-blue-surface);
-  color: var(--ctp-blue);
-  border: 1px solid var(--ctp-blue);
+  background: var(--ms-blue-surface);
+  color: var(--ms-blue);
+  border: 1px solid var(--ms-blue);
 }
 
 .backwardBadge {
-  background: var(--ctp-peach-surface);
-  color: var(--ctp-peach);
-  border: 1px solid var(--ctp-peach);
+  background: var(--ms-peach-surface);
+  color: var(--ms-peach);
+  border: 1px solid var(--ms-peach);
 }
 
 .doneBadge {
-  background: var(--ctp-green-surface);
-  color: var(--ctp-green);
-  border: 1px solid var(--ctp-green);
+  background: var(--ms-green-surface);
+  color: var(--ms-green);
+  border: 1px solid var(--ms-green);
 }
 
 .acc {
@@ -32,16 +32,16 @@
 }
 
 .accName {
-  color: var(--ctp-mauve);
+  color: var(--ms-mauve);
   font-weight: 600;
 }
 
 .accEq {
-  color: var(--ctp-text-faint);
+  color: var(--ms-text-faint);
 }
 
 .accVal {
-  color: var(--ctp-text-body);
+  color: var(--ms-text-body);
   font-weight: 700;
 }
 
@@ -63,7 +63,7 @@
   align-items: center;
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
   font-size: 11px;
-  color: var(--ctp-text-faint);
+  color: var(--ms-text-faint);
   white-space: nowrap;
 }
 
@@ -85,8 +85,8 @@
   font-weight: 700;
   padding: 2px 6px;
   border-radius: 3px;
-  background: var(--ctp-blue-surface);
-  color: var(--ctp-blue);
+  background: var(--ms-blue-surface);
+  color: var(--ms-blue);
   line-height: 1;
 }
 
@@ -103,62 +103,62 @@
 }
 
 .numsCell {
-  background: var(--ctp-bg-pane-secondary);
-  border-color: var(--ctp-surface);
-  color: var(--ctp-text-muted);
+  background: var(--ms-bg-pane-secondary);
+  border-color: var(--ms-surface);
+  color: var(--ms-text-muted);
   opacity: 0.7;
 }
 
 .numsActive {
-  background: var(--ctp-bg-pane-tertiary);
-  border-color: var(--ctp-text-faint);
-  color: var(--ctp-text-body);
+  background: var(--ms-bg-pane-tertiary);
+  border-color: var(--ms-text-faint);
+  color: var(--ms-text-body);
   opacity: 1;
 }
 
 .empty {
-  background: var(--ctp-bg-pane-secondary);
-  border-color: var(--ctp-surface);
+  background: var(--ms-bg-pane-secondary);
+  border-color: var(--ms-surface);
   border-style: dashed;
-  color: var(--ctp-text-faint);
+  color: var(--ms-text-faint);
   opacity: 0.5;
 }
 
 .filled {
-  background: var(--ctp-blue-surface);
-  border-color: var(--ctp-blue);
-  color: var(--ctp-blue);
+  background: var(--ms-blue-surface);
+  border-color: var(--ms-blue);
+  color: var(--ms-blue);
   opacity: 0.75;
 }
 
 .activeForward {
-  background: var(--ctp-blue-surface);
-  border-color: var(--ctp-blue);
-  color: var(--ctp-blue);
+  background: var(--ms-blue-surface);
+  border-color: var(--ms-blue);
+  color: var(--ms-blue);
   opacity: 1;
 }
 
 .activeBackward {
-  background: var(--ctp-green-surface);
-  border-color: var(--ctp-green);
-  color: var(--ctp-green);
+  background: var(--ms-green-surface);
+  border-color: var(--ms-green);
+  color: var(--ms-green);
   opacity: 1;
 }
 
 .final {
-  background: var(--ctp-green-surface);
-  border-color: var(--ctp-green);
-  color: var(--ctp-green);
+  background: var(--ms-green-surface);
+  border-color: var(--ms-green);
+  color: var(--ms-green);
 }
 
 .legendForward {
   font-size: 11px;
-  color: var(--ctp-blue);
+  color: var(--ms-blue);
 }
 
 .legendBackward {
   font-size: 11px;
-  color: var(--ctp-green);
+  color: var(--ms-green);
 }
 
 .legendForward,

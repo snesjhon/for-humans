@@ -8,7 +8,9 @@ export type ThemeFlavor = (typeof THEME_FLAVORS)[number];
 export const DEFAULT_THEME_FLAVOR: ThemeFlavor = 'latte';
 
 export function isThemeFlavor(value: unknown): value is ThemeFlavor {
-  return typeof value === 'string' && THEME_FLAVORS.includes(value as ThemeFlavor);
+  return (
+    typeof value === 'string' && THEME_FLAVORS.includes(value as ThemeFlavor)
+  );
 }
 
 export function isDarkTheme(flavor: ThemeFlavor): boolean {

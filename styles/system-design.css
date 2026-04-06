@@ -1,4 +1,4 @@
 /* System Design follows the shared Catppuccin token set from base.css. */
 [data-app='system-design'] {
-  --active-phase-color: var(--ctp-blue);
+  --active-phase-color: var(--ms-primary);
 }

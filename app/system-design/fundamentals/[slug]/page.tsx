@@ -28,7 +28,7 @@ export default function FundamentalsPage({ params }: Props) {
   const section = context?.section;
   const phase = context?.phase;
   const prereq = getPrecedingSection(params.slug);
-  const color = phase ? 'var(--ctp-blue)' : null;
+  const color = phase ? 'var(--ms-blue)' : null;
 
   // Strip the leading # h1 from the markdown so it doesn't duplicate the page header
   const strippedContent = guide.content.replace(/^#[^#].*\n+/, '').trimStart();
@@ -40,16 +40,16 @@ export default function FundamentalsPage({ params }: Props) {
       <PageHero>
         <div className="flex items-center gap-2 mb-3">
           {phase && (
-            <span className="text-xs text-[var(--ctp-text-faint)]">
+            <span className="text-xs text-[var(--ms-text-faint)]">
               {phase.emoji} {phase.label}
             </span>
           )}
         </div>
-        <h1 className="text-5xl font-bold leading-tight text-[var(--ctp-text-body)] font-display">
+        <h1 className="text-5xl font-bold leading-tight text-[var(--ms-text-body)] font-display">
           {section?.label ?? guide.title.replace(/\s*[–-]\s*Fundamentals/i, '')}
         </h1>
         {section && (
-          <p className="mt-3 text-lg italic leading-snug text-[var(--ctp-blue)]">
+          <p className="mt-3 text-lg italic leading-snug text-[var(--ms-blue)]">
             &quot;{section.mentalModelHook}&quot;
           </p>
         )}
@@ -65,9 +65,9 @@ export default function FundamentalsPage({ params }: Props) {
       >
         <section className="space-y-8">
           {/* Prerequisites */}
-          <div className="rounded-xl p-5 bg-[var(--ctp-bg-pane-secondary)] border border-[var(--ctp-surface)]">
-            <p className="text-sm mb-1 text-[var(--ctp-text-muted)]">
-              <span className="font-semibold text-[var(--ctp-text-body)]">
+          <div className="rounded-xl p-5 bg-[var(--ms-bg-pane-secondary)] border border-[var(--ms-surface)]">
+            <p className="text-sm mb-1 text-[var(--ms-text-muted)]">
+              <span className="font-semibold text-[var(--ms-text-body)]">
                 Prerequisites:
               </span>
             </p>
@@ -78,12 +78,12 @@ export default function FundamentalsPage({ params }: Props) {
                     ? `/fundamentals/${prereq.fundamentalsSlug}`
                     : '/path'
                 }
-                className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg transition-opacity hover:opacity-80 mt-2 bg-[var(--ctp-blue-surface)] text-[var(--ctp-blue)] border border-[var(--ctp-blue)]"
+                className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg transition-opacity hover:opacity-80 mt-2 bg-[var(--ms-blue-surface)] text-[var(--ms-blue)] border border-[var(--ms-blue)]"
               >
                 {prereq.label} Fundamentals
               </Link>
             ) : (
-              <p className="text-sm italic mb-1 text-[var(--ctp-text-subtle)]">
+              <p className="text-sm italic mb-1 text-[var(--ms-text-subtle)]">
                 None — this is the starting point of the path.
               </p>
             )}
@@ -97,17 +97,17 @@ export default function FundamentalsPage({ params }: Props) {
           />
 
           {/* Footer */}
-          <div className="flex items-center justify-between pt-8 border-t border-t-[var(--ctp-surface)]">
+          <div className="flex items-center justify-between pt-8 border-t border-t-[var(--ms-surface)]">
             <Link
               href="/system-design/path"
-              className="text-sm transition-opacity hover:opacity-70 text-[var(--ctp-text-subtle)]"
+              className="text-sm transition-opacity hover:opacity-70 text-[var(--ms-text-subtle)]"
             >
               ← Back to Learning Path
             </Link>
             {section && section.firstPass.length > 0 && (
               <Link
                 href={`/system-design/scenarios/${section.firstPass[0].slug}`}
-                className="text-sm px-4 py-2 rounded-lg font-medium transition-opacity hover:opacity-90 text-white bg-[var(--ctp-blue)]"
+                className="text-sm px-4 py-2 rounded-lg font-medium transition-opacity hover:opacity-90 text-white bg-[var(--ms-blue)]"
               >
                 Start First Scenario →
               </Link>

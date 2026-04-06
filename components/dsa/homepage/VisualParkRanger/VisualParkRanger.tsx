@@ -19,19 +19,19 @@ export function VisualParkRanger() {
                   key={c}
                   className="w-[28px] h-[28px] flex items-center justify-center rounded-[3px] text-[0.62rem]"
                   style={{
-                    border: `1px solid ${cell === 1 ? (isFlag ? 'var(--ctp-peach)' : '#52b87a') : 'var(--ctp-blue)'}`,
+                    border: `1px solid ${cell === 1 ? (isFlag ? 'var(--ms-peach)' : '#52b87a') : 'var(--ms-blue)'}`,
                     background:
                       cell === 1
                         ? isFlag
-                          ? 'var(--ctp-peach-surface)'
-                          : 'var(--ctp-green-surface)'
-                        : 'var(--ctp-blue-surface)',
+                          ? 'var(--ms-peach-surface)'
+                          : 'var(--ms-green-surface)'
+                        : 'var(--ms-blue-surface)',
                     color:
                       cell === 1
                         ? isFlag
-                          ? 'var(--ctp-peach)'
+                          ? 'var(--ms-peach)'
                           : '#52b87a'
-                        : 'var(--ctp-blue)',
+                        : 'var(--ms-blue)',
                   }}
                 >
                   {isFlag ? '⚑' : cell === 1 ? '▪' : '~'}
@@ -41,10 +41,10 @@ export function VisualParkRanger() {
           </div>
         ))}
       </div>
-      <div className="font-[ui-monospace,monospace] text-[0.55rem] text-[var(--ctp-text-faint)]">
-        <span className="text-[var(--ctp-peach)]">⚑</span> surveyed &nbsp;
+      <div className="font-[ui-monospace,monospace] text-[0.55rem] text-[var(--ms-text-faint)]">
+        <span className="text-[var(--ms-peach)]">⚑</span> surveyed &nbsp;
         <span className="text-[#52b87a]">▪</span> land &nbsp;
-        <span className="text-[var(--ctp-blue)]">~</span> ocean
+        <span className="text-[var(--ms-blue)]">~</span> ocean
       </div>
     </div>
   );

@@ -10,7 +10,7 @@ import 'highlight.js/styles/atom-one-light.css';
 const MermaidChart = dynamic(() => import('../MermaidChart/MermaidChart'), {
   ssr: false,
   loading: () => (
-    <div className="my-7 text-sm text-[var(--ctp-text-faint)]">Loading chart...</div>
+    <div className="my-7 text-sm text-[var(--ms-text-faint)]">Loading chart...</div>
   ),
 });
 

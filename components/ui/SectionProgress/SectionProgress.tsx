@@ -40,7 +40,7 @@ export function SectionProgress({
   return (
     <div className="flex items-center gap-2 mt-3">
       {total > 0 && (
-        <span className="font-mono text-[0.6rem] text-[var(--ctp-text-faint)]">
+        <span className="font-mono text-[0.6rem] text-[var(--ms-text-faint)]">
           {completedCount}/{total}
         </span>
       )}
@@ -52,7 +52,7 @@ export function SectionProgress({
       >
         <Icon
           aria-hidden="true"
-          className={sectionDone ? 'icon-circle-check text-[var(--ctp-green)]' : 'icon-circle text-[var(--ctp-surface)]'}
+          className={sectionDone ? 'icon-circle-check text-[var(--ms-green)]' : 'icon-circle text-[var(--ms-surface)]'}
         />
       </button>
     </div>

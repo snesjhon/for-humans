@@ -1,4 +1,4 @@
 /* Fullstack follows the shared Catppuccin token set from base.css. */
 [data-app='fullstack'] {
-  --active-phase-color: var(--ctp-blue);
+  --active-phase-color: var(--ms-primary);
 }

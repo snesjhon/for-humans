@@ -40,7 +40,7 @@ export default async function RootLayout({
       data-theme={DEFAULT_THEME_FLAVOR}
       className={`${newsreader.variable} ${plusJakarta.variable}`}
     >
-      <body className="min-h-screen bg-[var(--ctp-bg-pane)] text-[var(--ctp-text-body)]">
+      <body className="min-h-screen bg-[var(--ms-bg-pane)] text-[var(--ms-text-body)]">
         <div
           className="grid"
           style={{

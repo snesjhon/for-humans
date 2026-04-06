@@ -1,13 +1,13 @@
 .slotActive {
-  background: var(--ctp-peach-surface);
-  border-color: var(--ctp-peach);
-  color: var(--ctp-peach);
+  background: var(--ms-peach-surface);
+  border-color: var(--ms-peach);
+  color: var(--ms-peach);
 }
 
 .removing {
-  background: var(--ctp-peach-surface);
-  border-color: var(--ctp-peach);
-  color: var(--ctp-peach);
+  background: var(--ms-peach-surface);
+  border-color: var(--ms-peach);
+  color: var(--ms-peach);
   opacity: 0.7;
 }
 
@@ -22,7 +22,7 @@
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
   font-size: 11px;
   font-weight: 700;
-  color: var(--ctp-text-faint);
+  color: var(--ms-text-faint);
   width: 48px;
   flex-shrink: 0;
 }
@@ -37,8 +37,8 @@
 .emptyBasket {
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
   font-size: 14px;
-  color: var(--ctp-text-faint);
-  border: 2px dashed var(--ctp-surface);
+  color: var(--ms-text-faint);
+  border: 2px dashed var(--ms-surface);
   border-radius: 6px;
   padding: 0 16px;
   height: 52px;
@@ -47,35 +47,35 @@
 }
 
 .ptrSlot {
-  background: var(--ctp-peach-surface);
-  color: var(--ctp-peach);
+  background: var(--ms-peach-surface);
+  color: var(--ms-peach);
 }
 
 .ptrBasket {
-  background: var(--ctp-green-surface);
-  color: var(--ctp-green);
+  background: var(--ms-green-surface);
+  color: var(--ms-green);
 }
 
 .badgeAdd {
-  background: var(--ctp-blue-surface);
-  color: var(--ctp-blue);
-  border: 1px solid var(--ctp-blue);
+  background: var(--ms-blue-surface);
+  color: var(--ms-blue);
+  border: 1px solid var(--ms-blue);
 }
 
 .badgeRemove {
-  background: var(--ctp-peach-surface);
-  color: var(--ctp-peach);
-  border: 1px solid var(--ctp-peach);
+  background: var(--ms-peach-surface);
+  color: var(--ms-peach);
+  border: 1px solid var(--ms-peach);
 }
 
 .badgeRecord {
-  background: var(--ctp-green-surface);
-  color: var(--ctp-green);
-  border: 1px solid var(--ctp-green);
+  background: var(--ms-green-surface);
+  color: var(--ms-green);
+  border: 1px solid var(--ms-green);
 }
 
 .badgeDone {
-  background: var(--ctp-mauve-surface);
-  color: var(--ctp-mauve);
-  border: 1px solid var(--ctp-mauve);
+  background: var(--ms-mauve-surface);
+  color: var(--ms-mauve);
+  border: 1px solid var(--ms-mauve);
 }

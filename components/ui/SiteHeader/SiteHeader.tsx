@@ -41,7 +41,7 @@ export function SiteHeader({
   return (
     <header
       className={`sticky top-0 z-50 transition-[background-color] duration-500 ${
-        scrolled ? 'bg-[var(--ctp-bg-pane)] backdrop-blur-[16px]' : 'bg-transparent'
+        scrolled ? 'bg-[var(--ms-bg-pane)] backdrop-blur-[16px]' : 'bg-transparent'
       }`}
     >
       <div className="relative">
@@ -51,7 +51,7 @@ export function SiteHeader({
             className="no-underline flex items-center gap-[10px] shrink-0 focus:outline-none"
           >
             {icon}
-            <span className="italic font-normal text-[1.125rem] text-[var(--ctp-text-body)] tracking-[-0.01em] [font-family:var(--font-display)]">
+            <span className="italic font-normal text-[1.125rem] text-[var(--ms-text-body)] tracking-[-0.01em] [font-family:var(--font-display)]">
               {title}
             </span>
           </Link>
@@ -64,8 +64,8 @@ export function SiteHeader({
                 href={link.href}
                 className={`text-sm no-underline transition-colors ${
                   active
-                    ? 'border-b-2 border-b-[var(--ctp-blue)] pb-[2px] font-medium text-[var(--ctp-blue)]'
-                    : 'text-[var(--ctp-text-subtle)]'
+                    ? 'border-b-2 border-b-[var(--ms-blue)] pb-[2px] font-medium text-[var(--ms-blue)]'
+                    : 'text-[var(--ms-text-subtle)]'
                 }`}
               >
                 {link.label}
@@ -80,7 +80,7 @@ export function SiteHeader({
 
         <div
           aria-hidden="true"
-          className={`absolute bottom-0 left-0 right-0 h-px pointer-events-none bg-[var(--ctp-surface-hover)] transition-opacity duration-[450ms] ${
+          className={`absolute bottom-0 left-0 right-0 h-px pointer-events-none bg-[var(--ms-surface-hover)] transition-opacity duration-[450ms] ${
             scrolled ? 'opacity-100' : 'opacity-0'
           }`}
         />

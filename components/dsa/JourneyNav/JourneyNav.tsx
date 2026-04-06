@@ -3,7 +3,7 @@ import { JOURNEY, type JourneySection, type Phase } from '@/lib/dsa/journey'
 import { getAllProblems } from '@/lib/dsa/content'
 
 // Each step gets a unique accent color, cycling through the palette
-const stepColor = (_idx: number) => 'var(--ctp-blue)'
+const stepColor = (_idx: number) => 'var(--ms-blue)'
 
 interface JourneyNavProps {
   activeProblemId?: string
@@ -58,16 +58,16 @@ function ProblemRow({ id, isActive, dimmed, activeColor, problemMap }: {
     <Link
       href={`/dsa/problems/${id}`}
       className="flex items-center gap-2 py-1 rounded px-1 -mx-1 transition-colors"
-      style={{ background: isActive ? 'var(--ctp-bg-pane-secondary)' : 'transparent' }}
+      style={{ background: isActive ? 'var(--ms-bg-pane-secondary)' : 'transparent' }}
     >
       <span
         className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-        style={{ background: isActive ? activeColor : dimmed ? 'var(--ctp-text-faint)' : 'var(--ctp-green)' }}
+        style={{ background: isActive ? activeColor : dimmed ? 'var(--ms-text-faint)' : 'var(--ms-green)' }}
       />
       <span
         className="text-xs truncate"
         style={{
-          color: isActive ? activeColor : dimmed ? 'var(--ctp-text-faint)' : 'var(--ctp-text-subtle)',
+          color: isActive ? activeColor : dimmed ? 'var(--ms-text-faint)' : 'var(--ms-text-subtle)',
           fontWeight: isActive ? '600' : '400',
         }}
       >
@@ -97,7 +97,7 @@ export default function JourneyNav({ activeProblemId, activeFundamentalsSlug }: 
 
   return (
     <div className="space-y-3 pr-1">
-      <p className="text-xs font-semibold uppercase tracking-wider text-[var(--ctp-text-faint)]">
+      <p className="text-xs font-semibold uppercase tracking-wider text-[var(--ms-text-faint)]">
         Your Path
       </p>
 
@@ -117,7 +117,7 @@ export default function JourneyNav({ activeProblemId, activeFundamentalsSlug }: 
             {isNewPhase && (
               <div className="flex items-center gap-1.5 mb-1.5" style={{ marginTop: idx === 0 ? 0 : 8 }}>
                 <span className="text-sm">{phase.emoji}</span>
-                <p className="text-xs font-semibold text-[var(--ctp-text-muted)]">
+                <p className="text-xs font-semibold text-[var(--ms-text-muted)]">
                   Phase {phase.number}: {phase.label}
                 </p>
               </div>
@@ -126,7 +126,7 @@ export default function JourneyNav({ activeProblemId, activeFundamentalsSlug }: 
             <div
               className="rounded-lg overflow-hidden ml-1"
               style={{
-                border: `1px solid ${isCurrentSection ? color : 'var(--ctp-surface)'}`,
+                border: `1px solid ${isCurrentSection ? color : 'var(--ms-surface)'}`,
               }}
             >
               {/* Section header */}
@@ -134,13 +134,13 @@ export default function JourneyNav({ activeProblemId, activeFundamentalsSlug }: 
                 className="px-3 pt-2.5 pb-2"
                 style={{
                   background: isCurrentSection
-                    ? 'var(--ctp-bg-pane-secondary)'
-                    : 'var(--ctp-bg-pane-secondary)',
+                    ? 'var(--ms-bg-pane-secondary)'
+                    : 'var(--ms-bg-pane-secondary)',
                 }}
               >
                 <p
                   className="text-xs font-semibold leading-snug"
-                  style={{ color: isCurrentSection ? color : 'var(--ctp-text-muted)' }}
+                  style={{ color: isCurrentSection ? color : 'var(--ms-text-muted)' }}
                 >
                   {section.label}
                 </p>
@@ -148,7 +148,7 @@ export default function JourneyNav({ activeProblemId, activeFundamentalsSlug }: 
                   <Link
                     href={`/dsa/fundamentals/${section.fundamentalsSlug}`}
                     className="inline-flex items-center gap-1 mt-1.5 transition-opacity hover:opacity-80 text-[0.68rem] font-semibold no-underline"
-                    style={{ color: isCurrentSection ? color : 'var(--ctp-text-faint)' }}
+                    style={{ color: isCurrentSection ? color : 'var(--ms-text-faint)' }}
                   >
                     <span>📖</span>
                     <span>Read the guide →</span>
@@ -158,8 +158,8 @@ export default function JourneyNav({ activeProblemId, activeFundamentalsSlug }: 
 
               {/* Practice — this section's firstPass problems */}
               {hasFirstPass && (
-                <div className="px-3 pt-2 pb-1.5 border-t border-t-[var(--ctp-surface)] bg-[var(--ctp-bg-pane)]">
-                  <p className="font-[ui-monospace,monospace] text-[0.58rem] font-bold tracking-[0.09em] uppercase text-[var(--ctp-text-faint)] mb-[4px]">
+                <div className="px-3 pt-2 pb-1.5 border-t border-t-[var(--ms-surface)] bg-[var(--ms-bg-pane)]">
+                  <p className="font-[ui-monospace,monospace] text-[0.58rem] font-bold tracking-[0.09em] uppercase text-[var(--ms-text-faint)] mb-[4px]">
                     Practice
                   </p>
                   <div className="space-y-0.5">
@@ -172,8 +172,8 @@ export default function JourneyNav({ activeProblemId, activeFundamentalsSlug }: 
 
               {/* Also Revisit — previous section's reinforce problems */}
               {hasRevisits && (
-                <div className="px-3 pt-2 pb-1.5 border-t border-t-[var(--ctp-surface)] bg-[var(--ctp-bg-pane)]">
-                  <p className="font-[ui-monospace,monospace] text-[0.58rem] font-bold tracking-[0.09em] uppercase text-[var(--ctp-peach)] mb-[4px]">
+                <div className="px-3 pt-2 pb-1.5 border-t border-t-[var(--ms-surface)] bg-[var(--ms-bg-pane)]">
+                  <p className="font-[ui-monospace,monospace] text-[0.58rem] font-bold tracking-[0.09em] uppercase text-[var(--ms-peach)] mb-[4px]">
                     Also revisit — from {revisitFromLabel}
                   </p>
                   <div className="space-y-0.5">

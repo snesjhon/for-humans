@@ -1,7 +1,7 @@
 .root {
-  border: 1px solid var(--ctp-surface);
+  border: 1px solid var(--ms-surface);
   border-radius: 8px;
-  background: var(--ctp-bg-pane-secondary);
+  background: var(--ms-bg-pane-secondary);
   overflow: hidden;
   margin: 1.25rem 0;
 }
@@ -11,8 +11,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 8px 1.5rem;
-  border-bottom: 1px solid var(--ctp-surface);
-  background: var(--ctp-bg-pane);
+  border-bottom: 1px solid var(--ms-surface);
+  background: var(--ms-bg-pane);
   gap: 12px;
 }
 
@@ -59,69 +59,69 @@
 }
 
 .confirmed {
-  background: var(--ctp-green-surface);
-  border-color: var(--ctp-green);
-  color: var(--ctp-green);
+  background: var(--ms-green-surface);
+  border-color: var(--ms-green);
+  color: var(--ms-green);
 }
 
 .writeTarget {
-  background: var(--ctp-bg-pane-secondary);
-  border-color: var(--ctp-green);
+  background: var(--ms-bg-pane-secondary);
+  border-color: var(--ms-green);
   border-style: dashed;
-  color: var(--ctp-text-body);
+  color: var(--ms-text-body);
 }
 
 .readingKeep {
-  background: var(--ctp-blue-surface);
-  border-color: var(--ctp-blue);
-  color: var(--ctp-blue);
+  background: var(--ms-blue-surface);
+  border-color: var(--ms-blue);
+  color: var(--ms-blue);
 }
 
 .readingSkip {
-  background: var(--ctp-bg-pane-tertiary);
-  border-color: var(--ctp-surface);
-  color: var(--ctp-text-subtle);
+  background: var(--ms-bg-pane-tertiary);
+  border-color: var(--ms-surface);
+  color: var(--ms-text-subtle);
   opacity: 0.6;
 }
 
 .reading {
-  background: var(--ctp-blue-surface);
-  border-color: var(--ctp-blue);
-  color: var(--ctp-text-body);
+  background: var(--ms-blue-surface);
+  border-color: var(--ms-blue);
+  color: var(--ms-text-body);
 }
 
 .graveyard {
-  background: var(--ctp-bg-pane-secondary);
-  border-color: var(--ctp-surface);
-  color: var(--ctp-text-faint);
+  background: var(--ms-bg-pane-secondary);
+  border-color: var(--ms-surface);
+  color: var(--ms-text-faint);
   opacity: 0.35;
   text-decoration: line-through;
 }
 
 .active {
-  background: var(--ctp-blue-surface);
-  border-color: var(--ctp-blue);
-  color: var(--ctp-text-body);
+  background: var(--ms-blue-surface);
+  border-color: var(--ms-blue);
+  color: var(--ms-text-body);
 }
 
 .unvisited {
-  background: var(--ctp-bg-pane-secondary);
-  border-color: var(--ctp-surface);
-  color: var(--ctp-text-muted);
+  background: var(--ms-bg-pane-secondary);
+  border-color: var(--ms-surface);
+  color: var(--ms-text-muted);
   opacity: 0.55;
 }
 
 .irrelevant {
-  background: var(--ctp-bg-pane-secondary);
-  border-color: var(--ctp-surface);
-  color: var(--ctp-text-faint);
+  background: var(--ms-bg-pane-secondary);
+  border-color: var(--ms-surface);
+  color: var(--ms-text-faint);
   opacity: 0.2;
 }
 
 .idx {
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
   font-size: 10px;
-  color: var(--ctp-text-faint);
+  color: var(--ms-text-faint);
   line-height: 1;
 }
 
@@ -143,18 +143,18 @@
 }
 
 .reader {
-  background: var(--ctp-blue-surface);
-  color: var(--ctp-blue);
+  background: var(--ms-blue-surface);
+  color: var(--ms-blue);
 }
 
 .writer {
-  background: var(--ctp-green-surface);
-  color: var(--ctp-green);
+  background: var(--ms-green-surface);
+  color: var(--ms-green);
 }
 
 .both {
-  background: var(--ctp-blue-surface);
-  color: var(--ctp-blue);
+  background: var(--ms-blue-surface);
+  color: var(--ms-blue);
   gap: 3px;
 }
 
@@ -178,38 +178,38 @@
 }
 
 .actionKeep {
-  background: var(--ctp-green-surface);
-  color: var(--ctp-green);
-  border: 1px solid var(--ctp-green);
+  background: var(--ms-green-surface);
+  color: var(--ms-green);
+  border: 1px solid var(--ms-green);
 }
 
 .actionSkip {
-  background: var(--ctp-bg-pane-tertiary);
-  color: var(--ctp-text-subtle);
-  border: 1px solid var(--ctp-surface);
+  background: var(--ms-bg-pane-tertiary);
+  color: var(--ms-text-subtle);
+  border: 1px solid var(--ms-surface);
 }
 
 .actionDone {
-  background: var(--ctp-mauve-surface);
-  color: var(--ctp-mauve);
-  border: 1px solid var(--ctp-mauve);
+  background: var(--ms-mauve-surface);
+  color: var(--ms-mauve);
+  border: 1px solid var(--ms-mauve);
 }
 
 .actionMatch {
-  background: var(--ctp-green-surface);
-  color: var(--ctp-green);
-  border: 1px solid var(--ctp-green);
+  background: var(--ms-green-surface);
+  color: var(--ms-green);
+  border: 1px solid var(--ms-green);
 }
 
 .actionMismatch {
-  background: var(--ctp-red-surface);
-  color: var(--ctp-red);
-  border: 1px solid var(--ctp-red);
+  background: var(--ms-red-surface);
+  color: var(--ms-red);
+  border: 1px solid var(--ms-red);
 }
 
 .label {
   font-size: 13px;
-  color: var(--ctp-text-muted);
+  color: var(--ms-text-muted);
   line-height: 1.55;
   margin: 0;
 }
@@ -219,15 +219,15 @@
   align-items: center;
   justify-content: space-between;
   padding: 8px 1.5rem;
-  border-top: 1px solid var(--ctp-surface);
-  background: var(--ctp-bg-pane);
+  border-top: 1px solid var(--ms-surface);
+  background: var(--ms-bg-pane);
 }
 
 .legend {
   display: flex;
   gap: 10px;
   font-size: 11px;
-  color: var(--ctp-text-subtle);
+  color: var(--ms-text-subtle);
   align-items: center;
 }
 
@@ -248,9 +248,9 @@
   font-size: 12px;
   font-weight: 600;
   padding: 4px 12px;
-  border: 1px solid var(--ctp-surface);
-  background: var(--ctp-bg-pane-secondary);
-  color: var(--ctp-text-body);
+  border: 1px solid var(--ms-surface);
+  background: var(--ms-bg-pane-secondary);
+  color: var(--ms-text-body);
   border-radius: 5px;
   cursor: pointer;
   transition:
@@ -259,7 +259,7 @@
 }
 
 .button:hover:not(:disabled) {
-  background: var(--ctp-bg-pane-tertiary);
+  background: var(--ms-bg-pane-tertiary);
 }
 
 .button:disabled {
@@ -270,7 +270,7 @@
 .counter {
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
   font-size: 11px;
-  color: var(--ctp-text-subtle);
+  color: var(--ms-text-subtle);
   min-width: 44px;
   text-align: center;
 }

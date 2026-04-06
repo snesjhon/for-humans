@@ -5,20 +5,20 @@ export function TracerMockup() {
 
   return (
     <div
-      className="border border-[var(--ctp-surface)] rounded-[0.875rem] bg-[var(--ctp-bg-pane)] shadow-[0_8px_32px_rgba(88,60,172,0.08),0_1px_4px_rgba(0,0,0,0.06)] overflow-hidden"
+      className="border border-[var(--ms-surface)] rounded-[0.875rem] bg-[var(--ms-bg-pane)] shadow-[0_8px_32px_rgba(88,60,172,0.08),0_1px_4px_rgba(0,0,0,0.06)] overflow-hidden"
     >
       {/* header */}
       <div
-        className="px-4 py-[10px] flex items-center gap-3 border-b border-b-[var(--ctp-surface)] bg-[var(--ctp-bg-pane-secondary)]"
+        className="px-4 py-[10px] flex items-center gap-3 border-b border-b-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)]"
       >
         <span
-          className="font-[ui-monospace,monospace] text-[0.58rem] tracking-[0.1em] text-[var(--ctp-blue)] font-bold uppercase px-2 py-[3px] rounded"
-          style={{ background: 'var(--ctp-blue-surface)' }}
+          className="font-[ui-monospace,monospace] text-[0.58rem] tracking-[0.1em] text-[var(--ms-blue)] font-bold uppercase px-2 py-[3px] rounded"
+          style={{ background: 'var(--ms-blue-surface)' }}
         >
           FORWARD PASS
         </span>
-        <span className="font-[ui-monospace,monospace] text-[0.7rem] text-[var(--ctp-text-muted)]">
-          album = <strong className="text-[var(--ctp-blue)]">3</strong>
+        <span className="font-[ui-monospace,monospace] text-[0.7rem] text-[var(--ms-text-muted)]">
+          album = <strong className="text-[var(--ms-blue)]">3</strong>
         </span>
       </div>
 
@@ -30,7 +30,7 @@ export function TracerMockup() {
             {['nums', 'result'].map((lbl) => (
               <span
                 key={lbl}
-                className="font-[ui-monospace,monospace] text-[0.58rem] text-[var(--ctp-text-faint)] pr-[4px] h-11 flex items-center"
+                className="font-[ui-monospace,monospace] text-[0.58rem] text-[var(--ms-text-faint)] pr-[4px] h-11 flex items-center"
               >
                 {lbl}
               </span>
@@ -49,13 +49,13 @@ export function TracerMockup() {
                   {/* nums cell */}
                   <div
                     style={{
-                      border: `1px solid ${isActive ? 'var(--ctp-blue)' : 'var(--ctp-surface)'}`,
+                      border: `1px solid ${isActive ? 'var(--ms-blue)' : 'var(--ms-surface)'}`,
                       fontSize: '1rem',
                       fontFamily: 'ui-monospace, monospace',
                       background: isActive
-                        ? 'var(--ctp-blue-surface)'
-                        : 'var(--ctp-bg-pane)',
-                      color: isActive ? 'var(--ctp-blue)' : 'var(--ctp-text-body)',
+                        ? 'var(--ms-blue-surface)'
+                        : 'var(--ms-bg-pane)',
+                      color: isActive ? 'var(--ms-blue)' : 'var(--ms-text-body)',
                     }}
                     className="w-11 h-11 flex items-center justify-center rounded-md font-bold"
                   >
@@ -64,23 +64,23 @@ export function TracerMockup() {
                   {/* result cell */}
                   <div
                     style={{
-                      border: `1px solid ${isActive ? 'var(--ctp-blue)' : 'var(--ctp-surface)'}`,
+                      border: `1px solid ${isActive ? 'var(--ms-blue)' : 'var(--ms-surface)'}`,
                       fontFamily: 'ui-monospace, monospace',
                       fontSize: '1rem',
                       fontWeight: filled ? 700 : 400,
                       background: filled
-                        ? 'var(--ctp-blue-surface)'
+                        ? 'var(--ms-blue-surface)'
                         : isActive
-                          ? 'var(--ctp-blue-surface)'
-                          : 'var(--ctp-bg-pane)',
+                          ? 'var(--ms-blue-surface)'
+                          : 'var(--ms-bg-pane)',
                       color:
-                        filled || isActive ? 'var(--ctp-text-body)' : 'var(--ctp-text-faint)',
+                        filled || isActive ? 'var(--ms-text-body)' : 'var(--ms-text-faint)',
                     }}
                     className="w-11 h-11 flex items-center justify-center rounded-md"
                   >
                     {result[i]}
                   </div>
-                  <span className="font-[ui-monospace,monospace] text-[0.55rem] text-[var(--ctp-text-faint)]">
+                  <span className="font-[ui-monospace,monospace] text-[0.55rem] text-[var(--ms-text-faint)]">
                     {i}
                   </span>
                 </div>
@@ -91,25 +91,25 @@ export function TracerMockup() {
 
         {/* label */}
         <div
-          className="mt-[14px] px-3 py-[9px] rounded-md bg-[var(--ctp-bg-pane-secondary)] border border-[var(--ctp-surface)]"
+          className="mt-[14px] px-3 py-[9px] rounded-md bg-[var(--ms-bg-pane-secondary)] border border-[var(--ms-surface)]"
         >
-          <p className="font-[ui-monospace,monospace] text-[0.72rem] text-[var(--ctp-text-muted)] m-0 leading-[1.5]">
-            Stamp <strong className="text-[var(--ctp-blue)]">1</strong>: already
+          <p className="font-[ui-monospace,monospace] text-[0.72rem] text-[var(--ms-text-muted)] m-0 leading-[1.5]">
+            Stamp <strong className="text-[var(--ms-blue)]">1</strong>: already
             in album! →{' '}
-            <strong className="text-[var(--ctp-green)]">return true ✓</strong>
+            <strong className="text-[var(--ms-green)]">return true ✓</strong>
           </p>
         </div>
       </div>
 
       {/* footer */}
       <div
-        className="px-4 py-[10px] flex items-center justify-between border-t border-t-[var(--ctp-surface)] bg-[var(--ctp-bg-pane-secondary)]"
+        className="px-4 py-[10px] flex items-center justify-between border-t border-t-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)]"
       >
         <div className="flex gap-3">
           {['■ prefix stored', '■ final value'].map((lbl) => (
             <span
               key={lbl}
-              className="font-[ui-monospace,monospace] text-[0.58rem] text-[var(--ctp-text-faint)]"
+              className="font-[ui-monospace,monospace] text-[0.58rem] text-[var(--ms-text-faint)]"
             >
               {lbl}
             </span>
@@ -120,14 +120,14 @@ export function TracerMockup() {
             i === 1 ? (
               <span
                 key={t}
-                className="font-[ui-monospace,monospace] text-[0.68rem] text-[var(--ctp-text-faint)]"
+                className="font-[ui-monospace,monospace] text-[0.68rem] text-[var(--ms-text-faint)]"
               >
                 {t}
               </span>
             ) : (
               <button
                 key={t}
-                className="border border-[var(--ctp-surface)] bg-[var(--ctp-bg-pane)] font-[ui-monospace,monospace] text-[0.68rem] text-[var(--ctp-text-muted)] px-[10px] py-1 rounded cursor-pointer"
+                className="border border-[var(--ms-surface)] bg-[var(--ms-bg-pane)] font-[ui-monospace,monospace] text-[0.68rem] text-[var(--ms-text-muted)] px-[10px] py-1 rounded cursor-pointer"
               >
                 {t}
               </button>

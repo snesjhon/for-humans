@@ -8,10 +8,10 @@ interface RightPanelProps {
 
 export function RightPanel({ progress, toc }: RightPanelProps) {
   return (
-    <aside className="sticky top-0 flex h-screen flex-col overflow-y-auto border-l border-l-[var(--ctp-surface)] bg-[var(--ctp-bg-pane-secondary)]">
+    <aside className="sticky top-0 flex h-screen flex-col overflow-y-auto border-l border-l-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)]">
       <UserAvatarDropdown />
       {progress ? (
-        <div className="shrink-0 border-b border-b-[var(--ctp-surface)] p-4">
+        <div className="shrink-0 border-b border-b-[var(--ms-surface)] p-4">
           {progress}
         </div>
       ) : null}

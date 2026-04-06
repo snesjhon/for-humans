@@ -7,7 +7,7 @@
 .problemLink:hover .problemTitle {
   text-decoration: underline;
   text-underline-offset: 3px;
-  text-decoration-color: var(--ctp-text-faint);
+  text-decoration-color: var(--ms-text-faint);
 }
 
 .guideButton {

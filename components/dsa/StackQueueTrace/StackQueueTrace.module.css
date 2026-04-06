@@ -10,9 +10,9 @@
 }
 
 .structure {
-  border: 1px solid var(--ctp-surface);
+  border: 1px solid var(--ms-surface);
   border-radius: 8px;
-  background: var(--ctp-bg-pane);
+  background: var(--ms-bg-pane);
   padding: 0.9rem;
 }
 
@@ -28,7 +28,7 @@
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
   font-size: 12px;
   font-weight: 700;
-  color: var(--ctp-text-body);
+  color: var(--ms-text-body);
 }
 
 .structureKind {
@@ -36,7 +36,7 @@
   font-size: 10px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--ctp-text-faint);
+  color: var(--ms-text-faint);
 }
 
 .stackShell,
@@ -87,39 +87,39 @@
 .queueIdx {
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
   font-size: 10px;
-  color: var(--ctp-text-faint);
+  color: var(--ms-text-faint);
   line-height: 1;
 }
 
 .cellMuted {
-  background: var(--ctp-bg-pane-secondary);
-  border-color: var(--ctp-surface);
-  color: var(--ctp-text-muted);
+  background: var(--ms-bg-pane-secondary);
+  border-color: var(--ms-surface);
+  color: var(--ms-text-muted);
   opacity: 0.6;
 }
 
 .cellBlue {
-  background: var(--ctp-blue-surface);
-  border-color: var(--ctp-blue);
-  color: var(--ctp-blue);
+  background: var(--ms-blue-surface);
+  border-color: var(--ms-blue);
+  color: var(--ms-blue);
 }
 
 .cellOrange {
-  background: var(--ctp-peach-surface);
-  border-color: var(--ctp-peach);
-  color: var(--ctp-peach);
+  background: var(--ms-peach-surface);
+  border-color: var(--ms-peach);
+  color: var(--ms-peach);
 }
 
 .cellGreen {
-  background: var(--ctp-green-surface);
-  border-color: var(--ctp-green);
-  color: var(--ctp-green);
+  background: var(--ms-green-surface);
+  border-color: var(--ms-green);
+  color: var(--ms-green);
 }
 
 .cellPurple {
-  background: var(--ctp-mauve-surface);
-  border-color: var(--ctp-mauve);
-  color: var(--ctp-mauve);
+  background: var(--ms-mauve-surface);
+  border-color: var(--ms-mauve);
+  color: var(--ms-mauve);
 }
 
 .empty {
@@ -128,12 +128,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px dashed var(--ctp-surface);
+  border: 2px dashed var(--ms-surface);
   border-radius: 6px;
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
   font-size: 12px;
   font-style: italic;
-  color: var(--ctp-text-faint);
+  color: var(--ms-text-faint);
 }
 
 .footnote {
@@ -141,59 +141,59 @@
   text-align: center;
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
   font-size: 10px;
-  color: var(--ctp-text-faint);
+  color: var(--ms-text-faint);
 }
 
 .ptrBlue {
-  background: var(--ctp-blue-surface);
-  color: var(--ctp-blue);
+  background: var(--ms-blue-surface);
+  color: var(--ms-blue);
 }
 
 .ptrOrange {
-  background: var(--ctp-peach-surface);
-  color: var(--ctp-peach);
+  background: var(--ms-peach-surface);
+  color: var(--ms-peach);
 }
 
 .ptrGreen {
-  background: var(--ctp-green-surface);
-  color: var(--ctp-green);
+  background: var(--ms-green-surface);
+  color: var(--ms-green);
 }
 
 .ptrPurple {
-  background: var(--ctp-mauve-surface);
-  color: var(--ctp-mauve);
+  background: var(--ms-mauve-surface);
+  color: var(--ms-mauve);
 }
 
 .badgePush,
 .badgeEnqueue {
-  background: var(--ctp-blue-surface);
-  color: var(--ctp-blue);
-  border: 1px solid var(--ctp-blue);
+  background: var(--ms-blue-surface);
+  color: var(--ms-blue);
+  border: 1px solid var(--ms-blue);
 }
 
 .badgePop,
 .badgeDequeue {
-  background: var(--ctp-peach-surface);
-  color: var(--ctp-peach);
-  border: 1px solid var(--ctp-peach);
+  background: var(--ms-peach-surface);
+  color: var(--ms-peach);
+  border: 1px solid var(--ms-peach);
 }
 
 .badgePeek {
-  background: var(--ctp-green-surface);
-  color: var(--ctp-green);
-  border: 1px solid var(--ctp-green);
+  background: var(--ms-green-surface);
+  color: var(--ms-green);
+  border: 1px solid var(--ms-green);
 }
 
 .badgeTransfer {
-  background: var(--ctp-mauve-surface);
-  color: var(--ctp-mauve);
-  border: 1px solid var(--ctp-mauve);
+  background: var(--ms-mauve-surface);
+  color: var(--ms-mauve);
+  border: 1px solid var(--ms-mauve);
 }
 
 .badgeDone {
-  background: var(--ctp-sapphire-surface);
-  color: var(--ctp-sapphire);
-  border: 1px solid var(--ctp-sapphire);
+  background: var(--ms-sapphire-surface);
+  color: var(--ms-sapphire);
+  border: 1px solid var(--ms-sapphire);
 }
 
 @media (max-width: 760px) {

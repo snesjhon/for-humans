@@ -25,7 +25,7 @@ export function ProgressToggleAsync({ itemType, itemId, label }: Props) {
   }
 
   return (
-    <div className="flex items-start gap-2 rounded-md px-2 py-1 transition-colors hover:bg-[var(--ctp-bg-pane-secondary)]">
+    <div className="flex items-start gap-2 rounded-md px-2 py-1 transition-colors hover:bg-[var(--ms-bg-pane-secondary)]">
       <button
         onClick={handleToggle}
         disabled={isPending || loading}
@@ -36,7 +36,7 @@ export function ProgressToggleAsync({ itemType, itemId, label }: Props) {
       </button>
       {label && (
         <span
-          className={`text-xs leading-snug text-[var(--ctp-text-subtle)] ${
+          className={`text-xs leading-snug text-[var(--ms-text-subtle)] ${
             loading ? 'opacity-30' : 'opacity-100'
           }`}
         >

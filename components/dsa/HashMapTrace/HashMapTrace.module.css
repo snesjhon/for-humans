@@ -1,25 +1,25 @@
 .cellCurrent {
-  background: var(--ctp-blue-surface);
-  border-color: var(--ctp-blue);
-  color: var(--ctp-blue);
+  background: var(--ms-blue-surface);
+  border-color: var(--ms-blue);
+  color: var(--ms-blue);
 }
 
 .cellVisited {
-  background: var(--ctp-green-surface);
-  border-color: var(--ctp-green);
-  color: var(--ctp-green);
+  background: var(--ms-green-surface);
+  border-color: var(--ms-green);
+  color: var(--ms-green);
 }
 
 .cellUpcoming {
-  background: var(--ctp-bg-pane-secondary);
-  border-color: var(--ctp-surface);
-  color: var(--ctp-text-muted);
+  background: var(--ms-bg-pane-secondary);
+  border-color: var(--ms-surface);
+  color: var(--ms-text-muted);
   opacity: 0.55;
 }
 
 .ptrCurrent {
-  background: var(--ctp-blue-surface);
-  color: var(--ctp-blue);
+  background: var(--ms-blue-surface);
+  color: var(--ms-blue);
 }
 
 .vars {
@@ -39,17 +39,17 @@
 }
 
 .varName {
-  color: var(--ctp-mauve);
+  color: var(--ms-mauve);
   font-weight: 600;
 }
 
 .varEq {
-  color: var(--ctp-text-faint);
+  color: var(--ms-text-faint);
   padding: 0 2px;
 }
 
 .varVal {
-  color: var(--ctp-text-body);
+  color: var(--ms-text-body);
   font-weight: 700;
 }
 
@@ -66,7 +66,7 @@
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--ctp-text-faint);
+  color: var(--ms-text-faint);
   padding-top: 6px;
   flex-shrink: 0;
 }
@@ -82,7 +82,7 @@
 .mapEmpty {
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
   font-size: 12px;
-  color: var(--ctp-text-faint);
+  color: var(--ms-text-faint);
   font-style: italic;
 }
 
@@ -92,8 +92,8 @@
   gap: 5px;
   padding: 4px 10px;
   border-radius: 6px;
-  border: 1.5px solid var(--ctp-surface);
-  background: var(--ctp-bg-pane);
+  border: 1.5px solid var(--ms-surface);
+  background: var(--ms-bg-pane);
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
   font-size: 13px;
   transition:
@@ -102,77 +102,77 @@
 }
 
 .entryKey {
-  color: var(--ctp-text-body);
+  color: var(--ms-text-body);
   font-weight: 600;
 }
 
 .entryArrow {
-  color: var(--ctp-text-faint);
+  color: var(--ms-text-faint);
   width: 14px;
   height: 14px;
   flex-shrink: 0;
 }
 
 .entryVal {
-  color: var(--ctp-text-subtle);
+  color: var(--ms-text-subtle);
 }
 
 .entryInsert {
-  background: var(--ctp-blue-surface);
-  border-color: var(--ctp-blue);
+  background: var(--ms-blue-surface);
+  border-color: var(--ms-blue);
 }
 
 .entryInsert .entryKey,
 .entryInsert .entryVal {
-  color: var(--ctp-blue);
+  color: var(--ms-blue);
 }
 
 .entryUpdate {
-  background: var(--ctp-peach-surface);
-  border-color: var(--ctp-peach);
+  background: var(--ms-peach-surface);
+  border-color: var(--ms-peach);
 }
 
 .entryUpdate .entryKey,
 .entryUpdate .entryVal {
-  color: var(--ctp-peach);
+  color: var(--ms-peach);
 }
 
 .entryFound {
-  background: var(--ctp-green-surface);
-  border-color: var(--ctp-green);
+  background: var(--ms-green-surface);
+  border-color: var(--ms-green);
 }
 
 .entryFound .entryKey,
 .entryFound .entryVal {
-  color: var(--ctp-green);
+  color: var(--ms-green);
 }
 
 .badgeInsert {
-  background: var(--ctp-blue-surface);
-  color: var(--ctp-blue);
-  border: 1px solid var(--ctp-blue);
+  background: var(--ms-blue-surface);
+  color: var(--ms-blue);
+  border: 1px solid var(--ms-blue);
 }
 
 .badgeUpdate {
-  background: var(--ctp-peach-surface);
-  color: var(--ctp-peach);
-  border: 1px solid var(--ctp-peach);
+  background: var(--ms-peach-surface);
+  color: var(--ms-peach);
+  border: 1px solid var(--ms-peach);
 }
 
 .badgeFound {
-  background: var(--ctp-green-surface);
-  color: var(--ctp-green);
-  border: 1px solid var(--ctp-green);
+  background: var(--ms-green-surface);
+  color: var(--ms-green);
+  border: 1px solid var(--ms-green);
 }
 
 .badgeMiss {
-  background: var(--ctp-bg-pane-tertiary);
-  color: var(--ctp-text-subtle);
-  border: 1px solid var(--ctp-surface);
+  background: var(--ms-bg-pane-tertiary);
+  color: var(--ms-text-subtle);
+  border: 1px solid var(--ms-surface);
 }
 
 .badgeDone {
-  background: var(--ctp-mauve-surface);
-  color: var(--ctp-mauve);
-  border: 1px solid var(--ctp-mauve);
+  background: var(--ms-mauve-surface);
+  color: var(--ms-mauve);
+  border: 1px solid var(--ms-mauve);
 }

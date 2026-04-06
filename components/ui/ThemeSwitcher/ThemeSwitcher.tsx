@@ -50,7 +50,7 @@ export function ThemeSwitcher({
         onClick={() => applyThemeFlavor(next)}
         aria-label={`Switch to ${FLAVOR_LABELS[next]} theme`}
         title={`Switch to ${FLAVOR_LABELS[next]}`}
-        className="appearance-none shadow-none cursor-pointer border-none bg-transparent px-2 py-1 text-[var(--ctp-text-subtle)] outline-none ring-0 transition-colors hover:text-[var(--ctp-text-body)] focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
+        className="appearance-none shadow-none cursor-pointer border-none bg-transparent px-2 py-1 text-[var(--ms-text-subtle)] outline-none ring-0 transition-colors hover:text-[var(--ms-text-body)] focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
       >
         {theme === 'mocha' ? (
           <Sun aria-hidden="true" className="h-4 w-4" />
@@ -62,7 +62,7 @@ export function ThemeSwitcher({
   }
 
   return (
-    <div className="inline-flex rounded-md border border-[var(--ctp-surface)] bg-[var(--ctp-bg-pane-secondary)] p-1">
+    <div className="inline-flex rounded-md border border-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)] p-1">
       {(['latte', 'mocha'] as const).map((flavor) => {
         const active = theme === flavor;
 
@@ -73,8 +73,8 @@ export function ThemeSwitcher({
             aria-pressed={active}
             className={`appearance-none shadow-none inline-flex items-center gap-1.5 rounded px-2.5 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.08em] outline-none ring-0 transition-colors focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 ${
               active
-                ? 'bg-[var(--ctp-bg-pane)] text-[var(--ctp-text-body)]'
-                : 'bg-transparent text-[var(--ctp-text-subtle)] hover:text-[var(--ctp-text-body)]'
+                ? 'bg-[var(--ms-bg-pane)] text-[var(--ms-text-body)]'
+                : 'bg-transparent text-[var(--ms-text-subtle)] hover:text-[var(--ms-text-body)]'
             }`}
           >
             {flavor === 'latte' ? (

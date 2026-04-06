@@ -16,7 +16,7 @@ const ExcalidrawDynamic = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ctp-text-subtle)', fontSize: '0.875rem', fontStyle: 'italic' }}>
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ms-text-subtle)', fontSize: '0.875rem', fontStyle: 'italic' }}>
         Loading canvas…
       </div>
     ),
@@ -81,10 +81,10 @@ const aiBubbleStyle: React.CSSProperties = {
   alignSelf: 'flex-start',
   padding: '10px 14px',
   borderRadius: '12px 12px 12px 3px',
-  background: 'var(--ctp-bg-pane-secondary)',
-  border: '1px solid var(--ctp-surface)',
+  background: 'var(--ms-bg-pane-secondary)',
+  border: '1px solid var(--ms-surface)',
   fontSize: '0.9375rem',
-  color: 'var(--ctp-text-body)',
+  color: 'var(--ms-text-body)',
   lineHeight: 1.6,
 }
 
@@ -93,10 +93,10 @@ const userBubbleStyle: React.CSSProperties = {
   alignSelf: 'flex-end',
   padding: '10px 14px',
   borderRadius: '12px 12px 3px 12px',
-  background: 'var(--ctp-blue-surface)',
-  border: '1px solid var(--ctp-blue)',
+  background: 'var(--ms-blue-surface)',
+  border: '1px solid var(--ms-blue)',
   fontSize: '0.9375rem',
-  color: 'var(--ctp-text-body)',
+  color: 'var(--ms-text-body)',
   lineHeight: 1.6,
   whiteSpace: 'pre-wrap',
 }
@@ -388,7 +388,7 @@ Shape:
             onClick={handleClose}
             className="fixed inset-0 z-[49]"
             style={{
-              background: 'var(--ctp-bg-pane-tertiary)',
+              background: 'var(--ms-bg-pane-tertiary)',
             }}
           />
 
@@ -399,7 +399,7 @@ Shape:
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="fixed right-0 top-0 h-screen z-50 bg-[var(--ctp-bg-pane)] border-l border-l-[var(--ctp-surface)] flex flex-col overflow-hidden"
+            className="fixed right-0 top-0 h-screen z-50 bg-[var(--ms-bg-pane)] border-l border-l-[var(--ms-surface)] flex flex-col overflow-hidden"
             style={{
               width: drawOpen ? '100vw' : '420px',
               transition: 'width 0.3s ease',
@@ -407,8 +407,8 @@ Shape:
             }}
           >
             {/* Header */}
-            <div className="flex items-center gap-2 px-4 h-[52px] border-b border-b-[var(--ctp-surface)] shrink-0">
-              <p className="font-[ui-monospace,monospace] text-[0.65rem] font-bold tracking-[0.1em] uppercase text-[var(--ctp-text-faint)] m-0 flex-1">
+            <div className="flex items-center gap-2 px-4 h-[52px] border-b border-b-[var(--ms-surface)] shrink-0">
+              <p className="font-[ui-monospace,monospace] text-[0.65rem] font-bold tracking-[0.1em] uppercase text-[var(--ms-text-faint)] m-0 flex-1">
                 Discuss it
               </p>
               <button
@@ -431,9 +431,9 @@ Shape:
                 }}
                 className="flex items-center gap-1 px-3 py-[5px] rounded-[5px] border text-[0.75rem] font-medium transition-colors"
                 style={{
-                  background: drawOpen ? 'var(--ctp-text-body)' : 'var(--ctp-bg-pane-secondary)',
-                  color: drawOpen ? 'var(--ctp-bg-pane)' : 'var(--ctp-text-muted)',
-                  borderColor: drawOpen ? 'var(--ctp-text-body)' : 'var(--ctp-surface)',
+                  background: drawOpen ? 'var(--ms-text-body)' : 'var(--ms-bg-pane-secondary)',
+                  color: drawOpen ? 'var(--ms-bg-pane)' : 'var(--ms-text-muted)',
+                  borderColor: drawOpen ? 'var(--ms-text-body)' : 'var(--ms-surface)',
                   cursor: 'pointer',
                 }}
               >
@@ -444,9 +444,9 @@ Shape:
                 disabled={busy}
                 className="flex items-center gap-1 px-3 py-[5px] rounded-[5px] border text-[0.75rem] font-medium"
                 style={{
-                  background: 'var(--ctp-bg-pane-secondary)',
-                  color: busy ? 'var(--ctp-text-faint)' : 'var(--ctp-text-muted)',
-                  borderColor: 'var(--ctp-surface)',
+                  background: 'var(--ms-bg-pane-secondary)',
+                  color: busy ? 'var(--ms-text-faint)' : 'var(--ms-text-muted)',
+                  borderColor: 'var(--ms-surface)',
                   cursor: busy ? 'not-allowed' : 'pointer',
                 }}
               >
@@ -455,7 +455,7 @@ Shape:
               </button>
               <button
                 onClick={handleClose}
-                className="bg-transparent border-0 cursor-pointer text-[var(--ctp-text-subtle)] text-[1.25rem] leading-none p-[4px] rounded-[4px] flex items-center justify-center ml-1"
+                className="bg-transparent border-0 cursor-pointer text-[var(--ms-text-subtle)] text-[1.25rem] leading-none p-[4px] rounded-[4px] flex items-center justify-center ml-1"
                 aria-label="Close"
               >
                 ✕
@@ -465,7 +465,7 @@ Shape:
             {/* Content area */}
             <div className="flex-1 flex overflow-hidden relative" style={{ minHeight: 0 }}>
               {drawOpen && (
-                <div className="flex flex-col border-r border-r-[var(--ctp-surface)]" style={{ flex: 1, minWidth: 0 }}>
+                <div className="flex flex-col border-r border-r-[var(--ms-surface)]" style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ flex: 1, minHeight: 0, position: 'relative', overflow: 'hidden' }}>
                     <div style={{ position: 'absolute', inset: 0 }}>
                       <ExcalidrawDynamic
@@ -479,14 +479,14 @@ Shape:
                       />
                     </div>
                   </div>
-                  <div className="border-t border-t-[var(--ctp-surface)] p-3 bg-[var(--ctp-bg-pane-secondary)] shrink-0 flex justify-end">
+                  <div className="border-t border-t-[var(--ms-surface)] p-3 bg-[var(--ms-bg-pane-secondary)] shrink-0 flex justify-end">
                     <button
                       onClick={handleSubmitDrawing}
                       disabled={busy || !canvasReady}
                       className="px-4 py-[7px] rounded-[6px] border-0 text-[0.8125rem] font-semibold"
                       style={{
-                        background: busy ? 'var(--ctp-bg-pane-tertiary)' : 'var(--ctp-blue)',
-                        color: busy ? 'var(--ctp-text-faint)' : 'white',
+                        background: busy ? 'var(--ms-bg-pane-tertiary)' : 'var(--ms-blue)',
+                        color: busy ? 'var(--ms-text-faint)' : 'white',
                         cursor: busy ? 'not-allowed' : 'pointer',
                       }}
                     >
@@ -503,9 +503,9 @@ Shape:
                 {summarizing && (
                   <div
                     className="absolute inset-0 flex items-center justify-center z-10"
-                    style={{ background: 'var(--ctp-bg-pane)' }}
+                    style={{ background: 'var(--ms-bg-pane)' }}
                   >
-                    <p className="text-[var(--ctp-text-subtle)] text-sm italic">Generating summary…</p>
+                    <p className="text-[var(--ms-text-subtle)] text-sm italic">Generating summary…</p>
                   </div>
                 )}
 
@@ -513,42 +513,42 @@ Shape:
                   <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-5">
                     {summary.strengths.length > 0 && (
                       <div>
-                        <p className="font-[ui-monospace,monospace] text-[0.65rem] font-bold tracking-[0.09em] uppercase text-[var(--ctp-green)] mb-2">
+                        <p className="font-[ui-monospace,monospace] text-[0.65rem] font-bold tracking-[0.09em] uppercase text-[var(--ms-green)] mb-2">
                           What you covered well
                         </p>
                         <ul className="m-0 pl-5">
                           {summary.strengths.map((s, i) => (
-                            <li key={i} className="text-sm text-[var(--ctp-text-body)] mb-1">{s}</li>
+                            <li key={i} className="text-sm text-[var(--ms-text-body)] mb-1">{s}</li>
                           ))}
                         </ul>
                       </div>
                     )}
                     {summary.reinforce.length > 0 && (
                       <div>
-                        <p className="font-[ui-monospace,monospace] text-[0.65rem] font-bold tracking-[0.09em] uppercase text-[var(--ctp-peach)] mb-2">
+                        <p className="font-[ui-monospace,monospace] text-[0.65rem] font-bold tracking-[0.09em] uppercase text-[var(--ms-peach)] mb-2">
                           Worth reinforcing
                         </p>
                         <ul className="m-0 pl-5">
                           {summary.reinforce.map((r, i) => (
-                            <li key={i} className="text-sm text-[var(--ctp-text-body)] mb-1">{r}</li>
+                            <li key={i} className="text-sm text-[var(--ms-text-body)] mb-1">{r}</li>
                           ))}
                         </ul>
                       </div>
                     )}
                     {summary.lookUp && (
                       <div
-                        className="px-[14px] py-[10px] rounded-[6px] bg-[var(--ctp-blue-surface)]"
-                        style={{ border: '1px solid var(--ctp-blue)' }}
+                        className="px-[14px] py-[10px] rounded-[6px] bg-[var(--ms-blue-surface)]"
+                        style={{ border: '1px solid var(--ms-blue)' }}
                       >
-                        <p className="font-[ui-monospace,monospace] text-[0.65rem] font-bold tracking-[0.09em] uppercase text-[var(--ctp-blue)] mb-[0.375rem]">
+                        <p className="font-[ui-monospace,monospace] text-[0.65rem] font-bold tracking-[0.09em] uppercase text-[var(--ms-blue)] mb-[0.375rem]">
                           One thing to look up
                         </p>
-                        <p className="text-[0.9375rem] text-[var(--ctp-text-body)] m-0">{summary.lookUp}</p>
+                        <p className="text-[0.9375rem] text-[var(--ms-text-body)] m-0">{summary.lookUp}</p>
                       </div>
                     )}
                     <button
                       onClick={handleReset}
-                      className="self-start px-4 py-[7px] rounded-[6px] border border-[var(--ctp-surface)] bg-[var(--ctp-bg-pane-secondary)] text-[var(--ctp-text-muted)] text-[0.8125rem] cursor-pointer"
+                      className="self-start px-4 py-[7px] rounded-[6px] border border-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)] text-[var(--ms-text-muted)] text-[0.8125rem] cursor-pointer"
                     >
                       ↩ Start over
                     </button>
@@ -578,23 +578,23 @@ Shape:
                         <div style={aiBubbleStyle}><ReactMarkdown>{displayBuffer}</ReactMarkdown></div>
                       )}
                       {streaming && !displayBuffer && (
-                        <div className="text-[var(--ctp-text-faint)] italic" style={aiBubbleStyle}>thinking…</div>
+                        <div className="text-[var(--ms-text-faint)] italic" style={aiBubbleStyle}>thinking…</div>
                       )}
                     </div>
 
                     {error && (
-                      <div className="px-3 py-2 border-t border-t-[var(--ctp-surface)] flex items-center gap-3 flex-wrap bg-[var(--ctp-bg-pane-secondary)]">
+                      <div className="px-3 py-2 border-t border-t-[var(--ms-surface)] flex items-center gap-3 flex-wrap bg-[var(--ms-bg-pane-secondary)]">
                         <p className="m-0 text-[0.8125rem]" style={{ color: 'var(--red, #e06c75)' }}>
                           {error}{' '}
                           {error.includes('API key') && (
-                            <a href="/fullstack/settings" className="text-[var(--ctp-blue)]">Go to Settings →</a>
+                            <a href="/fullstack/settings" className="text-[var(--ms-blue)]">Go to Settings →</a>
                           )}
                         </p>
                         {error.includes('Summary failed') && (
                           <button
                             onClick={handleWrapUp}
                             disabled={busy}
-                            className="px-3 py-[4px] rounded-[5px] border border-[var(--ctp-surface)] bg-[var(--ctp-bg-pane)] text-[var(--ctp-text-muted)] text-[0.8125rem]"
+                            className="px-3 py-[4px] rounded-[5px] border border-[var(--ms-surface)] bg-[var(--ms-bg-pane)] text-[var(--ms-text-muted)] text-[0.8125rem]"
                             style={{ cursor: busy ? 'not-allowed' : 'pointer' }}
                           >
                             Retry summary
@@ -604,22 +604,22 @@ Shape:
                     )}
 
                     {wrapUpSuggested && !wrapUpDismissed && (
-                      <div className="border-t border-t-[var(--ctp-surface)] px-3 py-[0.625rem] bg-[var(--ctp-blue-surface)] flex items-center justify-between gap-3 shrink-0">
-                        <p className="m-0 text-[0.8125rem] text-[var(--ctp-text-muted)]">
+                      <div className="border-t border-t-[var(--ms-surface)] px-3 py-[0.625rem] bg-[var(--ms-blue-surface)] flex items-center justify-between gap-3 shrink-0">
+                        <p className="m-0 text-[0.8125rem] text-[var(--ms-text-muted)]">
                           Looks like we&apos;ve covered the main ideas — ready for a summary?
                         </p>
                         <div className="flex gap-2 shrink-0">
                           <button
                             onClick={handleWrapUp}
                             disabled={busy}
-                            className="px-3 py-[5px] rounded-[5px] border-0 bg-[var(--ctp-blue)] text-white text-[0.8125rem] font-semibold"
+                            className="px-3 py-[5px] rounded-[5px] border-0 bg-[var(--ms-blue)] text-white text-[0.8125rem] font-semibold"
                             style={{ cursor: busy ? 'not-allowed' : 'pointer' }}
                           >
                             Yes, wrap up
                           </button>
                           <button
                             onClick={() => setWrapUpDismissed(true)}
-                            className="px-3 py-[5px] rounded-[5px] border border-[var(--ctp-surface)] bg-[var(--ctp-bg-pane)] text-[var(--ctp-text-muted)] text-[0.8125rem] cursor-pointer"
+                            className="px-3 py-[5px] rounded-[5px] border border-[var(--ms-surface)] bg-[var(--ms-bg-pane)] text-[var(--ms-text-muted)] text-[0.8125rem] cursor-pointer"
                           >
                             Keep going
                           </button>
@@ -627,7 +627,7 @@ Shape:
                       </div>
                     )}
 
-                    <div className="border-t border-t-[var(--ctp-surface)] p-3 flex gap-2 items-end bg-[var(--ctp-bg-pane-secondary)] shrink-0">
+                    <div className="border-t border-t-[var(--ms-surface)] p-3 flex gap-2 items-end bg-[var(--ms-bg-pane-secondary)] shrink-0">
                       <textarea
                         value={input}
                         onChange={e => setInput(e.target.value)}
@@ -644,16 +644,16 @@ Shape:
                           e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px'
                         }}
                         disabled={busy}
-                        className="flex-1 text-sm px-[10px] py-[8px] rounded-[6px] border border-[var(--ctp-surface)] text-[var(--ctp-text-body)] resize-none outline-none overflow-hidden min-h-[38px] max-h-[120px]"
-                        style={{ fontFamily: 'inherit', background: busy ? 'var(--ctp-bg-pane-tertiary)' : 'var(--ctp-bg-pane)' }}
+                        className="flex-1 text-sm px-[10px] py-[8px] rounded-[6px] border border-[var(--ms-surface)] text-[var(--ms-text-body)] resize-none outline-none overflow-hidden min-h-[38px] max-h-[120px]"
+                        style={{ fontFamily: 'inherit', background: busy ? 'var(--ms-bg-pane-tertiary)' : 'var(--ms-bg-pane)' }}
                       />
                       <button
                         onClick={() => handleSend()}
                         disabled={busy || !input.trim()}
                         className="px-4 py-[7px] rounded-[6px] border-0 text-[0.8125rem] font-semibold whitespace-nowrap"
                         style={{
-                          background: busy || !input.trim() ? 'var(--ctp-bg-pane-tertiary)' : 'var(--ctp-blue)',
-                          color: busy || !input.trim() ? 'var(--ctp-text-faint)' : 'white',
+                          background: busy || !input.trim() ? 'var(--ms-bg-pane-tertiary)' : 'var(--ms-blue)',
+                          color: busy || !input.trim() ? 'var(--ms-text-faint)' : 'white',
                           cursor: busy || !input.trim() ? 'not-allowed' : 'pointer',
                         }}
                       >

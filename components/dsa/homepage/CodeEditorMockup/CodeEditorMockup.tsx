@@ -105,7 +105,7 @@ export function CodeEditorMockup() {
             </span>
           ))}
         </div>
-        <button className="py-[6px] px-[14px] rounded-[5px] bg-[var(--ctp-blue)] text-white border-0 text-[0.72rem] font-semibold cursor-pointer flex items-center gap-[6px] font-[ui-monospace,monospace]">
+        <button className="py-[6px] px-[14px] rounded-[5px] bg-[var(--ms-blue)] text-white border-0 text-[0.72rem] font-semibold cursor-pointer flex items-center gap-[6px] font-[ui-monospace,monospace]">
           Run{' '}
           <kbd className="bg-[rgba(255,255,255,0.15)] py-[1px] px-[5px] rounded-[3px] text-[0.68rem]">
             ⌘↵

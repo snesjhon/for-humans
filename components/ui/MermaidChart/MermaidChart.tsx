@@ -47,27 +47,27 @@ export default function MermaidChart({ chart }: MermaidChartProps) {
       const styles = getComputedStyle(document.documentElement);
       const primary = readThemeColor(
         styles,
-        '--ctp-blue',
+        '--ms-blue',
         dark ? '#89b4fa' : '#1e66f5',
       );
       const background = readThemeColor(
         styles,
-        '--ctp-bg-pane',
+        '--ms-bg-pane',
         dark ? '#1e1e2e' : '#eff1f5',
       );
       const backgroundAlt = readThemeColor(
         styles,
-        '--ctp-bg-pane-secondary',
+        '--ms-bg-pane-secondary',
         dark ? '#181825' : '#e6e9ef',
       );
       const foreground = readThemeColor(
         styles,
-        '--ctp-text-body',
+        '--ms-text-body',
         dark ? '#cdd6f4' : '#4c4f69',
       );
       const border = readThemeColor(
         styles,
-        '--ctp-surface',
+        '--ms-surface',
         dark ? '#313244' : '#ccd0da',
       );
 
@@ -126,7 +126,7 @@ export default function MermaidChart({ chart }: MermaidChartProps) {
       <div ref={innerRef} />
       {error && (
         <pre
-          className="text-[var(--ctp-red)] text-[0.8rem] p-4 m-0"
+          className="text-[var(--ms-red)] text-[0.8rem] p-4 m-0"
         >
           [Mermaid parse error]{'\n'}
           {error}

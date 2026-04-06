@@ -49,7 +49,7 @@ export default function TableOfContents({
 
   return (
     <nav>
-      <p className="text-xs font-semibold mb-4 text-[var(--ctp-text-body)]">{title}</p>
+      <p className="text-xs font-semibold mb-4 text-[var(--ms-text-body)]">{title}</p>
       <div className="space-y-0.5">
         {visible.map((heading) => {
           const isActive = activeId === heading.id;
@@ -58,14 +58,14 @@ export default function TableOfContents({
             <a
               key={heading.id}
               href={`#${heading.id}`}
-              className={`block rounded-md py-1.5 pr-2 text-xs leading-snug transition-colors no-underline focus:outline-none ${
+              className={`block rounded-md py-1.5 pr-2 text-xs leading-snug transition-colors no-underline hover:bg-[var(--ms-primary-surface)] focus:outline-none ${
                 isH3 ? 'pl-6' : 'pl-2'
               } ${
                 isActive
-                  ? 'bg-[var(--ctp-blue-surface)] font-medium text-[var(--ctp-blue)]'
+                  ? 'bg-[var(--ms-primary-surface)] font-medium text-[var(--ms-primary)]'
                   : isH3
-                    ? 'text-[var(--ctp-text-faint)]'
-                    : 'text-[var(--ctp-text-subtle)]'
+                    ? 'text-[var(--ms-text-faint)]'
+                    : 'text-[var(--ms-text-subtle)]'
               }`}
               onClick={(e) => {
                 e.preventDefault();

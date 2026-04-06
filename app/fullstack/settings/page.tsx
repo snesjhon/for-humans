@@ -40,7 +40,7 @@ export default function SettingsPage() {
     <main className="max-w-[600px] mx-auto mt-[80px] px-6 space-y-[3rem]">
       <div>
         <h1 className="font-extrabold text-[1.5rem] mb-[0.5rem]">Settings</h1>
-        <p className="text-[var(--ctp-text-subtle)] text-[0.9375rem]">
+        <p className="text-[var(--ms-text-subtle)] text-[0.9375rem]">
           Stored in your browser only. Never leaves your device.
         </p>
       </div>
@@ -48,11 +48,11 @@ export default function SettingsPage() {
       {/* API Key */}
       <section>
         <h2 className="font-bold text-[1rem] mb-[0.5rem]">Claude API Key</h2>
-        <p className="text-[0.875rem] text-[var(--ctp-text-subtle)] mb-[1rem]">Used to evaluate your work and power the chat interface.</p>
+        <p className="text-[0.875rem] text-[var(--ms-text-subtle)] mb-[1rem]">Used to evaluate your work and power the chat interface.</p>
         {storedKey && (
-          <div className="mb-[1rem] py-[12px] px-[16px] rounded-[6px] bg-[var(--ctp-bg-pane-secondary)] border border-[var(--ctp-surface)] flex justify-between items-center">
+          <div className="mb-[1rem] py-[12px] px-[16px] rounded-[6px] bg-[var(--ms-bg-pane-secondary)] border border-[var(--ms-surface)] flex justify-between items-center">
             <span className="font-[ui-monospace,monospace] text-[0.875rem]">{maskApiKey(storedKey)}</span>
-            <button onClick={() => { clearApiKey(); setStoredKey(null) }} className="text-[0.8rem] text-[var(--ctp-text-faint)] bg-transparent border-none cursor-pointer">Clear</button>
+            <button onClick={() => { clearApiKey(); setStoredKey(null) }} className="text-[0.8rem] text-[var(--ms-text-faint)] bg-transparent border-none cursor-pointer">Clear</button>
           </div>
         )}
         <div className="flex gap-[8px]">
@@ -61,10 +61,10 @@ export default function SettingsPage() {
             value={keyInput}
             onChange={(e) => setKeyInput(e.target.value)}
             placeholder={storedKey ? 'Replace API key…' : 'sk-ant-…'}
-            className="flex-1 py-[8px] px-[12px] rounded-[6px] border border-[var(--ctp-surface)] bg-[var(--ctp-bg-pane-secondary)] text-[var(--ctp-text-body)] text-[0.875rem]"
+            className="flex-1 py-[8px] px-[12px] rounded-[6px] border border-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)] text-[var(--ms-text-body)] text-[0.875rem]"
             onKeyDown={(e) => e.key === 'Enter' && handleSaveKey()}
           />
-          <button onClick={handleSaveKey} className="py-[8px] px-[20px] rounded-[6px] bg-[var(--ctp-blue)] text-white font-semibold text-[0.875rem] border-none cursor-pointer">
+          <button onClick={handleSaveKey} className="py-[8px] px-[20px] rounded-[6px] bg-[var(--ms-blue)] text-white font-semibold text-[0.875rem] border-none cursor-pointer">
             {keySaved ? 'Saved!' : 'Save'}
           </button>
         </div>
@@ -73,11 +73,11 @@ export default function SettingsPage() {
       {/* Chess App Path */}
       <section>
         <h2 className="font-bold text-[1rem] mb-[0.5rem]">Chess App Path</h2>
-        <p className="text-[0.875rem] text-[var(--ctp-text-subtle)] mb-[1rem]">Absolute path to your local chess app directory. Used to read your code when checking work.</p>
+        <p className="text-[0.875rem] text-[var(--ms-text-subtle)] mb-[1rem]">Absolute path to your local chess app directory. Used to read your code when checking work.</p>
         {storedPath && (
-          <div className="mb-[1rem] py-[12px] px-[16px] rounded-[6px] bg-[var(--ctp-bg-pane-secondary)] border border-[var(--ctp-surface)] flex justify-between items-center">
-            <span className="font-[ui-monospace,monospace] text-[0.875rem] text-[var(--ctp-text-body)]">{storedPath}</span>
-            <button onClick={() => { clearProjectPath(); setStoredPath(null) }} className="text-[0.8rem] text-[var(--ctp-text-faint)] bg-transparent border-none cursor-pointer">Clear</button>
+          <div className="mb-[1rem] py-[12px] px-[16px] rounded-[6px] bg-[var(--ms-bg-pane-secondary)] border border-[var(--ms-surface)] flex justify-between items-center">
+            <span className="font-[ui-monospace,monospace] text-[0.875rem] text-[var(--ms-text-body)]">{storedPath}</span>
+            <button onClick={() => { clearProjectPath(); setStoredPath(null) }} className="text-[0.8rem] text-[var(--ms-text-faint)] bg-transparent border-none cursor-pointer">Clear</button>
           </div>
         )}
         <div className="flex gap-[8px]">
@@ -86,10 +86,10 @@ export default function SettingsPage() {
             value={pathInput}
             onChange={(e) => setPathInput(e.target.value)}
             placeholder="/Users/you/chess-learning"
-            className="flex-1 py-[8px] px-[12px] rounded-[6px] border border-[var(--ctp-surface)] bg-[var(--ctp-bg-pane-secondary)] text-[var(--ctp-text-body)] text-[0.875rem] font-[ui-monospace,monospace]"
+            className="flex-1 py-[8px] px-[12px] rounded-[6px] border border-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)] text-[var(--ms-text-body)] text-[0.875rem] font-[ui-monospace,monospace]"
             onKeyDown={(e) => e.key === 'Enter' && handleSavePath()}
           />
-          <button onClick={handleSavePath} className="py-[8px] px-[20px] rounded-[6px] bg-[var(--ctp-blue)] text-white font-semibold text-[0.875rem] border-none cursor-pointer">
+          <button onClick={handleSavePath} className="py-[8px] px-[20px] rounded-[6px] bg-[var(--ms-blue)] text-white font-semibold text-[0.875rem] border-none cursor-pointer">
             {pathSaved ? 'Saved!' : 'Save'}
           </button>
         </div>

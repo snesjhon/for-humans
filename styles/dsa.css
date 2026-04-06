@@ -1,4 +1,4 @@
 /* DSA follows the shared Catppuccin token set from base.css. */
 :root {
-  --active-phase-color: var(--ctp-blue);
+  --active-phase-color: var(--ms-primary);
 }

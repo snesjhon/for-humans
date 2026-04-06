@@ -40,9 +40,9 @@
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
   font-size: 17px;
   font-weight: 700;
-  border: 2px solid var(--ctp-surface);
-  background: var(--ctp-bg-pane-secondary);
-  color: var(--ctp-text-muted);
+  border: 2px solid var(--ms-surface);
+  background: var(--ms-bg-pane-secondary);
+  color: var(--ms-text-muted);
   flex-shrink: 0;
   transition:
     background 0.18s,
@@ -51,27 +51,27 @@
 }
 
 .nodeBlue {
-  background: var(--ctp-blue-surface);
-  border-color: var(--ctp-blue);
-  color: var(--ctp-blue);
+  background: var(--ms-blue-surface);
+  border-color: var(--ms-blue);
+  color: var(--ms-blue);
 }
 
 .nodeOrange {
-  background: var(--ctp-peach-surface);
-  border-color: var(--ctp-peach);
-  color: var(--ctp-peach);
+  background: var(--ms-peach-surface);
+  border-color: var(--ms-peach);
+  color: var(--ms-peach);
 }
 
 .nodeGreen {
-  background: var(--ctp-green-surface);
-  border-color: var(--ctp-green);
-  color: var(--ctp-green);
+  background: var(--ms-green-surface);
+  border-color: var(--ms-green);
+  color: var(--ms-green);
 }
 
 .nodePurple {
-  background: var(--ctp-mauve-surface);
-  border-color: var(--ctp-mauve);
-  color: var(--ctp-mauve);
+  background: var(--ms-mauve-surface);
+  border-color: var(--ms-mauve);
+  color: var(--ms-mauve);
 }
 
 .nullBox {
@@ -84,59 +84,59 @@
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
   font-size: 12px;
   font-style: italic;
-  color: var(--ctp-text-faint);
-  border: 2px dashed var(--ctp-surface);
+  color: var(--ms-text-faint);
+  border: 2px dashed var(--ms-surface);
   background: transparent;
   flex-shrink: 0;
 }
 
 .arrow {
-  color: var(--ctp-text-faint);
+  color: var(--ms-text-faint);
   flex-shrink: 0;
   width: 28px;
   height: 20px;
 }
 
 .ptrBlue {
-  background: var(--ctp-blue-surface);
-  color: var(--ctp-blue);
+  background: var(--ms-blue-surface);
+  color: var(--ms-blue);
 }
 
 .ptrOrange {
-  background: var(--ctp-peach-surface);
-  color: var(--ctp-peach);
+  background: var(--ms-peach-surface);
+  color: var(--ms-peach);
 }
 
 .ptrGreen {
-  background: var(--ctp-green-surface);
-  color: var(--ctp-green);
+  background: var(--ms-green-surface);
+  color: var(--ms-green);
 }
 
 .ptrPurple {
-  background: var(--ctp-mauve-surface);
-  color: var(--ctp-mauve);
+  background: var(--ms-mauve-surface);
+  color: var(--ms-mauve);
 }
 
 .badgeRewire {
-  background: var(--ctp-peach-surface);
-  color: var(--ctp-peach);
-  border: 1px solid var(--ctp-peach);
+  background: var(--ms-peach-surface);
+  color: var(--ms-peach);
+  border: 1px solid var(--ms-peach);
 }
 
 .badgeFound {
-  background: var(--ctp-green-surface);
-  color: var(--ctp-green);
-  border: 1px solid var(--ctp-green);
+  background: var(--ms-green-surface);
+  color: var(--ms-green);
+  border: 1px solid var(--ms-green);
 }
 
 .badgeDelete {
-  background: var(--ctp-red-surface);
-  color: var(--ctp-red);
-  border: 1px solid var(--ctp-red);
+  background: var(--ms-red-surface);
+  color: var(--ms-red);
+  border: 1px solid var(--ms-red);
 }
 
 .badgeDone {
-  background: var(--ctp-mauve-surface);
-  color: var(--ctp-mauve);
-  border: 1px solid var(--ctp-mauve);
+  background: var(--ms-mauve-surface);
+  color: var(--ms-mauve);
+  border: 1px solid var(--ms-mauve);
 }

@@ -8,7 +8,7 @@ export function VisualOdometer() {
   return (
     <div className="pt-[20px] px-[20px] pb-[10px]">
       <div className="relative mb-[6px]">
-        <div className="h-[2px] bg-[var(--ctp-surface)] my-[10px]" />
+        <div className="h-[2px] bg-[var(--ms-surface)] my-[10px]" />
         <div className="flex justify-between absolute top-0 left-0 right-0">
           {pts.map((p, i) => (
             <div
@@ -20,9 +20,9 @@ export function VisualOdometer() {
                   width: 6,
                   height: 6,
                   borderRadius: '50%',
-                  background: i === 0 ? 'var(--ctp-text-faint)' : 'var(--ctp-peach)',
+                  background: i === 0 ? 'var(--ms-text-faint)' : 'var(--ms-peach)',
                   marginBottom: 2,
-                  border: `2px solid ${i === 0 ? 'var(--ctp-text-faint)' : 'var(--ctp-peach)'}`,
+                  border: `2px solid ${i === 0 ? 'var(--ms-text-faint)' : 'var(--ms-peach)'}`,
                 }}
               />
             </div>
@@ -39,7 +39,7 @@ export function VisualOdometer() {
               style={{
                 fontFamily: 'ui-monospace, monospace',
                 fontSize: '0.55rem',
-                color: i === 0 ? 'var(--ctp-text-faint)' : 'var(--ctp-peach)',
+                color: i === 0 ? 'var(--ms-text-faint)' : 'var(--ms-peach)',
               }}
             >
               {p.l}
@@ -49,7 +49,7 @@ export function VisualOdometer() {
                 fontFamily: 'ui-monospace, monospace',
                 fontSize: '0.62rem',
                 fontWeight: 700,
-                color: i === 0 ? 'var(--ctp-text-faint)' : 'var(--ctp-peach)',
+                color: i === 0 ? 'var(--ms-text-faint)' : 'var(--ms-peach)',
               }}
             >
               {p.m}
@@ -57,9 +57,9 @@ export function VisualOdometer() {
           </div>
         ))}
       </div>
-      <div className="font-[ui-monospace,monospace] text-[0.6rem] text-[var(--ctp-text-faint)] text-center">
+      <div className="font-[ui-monospace,monospace] text-[0.6rem] text-[var(--ms-text-faint)] text-center">
         C − A ={' '}
-        <span className="text-[var(--ctp-peach)] font-bold">
+        <span className="text-[var(--ms-peach)] font-bold">
           30 − 10 = 20
         </span>{' '}
         miles
