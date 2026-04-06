@@ -1,6 +1,3 @@
-// =============================================================================
-// Hash Maps & Sets — Level 3, Exercise 3: Count Tallies That Hit Round Numbers
-// =============================================================================
 // Goal: Use a running tally + modulo checkpoint map to count how many
 //       contiguous subarrays have a sum divisible by k.
 //
@@ -22,7 +19,11 @@ test('empty', () => countDivisibleSubarrays([], 3), 0);
 test('single hit', () => countDivisibleSubarrays([5], 5), 1);
 test('single miss', () => countDivisibleSubarrays([4], 5), 0);
 test('three subarrays', () => countDivisibleSubarrays([1, 2, 3], 3), 3);
-test('classic example', () => countDivisibleSubarrays([4, 5, 0, -2, -3, 1], 5), 7);
+test(
+  'classic example',
+  () => countDivisibleSubarrays([4, 5, 0, -2, -3, 1], 5),
+  7,
+);
 test('all zeros', () => countDivisibleSubarrays([0, 0, 0], 1), 6);
 
 // ---Helpers

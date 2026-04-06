@@ -1,6 +1,3 @@
-// =============================================================================
-// Hash Maps & Sets — Level 1, Exercise 2: Find the Most-Filed Card — SOLUTION
-// =============================================================================
 // Goal: Use the frequency catalog to retrieve the element with the highest count.
 function mostFrequent(nums: number[]): number {
   const freq = new Map<number, number>();

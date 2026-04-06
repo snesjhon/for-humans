@@ -1,6 +1,3 @@
-// =============================================================================
-// Hash Maps & Sets — Level 1, Exercise 3: Check the Catalog for a Matching Pair
-// =============================================================================
 // Goal: Use a catalog (value → index) to find a complementary pair in one pass
 //       without scanning backwards.
 //

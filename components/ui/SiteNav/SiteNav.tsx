@@ -2,9 +2,8 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { ChevronDown } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
 import { JOURNEY as DSA_JOURNEY } from '@/lib/dsa/journey';
 import { PROBLEM_TITLES } from '@/lib/dsa/titles';
 import { JourneyPanel } from '../JourneyPanel/JourneyPanel';
@@ -72,46 +71,6 @@ function dsaActiveSection(path: string): string | null {
   return null;
 }
 
-type AppKey = 'dsa';
-
-function appFromPath(path: string): AppKey | null {
-  if (path.startsWith('/dsa')) return 'dsa';
-  return null;
-}
-
-// ── AppHeader — accordion toggle button for each top-level app ────────────────
-
-function AppHeader({
-  label,
-  active,
-  open,
-  onToggle,
-}: {
-  label: string;
-  active: boolean;
-  open: boolean;
-  onToggle: () => void;
-}) {
-  return (
-    <button
-      onClick={onToggle}
-      className={`appearance-none shadow-none flex w-full items-center border-none border-t border-t-[var(--ms-surface)] bg-transparent px-4 py-[7px] text-left text-[0.825rem] transition-colors outline-none ring-0 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 ${
-        active
-          ? 'font-semibold tracking-[-0.01em] text-[var(--active-phase-color)]'
-          : 'font-normal text-[var(--ms-text-muted)]'
-      }`}
-    >
-      <span className="flex-1">{label}</span>
-      <ChevronDown
-        aria-hidden="true"
-        className={`h-3.5 w-3.5 shrink-0 text-[var(--ms-text-faint)] transition-transform duration-200 ${
-          open ? 'rotate-180' : 'rotate-0'
-        }`}
-      />
-    </button>
-  );
-}
-
 // ── SiteNav ───────────────────────────────────────────────────────────────────
 
 interface SiteNavProps {
@@ -127,38 +86,13 @@ export function SiteNav({
   const availableDsaFundamentals = new Set(availableDsaFundamentalsArr);
 
   const pathname = usePathname();
-  const [openApps, setOpenApps] = useState<Set<AppKey>>(() => {
-    const app = appFromPath(pathname);
-    return app ? new Set([app]) : new Set();
-  });
-
-  // Auto-open the current app's section when navigating
-  useEffect(() => {
-    const app = appFromPath(pathname);
-    if (!app) return;
-    setOpenApps((prev) => {
-      if (prev.has(app)) return prev;
-      const next = new Set(prev);
-      next.add(app);
-      return next;
-    });
-  }, [pathname]);
-
-  const toggleApp = (app: AppKey) => {
-    setOpenApps((prev) => {
-      const next = new Set(prev);
-      if (next.has(app)) next.delete(app);
-      else next.add(app);
-      return next;
-    });
-  };
-
   const activeSectionId = dsaActiveSection(pathname);
+  const isDsaPage = pathname.startsWith('/dsa');
 
   return (
     <nav className="sticky left-0 top-0 z-50 flex h-screen w-full flex-col border-r border-r-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)]">
       {/* Branding */}
-      <div className="shrink-0 border-b border-b-[var(--ms-surface)] px-4 pb-[14px] pt-[18px]">
+      <div className="shrink-0 px-4 pb-[14px] pt-[18px]">
         <Link href="/" className="no-underline block focus:outline-none">
           <span className="text-[1.05rem] italic font-normal tracking-[-0.01em] text-[var(--ms-text-body)] [font-family:var(--font-display)]">
             MentalSystems
@@ -166,33 +100,35 @@ export function SiteNav({
         </Link>
       </div>
 
-      {/* Accordion body — all headers flex-shrink:0, expanded content fills remaining space */}
       <div className="flex flex-1 flex-col overflow-hidden">
-        {/* ── DSA ── */}
-        <AppHeader
-          label="DSA"
-          active={pathname.startsWith('/dsa')}
-          open={openApps.has('dsa')}
-          onToggle={() => toggleApp('dsa')}
-        />
-        {openApps.has('dsa') && (
-          <div className="min-h-0 flex-1 overflow-y-auto">
-            <JourneyPanel
-              phases={DSA_PHASES}
-              pathname={pathname}
-              activeSectionId={activeSectionId}
-              activeItemKey={
-                pathname.match(/^\/dsa\/problems\/([^/]+)/)?.[1] ?? null
-              }
-              activeFundamentalsSlug={
-                pathname.match(/^\/dsa\/fundamentals\/([^/]+)/)?.[1] ?? null
-              }
-              availableItemKeys={availableProblemIds}
-              availableFundamentalsSlugs={availableDsaFundamentals}
-              getItemHref={(key) => `/dsa/problems/${key}`}
-              getFundamentalsHref={(slug) => `/dsa/fundamentals/${slug}`}
-            />
-          </div>
+        {isDsaPage && (
+          <>
+            <Link
+              href="/dsa/path"
+              className="flex w-full items-center gap-2 px-4 py-3 text-[0.775rem] font-normal text-[var(--ms-text-body)] no-underline transition-colors visited:text-[var(--ms-text-body)] hover:text-[var(--ms-primary)] focus:outline-none focus-visible:outline-none active:outline-none"
+              style={{ boxShadow: 'inset 0 -1px 0 var(--ms-surface)' }}
+            >
+              <ChevronLeft aria-hidden="true" className="h-3.5 w-3.5 shrink-0" />
+              <span>Back to Path</span>
+            </Link>
+            <div className="min-h-0 flex-1 overflow-y-auto">
+              <JourneyPanel
+                phases={DSA_PHASES}
+                pathname={pathname}
+                activeSectionId={activeSectionId}
+                activeItemKey={
+                  pathname.match(/^\/dsa\/problems\/([^/]+)/)?.[1] ?? null
+                }
+                activeFundamentalsSlug={
+                  pathname.match(/^\/dsa\/fundamentals\/([^/]+)/)?.[1] ?? null
+                }
+                availableItemKeys={availableProblemIds}
+                availableFundamentalsSlugs={availableDsaFundamentals}
+                getItemHref={(key) => `/dsa/problems/${key}`}
+                getFundamentalsHref={(slug) => `/dsa/fundamentals/${slug}`}
+              />
+            </div>
+          </>
         )}
       </div>
     </nav>

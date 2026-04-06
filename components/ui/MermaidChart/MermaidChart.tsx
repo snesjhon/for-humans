@@ -6,23 +6,8 @@ interface MermaidChartProps {
   chart: string;
 }
 
-// Strip inline `style NodeName fill:#xxx` and `style NodeName fill:#xxx,stroke:#xxx,...`
-// so all nodes use the theme's primaryColor instead of clashing hardcoded colors.
-function stripInlineStyles(src: string): string {
-  return src.replace(/^\s*style\s+\S+\s+fill:[^\n]*/gm, '');
-}
-
 function isDarkMode(): boolean {
   return document.documentElement.classList.contains('dark');
-}
-
-function readThemeColor(
-  styles: CSSStyleDeclaration,
-  name: string,
-  fallback: string,
-): string {
-  const value = styles.getPropertyValue(name).trim();
-  return value || fallback;
 }
 
 export default function MermaidChart({ chart }: MermaidChartProps) {
@@ -44,62 +29,14 @@ export default function MermaidChart({ chart }: MermaidChartProps) {
     let cancelled = false;
 
     async function run() {
-      const styles = getComputedStyle(document.documentElement);
-      const primary = readThemeColor(
-        styles,
-        '--ms-blue',
-        dark ? '#89b4fa' : '#1e66f5',
-      );
-      const background = readThemeColor(
-        styles,
-        '--ms-bg-pane',
-        dark ? '#1e1e2e' : '#eff1f5',
-      );
-      const backgroundAlt = readThemeColor(
-        styles,
-        '--ms-bg-pane-secondary',
-        dark ? '#181825' : '#e6e9ef',
-      );
-      const foreground = readThemeColor(
-        styles,
-        '--ms-text-body',
-        dark ? '#cdd6f4' : '#4c4f69',
-      );
-      const border = readThemeColor(
-        styles,
-        '--ms-surface',
-        dark ? '#313244' : '#ccd0da',
-      );
-
       const mermaid = (await import('mermaid')).default;
       mermaid.initialize({
         startOnLoad: false,
-        theme: dark ? 'dark' : 'base',
-        themeVariables: {
-          primaryColor: backgroundAlt,
-          primaryTextColor: foreground,
-          primaryBorderColor: primary,
-          secondaryColor: background,
-          secondaryTextColor: foreground,
-          secondaryBorderColor: primary,
-          tertiaryColor: backgroundAlt,
-          tertiaryTextColor: foreground,
-          tertiaryBorderColor: border,
-          background,
-          mainBkg: backgroundAlt,
-          nodeBorder: primary,
-          clusterBkg: backgroundAlt,
-          clusterBorder: border,
-          titleColor: foreground,
-          lineColor: primary,
-          edgeLabelBackground: background,
-          fontFamily: 'system-ui, -apple-system, sans-serif',
-        },
+        theme: dark ? 'dark' : 'default',
       });
 
       try {
-        const cleaned = stripInlineStyles(chart.trim());
-        const { svg } = await mermaid.render(`mermaid-${id}`, cleaned);
+        const { svg } = await mermaid.render(`mermaid-${id}`, chart.trim());
         if (cancelled || !innerRef.current) return;
 
         innerRef.current.innerHTML = svg;

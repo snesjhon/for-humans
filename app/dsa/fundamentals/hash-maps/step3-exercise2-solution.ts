@@ -1,6 +1,3 @@
-// =============================================================================
-// Hash Maps & Sets — Level 3, Exercise 2: Longest Stretch Between Checkpoints — SOLUTION
-// =============================================================================
 // Goal: Use a running tally + checkpoint map to find the LENGTH of the longest
 //       contiguous subarray whose elements sum to exactly k.
 function longestSubarrayWithSum(nums: number[], k: number): number {

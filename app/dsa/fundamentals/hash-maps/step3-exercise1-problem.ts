@@ -1,6 +1,3 @@
-// =============================================================================
-// Hash Maps & Sets — Level 3, Exercise 1: Did Any Tally Reset to Zero?
-// =============================================================================
 // Goal: Use a running tally + logbook to detect whether any contiguous subarray
 //       sums to exactly zero — in a single pass.
 //
@@ -23,7 +20,11 @@ function hasZeroSumSubarray(nums: number[]): boolean {
 test('false: positive only', () => hasZeroSumSubarray([1, 2, 3]), false);
 test('true: zero element', () => hasZeroSumSubarray([0]), true);
 test('true: pair cancels', () => hasZeroSumSubarray([1, -1, 2]), true);
-test('true: triple sums to zero', () => hasZeroSumSubarray([3, 1, -4, 2]), true);
+test(
+  'true: triple sums to zero',
+  () => hasZeroSumSubarray([3, 1, -4, 2]),
+  true,
+);
 test('true: whole array', () => hasZeroSumSubarray([1, 2, -3]), true);
 test('false: partial negatives', () => hasZeroSumSubarray([4, -1, 3]), false);
 

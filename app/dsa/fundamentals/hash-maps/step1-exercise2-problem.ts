@@ -1,6 +1,3 @@
-// =============================================================================
-// Hash Maps & Sets — Level 1, Exercise 2: Find the Most-Filed Card
-// =============================================================================
 // Goal: Use the frequency catalog to retrieve the element with the highest count.
 //
 // Return the element that appears most often. If two elements tie, return the

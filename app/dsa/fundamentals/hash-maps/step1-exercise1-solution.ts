@@ -1,6 +1,3 @@
-// =============================================================================
-// Hash Maps & Sets — Level 1, Exercise 1: File the Catalog Cards — SOLUTION
-// =============================================================================
 // Goal: Build a frequency catalog by counting how often each character appears
 //       in a string — one pass, no scanning.
 function countChars(s: string): Record<string, number> {

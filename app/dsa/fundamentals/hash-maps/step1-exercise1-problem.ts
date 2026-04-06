@@ -1,6 +1,3 @@
-// =============================================================================
-// Hash Maps & Sets — Level 1, Exercise 1: File the Catalog Cards
-// =============================================================================
 // Goal: Build a frequency catalog by counting how often each character appears
 //       in a string — one pass, no scanning.
 //
@@ -16,12 +13,14 @@ function countChars(s: string): Record<string, number> {
   throw new Error('not implemented');
 }
 
+// ---Tests
 test('empty string', () => countChars(''), {});
 test('single char', () => countChars('z'), { z: 1 });
 test('all same', () => countChars('aaaa'), { a: 4 });
 test('two chars', () => countChars('aabbc'), { a: 2, b: 2, c: 1 });
 test('hello', () => countChars('hello'), { h: 1, e: 1, l: 2, o: 1 });
 test('mixed', () => countChars('abcabc'), { a: 2, b: 2, c: 2 });
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

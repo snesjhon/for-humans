@@ -1,6 +1,3 @@
-// =============================================================================
-// Hash Maps & Sets — Level 2, Exercise 3: Entries Only in the First Logbook — SOLUTION
-// =============================================================================
 // Goal: Use a logbook (hash set) to find elements that exist in `a` but NOT
 //       in `b` — the set difference — without nested scanning.
 function setDifference(a: number[], b: number[]): number[] {

@@ -58,7 +58,7 @@ Take `[2, 7, 11, 15]` with target `9`. For each element I ask: does the compleme
 
 ## 3. Building Blocks — Progressive Learning
 
-**Level 1: The Catalog — Counting and Mapping**
+### Level 1: The Catalog — Counting and Mapping
 
 **Why this level matters**
 Most hash map usage in interviews reduces to two operations: counting how often something appears, or remembering a value (an index, a group key) keyed to something you've seen. Once you can build a frequency table and do a complement lookup in your sleep, you've got the core of the majority of hash map problems.
@@ -99,7 +99,7 @@ One pass, six steps. "How often does 'cat' appear?" — one lookup, answer: 3.
 
 ---
 
-**Level 2: The Logbook — Membership in O(1)**
+### Level 2: The Logbook — Membership in O(1)
 
 **Why this level matters**
 Deduplication, intersection, "have I seen this before?" — all of these reduce to membership testing. A hash set answers membership in O(1). It is a focused tool: add an entry, check it, no values needed.
@@ -138,7 +138,7 @@ A set tracks existence, not count. If you need to know how often something appea
 
 ---
 
-**Level 3: The Tally Sheet — Prefix Sum + Hash Map**
+### Level 3: The Tally Sheet — Prefix Sum + Hash Map
 
 **Why this level matters**
 "Count subarrays with sum equal to k" looks like it needs a nested loop. The prefix sum + hash map pattern reduces this to a single pass. Once you see how the tally sheet works, you'll recognize this trick across dozens of problems involving sums, differences, and ranges.

@@ -1,6 +1,3 @@
-// =============================================================================
-// Hash Maps & Sets — Level 2, Exercise 1: Count the Logbook Entries
-// =============================================================================
 // Goal: Use a logbook (hash set) to count how many distinct values are present
 //       in a single pass.
 //

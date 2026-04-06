@@ -1,6 +1,3 @@
-// =============================================================================
-// Hash Maps & Sets — Level 2, Exercise 1: Count the Logbook Entries — SOLUTION
-// =============================================================================
 // Goal: Use a logbook (hash set) to count how many distinct values are present
 //       in a single pass.
 function countUnique(nums: number[]): number {

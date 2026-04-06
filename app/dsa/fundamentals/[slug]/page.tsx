@@ -45,7 +45,7 @@ export default function FundamentalsPage({ params }: Props) {
               guide.title.replace(/\s*[–-]\s*Fundamentals/i, '')}
           </h1>
           {section && (
-            <p className="text-lg italic leading-snug text-[var(--ms-lavender)] mb-6">
+            <p className="text-lg italic leading-snug text-[var(--ms-mauve)] mb-6">
               &ldquo;{section.mentalModelHook}&rdquo;
             </p>
           )}

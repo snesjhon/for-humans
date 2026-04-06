@@ -114,9 +114,6 @@ export function JourneyPanel({
       {phases.map((phase) => {
         const color = pColor(phase.number)
         const PhaseIcon = phaseIcon(phase.label)
-        const hasActiveSectionInPhase = phase.sections.some(
-          (s) => s.id === activeSectionId,
-        )
 
         return (
           <div
@@ -125,9 +122,9 @@ export function JourneyPanel({
             style={{ '--phase-accent': color } as React.CSSProperties}
           >
             {/* Phase label */}
-            <div className="flex items-center gap-1.5 px-4 pb-1 pt-3">
+            <div className="flex items-center gap-1.5 px-4 pb-1 pt-4">
               <PhaseIcon aria-hidden="true" className="h-3.5 w-3.5 text-[var(--ms-text-faint)]" />
-              <span className="font-mono text-[0.58rem] font-bold uppercase tracking-widest text-[var(--ms-text-faint)]">
+              <span className="text-[0.66rem] font-bold uppercase tracking-[0.08em] text-[var(--ms-text-body)]">
                 {phase.label}
               </span>
             </div>
@@ -147,7 +144,7 @@ export function JourneyPanel({
                 <div key={section.id}>
                   <button
                     onClick={() => toggleSection(section.id)}
-                    className={`appearance-none shadow-none flex w-full items-center justify-between border-none bg-transparent px-4 py-[6px] text-left text-[0.775rem] leading-[1.4] transition-[background,color] duration-150 outline-none ring-0 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 ${
+                    className={`appearance-none shadow-none flex w-full items-center justify-between rounded-md border-none bg-transparent px-4 py-[6px] text-left text-[0.775rem] leading-[1.4] transition-[background,color] duration-150 outline-none ring-0 hover:bg-[var(--ms-primary-surface)] focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 ${
                       isThisActive
                         ? 'font-semibold text-[var(--ms-text-body)]'
                         : 'font-normal text-[var(--ms-text-muted)]'

@@ -1,6 +1,3 @@
-// =============================================================================
-// Hash Maps & Sets — Level 2, Exercise 2: Cross-Check Two Logbooks
-// =============================================================================
 // Goal: Use a logbook (hash set) to find which entries appear in BOTH arrays
 //       without nested scanning.
 //
