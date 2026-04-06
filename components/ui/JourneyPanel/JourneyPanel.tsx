@@ -121,13 +121,13 @@ export function JourneyPanel({
         return (
           <div
             key={phase.number}
-            className="[--phase-accent:var(--primary)]"
+            className="[--phase-accent:var(--ctp-blue)]"
             style={{ '--phase-accent': color } as React.CSSProperties}
           >
             {/* Phase label */}
             <div className="flex items-center gap-1.5 px-4 pb-1 pt-3">
-              <PhaseIcon aria-hidden="true" className="h-3.5 w-3.5 text-[var(--fg-gutter)]" />
-              <span className="font-mono text-[0.58rem] font-bold uppercase tracking-widest text-[var(--fg-gutter)]">
+              <PhaseIcon aria-hidden="true" className="h-3.5 w-3.5 text-[var(--ctp-text-faint)]" />
+              <span className="font-mono text-[0.58rem] font-bold uppercase tracking-widest text-[var(--ctp-text-faint)]">
                 {phase.label}
               </span>
             </div>
@@ -147,10 +147,10 @@ export function JourneyPanel({
                 <div key={section.id}>
                   <button
                     onClick={() => toggleSection(section.id)}
-                    className={`flex w-full items-center justify-between border-none bg-transparent px-4 py-[6px] text-left text-[0.775rem] leading-[1.4] transition-[background,color] duration-150 focus:outline-none ${
+                    className={`appearance-none shadow-none flex w-full items-center justify-between border-none bg-transparent px-4 py-[6px] text-left text-[0.775rem] leading-[1.4] transition-[background,color] duration-150 outline-none ring-0 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 ${
                       isThisActive
-                        ? 'font-semibold text-[var(--fg)]'
-                        : 'font-normal text-[var(--fg-alt)]'
+                        ? 'font-semibold text-[var(--ctp-text-body)]'
+                        : 'font-normal text-[var(--ctp-text-muted)]'
                     }`}
                   >
                     <span className="min-w-0 flex-1 pr-1.5">
@@ -159,13 +159,13 @@ export function JourneyPanel({
                     <ChevronRight
                       aria-hidden="true"
                       className={`h-3.5 w-3.5 shrink-0 transition-transform duration-200 ${
-                        isExpanded ? 'rotate-90 text-[var(--fg-alt)]' : 'text-[var(--fg-gutter)]'
+                        isExpanded ? 'rotate-90 text-[var(--ctp-text-muted)]' : 'text-[var(--ctp-text-faint)]'
                       }`}
                     />
                   </button>
 
                   {isExpanded && (
-                    <div className="mb-1 ml-4 border-l border-l-[var(--border)]">
+                    <div className="mb-1 ml-4 border-l border-l-[var(--ctp-surface)]">
                       {/* Fundamentals guide link */}
                       {section.fundamentalsSlug &&
                         availableFundamentalsSlugs.has(section.fundamentalsSlug) &&
@@ -176,10 +176,10 @@ export function JourneyPanel({
                             <Link
                               ref={isFundActive ? activeItemRef : null}
                               href={getFundamentalsHref(section.fundamentalsSlug!)}
-                              className={`flex items-center gap-2 px-[10px] py-[6px] text-[0.75rem] no-underline transition-[color,background] duration-150 focus:outline-none hover:bg-[var(--bg-alt)] ${
+                              className={`flex items-center gap-2 px-[10px] py-[6px] text-[0.75rem] no-underline transition-[color,background] duration-150 focus:outline-none hover:bg-[var(--ctp-bg-pane-secondary)] ${
                                 isFundActive
-                                  ? 'font-semibold text-[var(--fg)]'
-                                  : 'font-normal text-[var(--fg-comment)]'
+                                  ? 'font-semibold text-[var(--ctp-text-body)]'
+                                  : 'font-normal text-[var(--ctp-text-subtle)]'
                               }`}
                             >
                               <BookOpen aria-hidden="true" className="h-3.5 w-3.5 shrink-0" />
@@ -197,10 +197,10 @@ export function JourneyPanel({
                             key={item.key}
                             ref={isActive ? activeItemRef : null}
                             href={getItemHref(item.key)}
-                            className={`flex items-center gap-2 px-[10px] py-[6px] text-[0.75rem] no-underline transition-[color,background] duration-150 focus:outline-none hover:bg-[var(--bg-alt)] ${
+                            className={`flex items-center gap-2 px-[10px] py-[6px] text-[0.75rem] no-underline transition-[color,background] duration-150 focus:outline-none hover:bg-[var(--ctp-bg-pane-secondary)] ${
                               isActive
-                                ? 'font-semibold text-[var(--fg)]'
-                                : 'font-normal text-[var(--fg-comment)]'
+                                ? 'font-semibold text-[var(--ctp-text-body)]'
+                                : 'font-normal text-[var(--ctp-text-subtle)]'
                             }`}
                           >
                             <ProgressMark completed={isCompleted} />
@@ -214,7 +214,7 @@ export function JourneyPanel({
                       {/* Revisit items */}
                       {availableRevisits.length > 0 && (
                         <>
-                          <div className="px-[10px] pb-[3px] pt-2 text-[0.58rem] font-bold uppercase tracking-[0.08em] text-[var(--fg-gutter)] [font-family:var(--font-body)]">
+                          <div className="px-[10px] pb-[3px] pt-2 text-[0.58rem] font-bold uppercase tracking-[0.08em] text-[var(--ctp-text-faint)] [font-family:var(--font-body)]">
                             Also revisit
                           </div>
                           {availableRevisits.map((item) => {
@@ -225,10 +225,10 @@ export function JourneyPanel({
                                 key={item.key}
                                 ref={isActive ? activeItemRef : null}
                                 href={getItemHref(item.key)}
-                                className={`flex items-center gap-2 px-[10px] py-[6px] text-[0.75rem] no-underline transition-[color,background] duration-150 focus:outline-none hover:bg-[var(--bg-alt)] ${
+                                className={`flex items-center gap-2 px-[10px] py-[6px] text-[0.75rem] no-underline transition-[color,background] duration-150 focus:outline-none hover:bg-[var(--ctp-bg-pane-secondary)] ${
                                   isActive
-                                    ? 'font-semibold text-[var(--fg)]'
-                                    : 'font-normal text-[var(--fg-comment)]'
+                                    ? 'font-semibold text-[var(--ctp-text-body)]'
+                                    : 'font-normal text-[var(--ctp-text-subtle)]'
                                 }`}
                               >
                                 <ProgressMark completed={isCompleted} />

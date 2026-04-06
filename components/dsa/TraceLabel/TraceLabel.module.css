@@ -1,7 +1,7 @@
 .block {
   margin-top: 1.1rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--ctp-surface);
 }
 
 .context {
@@ -10,7 +10,7 @@
   font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: var(--fg-gutter);
+  color: var(--ctp-text-faint);
   margin-bottom: 0.6rem;
 }
 
@@ -23,7 +23,7 @@
 .actionRow {
   font-size: 13.5px;
   line-height: 1.6;
-  color: var(--fg-alt);
+  color: var(--ctp-text-muted);
 }
 
 .extras {
@@ -39,7 +39,7 @@
 }
 
 .arrow {
-  color: var(--fg-gutter);
+  color: var(--ctp-text-faint);
   font-size: 0.88em;
   margin: 0 4px;
   vertical-align: baseline;

@@ -108,10 +108,10 @@ export default async function PathPage() {
   return (
     <>
       <PageHero>
-        <h1 className="text-5xl font-bold leading-tight text-[var(--fg)]">
+        <h1 className="text-5xl font-bold leading-tight text-[var(--ctp-text-body)]">
           The Path
         </h1>
-        <p className="text-sm text-[var(--fg-gutter)] mt-2">
+        <p className="text-sm text-[var(--ctp-text-faint)] mt-2">
           {totalSections} mental models · {totalScenarios} scenarios
         </p>
       </PageHero>
@@ -120,7 +120,7 @@ export default async function PathPage() {
       <div className="relative">
         {/* Sticky TOC — absolutely spans all phase zones */}
         <aside
-          className="absolute left-0 top-0 hidden h-full w-[calc(314px+2.5rem)] bg-[var(--bg-alt)] pl-10 pt-10 transition-[background-color] duration-300 lg:block"
+          className="absolute left-0 top-0 hidden h-full w-[calc(314px+2.5rem)] bg-[var(--ctp-bg-pane-secondary)] pl-10 pt-10 transition-[background-color] duration-300 lg:block"
         >
           <div className="sticky top-20 max-h-[calc(100vh-5rem)] overflow-y-auto">
             <PathTOC phases={phaseGroups.map((g) => g.phase)} />
@@ -133,7 +133,7 @@ export default async function PathPage() {
           const chapterLabel = String(phase.number).padStart(2, '0');
 
           return (
-            <div key={phase.number} id={`phase-zone-${phase.number}`} className="bg-[var(--bg-alt)]">
+            <div key={phase.number} id={`phase-zone-${phase.number}`} className="bg-[var(--ctp-bg-pane-secondary)]">
               <div className="block lg:grid items-start gap-12 px-10 py-10 lg:grid-cols-[0.3fr_minmax(250px,1fr)] xl:grid-cols-[0.3fr_1fr_0.2fr]">
                 <div className="hidden lg:block" /> {/* TOC column spacer */}
                 <div className="min-w-0">
@@ -195,7 +195,7 @@ export default async function PathPage() {
                         <div className="pt-1">
                           {!hasAnyScenarios && (
                             <p
-                              className="m-0 text-sm italic text-[var(--fg-gutter)] [font-family:var(--font-display)]"
+                              className="m-0 text-sm italic text-[var(--ctp-text-faint)] [font-family:var(--font-display)]"
                             >
                               Scenarios coming soon.
                             </p>
@@ -203,7 +203,7 @@ export default async function PathPage() {
 
                           {hasNewScenarios && (
                             <div className={hasRevisits ? 'mb-5' : ''}>
-                              <p className="font-mono text-[0.6rem] font-bold tracking-[0.09em] uppercase mb-2 text-[var(--fg-gutter)]">
+                              <p className="font-mono text-[0.6rem] font-bold tracking-[0.09em] uppercase mb-2 text-[var(--ctp-text-faint)]">
                                 Practice
                               </p>
                               {section.firstPass.map(({ slug, label }) => {
@@ -220,7 +220,7 @@ export default async function PathPage() {
                                       className={`${pathStyles.problemLink} flex items-baseline`}
                                     >
                                       <span className="shrink-0 w-5" />
-                                      <span className={`${pathStyles.problemTitle} text-[0.875rem] leading-[1.3] text-[var(--fg-alt)]`}>
+                                      <span className={`${pathStyles.problemTitle} text-[0.875rem] leading-[1.3] text-[var(--ctp-text-muted)]`}>
                                         {label}
                                       </span>
                                     </Link>
@@ -232,7 +232,7 @@ export default async function PathPage() {
 
                           {hasRevisits && (
                             <div>
-                              <p className="font-mono text-[0.6rem] font-bold tracking-[0.09em] uppercase mb-2 text-[var(--orange)]">
+                              <p className="font-mono text-[0.6rem] font-bold tracking-[0.09em] uppercase mb-2 text-[var(--ctp-peach)]">
                                 Also revisit — from {revisitFromLabel}
                               </p>
                               {revisitSlugs.map(({ slug, label }) => {
@@ -248,10 +248,10 @@ export default async function PathPage() {
                                       href={`/system-design/scenarios/${slug}`}
                                       className={`${pathStyles.problemLink} flex items-baseline`}
                                     >
-                                      <span className="text-xs shrink-0 w-5 leading-none text-[var(--orange)]">
+                                      <span className="text-xs shrink-0 w-5 leading-none text-[var(--ctp-peach)]">
                                         ↩
                                       </span>
-                                      <span className={`${pathStyles.problemTitle} text-[0.875rem] leading-[1.3] text-[var(--fg-comment)]`}>
+                                      <span className={`${pathStyles.problemTitle} text-[0.875rem] leading-[1.3] text-[var(--ctp-text-subtle)]`}>
                                         {label}
                                       </span>
                                     </Link>
@@ -274,11 +274,11 @@ export default async function PathPage() {
         <div className="block lg:grid gap-12 px-10 lg:grid-cols-[0.3fr_minmax(250px,1fr)]">
           <div className="hidden lg:block" />
           <div className="flex items-center gap-4 pt-8 pb-16">
-            <div className="flex-1 h-px bg-[var(--border)]" />
-            <span className="text-[0.8rem] italic text-[var(--fg-gutter)] shrink-0 font-[var(--font-display)]">
+            <div className="flex-1 h-px bg-[var(--ctp-surface)]" />
+            <span className="text-[0.8rem] italic text-[var(--ctp-text-faint)] shrink-0 font-[var(--font-display)]">
               More mental models coming
             </span>
-            <div className="flex-1 h-px bg-[var(--border)]" />
+            <div className="flex-1 h-px bg-[var(--ctp-surface)]" />
           </div>
         </div>
       </div>

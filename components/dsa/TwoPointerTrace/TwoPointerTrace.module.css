@@ -1,57 +1,57 @@
 .verified {
-  background: var(--green-tint);
-  border-color: var(--green);
-  color: var(--green);
+  background: var(--ctp-green-surface);
+  border-color: var(--ctp-green);
+  color: var(--ctp-green);
 }
 
 .left {
-  background: var(--blue-tint);
-  border-color: var(--blue);
-  color: var(--blue);
+  background: var(--ctp-blue-surface);
+  border-color: var(--ctp-blue);
+  color: var(--ctp-blue);
 }
 
 .right {
-  background: var(--orange-tint);
-  border-color: var(--orange);
-  color: var(--orange);
+  background: var(--ctp-peach-surface);
+  border-color: var(--ctp-peach);
+  color: var(--ctp-peach);
 }
 
 .both {
-  background: var(--blue-tint);
-  border-color: var(--blue);
-  color: var(--blue);
+  background: var(--ctp-blue-surface);
+  border-color: var(--ctp-blue);
+  color: var(--ctp-blue);
 }
 
 .unchecked {
-  background: var(--bg-alt);
-  border-color: var(--border);
-  color: var(--fg-alt);
+  background: var(--ctp-bg-pane-secondary);
+  border-color: var(--ctp-surface);
+  color: var(--ctp-text-muted);
   opacity: 0.6;
 }
 
 .mismatch {
-  background: var(--red-tint);
-  border-color: var(--red);
-  color: var(--red);
+  background: var(--ctp-red-surface);
+  border-color: var(--ctp-red);
+  color: var(--ctp-red);
 }
 
 .middle {
-  background: var(--purple-tint);
-  border-color: var(--purple);
-  color: var(--purple);
+  background: var(--ctp-mauve-surface);
+  border-color: var(--ctp-mauve);
+  color: var(--ctp-mauve);
 }
 
 .leftPtr {
-  background: var(--blue-tint);
-  color: var(--blue);
+  background: var(--ctp-blue-surface);
+  color: var(--ctp-blue);
 }
 
 .rightPtr {
-  background: var(--orange-tint);
-  color: var(--orange);
+  background: var(--ctp-peach-surface);
+  color: var(--ctp-peach);
 }
 
 .bothPtr {
-  background: var(--blue-tint);
-  color: var(--blue);
+  background: var(--ctp-blue-surface);
+  color: var(--ctp-blue);
 }

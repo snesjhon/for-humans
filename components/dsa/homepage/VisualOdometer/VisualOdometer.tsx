@@ -8,7 +8,7 @@ export function VisualOdometer() {
   return (
     <div className="pt-[20px] px-[20px] pb-[10px]">
       <div className="relative mb-[6px]">
-        <div className="h-[2px] bg-[var(--border)] my-[10px]" />
+        <div className="h-[2px] bg-[var(--ctp-surface)] my-[10px]" />
         <div className="flex justify-between absolute top-0 left-0 right-0">
           {pts.map((p, i) => (
             <div
@@ -20,9 +20,9 @@ export function VisualOdometer() {
                   width: 6,
                   height: 6,
                   borderRadius: '50%',
-                  background: i === 0 ? 'var(--fg-gutter)' : 'var(--orange)',
+                  background: i === 0 ? 'var(--ctp-text-faint)' : 'var(--ctp-peach)',
                   marginBottom: 2,
-                  border: `2px solid ${i === 0 ? 'var(--fg-gutter)' : 'var(--orange)'}`,
+                  border: `2px solid ${i === 0 ? 'var(--ctp-text-faint)' : 'var(--ctp-peach)'}`,
                 }}
               />
             </div>
@@ -39,7 +39,7 @@ export function VisualOdometer() {
               style={{
                 fontFamily: 'ui-monospace, monospace',
                 fontSize: '0.55rem',
-                color: i === 0 ? 'var(--fg-gutter)' : 'var(--orange)',
+                color: i === 0 ? 'var(--ctp-text-faint)' : 'var(--ctp-peach)',
               }}
             >
               {p.l}
@@ -49,7 +49,7 @@ export function VisualOdometer() {
                 fontFamily: 'ui-monospace, monospace',
                 fontSize: '0.62rem',
                 fontWeight: 700,
-                color: i === 0 ? 'var(--fg-gutter)' : 'var(--orange)',
+                color: i === 0 ? 'var(--ctp-text-faint)' : 'var(--ctp-peach)',
               }}
             >
               {p.m}
@@ -57,9 +57,9 @@ export function VisualOdometer() {
           </div>
         ))}
       </div>
-      <div className="font-[ui-monospace,monospace] text-[0.6rem] text-[var(--fg-gutter)] text-center">
+      <div className="font-[ui-monospace,monospace] text-[0.6rem] text-[var(--ctp-text-faint)] text-center">
         C − A ={' '}
-        <span className="text-[var(--orange)] font-bold">
+        <span className="text-[var(--ctp-peach)] font-bold">
           30 − 10 = 20
         </span>{' '}
         miles

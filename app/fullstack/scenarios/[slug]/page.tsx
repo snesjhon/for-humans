@@ -26,7 +26,7 @@ export default function ScenarioPage({ params }: Props) {
   if (!match) notFound()
 
   const { scenario, section, phase } = match
-  const color = 'var(--primary)'
+  const color = 'var(--ctp-blue)'
 
   const strippedBrief = content.brief.replace(/^#[^#].*\n+/, '').trimStart()
   const strippedWalkthrough = content.walkthrough
@@ -44,14 +44,14 @@ export default function ScenarioPage({ params }: Props) {
   return (
     <>
       <PageHero>
-        <p className="text-xs font-mono mb-2 text-[var(--fg-gutter)]">{section.label}</p>
-        <h1 className="text-5xl font-bold leading-tight text-[var(--fg)]">{scenario.label}</h1>
+        <p className="text-xs font-mono mb-2 text-[var(--ctp-text-faint)]">{section.label}</p>
+        <h1 className="text-5xl font-bold leading-tight text-[var(--ctp-text-body)]">{scenario.label}</h1>
       </PageHero>
 
       <PageLayout accentColor={color} aside={<><TableOfContents headings={headings} title="Contents" /><CheckWork slug={params.slug} /></>}>
           <section className="space-y-8">
-            <div className="rounded-xl p-6 bg-[var(--bg-alt)] border border-[var(--border)]">
-              <p className="text-xs font-semibold uppercase mb-4 text-[var(--fg-gutter)] font-[ui-monospace,monospace] tracking-[0.08em]">
+            <div className="rounded-xl p-6 bg-[var(--ctp-bg-pane-secondary)] border border-[var(--ctp-surface)]">
+              <p className="text-xs font-semibold uppercase mb-4 text-[var(--ctp-text-faint)] font-[ui-monospace,monospace] tracking-[0.08em]">
                 Your task
               </p>
               <MarkdownRenderer
@@ -71,18 +71,18 @@ export default function ScenarioPage({ params }: Props) {
               />
             )}
 
-            <div className="flex items-center justify-between pt-6 border-t border-t-[var(--border)]">
+            <div className="flex items-center justify-between pt-6 border-t border-t-[var(--ctp-surface)]">
               {prevScenario ? (
-                <Link href={`/fullstack/scenarios/${prevScenario.slug}`} className="flex items-center gap-2 text-sm hover:opacity-70 text-[var(--fg-comment)]">
+                <Link href={`/fullstack/scenarios/${prevScenario.slug}`} className="flex items-center gap-2 text-sm hover:opacity-70 text-[var(--ctp-text-subtle)]">
                   ← {prevScenario.label}
                 </Link>
               ) : (
-                <Link href="/fullstack/path" className="flex items-center gap-2 text-sm hover:opacity-70 text-[var(--fg-comment)]">
+                <Link href="/fullstack/path" className="flex items-center gap-2 text-sm hover:opacity-70 text-[var(--ctp-text-subtle)]">
                   ← The Path
                 </Link>
               )}
               {nextScenario ? (
-                <Link href={`/fullstack/scenarios/${nextScenario.slug}`} className="flex items-center gap-2 text-sm hover:opacity-70 text-[var(--fg-comment)]">
+                <Link href={`/fullstack/scenarios/${nextScenario.slug}`} className="flex items-center gap-2 text-sm hover:opacity-70 text-[var(--ctp-text-subtle)]">
                   {nextScenario.label} →
                 </Link>
               ) : (

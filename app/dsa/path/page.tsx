@@ -103,8 +103,8 @@ export default async function PathPage() {
   return (
     <>
       <PageHero>
-        <h1 className="text-5xl text-[var(--fg)] font-display">The Path</h1>
-        <p className="text-sm text-[var(--fg-gutter)] mb-0">
+        <h1 className="text-5xl text-[var(--ctp-text-body)] font-display">The Path</h1>
+        <p className="text-sm text-[var(--ctp-text-faint)] mb-0">
           {totalSections} mental models · {totalProblems} problems
         </p>
       </PageHero>
@@ -115,7 +115,7 @@ export default async function PathPage() {
           const chapterLabel = String(phase.number).padStart(2, '0');
 
           return (
-            <div key={phase.number} id={`phase-zone-${phase.number}`} className="bg-[var(--bg-alt)]">
+            <div key={phase.number} id={`phase-zone-${phase.number}`} className="bg-[var(--ctp-bg-pane-secondary)]">
               <div className="px-10">
                 <PhaseBannerContent
                   phase={phase}
@@ -174,14 +174,14 @@ export default async function PathPage() {
                       {/* RIGHT: Practice + revisit */}
                       <div className="pt-1">
                         {!hasAnyProblems && (
-                          <p className="font-display italic text-sm text-[var(--fg-gutter)] m-0">
+                          <p className="font-display italic text-sm text-[var(--ctp-text-faint)] m-0">
                             Problems coming soon.
                           </p>
                         )}
 
                         {hasNewProblems && (
                           <div className={hasRevisits ? 'mb-5' : ''}>
-                            <p className="font-mono text-[0.6rem] font-bold tracking-[0.09em] uppercase mb-2 text-[var(--fg-gutter)]">
+                            <p className="font-mono text-[0.6rem] font-bold tracking-[0.09em] uppercase mb-2 text-[var(--ctp-text-faint)]">
                               Practice
                             </p>
                             {section.firstPass.map(({ id }) => {
@@ -202,10 +202,10 @@ export default async function PathPage() {
                                     href={`/dsa/problems/${id}`}
                                     className={`${pathStyles.problemLink} flex items-baseline`}
                                   >
-                                    <span className="shrink-0 min-w-[30px] font-mono text-[0.65rem] text-[var(--fg-gutter)]">
+                                    <span className="shrink-0 min-w-[30px] font-mono text-[0.65rem] text-[var(--ctp-text-faint)]">
                                       {id}
                                     </span>
-                                    <span className={`${pathStyles.problemTitle} text-[0.875rem] leading-[1.3] text-[var(--fg-alt)]`}>
+                                    <span className={`${pathStyles.problemTitle} text-[0.875rem] leading-[1.3] text-[var(--ctp-text-muted)]`}>
                                       {p.title}
                                     </span>
                                   </Link>
@@ -217,7 +217,7 @@ export default async function PathPage() {
 
                         {hasRevisits && (
                           <div>
-                            <p className="font-mono text-[0.6rem] font-bold tracking-[0.09em] uppercase mb-2 text-[var(--orange)]">
+                            <p className="font-mono text-[0.6rem] font-bold tracking-[0.09em] uppercase mb-2 text-[var(--ctp-peach)]">
                               Also revisit — from {revisitFromLabel}
                             </p>
                             {revisitIds.map((id) => {
@@ -238,13 +238,13 @@ export default async function PathPage() {
                                     href={`/dsa/problems/${id}`}
                                     className={`${pathStyles.problemLink} flex items-baseline`}
                                   >
-                                    <span className="text-xs shrink-0 w-5 leading-none text-[var(--orange)]">
+                                    <span className="text-xs shrink-0 w-5 leading-none text-[var(--ctp-peach)]">
                                       ↩
                                     </span>
-                                    <span className="shrink-0 min-w-[30px] font-mono text-[0.65rem] text-[var(--fg-gutter)]">
+                                    <span className="shrink-0 min-w-[30px] font-mono text-[0.65rem] text-[var(--ctp-text-faint)]">
                                       {id}
                                     </span>
-                                    <span className={`${pathStyles.problemTitle} text-[0.875rem] leading-[1.3] text-[var(--fg-comment)]`}>
+                                    <span className={`${pathStyles.problemTitle} text-[0.875rem] leading-[1.3] text-[var(--ctp-text-subtle)]`}>
                                       {p.title}
                                     </span>
                                   </Link>
@@ -265,11 +265,11 @@ export default async function PathPage() {
         {/* Footer strip */}
         <div className="px-10">
           <div className="flex items-center gap-4 pt-8 pb-16">
-            <div className="flex-1 h-px bg-[var(--border)]" />
-            <span className="font-display text-[0.8rem] italic shrink-0 text-[var(--fg-gutter)]">
+            <div className="flex-1 h-px bg-[var(--ctp-surface)]" />
+            <span className="font-display text-[0.8rem] italic shrink-0 text-[var(--ctp-text-faint)]">
               More mental models coming
             </span>
-            <div className="flex-1 h-px bg-[var(--border)]" />
+            <div className="flex-1 h-px bg-[var(--ctp-surface)]" />
           </div>
         </div>
       </div>

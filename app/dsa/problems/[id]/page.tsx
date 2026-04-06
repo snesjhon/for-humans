@@ -15,14 +15,14 @@ import {
   getDifficultyForProblem,
 } from '@/lib/dsa/journey';
 const DIFF_BG: Record<string, string> = {
-  easy: 'var(--green-tint)',
-  medium: 'var(--orange-tint)',
-  hard: 'var(--red-tint)',
+  easy: 'var(--ctp-green-surface)',
+  medium: 'var(--ctp-peach-surface)',
+  hard: 'var(--ctp-red-surface)',
 };
 const DIFF_FG: Record<string, string> = {
-  easy: 'var(--green)',
-  medium: 'var(--orange)',
-  hard: 'var(--red)',
+  easy: 'var(--ctp-green)',
+  medium: 'var(--ctp-peach)',
+  hard: 'var(--ctp-red)',
 };
 import { extractHeadings } from '@/lib/dsa/headings';
 import {
@@ -39,11 +39,13 @@ const ProblemProgressPanel = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex flex-col gap-2 rounded-lg border border-[var(--border)] bg-[var(--bg-alt)] p-4">
-        <p className="mb-1 font-mono text-[0.6rem] font-bold uppercase tracking-[0.09em] text-[var(--fg-gutter)]">
+      <div className="flex flex-col gap-2 rounded-lg border border-[var(--ctp-surface)] bg-[var(--ctp-bg-pane-secondary)] p-4">
+        <p className="mb-1 font-mono text-[0.6rem] font-bold uppercase tracking-[0.09em] text-[var(--ctp-text-faint)]">
           Your Progress
         </p>
-        <p className="text-sm text-[var(--fg-gutter)]">Loading progress...</p>
+        <p className="text-sm text-[var(--ctp-text-faint)]">
+          Loading progress...
+        </p>
       </div>
     ),
   },
@@ -54,7 +56,13 @@ interface Props {
 }
 
 const getStepNumbers = cache((problemSlug: string) => {
-  const problemDir = path.join(process.cwd(), 'app', 'dsa', 'problems', problemSlug);
+  const problemDir = path.join(
+    process.cwd(),
+    'app',
+    'dsa',
+    'problems',
+    problemSlug,
+  );
   return fs
     .readdirSync(problemDir)
     .filter((f) => /^step\d+-problem\.ts$/.test(f))
@@ -120,25 +128,25 @@ export default function ProblemPage({ params }: Props) {
     <DsaPageLayout
       hero={
         <PageHero>
-          <h1 className="text-5xl font-display leading-tight text-[var(--fg)] mb-0">
+          <h1 className="text-5xl font-display leading-tight text-[var(--ctp-text-body)] mb-0">
             {problem.title}
           </h1>
           {primarySection && (
-            <p className="text-lg italic leading-snug text-[var(--cyan)] mb-6">
+            <p className="text-lg italic leading-snug text-[var(--ctp-mauve)] mb-6">
               &ldquo;{primarySection.mentalModelHook}&rdquo;
             </p>
           )}
 
           <div className="flex items-center gap-2">
             {phase && (
-              <mark className="text-xs bg-transparent border border-[var(--border)] rounded text-[var(--fg-alt)]">
+              <mark className="text-xs bg-transparent border border-[var(--ctp-surface)] rounded text-[var(--ctp-text-muted)]">
                 {phase.emoji} {phase.label}
               </mark>
             )}
 
             {difficulty && (
               <mark
-                className="text-xs  border border-[var(--border)] rounded"
+                className="text-xs  border border-[var(--ctp-surface)] rounded"
                 style={{
                   background: DIFF_BG[difficulty],
                   color: DIFF_FG[difficulty],
@@ -155,42 +163,42 @@ export default function ProblemPage({ params }: Props) {
       }
       aside={<TableOfContents headings={headings} title="Contents" />}
     >
-        <section className="space-y-8">
-          {mentalModelContent ? (
-            <MarkdownRenderer
-              content={mentalModelContent}
-              problemSlug={problem.slug}
-              codeFiles={codeFiles}
-            />
-          ) : (
-            <p className="text-base text-[var(--fg-gutter)]">
-              Mental model coming soon.
-            </p>
-          )}
+      <section className="space-y-8">
+        {mentalModelContent ? (
+          <MarkdownRenderer
+            content={mentalModelContent}
+            problemSlug={problem.slug}
+            codeFiles={codeFiles}
+          />
+        ) : (
+          <p className="text-base text-[var(--ctp-text-faint)]">
+            Mental model coming soon.
+          </p>
+        )}
 
-          <div className="flex items-center justify-between border-t border-t-[var(--border)] pt-6">
-            {prevProblem ? (
-              <Link
-                href={`/dsa/problems/${prevProblem.id}`}
-                className="flex items-center gap-2 text-sm text-[var(--fg-comment)] transition-opacity hover:opacity-70"
-              >
-                ← {prevProblem.id}. {prevProblem.title}
-              </Link>
-            ) : (
-              <div />
-            )}
-            {nextProblem ? (
-              <Link
-                href={`/dsa/problems/${nextProblem.id}`}
-                className="flex items-center gap-2 text-sm text-[var(--fg-comment)] transition-opacity hover:opacity-70"
-              >
-                {nextProblem.id}. {nextProblem.title} →
-              </Link>
-            ) : (
-              <div />
-            )}
-          </div>
-        </section>
+        <div className="flex items-center justify-between border-t border-t-[var(--ctp-surface)] pt-6">
+          {prevProblem ? (
+            <Link
+              href={`/dsa/problems/${prevProblem.id}`}
+              className="flex items-center gap-2 text-sm text-[var(--ctp-text-subtle)] transition-opacity hover:opacity-70"
+            >
+              ← {prevProblem.id}. {prevProblem.title}
+            </Link>
+          ) : (
+            <div />
+          )}
+          {nextProblem ? (
+            <Link
+              href={`/dsa/problems/${nextProblem.id}`}
+              className="flex items-center gap-2 text-sm text-[var(--ctp-text-subtle)] transition-opacity hover:opacity-70"
+            >
+              {nextProblem.id}. {nextProblem.title} →
+            </Link>
+          ) : (
+            <div />
+          )}
+        </div>
+      </section>
     </DsaPageLayout>
   );
 }

@@ -4,7 +4,7 @@ export function VisualAssemblyLine() {
     R = 3;
   return (
     <div className="py-[24px] px-[18px] flex flex-col gap-2 w-full">
-      <div className="font-[ui-monospace,monospace] text-[0.52rem] text-[var(--fg-gutter)] mb-[2px] tracking-[0.06em] uppercase">
+      <div className="font-[ui-monospace,monospace] text-[0.52rem] text-[var(--ctp-text-faint)] mb-[2px] tracking-[0.06em] uppercase">
         conveyor belt
       </div>
       <div className="flex gap-[5px]">
@@ -17,27 +17,27 @@ export function VisualAssemblyLine() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              border: `1.5px solid ${i === W ? 'var(--primary)' : i === R ? 'var(--orange)' : i < W ? 'var(--primary)' : 'var(--border)'}`,
+              border: `1.5px solid ${i === W ? 'var(--ctp-blue)' : i === R ? 'var(--ctp-peach)' : i < W ? 'var(--ctp-blue)' : 'var(--ctp-surface)'}`,
               borderRadius: 5,
               background:
                 i === W
-                  ? 'var(--primary-tint)'
+                  ? 'var(--ctp-blue-surface)'
                   : i === R
-                    ? 'var(--orange-tint)'
+                    ? 'var(--ctp-peach-surface)'
                     : i < W
-                      ? 'var(--primary-tint)'
-                      : 'var(--bg)',
+                      ? 'var(--ctp-blue-surface)'
+                      : 'var(--ctp-bg-pane)',
               fontFamily: 'ui-monospace, monospace',
               fontSize: '0.875rem',
               fontWeight: i <= R ? 700 : 400,
               color:
                 i === W
-                  ? 'var(--primary)'
+                  ? 'var(--ctp-blue)'
                   : i === R
-                    ? 'var(--orange)'
+                    ? 'var(--ctp-peach)'
                     : i < W
-                      ? 'var(--primary)'
-                      : 'var(--fg-gutter)',
+                      ? 'var(--ctp-blue)'
+                      : 'var(--ctp-text-faint)',
             }}
           >
             {n}
@@ -52,9 +52,9 @@ export function VisualAssemblyLine() {
             style={{
               color:
                 i === W
-                  ? 'var(--primary)'
+                  ? 'var(--ctp-blue)'
                   : i === R
-                    ? 'var(--orange)'
+                    ? 'var(--ctp-peach)'
                     : 'transparent',
             }}
           >
@@ -62,11 +62,11 @@ export function VisualAssemblyLine() {
           </div>
         ))}
       </div>
-      <div className="font-[ui-monospace,monospace] text-[0.56rem] text-[var(--fg-gutter)] mt-[4px] leading-[1.6]">
-        <span className="text-[var(--primary)] font-bold">W</span> places
+      <div className="font-[ui-monospace,monospace] text-[0.56rem] text-[var(--ctp-text-faint)] mt-[4px] leading-[1.6]">
+        <span className="text-[var(--ctp-blue)] font-bold">W</span> places
         keepers
         <br />
-        <span className="text-[var(--orange)] font-bold">R</span>{' '}
+        <span className="text-[var(--ctp-peach)] font-bold">R</span>{' '}
         inspects everything
       </div>
     </div>

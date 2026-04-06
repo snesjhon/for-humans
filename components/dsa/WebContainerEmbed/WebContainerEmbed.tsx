@@ -401,73 +401,83 @@ export default function WebContainerEmbed({
 
       const theme = EditorView.theme({
         '&': {
-          backgroundColor: 'var(--bg-alt)',
-          color: 'var(--fg)',
+          backgroundColor: 'var(--ctp-bg-pane-secondary)',
+          color: 'var(--ctp-text-body)',
         },
         '.cm-content': {
-          caretColor: 'var(--fg)',
+          caretColor: 'var(--ctp-cursor)',
           padding: '0.75rem 0',
         },
         '.cm-cursor': {
-          borderLeftColor: 'var(--fg)',
+          borderLeftColor: 'var(--ctp-cursor)',
           borderLeftWidth: '2px',
         },
-        '.cm-activeLine': { backgroundColor: 'var(--bg-highlight)' },
-        '.cm-activeLineGutter': { backgroundColor: 'var(--bg-highlight)' },
+        '.cm-activeLine': {
+          backgroundColor: 'color-mix(in srgb, var(--ctp-text-body) 10%, transparent)',
+        },
+        '.cm-activeLineGutter': {
+          backgroundColor: 'color-mix(in srgb, var(--ctp-text-body) 10%, transparent)',
+        },
+        '.cm-lineNumbers .cm-gutterElement': {
+          color: 'var(--ctp-overlay1)',
+        },
+        '.cm-activeLineGutter .cm-gutterElement': {
+          color: 'var(--ctp-lavender)',
+        },
         '.cm-selectionBackground': {
-          backgroundColor: 'var(--sel-bg) !important',
+          backgroundColor: 'var(--ctp-selection) !important',
         },
         '&.cm-focused .cm-selectionBackground': {
-          backgroundColor: 'var(--sel-bg) !important',
+          backgroundColor: 'var(--ctp-selection) !important',
         },
         '.cm-gutters': {
-          backgroundColor: 'var(--bg-alt)',
-          color: 'var(--fg-gutter)',
+          backgroundColor: 'var(--ctp-bg-pane-secondary)',
+          color: 'var(--ctp-text-faint)',
           border: 'none',
-          borderRight: '1px solid var(--border)',
+          borderRight: '1px solid var(--ctp-surface)',
           paddingRight: '4px',
         },
         '.cm-foldPlaceholder': {
-          backgroundColor: 'var(--bg-highlight)',
-          border: '1px solid var(--border)',
-          color: 'var(--fg-comment)',
+          backgroundColor: 'var(--ctp-bg-pane-tertiary)',
+          border: '1px solid var(--ctp-surface)',
+          color: 'var(--ctp-text-subtle)',
         },
       });
 
       const highlight = HighlightStyle.define([
-        { tag: tags.keyword, color: 'var(--purple)', fontWeight: '600' },
-        { tag: tags.controlKeyword, color: 'var(--purple)', fontWeight: '600' },
+        { tag: tags.keyword, color: 'var(--ctp-mauve)', fontWeight: '600' },
+        { tag: tags.controlKeyword, color: 'var(--ctp-mauve)', fontWeight: '600' },
         {
           tag: tags.definitionKeyword,
-          color: 'var(--purple)',
+          color: 'var(--ctp-mauve)',
           fontWeight: '600',
         },
-        { tag: tags.moduleKeyword, color: 'var(--purple)', fontWeight: '600' },
-        { tag: tags.string, color: 'var(--green)' },
-        { tag: tags.special(tags.string), color: 'var(--green)' },
-        { tag: tags.number, color: 'var(--orange)' },
-        { tag: tags.bool, color: 'var(--orange)' },
-        { tag: tags.null, color: 'var(--orange)' },
-        { tag: tags.comment, color: 'var(--fg-comment)', fontStyle: 'italic' },
+        { tag: tags.moduleKeyword, color: 'var(--ctp-mauve)', fontWeight: '600' },
+        { tag: tags.string, color: 'var(--ctp-green)' },
+        { tag: tags.special(tags.string), color: 'var(--ctp-green)' },
+        { tag: tags.number, color: 'var(--ctp-peach)' },
+        { tag: tags.bool, color: 'var(--ctp-peach)' },
+        { tag: tags.null, color: 'var(--ctp-peach)' },
+        { tag: tags.comment, color: 'var(--ctp-overlay2)', fontStyle: 'italic' },
         {
           tag: tags.lineComment,
-          color: 'var(--fg-comment)',
+          color: 'var(--ctp-overlay2)',
           fontStyle: 'italic',
         },
         {
           tag: tags.blockComment,
-          color: 'var(--fg-comment)',
+          color: 'var(--ctp-overlay2)',
           fontStyle: 'italic',
         },
-        { tag: [tags.typeName, tags.className], color: 'var(--blue)' },
-        { tag: tags.propertyName, color: 'var(--cyan, var(--blue))' },
-        { tag: tags.function(tags.variableName), color: 'var(--blue)' },
-        { tag: tags.definition(tags.variableName), color: 'var(--fg)' },
-        { tag: tags.variableName, color: 'var(--fg)' },
-        { tag: tags.operator, color: 'var(--fg-alt)' },
-        { tag: tags.punctuation, color: 'var(--fg-alt)' },
-        { tag: tags.invalid, color: 'var(--red)', textDecoration: 'underline' },
-        { tag: tags.angleBracket, color: 'var(--fg-alt)' },
+        { tag: [tags.typeName, tags.className], color: 'var(--ctp-yellow)' },
+        { tag: tags.propertyName, color: 'var(--ctp-blue)' },
+        { tag: tags.function(tags.variableName), color: 'var(--ctp-blue)' },
+        { tag: tags.definition(tags.variableName), color: 'var(--ctp-maroon)' },
+        { tag: tags.variableName, color: 'var(--ctp-text-body)' },
+        { tag: tags.operator, color: 'var(--ctp-sky)' },
+        { tag: tags.punctuation, color: 'var(--ctp-overlay2)' },
+        { tag: tags.invalid, color: 'var(--ctp-red)', textDecoration: 'underline' },
+        { tag: tags.angleBracket, color: 'var(--ctp-overlay2)' },
       ]);
 
       const interceptKeys = EditorView.domEventHandlers({

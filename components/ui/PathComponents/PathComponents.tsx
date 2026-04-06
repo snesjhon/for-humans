@@ -26,11 +26,11 @@ export function PhaseBannerContent({
 }) {
   return (
     <div
-      className="relative overflow-hidden pt-[56px] pb-10 [--accent:var(--primary)]"
+      className="relative overflow-hidden pt-[56px] pb-10 [--accent:var(--ctp-blue)]"
       style={{ '--accent': color } as React.CSSProperties}
     >
       <div
-        className="absolute right-0 top-1/2 -translate-y-1/2 select-none pointer-events-none italic font-normal text-[13rem] leading-none tracking-[-0.05em] text-[var(--border)] [font-family:var(--font-display)]"
+        className="absolute right-0 top-1/2 -translate-y-1/2 select-none pointer-events-none italic font-normal text-[13rem] leading-none tracking-[-0.05em] text-[var(--ctp-surface)] [font-family:var(--font-display)]"
       >
         {chapterLabel}
       </div>
@@ -42,13 +42,13 @@ export function PhaseBannerContent({
         </span>
       </div>
 
-      <h3 className="mb-[14px] text-[2.75rem] leading-[1.05] tracking-[-0.03em] text-[var(--fg)] italic font-normal [font-family:var(--font-display)]">
+      <h3 className="mb-[14px] text-[2.75rem] leading-[1.05] tracking-[-0.03em] text-[var(--ctp-text-body)] italic font-normal [font-family:var(--font-display)]">
         {phase.label}
       </h3>
 
       <div className="mb-[14px] h-[3px] w-10 rounded-[2px] bg-[var(--accent)]" />
 
-      <p className="text-[0.9375rem] leading-[1.65] m-0 max-w-[560px] text-[var(--fg-comment)]">
+      <p className="text-[0.9375rem] leading-[1.65] m-0 max-w-[560px] text-[var(--ctp-text-subtle)]">
         {phase.goal}
       </p>
     </div>
@@ -72,11 +72,11 @@ export function StepGuideCard({
 }) {
   return (
     <div
-      className="flex h-full flex-col box-border rounded-[0.875rem] border bg-transparent px-[22px] py-5 shadow-[0_1px_4px_rgba(0,0,0,0.08)] backdrop-blur-[12px] [--accent:var(--primary)] border-[var(--accent)]"
+      className="flex h-full flex-col box-border rounded-[0.875rem] border bg-transparent px-[22px] py-5 shadow-[0_1px_4px_rgba(0,0,0,0.08)] backdrop-blur-[12px] [--accent:var(--ctp-blue)] border-[var(--accent)]"
       style={{ '--accent': color } as React.CSSProperties}
     >
       <div className="flex items-center gap-2 mb-[14px]">
-        <span className="font-mono text-[0.58rem] font-bold tracking-[0.1em] uppercase text-[var(--fg-gutter)]">
+        <span className="font-mono text-[0.58rem] font-bold tracking-[0.1em] uppercase text-[var(--ctp-text-faint)]">
           Step {stepNum}
         </span>
         <span className="inline-block h-[9px] w-px bg-[var(--accent)]" />
@@ -84,10 +84,10 @@ export function StepGuideCard({
           📖 Mental Model
         </span>
       </div>
-      <div className="font-extrabold text-[1.25rem] leading-[1.2] tracking-[-0.02em] mb-3 text-[var(--fg)]">
+      <div className="font-extrabold text-[1.25rem] leading-[1.2] tracking-[-0.02em] mb-3 text-[var(--ctp-text-body)]">
         {label}
       </div>
-      <p className="mb-5 flex-1 text-[0.9375rem] leading-[1.65] text-[var(--fg-comment)] italic [font-family:var(--font-display)]">
+      <p className="mb-5 flex-1 text-[0.9375rem] leading-[1.65] text-[var(--ctp-text-subtle)] italic [font-family:var(--font-display)]">
         {hook}
       </p>
       <Link
@@ -112,23 +112,23 @@ export function PlaceholderGuideCard({
   stepNum: string;
 }) {
   return (
-    <div className="flex h-full flex-col box-border rounded-[0.875rem] border border-dashed border-[var(--border)] bg-[var(--bg-alt)] px-[22px] py-5">
+    <div className="flex h-full flex-col box-border rounded-[0.875rem] border border-dashed border-[var(--ctp-surface)] bg-[var(--ctp-bg-pane-secondary)] px-[22px] py-5">
       <div className="flex items-center gap-2 mb-[14px]">
-        <span className="font-mono text-[0.58rem] font-bold tracking-[0.1em] uppercase text-[var(--fg-gutter)]">
+        <span className="font-mono text-[0.58rem] font-bold tracking-[0.1em] uppercase text-[var(--ctp-text-faint)]">
           Step {stepNum}
         </span>
-        <span className="w-px h-[9px] inline-block bg-[var(--border)]" />
-        <span className="font-mono text-[0.58rem] font-bold tracking-[0.1em] uppercase text-[var(--fg-gutter)]">
+        <span className="w-px h-[9px] inline-block bg-[var(--ctp-surface)]" />
+        <span className="font-mono text-[0.58rem] font-bold tracking-[0.1em] uppercase text-[var(--ctp-text-faint)]">
           📖 Mental Model
         </span>
       </div>
-      <div className="font-extrabold text-[1.1875rem] leading-[1.2] tracking-[-0.02em] mb-3 text-[var(--fg-alt)]">
+      <div className="font-extrabold text-[1.1875rem] leading-[1.2] tracking-[-0.02em] mb-3 text-[var(--ctp-text-muted)]">
         {label}
       </div>
-      <p className="mb-5 flex-1 text-[0.9rem] leading-[1.65] text-[var(--fg-gutter)] italic [font-family:var(--font-display)]">
+      <p className="mb-5 flex-1 text-[0.9rem] leading-[1.65] text-[var(--ctp-text-faint)] italic [font-family:var(--font-display)]">
         {hook}
       </p>
-      <div className="self-start py-[7px] px-4 rounded-[6px] text-[0.8rem] font-semibold select-none bg-[var(--bg-highlight)] border border-[var(--border)] text-[var(--fg-gutter)]">
+      <div className="self-start py-[7px] px-4 rounded-[6px] text-[0.8rem] font-semibold select-none bg-[var(--ctp-bg-pane-tertiary)] border border-[var(--ctp-surface)] text-[var(--ctp-text-faint)]">
         Coming soon
       </div>
     </div>
@@ -164,7 +164,7 @@ export function PathTOC({ phases }: { phases: PathPhase[] }) {
 
   return (
     <nav>
-      <p className="text-sm font-semibold mb-4 text-[var(--fg)]">Phases</p>
+      <p className="text-sm font-semibold mb-4 text-[var(--ctp-text-body)]">Phases</p>
       <div className="space-y-0.5">
         {phases.map((phase) => {
           const color = pColor(phase.number);
@@ -173,10 +173,10 @@ export function PathTOC({ phases }: { phases: PathPhase[] }) {
             <a
               key={phase.number}
               href={`#phase-zone-${phase.number}`}
-              className={`flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors no-underline [--accent:var(--primary)] ${
+              className={`flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors no-underline [--accent:var(--ctp-blue)] ${
                 isActive
-                  ? 'bg-[var(--bg-alt)] font-semibold text-[var(--accent)]'
-                  : 'text-[var(--fg-comment)]'
+                  ? 'bg-[var(--ctp-bg-pane-secondary)] font-semibold text-[var(--accent)]'
+                  : 'text-[var(--ctp-text-subtle)]'
               }`}
               style={{ '--accent': color } as React.CSSProperties}
               onClick={(e) => {

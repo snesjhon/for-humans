@@ -16,6 +16,15 @@ function isDarkMode(): boolean {
   return document.documentElement.classList.contains('dark');
 }
 
+function readThemeColor(
+  styles: CSSStyleDeclaration,
+  name: string,
+  fallback: string,
+): string {
+  const value = styles.getPropertyValue(name).trim();
+  return value || fallback;
+}
+
 export default function MermaidChart({ chart }: MermaidChartProps) {
   const innerRef = useRef<HTMLDivElement>(null);
   const id = useId().replace(/:/g, '');
@@ -35,34 +44,55 @@ export default function MermaidChart({ chart }: MermaidChartProps) {
     let cancelled = false;
 
     async function run() {
+      const styles = getComputedStyle(document.documentElement);
+      const primary = readThemeColor(
+        styles,
+        '--ctp-blue',
+        dark ? '#89b4fa' : '#1e66f5',
+      );
+      const background = readThemeColor(
+        styles,
+        '--ctp-bg-pane',
+        dark ? '#1e1e2e' : '#eff1f5',
+      );
+      const backgroundAlt = readThemeColor(
+        styles,
+        '--ctp-bg-pane-secondary',
+        dark ? '#181825' : '#e6e9ef',
+      );
+      const foreground = readThemeColor(
+        styles,
+        '--ctp-text-body',
+        dark ? '#cdd6f4' : '#4c4f69',
+      );
+      const border = readThemeColor(
+        styles,
+        '--ctp-surface',
+        dark ? '#313244' : '#ccd0da',
+      );
+
       const mermaid = (await import('mermaid')).default;
       mermaid.initialize({
         startOnLoad: false,
         theme: dark ? 'dark' : 'base',
-        themeVariables: dark ? {
-          // Override accent to match the app's blue; dark theme handles
-          // background, alternating row fills, and text contrast natively.
-          primaryBorderColor: '#4a88d8',
-          lineColor: '#4a88d8',
-          edgeLabelBackground: '#1a2a2a',
-          fontFamily: 'system-ui, -apple-system, sans-serif',
-        } : {
-          primaryColor: '#EDE8F8',
-          primaryTextColor: '#303030',
-          primaryBorderColor: '#583CAC',
-          lineColor: '#583CAC',
-          secondaryColor: '#E8F0FD',
-          secondaryTextColor: '#303030',
-          secondaryBorderColor: '#006CD8',
-          tertiaryColor: '#E6F4EC',
-          tertiaryTextColor: '#303030',
-          tertiaryBorderColor: '#0A7F3D',
-          background: '#F0F0FA',
-          mainBkg: '#EDE8F8',
-          nodeBorder: '#583CAC',
-          clusterBkg: '#F0F0FA',
-          titleColor: '#303030',
-          edgeLabelBackground: '#FAFAFF',
+        themeVariables: {
+          primaryColor: backgroundAlt,
+          primaryTextColor: foreground,
+          primaryBorderColor: primary,
+          secondaryColor: background,
+          secondaryTextColor: foreground,
+          secondaryBorderColor: primary,
+          tertiaryColor: backgroundAlt,
+          tertiaryTextColor: foreground,
+          tertiaryBorderColor: border,
+          background,
+          mainBkg: backgroundAlt,
+          nodeBorder: primary,
+          clusterBkg: backgroundAlt,
+          clusterBorder: border,
+          titleColor: foreground,
+          lineColor: primary,
+          edgeLabelBackground: background,
           fontFamily: 'system-ui, -apple-system, sans-serif',
         },
       });
@@ -96,7 +126,7 @@ export default function MermaidChart({ chart }: MermaidChartProps) {
       <div ref={innerRef} />
       {error && (
         <pre
-          className="text-[var(--red)] text-[0.8rem] p-4 m-0"
+          className="text-[var(--ctp-red)] text-[0.8rem] p-4 m-0"
         >
           [Mermaid parse error]{'\n'}
           {error}

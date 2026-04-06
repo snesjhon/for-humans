@@ -70,10 +70,10 @@ export default function CheckWork({ slug }: Props) {
 
   if (!projectPath) {
     return (
-      <div className="mt-6 p-4 rounded-lg border border-[var(--border)] bg-[var(--bg-alt)]">
-        <p className="text-sm text-[var(--fg-gutter)]">
+      <div className="mt-6 p-4 rounded-lg border border-[var(--ctp-surface)] bg-[var(--ctp-bg-pane-secondary)]">
+        <p className="text-sm text-[var(--ctp-text-faint)]">
           Set your chess app path in{' '}
-          <a href="/fullstack/settings" className="text-[var(--primary)]">Settings</a>{' '}
+          <a href="/fullstack/settings" className="text-[var(--ctp-blue)]">Settings</a>{' '}
           to enable work checking.
         </p>
       </div>
@@ -83,7 +83,7 @@ export default function CheckWork({ slug }: Props) {
   return (
     <div className="mt-6 space-y-3">
       {changesDetected && (
-        <div className="px-4 py-3 rounded-lg bg-[var(--primary-tint)] border border-[var(--primary)] text-sm text-[var(--fg)]">
+        <div className="px-4 py-3 rounded-lg bg-[var(--ctp-blue-surface)] border border-[var(--ctp-blue)] text-sm text-[var(--ctp-text-body)]">
           New changes detected — ready to check?
         </div>
       )}
@@ -91,20 +91,20 @@ export default function CheckWork({ slug }: Props) {
       <button
         onClick={handleCheck}
         disabled={checking}
-        className="w-full py-[8px] px-[20px] rounded-[6px] bg-[var(--primary)] text-white text-sm font-semibold border-0 cursor-pointer disabled:opacity-50"
+        className="w-full py-[8px] px-[20px] rounded-[6px] bg-[var(--ctp-blue)] text-white text-sm font-semibold border-0 cursor-pointer disabled:opacity-50"
       >
         {checking ? 'Checking…' : 'Check my work'}
       </button>
 
       {result && (
-        <div className="rounded-lg border border-[var(--border)] bg-[var(--bg-alt)] p-4 space-y-3 text-sm">
+        <div className="rounded-lg border border-[var(--ctp-surface)] bg-[var(--ctp-bg-pane-secondary)] p-4 space-y-3 text-sm">
           {result.covered.length > 0 && (
             <div>
-              <p className="font-mono text-[0.6rem] font-bold tracking-[0.09em] uppercase text-[var(--green)] mb-2">Covered</p>
+              <p className="font-mono text-[0.6rem] font-bold tracking-[0.09em] uppercase text-[var(--ctp-green)] mb-2">Covered</p>
               <ul className="space-y-1">
                 {result.covered.map((item, i) => (
-                  <li key={i} className="flex gap-2 text-[var(--fg-alt)]">
-                    <CircleCheck className="mt-0.5 h-4 w-4 shrink-0 stroke-[2.2] text-[var(--green)]" />
+                  <li key={i} className="flex gap-2 text-[var(--ctp-text-muted)]">
+                    <CircleCheck className="mt-0.5 h-4 w-4 shrink-0 stroke-[2.2] text-[var(--ctp-green)]" />
                     {item}
                   </li>
                 ))}
@@ -114,11 +114,11 @@ export default function CheckWork({ slug }: Props) {
 
           {result.missed.length > 0 && (
             <div>
-              <p className="font-mono text-[0.6rem] font-bold tracking-[0.09em] uppercase text-[var(--orange)] mb-2">Missed</p>
+              <p className="font-mono text-[0.6rem] font-bold tracking-[0.09em] uppercase text-[var(--ctp-peach)] mb-2">Missed</p>
               <ul className="space-y-1">
                 {result.missed.map((item, i) => (
-                  <li key={i} className="flex gap-2 text-[var(--fg-alt)]">
-                    <Circle className="mt-0.5 h-4 w-4 shrink-0 stroke-2 text-[var(--orange)]" />
+                  <li key={i} className="flex gap-2 text-[var(--ctp-text-muted)]">
+                    <Circle className="mt-0.5 h-4 w-4 shrink-0 stroke-2 text-[var(--ctp-peach)]" />
                     {item}
                   </li>
                 ))}
@@ -127,9 +127,9 @@ export default function CheckWork({ slug }: Props) {
           )}
 
           {result.followUp && (
-            <div className="pt-2 border-t border-[var(--border)]">
-              <p className="font-mono text-[0.6rem] font-bold tracking-[0.09em] uppercase text-[var(--fg-gutter)] mb-2">Think about this</p>
-              <p className="text-[var(--fg-alt)] leading-relaxed">{result.followUp}</p>
+            <div className="pt-2 border-t border-[var(--ctp-surface)]">
+              <p className="font-mono text-[0.6rem] font-bold tracking-[0.09em] uppercase text-[var(--ctp-text-faint)] mb-2">Think about this</p>
+              <p className="text-[var(--ctp-text-muted)] leading-relaxed">{result.followUp}</p>
             </div>
           )}
         </div>

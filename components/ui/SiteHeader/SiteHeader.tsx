@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
+import { ThemeSwitcher } from '../ThemeSwitcher/ThemeSwitcher';
 
 export interface NavLink {
   href: string;
@@ -28,27 +29,19 @@ export function SiteHeader({
   navLinks = [],
 }: SiteHeaderProps) {
   const [scrolled, setScrolled] = useState(false);
-  const [dark, setDark] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
-    setDark(document.documentElement.classList.contains('dark'));
     const check = () => setScrolled(window.scrollY > 12);
     check();
     window.addEventListener('scroll', check, { passive: true });
     return () => window.removeEventListener('scroll', check);
   }, []);
 
-  const toggleDark = () => {
-    const next = !dark;
-    document.documentElement.classList.toggle('dark', next);
-    setDark(next);
-  };
-
   return (
     <header
       className={`sticky top-0 z-50 transition-[background-color] duration-500 ${
-        scrolled ? 'bg-[var(--bg)] backdrop-blur-[16px]' : 'bg-transparent'
+        scrolled ? 'bg-[var(--ctp-bg-pane)] backdrop-blur-[16px]' : 'bg-transparent'
       }`}
     >
       <div className="relative">
@@ -58,7 +51,7 @@ export function SiteHeader({
             className="no-underline flex items-center gap-[10px] shrink-0 focus:outline-none"
           >
             {icon}
-            <span className="italic font-normal text-[1.125rem] text-[var(--fg)] tracking-[-0.01em] [font-family:var(--font-display)]">
+            <span className="italic font-normal text-[1.125rem] text-[var(--ctp-text-body)] tracking-[-0.01em] [font-family:var(--font-display)]">
               {title}
             </span>
           </Link>
@@ -71,8 +64,8 @@ export function SiteHeader({
                 href={link.href}
                 className={`text-sm no-underline transition-colors ${
                   active
-                    ? 'border-b-2 border-b-[var(--primary)] pb-[2px] font-medium text-[var(--primary)]'
-                    : 'text-[var(--fg-comment)]'
+                    ? 'border-b-2 border-b-[var(--ctp-blue)] pb-[2px] font-medium text-[var(--ctp-blue)]'
+                    : 'text-[var(--ctp-text-subtle)]'
                 }`}
               >
                 {link.label}
@@ -82,18 +75,12 @@ export function SiteHeader({
 
           <div className="ml-auto" />
 
-          <button
-            onClick={toggleDark}
-            aria-label="Toggle dark mode"
-            className="bg-transparent border border-[var(--border)] rounded-[6px] px-[8px] py-[4px] cursor-pointer text-[var(--fg-comment)] text-[14px] leading-none shrink-0"
-          >
-            {dark ? '☀' : '◑'}
-          </button>
+          <ThemeSwitcher />
         </nav>
 
         <div
           aria-hidden="true"
-          className={`absolute bottom-0 left-0 right-0 h-px pointer-events-none bg-[var(--border-dark)] transition-opacity duration-[450ms] ${
+          className={`absolute bottom-0 left-0 right-0 h-px pointer-events-none bg-[var(--ctp-surface-hover)] transition-opacity duration-[450ms] ${
             scrolled ? 'opacity-100' : 'opacity-0'
           }`}
         />

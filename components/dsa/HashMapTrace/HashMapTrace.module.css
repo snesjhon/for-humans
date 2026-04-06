@@ -1,25 +1,25 @@
 .cellCurrent {
-  background: var(--blue-tint);
-  border-color: var(--blue);
-  color: var(--blue);
+  background: var(--ctp-blue-surface);
+  border-color: var(--ctp-blue);
+  color: var(--ctp-blue);
 }
 
 .cellVisited {
-  background: var(--green-tint);
-  border-color: var(--green);
-  color: var(--green);
+  background: var(--ctp-green-surface);
+  border-color: var(--ctp-green);
+  color: var(--ctp-green);
 }
 
 .cellUpcoming {
-  background: var(--bg-alt);
-  border-color: var(--border);
-  color: var(--fg-alt);
+  background: var(--ctp-bg-pane-secondary);
+  border-color: var(--ctp-surface);
+  color: var(--ctp-text-muted);
   opacity: 0.55;
 }
 
 .ptrCurrent {
-  background: var(--blue-tint);
-  color: var(--blue);
+  background: var(--ctp-blue-surface);
+  color: var(--ctp-blue);
 }
 
 .vars {
@@ -39,17 +39,17 @@
 }
 
 .varName {
-  color: var(--purple);
+  color: var(--ctp-mauve);
   font-weight: 600;
 }
 
 .varEq {
-  color: var(--fg-gutter);
+  color: var(--ctp-text-faint);
   padding: 0 2px;
 }
 
 .varVal {
-  color: var(--fg);
+  color: var(--ctp-text-body);
   font-weight: 700;
 }
 
@@ -66,7 +66,7 @@
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--fg-gutter);
+  color: var(--ctp-text-faint);
   padding-top: 6px;
   flex-shrink: 0;
 }
@@ -82,7 +82,7 @@
 .mapEmpty {
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
   font-size: 12px;
-  color: var(--fg-gutter);
+  color: var(--ctp-text-faint);
   font-style: italic;
 }
 
@@ -92,8 +92,8 @@
   gap: 5px;
   padding: 4px 10px;
   border-radius: 6px;
-  border: 1.5px solid var(--border);
-  background: var(--bg);
+  border: 1.5px solid var(--ctp-surface);
+  background: var(--ctp-bg-pane);
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
   font-size: 13px;
   transition:
@@ -102,77 +102,77 @@
 }
 
 .entryKey {
-  color: var(--fg);
+  color: var(--ctp-text-body);
   font-weight: 600;
 }
 
 .entryArrow {
-  color: var(--fg-gutter);
+  color: var(--ctp-text-faint);
   width: 14px;
   height: 14px;
   flex-shrink: 0;
 }
 
 .entryVal {
-  color: var(--fg-comment);
+  color: var(--ctp-text-subtle);
 }
 
 .entryInsert {
-  background: var(--blue-tint);
-  border-color: var(--blue);
+  background: var(--ctp-blue-surface);
+  border-color: var(--ctp-blue);
 }
 
 .entryInsert .entryKey,
 .entryInsert .entryVal {
-  color: var(--blue);
+  color: var(--ctp-blue);
 }
 
 .entryUpdate {
-  background: var(--orange-tint);
-  border-color: var(--orange);
+  background: var(--ctp-peach-surface);
+  border-color: var(--ctp-peach);
 }
 
 .entryUpdate .entryKey,
 .entryUpdate .entryVal {
-  color: var(--orange);
+  color: var(--ctp-peach);
 }
 
 .entryFound {
-  background: var(--green-tint);
-  border-color: var(--green);
+  background: var(--ctp-green-surface);
+  border-color: var(--ctp-green);
 }
 
 .entryFound .entryKey,
 .entryFound .entryVal {
-  color: var(--green);
+  color: var(--ctp-green);
 }
 
 .badgeInsert {
-  background: var(--blue-tint);
-  color: var(--blue);
-  border: 1px solid var(--blue);
+  background: var(--ctp-blue-surface);
+  color: var(--ctp-blue);
+  border: 1px solid var(--ctp-blue);
 }
 
 .badgeUpdate {
-  background: var(--orange-tint);
-  color: var(--orange);
-  border: 1px solid var(--orange);
+  background: var(--ctp-peach-surface);
+  color: var(--ctp-peach);
+  border: 1px solid var(--ctp-peach);
 }
 
 .badgeFound {
-  background: var(--green-tint);
-  color: var(--green);
-  border: 1px solid var(--green);
+  background: var(--ctp-green-surface);
+  color: var(--ctp-green);
+  border: 1px solid var(--ctp-green);
 }
 
 .badgeMiss {
-  background: var(--bg-highlight);
-  color: var(--fg-comment);
-  border: 1px solid var(--border);
+  background: var(--ctp-bg-pane-tertiary);
+  color: var(--ctp-text-subtle);
+  border: 1px solid var(--ctp-surface);
 }
 
 .badgeDone {
-  background: var(--purple-tint);
-  color: var(--purple);
-  border: 1px solid var(--purple);
+  background: var(--ctp-mauve-surface);
+  color: var(--ctp-mauve);
+  border: 1px solid var(--ctp-mauve);
 }

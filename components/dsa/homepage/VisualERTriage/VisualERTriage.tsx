@@ -9,10 +9,10 @@ export function VisualERTriage() {
   const fontSizes = ['1rem', '0.82rem', '0.68rem'];
   return (
     <div className="pt-[22px] px-[14px] pb-[14px] flex flex-col items-center gap-[7px] w-full">
-      <div className="font-[ui-monospace,monospace] text-[0.52rem] text-[var(--fg-gutter)] self-start tracking-[0.06em] uppercase mb-[4px]">
+      <div className="font-[ui-monospace,monospace] text-[0.52rem] text-[var(--ctp-text-faint)] self-start tracking-[0.06em] uppercase mb-[4px]">
         ER triage
       </div>
-      <div className="font-[ui-monospace,monospace] text-[0.52rem] text-[var(--fg-gutter)] mb-[2px]">
+      <div className="font-[ui-monospace,monospace] text-[0.52rem] text-[var(--ctp-text-faint)] mb-[2px]">
         most critical always at top
       </div>
       {levels.map((row, r) => (
@@ -31,7 +31,7 @@ export function VisualERTriage() {
                 justifyContent: 'center',
                 border: `2px solid ${colors[r][c]}`,
                 borderRadius: 6,
-                background: r === 0 ? 'var(--red-tint)' : 'var(--bg-alt)',
+                background: r === 0 ? 'var(--ctp-red-surface)' : 'var(--ctp-bg-pane-secondary)',
                 fontFamily: 'ui-monospace, monospace',
                 fontSize: fontSizes[r],
                 fontWeight: 700,
@@ -43,7 +43,7 @@ export function VisualERTriage() {
           ))}
         </div>
       ))}
-      <div className="font-[ui-monospace,monospace] text-[0.54rem] text-[var(--fg-gutter)] mt-[4px] text-center leading-[1.6]">
+      <div className="font-[ui-monospace,monospace] text-[0.54rem] text-[var(--ctp-text-faint)] mt-[4px] text-center leading-[1.6]">
         parent ≤ children
         <br />
         min always at root · O(log n)

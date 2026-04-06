@@ -1,13 +1,13 @@
 .slotActive {
-  background: var(--orange-tint);
-  border-color: var(--orange);
-  color: var(--orange);
+  background: var(--ctp-peach-surface);
+  border-color: var(--ctp-peach);
+  color: var(--ctp-peach);
 }
 
 .removing {
-  background: var(--orange-tint);
-  border-color: var(--orange);
-  color: var(--orange);
+  background: var(--ctp-peach-surface);
+  border-color: var(--ctp-peach);
+  color: var(--ctp-peach);
   opacity: 0.7;
 }
 
@@ -22,7 +22,7 @@
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
   font-size: 11px;
   font-weight: 700;
-  color: var(--fg-gutter);
+  color: var(--ctp-text-faint);
   width: 48px;
   flex-shrink: 0;
 }
@@ -37,8 +37,8 @@
 .emptyBasket {
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
   font-size: 14px;
-  color: var(--fg-gutter);
-  border: 2px dashed var(--border);
+  color: var(--ctp-text-faint);
+  border: 2px dashed var(--ctp-surface);
   border-radius: 6px;
   padding: 0 16px;
   height: 52px;
@@ -47,35 +47,35 @@
 }
 
 .ptrSlot {
-  background: var(--orange-tint);
-  color: var(--orange);
+  background: var(--ctp-peach-surface);
+  color: var(--ctp-peach);
 }
 
 .ptrBasket {
-  background: var(--green-tint);
-  color: var(--green);
+  background: var(--ctp-green-surface);
+  color: var(--ctp-green);
 }
 
 .badgeAdd {
-  background: var(--blue-tint);
-  color: var(--blue);
-  border: 1px solid var(--blue);
+  background: var(--ctp-blue-surface);
+  color: var(--ctp-blue);
+  border: 1px solid var(--ctp-blue);
 }
 
 .badgeRemove {
-  background: var(--orange-tint);
-  color: var(--orange);
-  border: 1px solid var(--orange);
+  background: var(--ctp-peach-surface);
+  color: var(--ctp-peach);
+  border: 1px solid var(--ctp-peach);
 }
 
 .badgeRecord {
-  background: var(--green-tint);
-  color: var(--green);
-  border: 1px solid var(--green);
+  background: var(--ctp-green-surface);
+  color: var(--ctp-green);
+  border: 1px solid var(--ctp-green);
 }
 
 .badgeDone {
-  background: var(--purple-tint);
-  color: var(--purple);
-  border: 1px solid var(--purple);
+  background: var(--ctp-mauve-surface);
+  color: var(--ctp-mauve);
+  border: 1px solid var(--ctp-mauve);
 }

@@ -10,9 +10,9 @@
 }
 
 .structure {
-  border: 1px solid var(--border);
+  border: 1px solid var(--ctp-surface);
   border-radius: 8px;
-  background: var(--bg);
+  background: var(--ctp-bg-pane);
   padding: 0.9rem;
 }
 
@@ -28,7 +28,7 @@
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
   font-size: 12px;
   font-weight: 700;
-  color: var(--fg);
+  color: var(--ctp-text-body);
 }
 
 .structureKind {
@@ -36,7 +36,7 @@
   font-size: 10px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--fg-gutter);
+  color: var(--ctp-text-faint);
 }
 
 .stackShell,
@@ -87,39 +87,39 @@
 .queueIdx {
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
   font-size: 10px;
-  color: var(--fg-gutter);
+  color: var(--ctp-text-faint);
   line-height: 1;
 }
 
 .cellMuted {
-  background: var(--bg-alt);
-  border-color: var(--border);
-  color: var(--fg-alt);
+  background: var(--ctp-bg-pane-secondary);
+  border-color: var(--ctp-surface);
+  color: var(--ctp-text-muted);
   opacity: 0.6;
 }
 
 .cellBlue {
-  background: var(--blue-tint);
-  border-color: var(--blue);
-  color: var(--blue);
+  background: var(--ctp-blue-surface);
+  border-color: var(--ctp-blue);
+  color: var(--ctp-blue);
 }
 
 .cellOrange {
-  background: var(--orange-tint);
-  border-color: var(--orange);
-  color: var(--orange);
+  background: var(--ctp-peach-surface);
+  border-color: var(--ctp-peach);
+  color: var(--ctp-peach);
 }
 
 .cellGreen {
-  background: var(--green-tint);
-  border-color: var(--green);
-  color: var(--green);
+  background: var(--ctp-green-surface);
+  border-color: var(--ctp-green);
+  color: var(--ctp-green);
 }
 
 .cellPurple {
-  background: var(--purple-tint);
-  border-color: var(--purple);
-  color: var(--purple);
+  background: var(--ctp-mauve-surface);
+  border-color: var(--ctp-mauve);
+  color: var(--ctp-mauve);
 }
 
 .empty {
@@ -128,12 +128,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px dashed var(--border);
+  border: 2px dashed var(--ctp-surface);
   border-radius: 6px;
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
   font-size: 12px;
   font-style: italic;
-  color: var(--fg-gutter);
+  color: var(--ctp-text-faint);
 }
 
 .footnote {
@@ -141,59 +141,59 @@
   text-align: center;
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
   font-size: 10px;
-  color: var(--fg-gutter);
+  color: var(--ctp-text-faint);
 }
 
 .ptrBlue {
-  background: var(--blue-tint);
-  color: var(--blue);
+  background: var(--ctp-blue-surface);
+  color: var(--ctp-blue);
 }
 
 .ptrOrange {
-  background: var(--orange-tint);
-  color: var(--orange);
+  background: var(--ctp-peach-surface);
+  color: var(--ctp-peach);
 }
 
 .ptrGreen {
-  background: var(--green-tint);
-  color: var(--green);
+  background: var(--ctp-green-surface);
+  color: var(--ctp-green);
 }
 
 .ptrPurple {
-  background: var(--purple-tint);
-  color: var(--purple);
+  background: var(--ctp-mauve-surface);
+  color: var(--ctp-mauve);
 }
 
 .badgePush,
 .badgeEnqueue {
-  background: var(--blue-tint);
-  color: var(--blue);
-  border: 1px solid var(--blue);
+  background: var(--ctp-blue-surface);
+  color: var(--ctp-blue);
+  border: 1px solid var(--ctp-blue);
 }
 
 .badgePop,
 .badgeDequeue {
-  background: var(--orange-tint);
-  color: var(--orange);
-  border: 1px solid var(--orange);
+  background: var(--ctp-peach-surface);
+  color: var(--ctp-peach);
+  border: 1px solid var(--ctp-peach);
 }
 
 .badgePeek {
-  background: var(--green-tint);
-  color: var(--green);
-  border: 1px solid var(--green);
+  background: var(--ctp-green-surface);
+  color: var(--ctp-green);
+  border: 1px solid var(--ctp-green);
 }
 
 .badgeTransfer {
-  background: var(--purple-tint);
-  color: var(--purple);
-  border: 1px solid var(--purple);
+  background: var(--ctp-mauve-surface);
+  color: var(--ctp-mauve);
+  border: 1px solid var(--ctp-mauve);
 }
 
 .badgeDone {
-  background: var(--cyan-tint);
-  color: var(--cyan);
-  border: 1px solid var(--cyan);
+  background: var(--ctp-sapphire-surface);
+  color: var(--ctp-sapphire);
+  border: 1px solid var(--ctp-sapphire);
 }
 
 @media (max-width: 760px) {

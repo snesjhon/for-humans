@@ -17,7 +17,7 @@ export function ProgressMark({
       className={`${
         completed ? 'icon-circle-check' : 'icon-circle'
       } ${
-        completed ? 'text-[var(--green)]' : 'text-[var(--border)]'
+        completed ? 'text-[var(--ctp-green)]' : 'text-[var(--ctp-surface)]'
       } ${className}`.trim()}
     />
   );

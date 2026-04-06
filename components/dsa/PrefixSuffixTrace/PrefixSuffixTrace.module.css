@@ -6,21 +6,21 @@
 }
 
 .forwardBadge {
-  background: var(--blue-tint);
-  color: var(--blue);
-  border: 1px solid var(--blue);
+  background: var(--ctp-blue-surface);
+  color: var(--ctp-blue);
+  border: 1px solid var(--ctp-blue);
 }
 
 .backwardBadge {
-  background: var(--orange-tint);
-  color: var(--orange);
-  border: 1px solid var(--orange);
+  background: var(--ctp-peach-surface);
+  color: var(--ctp-peach);
+  border: 1px solid var(--ctp-peach);
 }
 
 .doneBadge {
-  background: var(--green-tint);
-  color: var(--green);
-  border: 1px solid var(--green);
+  background: var(--ctp-green-surface);
+  color: var(--ctp-green);
+  border: 1px solid var(--ctp-green);
 }
 
 .acc {
@@ -32,16 +32,16 @@
 }
 
 .accName {
-  color: var(--purple);
+  color: var(--ctp-mauve);
   font-weight: 600;
 }
 
 .accEq {
-  color: var(--fg-gutter);
+  color: var(--ctp-text-faint);
 }
 
 .accVal {
-  color: var(--fg);
+  color: var(--ctp-text-body);
   font-weight: 700;
 }
 
@@ -63,7 +63,7 @@
   align-items: center;
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
   font-size: 11px;
-  color: var(--fg-gutter);
+  color: var(--ctp-text-faint);
   white-space: nowrap;
 }
 
@@ -85,8 +85,8 @@
   font-weight: 700;
   padding: 2px 6px;
   border-radius: 3px;
-  background: var(--blue-tint);
-  color: var(--blue);
+  background: var(--ctp-blue-surface);
+  color: var(--ctp-blue);
   line-height: 1;
 }
 
@@ -103,62 +103,62 @@
 }
 
 .numsCell {
-  background: var(--bg-alt);
-  border-color: var(--border);
-  color: var(--fg-alt);
+  background: var(--ctp-bg-pane-secondary);
+  border-color: var(--ctp-surface);
+  color: var(--ctp-text-muted);
   opacity: 0.7;
 }
 
 .numsActive {
-  background: var(--bg-highlight);
-  border-color: var(--fg-gutter);
-  color: var(--fg);
+  background: var(--ctp-bg-pane-tertiary);
+  border-color: var(--ctp-text-faint);
+  color: var(--ctp-text-body);
   opacity: 1;
 }
 
 .empty {
-  background: var(--bg-alt);
-  border-color: var(--border);
+  background: var(--ctp-bg-pane-secondary);
+  border-color: var(--ctp-surface);
   border-style: dashed;
-  color: var(--fg-gutter);
+  color: var(--ctp-text-faint);
   opacity: 0.5;
 }
 
 .filled {
-  background: var(--blue-tint);
-  border-color: var(--blue);
-  color: var(--blue);
+  background: var(--ctp-blue-surface);
+  border-color: var(--ctp-blue);
+  color: var(--ctp-blue);
   opacity: 0.75;
 }
 
 .activeForward {
-  background: var(--blue-tint);
-  border-color: var(--blue);
-  color: var(--blue);
+  background: var(--ctp-blue-surface);
+  border-color: var(--ctp-blue);
+  color: var(--ctp-blue);
   opacity: 1;
 }
 
 .activeBackward {
-  background: var(--green-tint);
-  border-color: var(--green);
-  color: var(--green);
+  background: var(--ctp-green-surface);
+  border-color: var(--ctp-green);
+  color: var(--ctp-green);
   opacity: 1;
 }
 
 .final {
-  background: var(--green-tint);
-  border-color: var(--green);
-  color: var(--green);
+  background: var(--ctp-green-surface);
+  border-color: var(--ctp-green);
+  color: var(--ctp-green);
 }
 
 .legendForward {
   font-size: 11px;
-  color: var(--blue);
+  color: var(--ctp-blue);
 }
 
 .legendBackward {
   font-size: 11px;
-  color: var(--green);
+  color: var(--ctp-green);
 }
 
 .legendForward,

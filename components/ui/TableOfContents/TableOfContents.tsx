@@ -49,7 +49,7 @@ export default function TableOfContents({
 
   return (
     <nav>
-      <p className="text-xs font-semibold mb-4 text-[var(--fg)]">{title}</p>
+      <p className="text-xs font-semibold mb-4 text-[var(--ctp-text-body)]">{title}</p>
       <div className="space-y-0.5">
         {visible.map((heading) => {
           const isActive = activeId === heading.id;
@@ -62,10 +62,10 @@ export default function TableOfContents({
                 isH3 ? 'pl-6' : 'pl-2'
               } ${
                 isActive
-                  ? 'bg-[var(--primary-tint)] font-medium text-[var(--primary)]'
+                  ? 'bg-[var(--ctp-blue-surface)] font-medium text-[var(--ctp-blue)]'
                   : isH3
-                    ? 'text-[var(--fg-gutter)]'
-                    : 'text-[var(--fg-comment)]'
+                    ? 'text-[var(--ctp-text-faint)]'
+                    : 'text-[var(--ctp-text-subtle)]'
               }`}
               onClick={(e) => {
                 e.preventDefault();

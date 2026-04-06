@@ -40,23 +40,23 @@ export default function FundamentalsPage({ params }: Props) {
     <DsaPageLayout
       hero={
         <PageHero>
-          <h1 className="text-5xl leading-tight text-[var(--fg)] font-display mb-0">
+          <h1 className="text-5xl leading-tight text-[var(--ctp-text-body)] font-display mb-0">
             {section?.label ??
               guide.title.replace(/\s*[–-]\s*Fundamentals/i, '')}
           </h1>
           {section && (
-            <p className="text-lg italic leading-snug text-[var(--cyan)] mb-6">
+            <p className="text-lg italic leading-snug text-[var(--ctp-lavender)] mb-6">
               &ldquo;{section.mentalModelHook}&rdquo;
             </p>
           )}
 
           <div className="flex items-center gap-2">
             {phase && (
-              <mark className="text-xs bg-transparent border border-[var(--border)] rounded text-[var(--fg-alt)]">
+              <mark className="text-xs bg-transparent border border-[var(--ctp-surface)] rounded text-[var(--ctp-text-muted)]">
                 {phase.emoji} {phase.label}
               </mark>
             )}
-            <mark className="text-xs bg-transparent border border-[var(--border)] rounded text-[var(--fg-alt)]">
+            <mark className="text-xs bg-transparent border border-[var(--ctp-surface)] rounded text-[var(--ctp-text-muted)]">
               Fundamentals
             </mark>
           </div>
@@ -65,9 +65,9 @@ export default function FundamentalsPage({ params }: Props) {
       aside={<TableOfContents headings={headings} title="Contents" />}
     >
       <section className="space-y-8 py-2">
-        <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-alt)] p-5">
-          <p className="mb-1 text-sm text-[var(--fg-alt)]">
-            <span className="font-semibold text-[var(--fg)]">
+        <div className="rounded-xl border border-[var(--ctp-surface)] bg-[var(--ctp-bg-pane-secondary)] p-5">
+          <p className="mb-1 text-sm text-[var(--ctp-text-muted)]">
+            <span className="font-semibold text-[var(--ctp-text-body)]">
               Prerequisites:
             </span>
           </p>
@@ -78,12 +78,12 @@ export default function FundamentalsPage({ params }: Props) {
                   ? `/fundamentals/${prereq.fundamentalsSlug}`
                   : '/'
               }
-              className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-[var(--primary)] bg-[var(--primary-tint)] px-3 py-1.5 text-xs font-medium text-[var(--primary)] transition-opacity no-underline hover:opacity-80"
+              className="mt-2 inline-flex items-center gap-1.5 rounded-lg border border-[var(--ctp-blue)] bg-[var(--ctp-blue-surface)] px-3 py-1.5 text-xs font-medium text-[var(--ctp-blue)] transition-opacity no-underline hover:opacity-80"
             >
               {prereq.label} Fundamentals
             </Link>
           ) : (
-            <p className="mb-0 mt-1 text-sm italic text-[var(--fg-comment)]">
+            <p className="mb-0 mt-1 text-sm italic text-[var(--ctp-text-subtle)]">
               None — this is the starting point of the path.
             </p>
           )}
@@ -93,17 +93,17 @@ export default function FundamentalsPage({ params }: Props) {
           fundamentalsSlug={params.slug}
           codeFiles={codeFiles}
         />
-        <div className="flex items-center justify-between border-t border-t-[var(--border)] pt-8">
+        <div className="flex items-center justify-between border-t border-t-[var(--ctp-surface)] pt-8">
           <Link
             href="/"
-            className="text-sm text-[var(--fg-comment)] transition-opacity hover:opacity-70"
+            className="text-sm text-[var(--ctp-text-subtle)] transition-opacity hover:opacity-70"
           >
             ← Back to Learning Path
           </Link>
           {section && section.firstPass.length > 0 && (
             <Link
               href={`/dsa/problems/${section.firstPass[0].id}`}
-              className="rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90"
+              className="rounded-lg bg-[var(--ctp-blue)] px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90"
             >
               Start First Problem →
             </Link>

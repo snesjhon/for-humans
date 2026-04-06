@@ -28,7 +28,7 @@ export default function FundamentalsPage({ params }: Props) {
   const section = context?.section;
   const phase = context?.phase;
   const prereq = getPrecedingSection(params.slug);
-  const color = phase ? 'var(--primary)' : null;
+  const color = phase ? 'var(--ctp-blue)' : null;
 
   const strippedContent = guide.content.replace(/^#[^#].*\n+/, '').trimStart();
   const headings = extractHeadings(strippedContent);
@@ -36,21 +36,21 @@ export default function FundamentalsPage({ params }: Props) {
   return (
     <>
       <PageHero>
-        <h1 className="text-5xl font-bold leading-tight text-[var(--fg)] font-display">
+        <h1 className="text-5xl font-bold leading-tight text-[var(--ctp-text-body)] font-display">
           {section?.label ?? guide.title.replace(/\s*[–-]\s*Fundamentals/i, '')}
         </h1>
         {section && (
-          <p className="text-lg italic leading-snug text-[var(--primary)]">
+          <p className="text-lg italic leading-snug text-[var(--ctp-blue)]">
             &quot;{section.mentalModelHook}&quot;
           </p>
         )}
         <div className="flex items-center gap-2">
           {phase && (
-            <mark className="text-xs bg-transparent border border-[var(--border)] rounded text-[var(--fg-alt)]">
+            <mark className="text-xs bg-transparent border border-[var(--ctp-surface)] rounded text-[var(--ctp-text-muted)]">
               {phase.emoji} {phase.label}
             </mark>
           )}
-          <mark className="text-xs bg-transparent border border-[var(--border)] rounded text-[var(--fg-alt)]">
+          <mark className="text-xs bg-transparent border border-[var(--ctp-surface)] rounded text-[var(--ctp-text-muted)]">
             Fundamentals
           </mark>
         </div>
@@ -61,9 +61,9 @@ export default function FundamentalsPage({ params }: Props) {
         aside={<TableOfContents headings={headings} title="Contents" />}
       >
         <section className="space-y-8">
-          <div className="rounded-xl p-5 bg-[var(--bg-alt)] border border-[var(--border)]">
-            <p className="text-sm mb-1 text-[var(--fg-alt)]">
-              <span className="font-semibold text-[var(--fg)]">
+          <div className="rounded-xl p-5 bg-[var(--ctp-bg-pane-secondary)] border border-[var(--ctp-surface)]">
+            <p className="text-sm mb-1 text-[var(--ctp-text-muted)]">
+              <span className="font-semibold text-[var(--ctp-text-body)]">
                 Prerequisites:
               </span>
             </p>
@@ -74,12 +74,12 @@ export default function FundamentalsPage({ params }: Props) {
                     ? `/fundamentals/${prereq.fundamentalsSlug}`
                     : '/path'
                 }
-                className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg transition-opacity hover:opacity-80 mt-2 bg-[var(--primary-tint)] text-[var(--primary)] border border-[var(--primary)]"
+                className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg transition-opacity hover:opacity-80 mt-2 bg-[var(--ctp-blue-surface)] text-[var(--ctp-blue)] border border-[var(--ctp-blue)]"
               >
                 {prereq.label} Fundamentals
               </Link>
             ) : (
-              <p className="text-sm italic mb-1 text-[var(--fg-comment)]">
+              <p className="text-sm italic mb-1 text-[var(--ctp-text-subtle)]">
                 None — this is the starting point of the path.
               </p>
             )}
@@ -92,17 +92,17 @@ export default function FundamentalsPage({ params }: Props) {
             storageKeyPrefix={`chat:${params.slug}`}
           />
 
-          <div className="flex items-center justify-between pt-8 border-t border-t-[var(--border)]">
+          <div className="flex items-center justify-between pt-8 border-t border-t-[var(--ctp-surface)]">
             <Link
               href="/fullstack/path"
-              className="text-sm transition-opacity hover:opacity-70 text-[var(--fg-comment)]"
+              className="text-sm transition-opacity hover:opacity-70 text-[var(--ctp-text-subtle)]"
             >
               ← Back to The Path
             </Link>
             {section && section.firstPass.length > 0 && (
               <Link
                 href={`/fullstack/scenarios/${section.firstPass[0].slug}`}
-                className="text-sm px-4 py-2 rounded-lg font-medium transition-opacity hover:opacity-90 text-white bg-[var(--primary)]"
+                className="text-sm px-4 py-2 rounded-lg font-medium transition-opacity hover:opacity-90 text-white bg-[var(--ctp-blue)]"
               >
                 Start First Scenario →
               </Link>

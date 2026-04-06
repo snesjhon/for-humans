@@ -18,7 +18,7 @@ const WebContainerEmbed = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="rounded-lg border border-[var(--border)] bg-[var(--bg-alt)] p-4 text-sm text-[var(--fg-gutter)]">
+      <div className="rounded-lg border border-[var(--ctp-surface)] bg-[var(--ctp-bg-pane-secondary)] p-4 text-sm text-[var(--ctp-text-faint)]">
         Loading editor...
       </div>
     ),

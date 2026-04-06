@@ -68,10 +68,10 @@ export default function ProblemProgressPanel({
   if (!resolved) {
     return (
       <div>
-        <p className="mb-4 text-xs font-semibold text-[var(--fg)]">
+        <p className="mb-4 text-xs font-semibold text-[var(--ctp-text-body)]">
           Your Progress
         </p>
-        <p className="text-xs leading-relaxed text-[var(--fg-comment)]">
+        <p className="text-xs leading-relaxed text-[var(--ctp-text-subtle)]">
           Loading progress...
         </p>
       </div>
@@ -81,12 +81,12 @@ export default function ProblemProgressPanel({
   if (!hasSession) {
     return (
       <div>
-        <p className="mb-4 text-xs font-semibold text-[var(--fg)]">
+        <p className="mb-4 text-xs font-semibold text-[var(--ctp-text-body)]">
           Your Progress
         </p>
         <Link
           href={`/login?next=${encodeURIComponent(`/dsa/problems/${problemId}`)}`}
-          className="text-xs leading-relaxed text-[var(--fg-comment)] transition-colors no-underline hover:text-[var(--fg)]"
+          className="text-xs leading-relaxed text-[var(--ctp-text-subtle)] transition-colors no-underline hover:text-[var(--ctp-text-body)]"
         >
           Sign in to track progress →
         </Link>
@@ -105,7 +105,7 @@ export default function ProblemProgressPanel({
       ]}
     >
       <div>
-        <p className="mb-4 text-xs font-semibold text-[var(--fg)]">
+        <p className="mb-4 text-xs font-semibold text-[var(--ctp-text-body)]">
           Your Progress
         </p>
         <div className="space-y-0.5">

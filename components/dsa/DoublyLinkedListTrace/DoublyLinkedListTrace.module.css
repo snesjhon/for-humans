@@ -40,9 +40,9 @@
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
   font-size: 14px;
   font-weight: 700;
-  border: 2px solid var(--border);
-  background: var(--bg-alt);
-  color: var(--fg-alt);
+  border: 2px solid var(--ctp-surface);
+  background: var(--ctp-bg-pane-secondary);
+  color: var(--ctp-text-muted);
   flex-shrink: 0;
   overflow: hidden;
   transition:
@@ -52,27 +52,27 @@
 }
 
 .nodeBlue {
-  background: var(--blue-tint);
-  border-color: var(--blue);
-  color: var(--blue);
+  background: var(--ctp-blue-surface);
+  border-color: var(--ctp-blue);
+  color: var(--ctp-blue);
 }
 
 .nodeOrange {
-  background: var(--orange-tint);
-  border-color: var(--orange);
-  color: var(--orange);
+  background: var(--ctp-peach-surface);
+  border-color: var(--ctp-peach);
+  color: var(--ctp-peach);
 }
 
 .nodeGreen {
-  background: var(--green-tint);
-  border-color: var(--green);
-  color: var(--green);
+  background: var(--ctp-green-surface);
+  border-color: var(--ctp-green);
+  color: var(--ctp-green);
 }
 
 .nodePurple {
-  background: var(--purple-tint);
-  border-color: var(--purple);
-  color: var(--purple);
+  background: var(--ctp-mauve-surface);
+  border-color: var(--ctp-mauve);
+  color: var(--ctp-mauve);
 }
 
 .slot {
@@ -106,14 +106,14 @@
   font-family: ui-monospace, 'SF Mono', Menlo, monospace;
   font-size: 14px;
   font-weight: 700;
-  color: var(--fg-gutter);
-  border: 2px solid var(--border);
+  color: var(--ctp-text-faint);
+  border: 2px solid var(--ctp-surface);
   background: transparent;
   flex-shrink: 0;
 }
 
 .connector {
-  color: var(--fg-gutter);
+  color: var(--ctp-text-faint);
   flex-shrink: 0;
   width: 112px;
   display: flex;
@@ -156,45 +156,45 @@
 }
 
 .tagBlue {
-  background: var(--blue-tint);
-  color: var(--blue);
+  background: var(--ctp-blue-surface);
+  color: var(--ctp-blue);
 }
 
 .tagOrange {
-  background: var(--orange-tint);
-  color: var(--orange);
+  background: var(--ctp-peach-surface);
+  color: var(--ctp-peach);
 }
 
 .tagGreen {
-  background: var(--green-tint);
-  color: var(--green);
+  background: var(--ctp-green-surface);
+  color: var(--ctp-green);
 }
 
 .tagPurple {
-  background: var(--purple-tint);
-  color: var(--purple);
+  background: var(--ctp-mauve-surface);
+  color: var(--ctp-mauve);
 }
 
 .badgeRewire {
-  background: var(--orange-tint);
-  color: var(--orange);
-  border: 1px solid var(--orange);
+  background: var(--ctp-peach-surface);
+  color: var(--ctp-peach);
+  border: 1px solid var(--ctp-peach);
 }
 
 .badgeFound {
-  background: var(--green-tint);
-  color: var(--green);
-  border: 1px solid var(--green);
+  background: var(--ctp-green-surface);
+  color: var(--ctp-green);
+  border: 1px solid var(--ctp-green);
 }
 
 .badgeDelete {
-  background: var(--red-tint);
-  color: var(--red);
-  border: 1px solid var(--red);
+  background: var(--ctp-red-surface);
+  color: var(--ctp-red);
+  border: 1px solid var(--ctp-red);
 }
 
 .badgeDone {
-  background: var(--purple-tint);
-  color: var(--purple);
-  border: 1px solid var(--purple);
+  background: var(--ctp-mauve-surface);
+  color: var(--ctp-mauve);
+  border: 1px solid var(--ctp-mauve);
 }

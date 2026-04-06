@@ -11,7 +11,7 @@ export function VisualStampAlbum() {
               style={{
                 width: 44,
                 height: 52,
-                border: `1.5px solid ${isDup ? '#d94f4f' : isMounted ? 'var(--purple)' : 'var(--border)'}`,
+                border: `1.5px solid ${isDup ? '#d94f4f' : isMounted ? 'var(--ctp-mauve)' : 'var(--ctp-surface)'}`,
                 borderRadius: 5,
                 display: 'flex',
                 flexDirection: 'column',
@@ -19,10 +19,10 @@ export function VisualStampAlbum() {
                 justifyContent: 'center',
                 gap: 2,
                 background: isDup
-                  ? 'var(--red-tint)'
+                  ? 'var(--ctp-red-surface)'
                   : isMounted
-                    ? 'var(--primary-tint)'
-                    : 'var(--bg)',
+                    ? 'var(--ctp-blue-surface)'
+                    : 'var(--ctp-bg-pane)',
               }}
             >
               <span
@@ -33,8 +33,8 @@ export function VisualStampAlbum() {
                   color: isDup
                     ? '#d94f4f'
                     : isMounted
-                      ? 'var(--primary)'
-                      : 'var(--fg-gutter)',
+                      ? 'var(--ctp-blue)'
+                      : 'var(--ctp-text-faint)',
                 }}
               >
                 {n}
@@ -42,7 +42,7 @@ export function VisualStampAlbum() {
               <span
                 style={{
                   fontSize: '0.5rem',
-                  color: isDup ? '#d94f4f' : 'var(--primary)',
+                  color: isDup ? '#d94f4f' : 'var(--ctp-blue)',
                 }}
               >
                 {isDup ? 'dup!' : '✓'}
@@ -56,9 +56,9 @@ export function VisualStampAlbum() {
           in album!
         </div>
       </div>
-      <div className="font-[ui-monospace,monospace] text-[0.58rem] text-[var(--fg-gutter)]">
+      <div className="font-[ui-monospace,monospace] text-[0.58rem] text-[var(--ctp-text-faint)]">
         album = {'{'}
-        <span className="text-[var(--primary)]">1, 2, 3</span>
+        <span className="text-[var(--ctp-blue)]">1, 2, 3</span>
         {'}'}
       </div>
     </div>

@@ -3,10 +3,11 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { ChevronDown, ChevronLeft, ChevronRight, Moon, Sun } from 'lucide-react';
+import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { JOURNEY as DSA_JOURNEY } from '@/lib/dsa/journey';
 import { PROBLEM_TITLES } from '@/lib/dsa/titles';
 import { JourneyPanel } from '../JourneyPanel/JourneyPanel';
+import { ThemeSwitcher } from '../ThemeSwitcher/ThemeSwitcher';
 import type { JourneyPanelPhase } from '../JourneyPanel/JourneyPanel';
 
 // ── DSA static lookups ────────────────────────────────────────────────────────
@@ -106,16 +107,16 @@ function AppHeader({
   return (
     <button
       onClick={onToggle}
-      className={`flex w-full items-center border-none border-t border-t-[var(--border)] bg-transparent px-4 py-[7px] text-left text-[0.825rem] transition-colors focus:outline-none ${
+      className={`appearance-none shadow-none flex w-full items-center border-none border-t border-t-[var(--ctp-surface)] bg-transparent px-4 py-[7px] text-left text-[0.825rem] transition-colors outline-none ring-0 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 ${
         active
           ? 'font-semibold tracking-[-0.01em] text-[var(--active-phase-color)]'
-          : 'font-normal text-[var(--fg-alt)]'
+          : 'font-normal text-[var(--ctp-text-muted)]'
       }`}
     >
       <span className="flex-1">{label}</span>
       <ChevronDown
         aria-hidden="true"
-        className={`h-3.5 w-3.5 shrink-0 text-[var(--fg-gutter)] transition-transform duration-200 ${
+        className={`h-3.5 w-3.5 shrink-0 text-[var(--ctp-text-faint)] transition-transform duration-200 ${
           open ? 'rotate-180' : 'rotate-0'
         }`}
       />
@@ -138,16 +139,11 @@ export function SiteNav({
   const availableDsaFundamentals = new Set(availableDsaFundamentalsArr);
 
   const pathname = usePathname();
-  const [dark, setDark] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [openApps, setOpenApps] = useState<Set<AppKey>>(() => {
     const app = appFromPath(pathname);
     return app ? new Set([app]) : new Set();
   });
-
-  useEffect(() => {
-    setDark(document.documentElement.classList.contains('dark'));
-  }, []);
 
   useEffect(() => {
     const saved = localStorage.getItem('sidebar-collapsed') === 'true';
@@ -179,12 +175,6 @@ export function SiteNav({
     });
   };
 
-  const toggleDark = () => {
-    const next = !dark;
-    document.documentElement.classList.toggle('dark', next);
-    setDark(next);
-  };
-
   const toggleCollapsed = () => {
     const next = !collapsed;
     setCollapsed(next);
@@ -199,9 +189,9 @@ export function SiteNav({
 
   if (collapsed) {
     return (
-      <nav className="sticky left-0 top-0 z-50 flex h-screen w-[44px] flex-col border-r border-r-[var(--border)] bg-white dark:bg-[var(--bg-alt)]">
-        <div className="flex shrink-0 items-center justify-center border-b border-b-[var(--border)] py-[18px]">
-          <span className="text-[0.85rem] italic font-normal text-[var(--fg)] [font-family:var(--font-display)]">
+      <nav className="sticky left-0 top-0 z-50 flex h-screen w-[44px] flex-col border-r border-r-[var(--ctp-surface)] bg-[var(--ctp-bg-pane-secondary)]">
+        <div className="flex shrink-0 items-center justify-center border-b border-b-[var(--ctp-surface)] py-[18px]">
+          <span className="text-[0.85rem] italic font-normal text-[var(--ctp-text-body)] [font-family:var(--font-display)]">
             M
           </span>
         </div>
@@ -215,10 +205,10 @@ export function SiteNav({
                   key={section.id}
                   title={section.label}
                   onClick={toggleCollapsed}
-                  className={`flex w-full cursor-pointer items-center justify-center border-none bg-transparent py-[6px] transition-colors focus:outline-none ${
+                  className={`appearance-none shadow-none flex w-full cursor-pointer items-center justify-center border-none bg-transparent py-[6px] transition-colors outline-none ring-0 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 ${
                     isActive
-                      ? 'font-bold text-[var(--primary)]'
-                      : 'text-[var(--fg-gutter)] hover:text-[var(--fg)]'
+                      ? 'font-bold text-[var(--ctp-blue)]'
+                      : 'text-[var(--ctp-text-faint)] hover:text-[var(--ctp-text-body)]'
                   }`}
                 >
                   <span className="text-[0.6rem] font-mono font-bold leading-none">
@@ -230,22 +220,12 @@ export function SiteNav({
           )}
         </div>
 
-        <div className="flex shrink-0 flex-col items-center gap-2 border-t border-t-[var(--border)] py-3">
-          <button
-            onClick={toggleDark}
-            aria-label="Toggle dark mode"
-            className="cursor-pointer bg-transparent px-2 py-1 text-[var(--fg-comment)]"
-          >
-            {dark ? (
-              <Sun aria-hidden="true" className="h-4 w-4" />
-            ) : (
-              <Moon aria-hidden="true" className="h-4 w-4" />
-            )}
-          </button>
+        <div className="flex shrink-0 flex-col items-center gap-2 border-t border-t-[var(--ctp-surface)] py-3">
+          <ThemeSwitcher collapsed />
           <button
             onClick={toggleCollapsed}
             aria-label="Expand sidebar"
-            className="cursor-pointer rounded border border-[var(--border)] bg-transparent px-1.5 py-1 text-[0.65rem] leading-none text-[var(--fg-gutter)] hover:text-[var(--fg)] focus:outline-none"
+            className="appearance-none shadow-none cursor-pointer rounded border border-[var(--ctp-surface)] bg-transparent px-1.5 py-1 text-[0.65rem] leading-none text-[var(--ctp-text-faint)] outline-none ring-0 hover:text-[var(--ctp-text-body)] focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
           >
             <ChevronRight aria-hidden="true" className="h-3.5 w-3.5" />
           </button>
@@ -255,11 +235,11 @@ export function SiteNav({
   }
 
   return (
-    <nav className="sticky left-0 top-0 z-50 flex h-screen w-full flex-col border-r border-r-[var(--border)] bg-white dark:bg-[var(--bg-alt)]">
+    <nav className="sticky left-0 top-0 z-50 flex h-screen w-full flex-col border-r border-r-[var(--ctp-surface)] bg-[var(--ctp-bg-pane-secondary)]">
       {/* Branding */}
-      <div className="shrink-0 border-b border-b-[var(--border)] px-4 pb-[14px] pt-[18px]">
+      <div className="shrink-0 border-b border-b-[var(--ctp-surface)] px-4 pb-[14px] pt-[18px]">
         <Link href="/" className="no-underline block focus:outline-none">
-          <span className="text-[1.05rem] italic font-normal tracking-[-0.01em] text-[var(--fg)] [font-family:var(--font-display)]">
+          <span className="text-[1.05rem] italic font-normal tracking-[-0.01em] text-[var(--ctp-text-body)] [font-family:var(--font-display)]">
             MentalSystems
           </span>
         </Link>
@@ -295,22 +275,12 @@ export function SiteNav({
         )}
       </div>
 
-      <div className="flex shrink-0 items-center justify-between border-t border-t-[var(--border)] px-3 py-3">
-        <button
-          onClick={toggleDark}
-          aria-label="Toggle dark mode"
-          className="cursor-pointer bg-transparent px-1 py-1 text-[var(--fg-comment)]"
-        >
-          {dark ? (
-            <Sun aria-hidden="true" className="h-4 w-4" />
-          ) : (
-            <Moon aria-hidden="true" className="h-4 w-4" />
-          )}
-        </button>
+      <div className="flex shrink-0 items-center justify-between border-t border-t-[var(--ctp-surface)] px-3 py-3">
+        <ThemeSwitcher />
         <button
           onClick={toggleCollapsed}
           aria-label="Collapse sidebar"
-          className="cursor-pointer rounded border border-[var(--border)] bg-transparent px-1.5 py-1 text-[0.65rem] leading-none text-[var(--fg-gutter)] hover:text-[var(--fg)] focus:outline-none"
+          className="appearance-none shadow-none cursor-pointer rounded border border-[var(--ctp-surface)] bg-transparent px-1.5 py-1 text-[0.65rem] leading-none text-[var(--ctp-text-faint)] outline-none ring-0 hover:text-[var(--ctp-text-body)] focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
         >
           <ChevronLeft aria-hidden="true" className="h-3.5 w-3.5" />
         </button>

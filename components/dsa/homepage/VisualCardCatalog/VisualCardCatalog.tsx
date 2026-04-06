@@ -6,33 +6,33 @@ export function VisualCardCatalog() {
   ];
   return (
     <div className="py-[24px] px-[16px] flex flex-col gap-2 w-full">
-      <div className="font-[ui-monospace,monospace] text-[0.52rem] text-[var(--fg-gutter)] mb-[4px] tracking-[0.06em] uppercase">
+      <div className="font-[ui-monospace,monospace] text-[0.52rem] text-[var(--ctp-text-faint)] mb-[4px] tracking-[0.06em] uppercase">
         card catalog
       </div>
       {rows.map(({ k, v, bucket }, i) => (
         <div key={i} className="flex items-center gap-[5px]">
           <div
-            className="font-[ui-monospace,monospace] text-[0.65rem] text-[var(--primary)] rounded-[4px] px-[7px] py-[4px] whitespace-nowrap"
+            className="font-[ui-monospace,monospace] text-[0.65rem] text-[var(--ctp-blue)] rounded-[4px] px-[7px] py-[4px] whitespace-nowrap"
             style={{
-              background: 'var(--primary-tint)',
-              border: '1px solid var(--primary)',
+              background: 'var(--ctp-blue-surface)',
+              border: '1px solid var(--ctp-blue)',
             }}
           >
             {k}
           </div>
-          <span className="font-[ui-monospace,monospace] text-[0.55rem] text-[var(--fg-gutter)]">
+          <span className="font-[ui-monospace,monospace] text-[0.55rem] text-[var(--ctp-text-faint)]">
             →
           </span>
-          <div className="font-[ui-monospace,monospace] text-[0.55rem] text-[var(--fg-gutter)] bg-[var(--bg-alt)] border border-[var(--border)] rounded-[4px] px-[6px] py-[3px] whitespace-nowrap">
+          <div className="font-[ui-monospace,monospace] text-[0.55rem] text-[var(--ctp-text-faint)] bg-[var(--ctp-bg-pane-secondary)] border border-[var(--ctp-surface)] rounded-[4px] px-[6px] py-[3px] whitespace-nowrap">
             slot {bucket}
           </div>
-          <span className="font-[ui-monospace,monospace] text-[0.55rem] text-[var(--fg-gutter)]">
+          <span className="font-[ui-monospace,monospace] text-[0.55rem] text-[var(--ctp-text-faint)]">
             →
           </span>
           <div
             className="font-[ui-monospace,monospace] text-[0.65rem] text-[#52b87a] rounded-[4px] px-[7px] py-[4px] flex-1 whitespace-nowrap overflow-hidden text-ellipsis"
             style={{
-              background: 'var(--green-tint)',
+              background: 'var(--ctp-green-surface)',
               border: '1px solid #52b87a',
             }}
           >
@@ -40,7 +40,7 @@ export function VisualCardCatalog() {
           </div>
         </div>
       ))}
-      <div className="font-[ui-monospace,monospace] text-[0.55rem] text-[var(--fg-gutter)] mt-[4px]">
+      <div className="font-[ui-monospace,monospace] text-[0.55rem] text-[var(--ctp-text-faint)] mt-[4px]">
         any key → O(1) lookup
       </div>
     </div>

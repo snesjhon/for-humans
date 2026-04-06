@@ -24,7 +24,7 @@ export default function ScenarioPage({ params }: Props) {
   if (!match) notFound();
 
   const { scenario, section, phase } = match;
-  const color = 'var(--primary)';
+  const color = 'var(--ctp-blue)';
 
   // Strip leading h1 from brief and walkthrough
   const strippedBrief = content.brief.replace(/^#[^#].*\n+/, '').trimStart();
@@ -46,10 +46,10 @@ export default function ScenarioPage({ params }: Props) {
   return (
     <>
       <PageHero>
-        <p className="text-xs font-mono mb-2 text-[var(--fg-gutter)]">
+        <p className="text-xs font-mono mb-2 text-[var(--ctp-text-faint)]">
           {section.label}
         </p>
-        <h1 className="text-5xl font-bold leading-tight text-[var(--fg)]">
+        <h1 className="text-5xl font-bold leading-tight text-[var(--ctp-text-body)]">
           {scenario.label}
         </h1>
       </PageHero>
@@ -61,7 +61,7 @@ export default function ScenarioPage({ params }: Props) {
             <TableOfContents headings={headings} title="Contents" />
             {scenario.relatedFundamentalsSlugs.length > 0 && (
               <div className="mt-8">
-                <p className="text-sm font-semibold mb-3 text-[var(--fg)]">
+                <p className="text-sm font-semibold mb-3 text-[var(--ctp-text-body)]">
                   Concepts
                 </p>
                 <div className="space-y-1">
@@ -69,7 +69,7 @@ export default function ScenarioPage({ params }: Props) {
                     <Link
                       key={slug}
                       href={`/system-design/fundamentals/${slug}`}
-                      className="block text-sm py-1.5 px-2 rounded-md transition-colors hover:opacity-80 text-[var(--fg-comment)] no-underline"
+                      className="block text-sm py-1.5 px-2 rounded-md transition-colors hover:opacity-80 text-[var(--ctp-text-subtle)] no-underline"
                     >
                       {slug.replace(/-/g, ' ')}
                     </Link>
@@ -81,8 +81,8 @@ export default function ScenarioPage({ params }: Props) {
         }
       >
         <section className="space-y-8">
-          <div className="rounded-xl p-6 bg-[var(--bg-alt)] border border-[var(--border)]">
-            <p className="text-xs font-semibold uppercase mb-4 text-[var(--fg-gutter)] font-[ui-monospace,monospace] tracking-[0.08em]">
+          <div className="rounded-xl p-6 bg-[var(--ctp-bg-pane-secondary)] border border-[var(--ctp-surface)]">
+            <p className="text-xs font-semibold uppercase mb-4 text-[var(--ctp-text-faint)] font-[ui-monospace,monospace] tracking-[0.08em]">
               Requirements
             </p>
             <MarkdownRenderer
@@ -103,11 +103,11 @@ export default function ScenarioPage({ params }: Props) {
           )}
 
           {/* Prev / Next */}
-          <div className="flex items-center justify-between pt-6 border-t border-t-[var(--border)]">
+          <div className="flex items-center justify-between pt-6 border-t border-t-[var(--ctp-surface)]">
             {prevScenario ? (
               <Link
                 href={`/system-design/scenarios/${prevScenario.slug}`}
-                className="flex items-center gap-2 text-sm transition-opacity hover:opacity-70 text-[var(--fg-comment)]"
+                className="flex items-center gap-2 text-sm transition-opacity hover:opacity-70 text-[var(--ctp-text-subtle)]"
               >
                 ← {prevScenario.label}
               </Link>
@@ -118,7 +118,7 @@ export default function ScenarioPage({ params }: Props) {
                     ? `/system-design/fundamentals/${section.fundamentalsSlug}`
                     : '/system-design/path'
                 }
-                className="flex items-center gap-2 text-sm transition-opacity hover:opacity-70 text-[var(--fg-comment)]"
+                className="flex items-center gap-2 text-sm transition-opacity hover:opacity-70 text-[var(--ctp-text-subtle)]"
               >
                 ← {section.label} Fundamentals
               </Link>
@@ -126,7 +126,7 @@ export default function ScenarioPage({ params }: Props) {
             {nextScenario ? (
               <Link
                 href={`/system-design/scenarios/${nextScenario.slug}`}
-                className="flex items-center gap-2 text-sm transition-opacity hover:opacity-70 text-[var(--fg-comment)]"
+                className="flex items-center gap-2 text-sm transition-opacity hover:opacity-70 text-[var(--ctp-text-subtle)]"
               >
                 {nextScenario.label} →
               </Link>
