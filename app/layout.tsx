@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Newsreader, Plus_Jakarta_Sans } from 'next/font/google';
-import { SiteNav } from '@/components/ui/SiteNav/SiteNav';
+import { LayoutShell } from '@/components/ui/LayoutShell/LayoutShell';
 import { getAllProblems } from '@/lib/dsa/content';
 import { getAllFundamentalsSlugs } from '@/lib/dsa/fundamentals';
 import { DEFAULT_THEME_FLAVOR, getThemeInitScript } from '@/lib/theme';
@@ -44,19 +44,12 @@ export default async function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: getThemeInitScript() }} />
       </head>
       <body className="min-h-screen bg-[var(--ms-bg-pane)] text-[var(--ms-text-body)]">
-        <div
-          className="grid"
-          style={{
-            gridTemplateColumns: 'var(--sidebar-w, 260px) 1fr',
-            transition: 'grid-template-columns 200ms ease',
-          }}
+        <LayoutShell
+          availableProblemIds={availableProblemIds}
+          availableFundamentalsSlugs={availableFundamentalsSlugs}
         >
-          <SiteNav
-            availableProblemIds={availableProblemIds}
-            availableFundamentalsSlugs={availableFundamentalsSlugs}
-          />
-          <main className="w-full">{children}</main>
-        </div>
+          {children}
+        </LayoutShell>
       </body>
     </html>
   );

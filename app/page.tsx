@@ -21,8 +21,8 @@ export default function HomePage() {
   return (
     <>
       <AppTheme app="dsa" />
-      <section className="-mt-28 bg-[var(--ms-bg-pane-secondary)] pb-28">
-        <div className="max-w-[1152px] mx-auto pt-[118px] px-6">
+      <section className="bg-[var(--ms-bg-pane-secondary)] pb-28">
+        <div className="max-w-[1152px] mx-auto pt-[72px] px-6">
           <div className="mb-8">
             <span
               className="font-mono text-[0.68rem] font-bold tracking-[0.12em] uppercase inline-block py-[5px] px-[14px] rounded-full text-[var(--ms-blue)] bg-[var(--ms-bg-pane)] border border-[var(--ms-blue)]"

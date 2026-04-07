@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ChevronLeft } from 'lucide-react';
+import { AppIcon } from '@/components/dsa/AppIcon/AppIcon';
 import { JOURNEY as DSA_JOURNEY } from '@/lib/dsa/journey';
 import { PROBLEM_TITLES } from '@/lib/dsa/titles';
 import { JourneyPanel } from '../JourneyPanel/JourneyPanel';
@@ -93,7 +94,13 @@ export function SiteNav({
     <nav className="sticky left-0 top-0 z-50 flex h-screen w-full flex-col border-r border-r-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)]">
       {/* Branding */}
       <div className="shrink-0 px-4 pb-[14px] pt-[18px]">
-        <Link href="/" className="no-underline block focus:outline-none">
+        <Link
+          href="/"
+          className="no-underline flex items-center gap-[10px] focus:outline-none"
+        >
+          <span className="text-[var(--ms-text-body)]">
+            <AppIcon size={26} />
+          </span>
           <span className="text-[1.05rem] italic font-normal tracking-[-0.01em] text-[var(--ms-text-body)] [font-family:var(--font-display)]">
             MentalSystems
           </span>
@@ -108,7 +115,10 @@ export function SiteNav({
               className="flex w-full items-center gap-2 px-4 py-3 text-[0.775rem] font-normal text-[var(--ms-text-body)] no-underline transition-colors visited:text-[var(--ms-text-body)] hover:text-[var(--ms-primary)] focus:outline-none focus-visible:outline-none active:outline-none"
               style={{ boxShadow: 'inset 0 -1px 0 var(--ms-surface)' }}
             >
-              <ChevronLeft aria-hidden="true" className="h-3.5 w-3.5 shrink-0" />
+              <ChevronLeft
+                aria-hidden="true"
+                className="h-3.5 w-3.5 shrink-0"
+              />
               <span>Back to Path</span>
             </Link>
             <div className="min-h-0 flex-1 overflow-y-auto">

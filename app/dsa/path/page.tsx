@@ -116,7 +116,7 @@ export default async function PathPage() {
 
           return (
             <div key={phase.number} id={`phase-zone-${phase.number}`} className="bg-[var(--ms-bg-pane-secondary)]">
-              <div className="px-10">
+              <div className="max-w-[1152px] mx-auto px-6">
                 <PhaseBannerContent
                   phase={phase}
                   color={color}
@@ -263,7 +263,7 @@ export default async function PathPage() {
         })}
 
         {/* Footer strip */}
-        <div className="px-10">
+        <div className="max-w-[1152px] mx-auto px-6">
           <div className="flex items-center gap-4 pt-8 pb-16">
             <div className="flex-1 h-px bg-[var(--ms-surface)]" />
             <span className="font-display text-[0.8rem] italic shrink-0 text-[var(--ms-text-faint)]">
