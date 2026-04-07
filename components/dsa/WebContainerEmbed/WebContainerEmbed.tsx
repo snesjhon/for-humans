@@ -274,14 +274,17 @@ export default function WebContainerEmbed({
     const root = rootRef.current;
     if (!root || typeof window === 'undefined') return;
 
-    const width = Math.max(320, Math.round(window.innerWidth * 0.75));
+    const width = Math.max(320, Math.round(window.innerWidth * 0.8));
+    const height = Math.max(420, Math.round(window.innerHeight * 0.8));
     const left = Math.round((window.innerWidth - width) / 2);
+    const centeredTop = Math.round((window.innerHeight - height) / 2);
+    const top = Math.max(16, Math.round(centeredTop * 0.6));
 
     setExpandedLayout({
       left,
-      top: 24,
+      top,
       width,
-      height: Math.max(420, window.innerHeight - 48),
+      height,
     });
     setInlineHeight(root.getBoundingClientRect().height);
   }
@@ -747,7 +750,9 @@ export default function WebContainerEmbed({
           style={rootStyle}
         >
           <div
-            className={`flex min-h-0 flex-1 flex-col ${isExpanded ? 'flex-row' : ''}`}
+            className={`flex min-h-0 flex-1 ${
+              isExpanded ? 'flex-row' : 'flex-col'
+            }`}
           >
             <div
               className={`flex min-h-0 flex-col ${
@@ -763,8 +768,10 @@ export default function WebContainerEmbed({
                       <button
                         key={i}
                         type="button"
-                        className={`m-0 h-10 w-auto border-none bg-transparent px-3.5 text-[13px] font-medium text-[var(--ms-text-faint)] shadow-none transition-colors duration-150 hover:text-[var(--ms-text-muted)] ${
-                          tabIdx === i ? 'text-[var(--ms-blue)]' : ''
+                        className={`m-0 h-10 w-auto border-none bg-transparent px-3.5 text-[13px] font-medium shadow-none transition-colors duration-150 ${
+                          tabIdx === i
+                            ? 'text-[var(--ms-blue)]'
+                            : 'text-[var(--ms-text-faint)] hover:text-[var(--ms-text-muted)]'
                         }`}
                         onClick={() => setTabIdx(i)}
                       >
@@ -800,7 +807,7 @@ export default function WebContainerEmbed({
               >
                 <button
                   type="button"
-                  className="mb-0 text-xs px-2 py-1"
+                  className="mb-0 cursor-pointer rounded-[5px] border-none bg-[var(--ms-blue)] px-3.5 py-1 text-[13px] font-semibold text-white transition-opacity duration-150 hover:opacity-85 disabled:cursor-not-allowed disabled:opacity-50"
                   onClick={runCode}
                   disabled={
                     status === 'booting' || status === 'running' || !hasCode
@@ -817,7 +824,7 @@ export default function WebContainerEmbed({
                   ) : (
                     <>
                       Run{' '}
-                      <kbd className="text-white bg-transparent tracking-widest align-center p-0 ml-1">
+                      <kbd className="ml-1 inline-block border-none bg-transparent p-0 align-middle text-[11px] font-medium tracking-normal text-[rgba(255,255,255,0.6)] shadow-none">
                         {typeof navigator !== 'undefined' &&
                         /Mac|iPhone|iPod|iPad/.test(navigator.platform)
                           ? '⌘'
