@@ -12,12 +12,13 @@ Use this skill when asked to generate or rebuild a full DSA fundamentals guide u
 `dsa-fundamentals` owns the end-to-end workflow:
 
 1. Gather context from `lib/journey.ts` and existing guides
-2. Run `dsa-fundamentals-narrative` first
-3. Carry the resulting handoff contract forward
-4. Run `dsa-fundamentals-build` second
-5. Stitch and validate outputs
-6. Update `lib/journey.ts`
-7. Deliver the final result
+2. Verify the topic's trace visualization support exists, and build it if missing
+3. Run `dsa-fundamentals-narrative` first
+4. Carry the resulting handoff contract forward
+5. Run `dsa-fundamentals-build` second
+6. Stitch and validate outputs
+7. Update `lib/journey.ts`
+8. Deliver the final result
 
 This workflow is sequential, never parallel:
 
@@ -42,6 +43,15 @@ Before generating anything:
 - Read one or two existing guides (e.g. `arrays-strings-fundamentals.md`, `sliding-window-fundamentals.md`) to calibrate tone, depth, and structure
 - Note which trace components are available in `components/dsa/`
 
+### Step 1.25: Ensure Trace Visualization Support Exists
+
+Before generating the guide, identify the trace family the topic actually needs and verify both pieces of support exist:
+
+- the backing component in `components/dsa/`
+- the matching fence handling in `components/dsa/MarkdownRenderer/MarkdownRenderer.tsx`
+
+If the correct trace family is missing, build it first. Do not continue with narrative or build phases until the renderer can display the guide's intended visualization.
+
 ### Step 1.5: Apply the Shared DSA Teaching Contract
 
 The downstream skills contain the detailed rules. As the orchestrator, enforce these global constraints:
@@ -49,6 +59,7 @@ The downstream skills contain the detailed rules. As the orchestrator, enforce t
 - one analogy only — committed before any scaffold is written
 - conceptual understanding before exercise scaffolding
 - trace components for execution visualization, mermaid for conceptual structure
+- the correct trace family must exist; if it does not, create it instead of substituting an incorrect tracer
 - each Building Blocks level uses a `Visualization` subsection; do not generate a `Walking through it` subsection
 - no TypeScript code blocks in the guide markdown
 - `---` in exactly two places: before `## 3. Building Blocks` and before `## 5. Decision Framework`
@@ -144,6 +155,7 @@ A finished fundamentals guide must satisfy all of these:
 - `---` appears in exactly two places in the guide
 - all 9 `*-problem.ts` files exit 0 and print only `TODO` lines (no crashes)
 - all 9 `*-solution.ts` files exit 0 and print only `PASS` lines
+- every trace fence used by the guide is backed by a real component and markdown-renderer support
 - `journey.ts` has `fundamentalsSlug` and `fundamentalsBlurb` set for this topic
 
 ## Example Invocations

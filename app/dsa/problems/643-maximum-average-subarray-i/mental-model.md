@@ -2,15 +2,19 @@
 
 ## The Problem
 
-You are given an integer array `nums` consisting of `n` elements, and an integer `k`. Find a contiguous subarray whose length is equal to `k` that has the maximum average value and return this value. Any answer with a calculation error less than `10^-5` will be accepted.
+You are given an integer array `nums` consisting of `n` elements, and an integer `k`.
+
+Find a contiguous subarray whose length is equal to `k` that has the maximum average value and return this value. Any answer with a calculation error less than `10^-5` will be accepted.
 
 **Example 1:**
+
 ```
 Input: nums = [1,12,-5,-6,50,3], k = 4
 Output: 12.75000
 ```
 
 **Example 2:**
+
 ```
 Input: nums = [5], k = 1
 Output: 5.00000
@@ -56,12 +60,12 @@ Take `[1, 12, -5, -6, 50, 3]`, k=4.
 
 :::trace-lr
 [
-  {"chars": ["1","12","-5","-6","50","3"], "L": 0, "R": 0, "action": null, "label": "Warming: add 1. spotlightSum=1."},
-  {"chars": ["1","12","-5","-6","50","3"], "L": 0, "R": 1, "action": null, "label": "Warming: add 12. spotlightSum=13."},
-  {"chars": ["1","12","-5","-6","50","3"], "L": 0, "R": 2, "action": null, "label": "Warming: add -5. spotlightSum=8."},
-  {"chars": ["1","12","-5","-6","50","3"], "L": 0, "R": 3, "action": "match", "label": "Warming done: add -6. spotlightSum=2. bestSpotlight=2."},
-  {"chars": ["1","12","-5","-6","50","3"], "L": 1, "R": 4, "action": "match", "label": "Slide: +50 -1 → spotlightSum=51. New best! bestSpotlight=51."},
-  {"chars": ["1","12","-5","-6","50","3"], "L": 2, "R": 5, "action": "done", "label": "Slide: +3 -12 → spotlightSum=42. No change. Return 51/4=12.75."}
+{"chars": ["1","12","-5","-6","50","3"], "L": 0, "R": 0, "action": null, "label": "Warming: add 1. spotlightSum=1."},
+{"chars": ["1","12","-5","-6","50","3"], "L": 0, "R": 1, "action": null, "label": "Warming: add 12. spotlightSum=13."},
+{"chars": ["1","12","-5","-6","50","3"], "L": 0, "R": 2, "action": null, "label": "Warming: add -5. spotlightSum=8."},
+{"chars": ["1","12","-5","-6","50","3"], "L": 0, "R": 3, "action": "match", "label": "Warming done: add -6. spotlightSum=2. bestSpotlight=2."},
+{"chars": ["1","12","-5","-6","50","3"], "L": 1, "R": 4, "action": "match", "label": "Slide: +50 -1 → spotlightSum=51. New best! bestSpotlight=51."},
+{"chars": ["1","12","-5","-6","50","3"], "L": 2, "R": 5, "action": "done", "label": "Slide: +3 -12 → spotlightSum=42. No change. Return 51/4=12.75."}
 ]
 :::
 
@@ -79,9 +83,9 @@ For arrays of exactly length k, the spotlight covers the whole row. There's nowh
 
 :::trace-lr
 [
-  {"chars": ["2","4","6"], "L": 0, "R": 0, "action": null, "label": "Warming: add 2. spotlightSum=2."},
-  {"chars": ["2","4","6"], "L": 0, "R": 1, "action": null, "label": "Warming: add 4. spotlightSum=6."},
-  {"chars": ["2","4","6"], "L": 0, "R": 2, "action": "done", "label": "Warming done: add 6. spotlightSum=12. bestSpotlight=12. Return 12/3=4."}
+{"chars": ["2","4","6"], "L": 0, "R": 0, "action": null, "label": "Warming: add 2. spotlightSum=2."},
+{"chars": ["2","4","6"], "L": 0, "R": 1, "action": null, "label": "Warming: add 4. spotlightSum=6."},
+{"chars": ["2","4","6"], "L": 0, "R": 2, "action": "done", "label": "Warming done: add 6. spotlightSum=12. bestSpotlight=12. Return 12/3=4."}
 ]
 :::
 
@@ -104,9 +108,9 @@ The window never changes size — it always holds exactly k performers. The sing
 
 :::trace-lr
 [
-  {"chars": ["1","12","-5","-6","50","3"], "L": 0, "R": 3, "action": "match", "label": "After warming: spotlightSum=2. bestSpotlight=2."},
-  {"chars": ["1","12","-5","-6","50","3"], "L": 1, "R": 4, "action": "match", "label": "Slide i=4: +nums[4]=50, -nums[0]=1. spotlightSum=51. bestSpotlight=51."},
-  {"chars": ["1","12","-5","-6","50","3"], "L": 2, "R": 5, "action": "done", "label": "Slide i=5: +nums[5]=3, -nums[1]=12. spotlightSum=42. No change. Return 51/4=12.75."}
+{"chars": ["1","12","-5","-6","50","3"], "L": 0, "R": 3, "action": "match", "label": "After warming: spotlightSum=2. bestSpotlight=2."},
+{"chars": ["1","12","-5","-6","50","3"], "L": 1, "R": 4, "action": "match", "label": "Slide i=4: +nums[4]=50, -nums[0]=1. spotlightSum=51. bestSpotlight=51."},
+{"chars": ["1","12","-5","-6","50","3"], "L": 2, "R": 5, "action": "done", "label": "Slide i=5: +nums[5]=3, -nums[1]=12. spotlightSum=42. No change. Return 51/4=12.75."}
 ]
 :::
 
@@ -142,15 +146,15 @@ flowchart TD
 
 Using `nums = [1, 12, -5, -6, 50, 3]`, `k = 4` → expected output: 12.75
 
-| Phase | Position (i) | Incoming Performer | Exiting Performer | Spotlight Sum | Best Sum | Action |
-|-------|---|---|---|---|---|---|
-| Warm | 0 | nums[0]=1 | — | 1 | — | add 1 |
-| Warm | 1 | nums[1]=12 | — | 13 | — | add 12 |
-| Warm | 2 | nums[2]=-5 | — | 8 | — | add -5 |
-| Warm | 3 | nums[3]=-6 | — | 2 | 2 | warmup done; bestSpotlight=2 |
-| Slide | 4 | nums[4]=50 | nums[0]=1 | 51 | 51 | new best |
-| Slide | 5 | nums[5]=3 | nums[1]=12 | 42 | 51 | no change |
-| Done | — | — | — | — | 51 | return 51/4=12.75 |
+| Phase | Position (i) | Incoming Performer | Exiting Performer | Spotlight Sum | Best Sum | Action                       |
+| ----- | ------------ | ------------------ | ----------------- | ------------- | -------- | ---------------------------- |
+| Warm  | 0            | nums[0]=1          | —                 | 1             | —        | add 1                        |
+| Warm  | 1            | nums[1]=12         | —                 | 13            | —        | add 12                       |
+| Warm  | 2            | nums[2]=-5         | —                 | 8             | —        | add -5                       |
+| Warm  | 3            | nums[3]=-6         | —                 | 2             | 2        | warmup done; bestSpotlight=2 |
+| Slide | 4            | nums[4]=50         | nums[0]=1         | 51            | 51       | new best                     |
+| Slide | 5            | nums[5]=3          | nums[1]=12        | 42            | 51       | no change                    |
+| Done  | —            | —                  | —                 | —             | 51       | return 51/4=12.75            |
 
 ---
 

@@ -70,9 +70,14 @@ Current mappings:
 - `components/dsa/StackQueueTrace/StackQueueTrace.tsx` → `:::trace-sq`
 - `components/dsa/SubsetTrace/SubsetTrace.tsx` → `:::trace-subset`
 
-If the correct component does not exist, stop and ask exactly:
+If the correct component or markdown-renderer support does not exist, build it before continuing:
 
-`Should we create the visualization component first`
+- create the component in `components/dsa/`
+- add any required CSS module
+- wire the fence into `components/dsa/MarkdownRenderer/MarkdownRenderer.tsx`
+- confirm the chosen fence now renders through the DSA markdown pipeline
+
+Do not improvise with the wrong existing tracer just because it is already available.
 
 ### Step 4: Choose One Analogy
 
@@ -194,5 +199,6 @@ The narrative is complete only if:
 - someone can understand the topic and its core patterns before seeing any code
 - the analogy supports every major operation naturally
 - the trace component in `## 2` matches the actual primary data structure being taught
+- the trace family chosen for the handoff contract is backed by a real component and markdown-renderer support
 - the vocabulary map is concrete enough that `dsa-fundamentals-build` can use it verbatim in exercise file comments
 - the three-level progression is implied by the mental model, even though it is not yet scaffolded

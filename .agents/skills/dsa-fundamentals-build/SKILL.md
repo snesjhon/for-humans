@@ -16,6 +16,7 @@ Use this skill after `dsa-fundamentals-narrative` has already fixed the analogy,
 - `stepN-exerciseM-problem.ts` (9 files)
 - `stepN-exerciseM-solution.ts` (9 files)
 - StackBlitz directives
+- trace-component completion for the inherited visualization family when renderer support is missing
 - Validation of all generated exercise files
 
 `dsa-fundamentals-build` does not own:
@@ -32,6 +33,7 @@ Use this skill after `dsa-fundamentals-narrative` has already fixed the analogy,
 3. Exercise files use the same analogy vocabulary as the guide — no divergence
 4. Tests define what each level is teaching, not just what the function does
 5. Prose in Building Blocks guides thinking; the StackBlitz embed is where the learner writes code
+6. Never substitute the wrong trace family just because it already exists; if the right one is missing, build it first
 
 ## Inputs Required
 
@@ -67,6 +69,23 @@ Use these rules:
 - **Level 3**: Advanced — combines or extends Level 1 + 2 to solve harder problems
 
 The bridge between levels must name the concrete failure that the current level produces, not just say "more complex problems."
+
+### Step 1.5: Verify Trace Support
+
+Before writing any level prose, confirm that the inherited visualization family is fully usable:
+
+- the backing component exists in `components/dsa/`
+- `components/dsa/MarkdownRenderer/MarkdownRenderer.tsx` recognizes the matching fence
+- the trace family actually matches the data structure or execution pattern being taught
+
+If the correct trace family is missing, build it before continuing. Do not switch to an incorrect existing tracer just to avoid component work.
+
+Minimum completion for a new trace family:
+
+- create the new component directory under `components/dsa/` following the existing trace component shape
+- add any needed CSS module alongside it
+- wire the new fence into `components/dsa/MarkdownRenderer/MarkdownRenderer.tsx`
+- verify the generated markdown fence for this fundamentals guide will render through the DSA markdown pipeline
 
 ### Step 2: Write `## 3. Building Blocks — Progressive Learning`
 
@@ -250,6 +269,8 @@ Supported trace fences:
 - `:::trace-sq` — stack/queue state transitions and call-stack style execution
 - `:::trace-subset` — choose-explore-undo / subset-style branching traces
 
+For any new fence that this guide genuinely needs and the renderer does not yet support, implement the component and markdown-renderer wiring before generating the guide content. Do not fall back to prose traces or the wrong existing fence.
+
 ## Quality Bar
 
 The build phase is complete only if:
@@ -259,6 +280,7 @@ The build phase is complete only if:
 - all 9 problem files exit 0 and print only `TODO` lines (no crashes)
 - all 9 solution files exit 0 and print only `PASS` lines
 - markdown and file set agree on level count and level names
+- every trace fence used by the guide is backed by a real component and renderer support
 - no TypeScript code blocks appear in the guide sections written here
 - no `Walking through it` subsections appear in the guide
 - the bridge sentence between levels names a concrete failure, not just "more complex problems"
