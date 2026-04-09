@@ -102,7 +102,7 @@ export function SiteNav({
             <AppIcon size={26} />
           </span>
           <span className="text-[1.05rem] font-normal tracking-[-0.01em] text-[var(--ms-text-body)] [font-family:var(--font-display)]">
-            thinkdeep.systems
+            thinkdeep
           </span>
         </Link>
       </div>

@@ -21,7 +21,7 @@ const plusJakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: 'MentalSystems',
+  title: 'thinkdeep',
   description:
     'A structured learning platform for DSA, system design, and fullstack development.',
 };

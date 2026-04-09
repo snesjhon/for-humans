@@ -4,7 +4,7 @@
 
 ## Philosophy
 
-This curriculum is designed with the same pedagogical progression as dsa-for-humans:
+This curriculum is designed with the same pedagogical progression as thinkdeep:
 
 - **Early steps** build foundational intuition with concrete, tangible systems
 - **Middle steps** introduce distributed thinking and the trade-offs that come with scale

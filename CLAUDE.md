@@ -1,4 +1,4 @@
-# DSA for Humans — Claude Code Guide
+# thinkdeep — Claude Code Guide
 
 ## Project Overview
 

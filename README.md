@@ -1,14 +1,14 @@
-# DSA-for-humans
+# thinkdeep
 
-A web platform for learning Data Structures & Algorithms through mental models and pattern recognition — built for humans, not machines.
+A web platform for learning Data Structures & Algorithms through mental models and pattern recognition.
 
 ---
 
-## What is DSA-for-humans?
+## What is thinkdeep?
 
-DSA-for-humans is an interactive study platform that teaches you to *see patterns*, not memorize solutions.
+thinkdeep is an interactive study platform that teaches you to *see patterns*, not memorize solutions.
 
-The core belief: most DSA content teaches you to produce code, not to think. Explanations are written for people who already understand the concept. DSA-for-humans inverts that — the mental model comes first, the code second.
+The core belief: most DSA content teaches you to produce code, not to think. Explanations are written for people who already understand the concept. thinkdeep inverts that — the mental model comes first, the code second.
 
 ---
 
