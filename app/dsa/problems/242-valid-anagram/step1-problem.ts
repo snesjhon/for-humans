@@ -6,10 +6,12 @@ function isAnagram(s: string, t: string): boolean {
 }
 
 // ---Tests
-test('rat vs cats — lengths differ (3 vs 4)', () => isAnagram('rat', 'cats'), false);
+test(
+  'rat vs cats — lengths differ (3 vs 4)',
+  () => isAnagram('rat', 'cats'),
+  false,
+);
 test('a vs empty — lengths differ (1 vs 0)', () => isAnagram('a', ''), false);
-test('anagram vs nagaram — same length, needs step 2', () => isAnagram('anagram', 'nagaram'), true);
-test('rat vs car — same length, needs step 2', () => isAnagram('rat', 'car'), false);
 // ---End Tests
 
 // ---Helpers

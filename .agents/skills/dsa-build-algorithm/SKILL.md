@@ -12,6 +12,7 @@ Use this skill after `dsa-intuition` has already fixed the analogy, final algori
 `dsa-build-algorithm` owns:
 
 - `## Building the Algorithm`
+- optional `## Tracing through an Example`
 - step decomposition
 - step titles
 - `stepN-problem.ts`
@@ -105,7 +106,10 @@ Additional markdown rules:
 - hints should surface traps and patterns, not restate the solution
 - the overall shape should feel comparable to `146-lru-cache`: one coherent teaching progression rather than a loose collection of implementation notes
 - every step must have its own visualization; do not leave a step as prose plus embed only
-- do not add a standalone `Tracing through an Example` section anywhere in the document
+- if you add `## Tracing through an Example`, place it after `## Building the Algorithm` and before `## Common Misconceptions`
+- `## Tracing through an Example` should use the inherited trace family to run the whole algorithm on one fresh example from start to finish
+- the example in `## Tracing through an Example` should be different from the compact preview example used in `## How I Think Through This`
+- keep `## Tracing through an Example` focused on one full walkthrough; do not turn it into a second step-by-step teaching section
 
 ### Step 3: Generate Step Files
 
@@ -161,7 +165,16 @@ Avoid these failure modes:
 
 ### Step 5: Add Final Document Sections
 
-If the algorithm benefits from a high-level flowchart or state machine, add one optional section after `## Building the Algorithm` and before `## Common Misconceptions`.
+If the algorithm benefits from a full end-to-end walkthrough, add `## Tracing through an Example` after `## Building the Algorithm` and before `## Common Misconceptions`.
+
+This section should:
+
+- use the inherited trace family
+- run the complete algorithm, not just one step
+- use a fresh example that is different from the preview in `## How I Think Through This`
+- stay execution-focused; do not repeat all of the conceptual prose from earlier sections
+
+If the algorithm benefits from a high-level flowchart or state machine, add one optional section after `## Building the Algorithm` or after `## Tracing through an Example`, but still before `## Common Misconceptions`.
 
 Use mermaid only for conceptual structure, never for step-by-step execution.
 
@@ -196,6 +209,15 @@ Supported fences:
 - `:::trace-map`
 - `:::trace-ll`
 - `:::trace-dll`
+- `:::trace-parse`
+
+`:::trace-parse` is the default choice when a problem is not really two pointers or a sliding window, but instead a single parsing cursor plus one or more discovered boundaries. Use it when each step of the algorithm means:
+
+- start at the current cursor
+- read a local structural marker or header
+- derive metadata such as `len`, token kind, or section width
+- consume a payload span without interpreting its interior
+- advance to the next boundary
 
 If the correct trace component is missing, stop and ask exactly:
 
@@ -213,7 +235,7 @@ The build phase is complete only if:
 - the final step leaves the learner with the complete correct solution
 - the finished `## Building the Algorithm` would feel at home next to `app/dsa/problems/146-lru-cache/mental-model.md`
 - each step has its own visualization
-- no standalone `Tracing through an Example` section exists
+- if `## Tracing through an Example` exists, it uses a different example from `## How I Think Through This` and shows the full algorithm rather than a compact preview
 - no `stepN-problem.ts` introduces new non-helper scaffolding that the learner did not build in an earlier step
 - the first executable problem file is literally a blank function body with only `throw new Error('not implemented')`
 - each later executable problem file grows the function only by previously learned lines plus one new learner-owned chunk

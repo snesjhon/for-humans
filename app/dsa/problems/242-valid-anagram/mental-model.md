@@ -7,12 +7,14 @@ Given two strings `s` and `t`, return `true` if `t` is an anagram of `s`, and `f
 An **anagram** is a word or phrase formed by rearranging the letters of a different word or phrase, using all the original letters exactly once.
 
 **Example 1:**
+
 ```
 Input: s = "anagram", t = "nagaram"
 Output: true
 ```
 
 **Example 2:**
+
 ```
 Input: s = "rat", t = "car"
 Output: false
@@ -42,11 +44,17 @@ If the sizes do match, you open both bags and run the tally check. Your goal is 
 
 The tally sheet (`tileBag` HashMap) maps each letter to its current count. When you add a tile, its count goes up by one. When you pull a tile, its count goes down by one.
 
-There's one rule that makes the drain work: you can only pull a tile that's currently in the bag. If your friend has a letter whose tally entry sits at zero, they're trying to play a tile that wasn't in your bag — or they've already used up all copies of it. Either way, the bags don't match. Return false immediately instead of waiting until the end.
+> There's **one rule** that makes the drain work: you can only pull a tile that's currently in the bag.
+
+If your friend has a letter whose tally entry sits at zero, they're trying to play a tile that wasn't in your bag — or they've already used up all copies of it. Either way, the bags don't match. Return false immediately instead of waiting until the end.
 
 ### Why This Approach
 
-The sorting approach also works: sort both strings alphabetically and compare them. If they match, it's an anagram. But sorting costs O(n log n). The tile bag approach is O(n) — one pass to fill the tally, one pass to drain it, each letter touched exactly once. No reordering needed, just counting.
+The sorting approach also works: sort both strings alphabetically and compare them. If they match, it's an anagram. But sorting costs `O(n log n)`.
+
+The tile bag approach is `O(n)` - one pass to fill the tally, one pass to drain it, each letter touched exactly once.
+
+**No reordering needed, just counting.**
 
 ---
 
@@ -54,20 +62,27 @@ The sorting approach also works: sort both strings alphabetically and compare th
 
 Before touching any tiles, I do a quick sanity check: do `s` and `t` have the same length? If not, `t` can't possibly be an anagram — a seven-tile word can't rearrange into a six-tile word. I return false immediately.
 
-If the lengths match, I scan through `s` with a `tileBag` HashMap, incrementing the count for each letter. Then I scan through `t` and decrement the count for each letter encountered. If any decrement would take a count to zero and I'm asking for another, `t` has a letter `s` doesn't — return false. After processing all of `t` without hitting a miss, every tile was accounted for. Return true.
+If the lengths match:
+
+1. I scan through `s` with a `tileBag` HashMap, incrementing the count for each letter.
+2. Then I scan through `t` and decrement the count for each letter encountered.
+
+If any decrement would take a count to zero and I'm asking for another, `t` has a letter `s` doesn't — return false.
+
+After processing all of `t` without hitting a miss, every tile was accounted for. Return true.
 
 Take `"anagram"`, `"nagaram"`.
 
 :::trace-map
 [
-  {"input":["a","n","a","g","r","a","m"],"currentI":0,"map":[],"highlight":null,"action":null,"label":"Filling the tile bag from 'anagram'."},
-  {"input":["a","n","a","g","r","a","m"],"currentI":0,"map":[["a",1]],"highlight":"a","action":"insert","label":"'a' → drop in bag. a=1."},
-  {"input":["a","n","a","g","r","a","m"],"currentI":1,"map":[["a",1],["n",1]],"highlight":"n","action":"insert","label":"'n' → insert. a=1, n=1."},
-  {"input":["a","n","a","g","r","a","m"],"currentI":2,"map":[["a",2],["n",1]],"highlight":"a","action":"update","label":"'a' again → update. a=2, n=1."},
-  {"input":["a","n","a","g","r","a","m"],"currentI":6,"map":[["a",3],["n",1],["g",1],["r",1],["m",1]],"highlight":"m","action":"insert","label":"Bag full: a=3, n=1, g=1, r=1, m=1. Now draining with 'nagaram'."},
-  {"input":["n","a","g","a","r","a","m"],"currentI":0,"map":[["a",3],["n",0],["g",1],["r",1],["m",1]],"highlight":"n","action":"found","label":"Pull 'n' → n: 1→0. Tile accounted for."},
-  {"input":["n","a","g","a","r","a","m"],"currentI":6,"map":[["a",0],["n",0],["g",0],["r",0],["m",0]],"highlight":"m","action":"found","label":"Pull 'm' → all counts at zero. Bag empty."},
-  {"input":["n","a","g","a","r","a","m"],"currentI":-2,"map":[["a",0],["n",0],["g",0],["r",0],["m",0]],"highlight":null,"action":"done","label":"Every tile accounted for. Return true ✓"}
+{"input":["a","n","a","g","r","a","m"],"currentI":0,"map":[],"highlight":null,"action":null,"label":"Filling the tile bag from 'anagram'."},
+{"input":["a","n","a","g","r","a","m"],"currentI":0,"map":[["a",1]],"highlight":"a","action":"insert","label":"'a' → drop in bag. a=1."},
+{"input":["a","n","a","g","r","a","m"],"currentI":1,"map":[["a",1],["n",1]],"highlight":"n","action":"insert","label":"'n' → insert. a=1, n=1."},
+{"input":["a","n","a","g","r","a","m"],"currentI":2,"map":[["a",2],["n",1]],"highlight":"a","action":"update","label":"'a' again → update. a=2, n=1."},
+{"input":["a","n","a","g","r","a","m"],"currentI":6,"map":[["a",3],["n",1],["g",1],["r",1],["m",1]],"highlight":"m","action":"insert","label":"Bag full: a=3, n=1, g=1, r=1, m=1. Now draining with 'nagaram'."},
+{"input":["n","a","g","a","r","a","m"],"currentI":0,"map":[["a",3],["n",0],["g",1],["r",1],["m",1]],"highlight":"n","action":"found","label":"Pull 'n' → n: 1→0. Tile accounted for."},
+{"input":["n","a","g","a","r","a","m"],"currentI":6,"map":[["a",0],["n",0],["g",0],["r",0],["m",0]],"highlight":"m","action":"found","label":"Pull 'm' → all counts at zero. Bag empty."},
+{"input":["n","a","g","a","r","a","m"],"currentI":-2,"map":[["a",0],["n",0],["g",0],["r",0],["m",0]],"highlight":null,"action":"done","label":"Every tile accounted for. Return true ✓"}
 ]
 :::
 
@@ -91,12 +106,12 @@ Scan `s` and fill the bag — each letter increments its count. Then scan `t` an
 
 :::trace-map
 [
-  {"input":["r","a","t"],"currentI":0,"map":[],"highlight":null,"action":null,"label":"Filling tile bag from 'rat'."},
-  {"input":["r","a","t"],"currentI":0,"map":[["r",1]],"highlight":"r","action":"insert","label":"'r' → r=1."},
-  {"input":["r","a","t"],"currentI":1,"map":[["r",1],["a",1]],"highlight":"a","action":"insert","label":"'a' → a=1."},
-  {"input":["r","a","t"],"currentI":2,"map":[["r",1],["a",1],["t",1]],"highlight":"t","action":"insert","label":"'t' → t=1. Bag full: r=1, a=1, t=1. Now draining 'car'."},
-  {"input":["c","a","r"],"currentI":0,"map":[["r",1],["a",1],["t",1]],"highlight":"c","action":"miss","label":"Pull 'c' — not in bag! Count would go negative. Return false."},
-  {"input":["c","a","r"],"currentI":-2,"map":[["r",1],["a",1],["t",1]],"highlight":null,"action":"done","label":"'c' has no tile in the bag. Not an anagram. ✓"}
+{"input":["r","a","t"],"currentI":0,"map":[],"highlight":null,"action":null,"label":"Filling tile bag from 'rat'."},
+{"input":["r","a","t"],"currentI":0,"map":[["r",1]],"highlight":"r","action":"insert","label":"'r' → r=1."},
+{"input":["r","a","t"],"currentI":1,"map":[["r",1],["a",1]],"highlight":"a","action":"insert","label":"'a' → a=1."},
+{"input":["r","a","t"],"currentI":2,"map":[["r",1],["a",1],["t",1]],"highlight":"t","action":"insert","label":"'t' → t=1. Bag full: r=1, a=1, t=1. Now draining 'car'."},
+{"input":["c","a","r"],"currentI":0,"map":[["r",1],["a",1],["t",1]],"highlight":"c","action":"miss","label":"Pull 'c' — not in bag! Count would go negative. Return false."},
+{"input":["c","a","r"],"currentI":-2,"map":[["r",1],["a",1],["t",1]],"highlight":null,"action":"done","label":"'c' has no tile in the bag. Not an anagram. ✓"}
 ]
 :::
 
@@ -123,24 +138,24 @@ flowchart TD
 
 Input: `s = "anagram"`, `t = "nagaram"`
 
-| Step | Phase | Letter | Tile Count Before | Action | Tile Bag State |
-|------|-------|--------|------------------|--------|----------------|
-| Start | — | — | — | initialize | {} |
-| 1 | Fill (s) | a | 0 | insert → a=1 | {a:1} |
-| 2 | Fill (s) | n | 0 | insert → n=1 | {a:1, n:1} |
-| 3 | Fill (s) | a | 1 | update → a=2 | {a:2, n:1} |
-| 4 | Fill (s) | g | 0 | insert → g=1 | {a:2, n:1, g:1} |
-| 5 | Fill (s) | r | 0 | insert → r=1 | {a:2, n:1, g:1, r:1} |
-| 6 | Fill (s) | a | 2 | update → a=3 | {a:3, n:1, g:1, r:1} |
-| 7 | Fill (s) | m | 0 | insert → m=1 | {a:3, n:1, g:1, r:1, m:1} |
-| 8 | Drain (t) | n | 1 | pull → n=0 | {a:3, n:0, g:1, r:1, m:1} |
-| 9 | Drain (t) | a | 3 | pull → a=2 | {a:2, n:0, g:1, r:1, m:1} |
-| 10 | Drain (t) | g | 1 | pull → g=0 | {a:2, n:0, g:0, r:1, m:1} |
-| 11 | Drain (t) | a | 2 | pull → a=1 | {a:1, n:0, g:0, r:1, m:1} |
-| 12 | Drain (t) | r | 1 | pull → r=0 | {a:1, n:0, g:0, r:0, m:1} |
-| 13 | Drain (t) | a | 1 | pull → a=0 | {a:0, n:0, g:0, r:0, m:1} |
-| 14 | Drain (t) | m | 1 | pull → m=0 | {a:0, n:0, g:0, r:0, m:0} |
-| Done | — | — | — | all counts zero → return true | {a:0, n:0, g:0, r:0, m:0} |
+| Step  | Phase     | Letter | Tile Count Before | Action                        | Tile Bag State            |
+| ----- | --------- | ------ | ----------------- | ----------------------------- | ------------------------- |
+| Start | —         | —      | —                 | initialize                    | {}                        |
+| 1     | Fill (s)  | a      | 0                 | insert → a=1                  | {a:1}                     |
+| 2     | Fill (s)  | n      | 0                 | insert → n=1                  | {a:1, n:1}                |
+| 3     | Fill (s)  | a      | 1                 | update → a=2                  | {a:2, n:1}                |
+| 4     | Fill (s)  | g      | 0                 | insert → g=1                  | {a:2, n:1, g:1}           |
+| 5     | Fill (s)  | r      | 0                 | insert → r=1                  | {a:2, n:1, g:1, r:1}      |
+| 6     | Fill (s)  | a      | 2                 | update → a=3                  | {a:3, n:1, g:1, r:1}      |
+| 7     | Fill (s)  | m      | 0                 | insert → m=1                  | {a:3, n:1, g:1, r:1, m:1} |
+| 8     | Drain (t) | n      | 1                 | pull → n=0                    | {a:3, n:0, g:1, r:1, m:1} |
+| 9     | Drain (t) | a      | 3                 | pull → a=2                    | {a:2, n:0, g:1, r:1, m:1} |
+| 10    | Drain (t) | g      | 1                 | pull → g=0                    | {a:2, n:0, g:0, r:1, m:1} |
+| 11    | Drain (t) | a      | 2                 | pull → a=1                    | {a:1, n:0, g:0, r:1, m:1} |
+| 12    | Drain (t) | r      | 1                 | pull → r=0                    | {a:1, n:0, g:0, r:0, m:1} |
+| 13    | Drain (t) | a      | 1                 | pull → a=0                    | {a:0, n:0, g:0, r:0, m:1} |
+| 14    | Drain (t) | m      | 1                 | pull → m=0                    | {a:0, n:0, g:0, r:0, m:0} |
+| Done  | —         | —      | —                 | all counts zero → return true | {a:0, n:0, g:0, r:0, m:0} |
 
 ---
 

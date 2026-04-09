@@ -22,15 +22,28 @@ function isAnagram(s: string, t: string): boolean {
   return true;
 }
 
-// Tests — all must print PASS
+// ---Tests
 test('rat vs cats — lengths differ', () => isAnagram('rat', 'cats'), false);
 test('a vs empty — lengths differ', () => isAnagram('a', ''), false);
-test('anagram vs nagaram — valid anagram', () => isAnagram('anagram', 'nagaram'), true);
-test('rat vs car — same letters, wrong counts', () => isAnagram('rat', 'car'), false);
+test(
+  'anagram vs nagaram — valid anagram',
+  () => isAnagram('anagram', 'nagaram'),
+  true,
+);
+test(
+  'rat vs car — same letters, wrong counts',
+  () => isAnagram('rat', 'car'),
+  false,
+);
 test('ab vs ba — two-letter swap', () => isAnagram('ab', 'ba'), true);
-test('aa vs bb — same length, no matching tiles', () => isAnagram('aa', 'bb'), false);
+test(
+  'aa vs bb — same length, no matching tiles',
+  () => isAnagram('aa', 'bb'),
+  false,
+);
 test('empty vs empty — trivially equal', () => isAnagram('', ''), true);
 test('aab vs baa — repeated tiles', () => isAnagram('aab', 'baa'), true);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

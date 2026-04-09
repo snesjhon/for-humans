@@ -16,6 +16,7 @@ import type {
   SubsetTraceStep,
 } from '../SubsetTrace/SubsetTrace';
 import type { BinarySearchStep } from '../BinarySearchTrace/BinarySearchTrace';
+import type { ParserTraceStep } from '../ParserTrace/ParserTrace';
 
 const WebContainerEmbed = dynamic(
   () => import('../WebContainerEmbed/WebContainerEmbed'),
@@ -47,6 +48,7 @@ const SubsetTrace = dynamic(() => import('../SubsetTrace/SubsetTrace'));
 const BinarySearchTrace = dynamic(
   () => import('../BinarySearchTrace/BinarySearchTrace'),
 );
+const ParserTrace = dynamic(() => import('../ParserTrace/ParserTrace'));
 
 interface MarkdownRendererProps {
   content: string;
@@ -92,6 +94,10 @@ type TraceBSSegment = BaseSegment & {
   type: 'trace-bs';
   steps: BinarySearchStep[];
 };
+type TraceParseSegment = BaseSegment & {
+  type: 'trace-parse';
+  steps: ParserTraceStep[];
+};
 type StackBlitzSegment = BaseSegment & {
   type: 'stackblitz';
   file: string;
@@ -120,7 +126,8 @@ function splitTrace(segments: BaseSegment[]): BaseSegment[] {
       | 'trace-dll'
       | 'trace-sq'
       | 'trace-subset'
-      | 'trace-bs';
+      | 'trace-bs'
+      | 'trace-parse';
   }> = [
     { fence: /^:::trace\r?\n([\s\S]*?)\r?\n:::[ \t]*$/gm, type: 'trace' },
     { fence: /^:::trace-lr\r?\n([\s\S]*?)\r?\n:::[ \t]*$/gm, type: 'trace-lr' },
@@ -134,6 +141,7 @@ function splitTrace(segments: BaseSegment[]): BaseSegment[] {
     { fence: /^:::trace-sq\r?\n([\s\S]*?)\r?\n:::[ \t]*$/gm, type: 'trace-sq' },
     { fence: /^:::trace-subset\r?\n([\s\S]*?)\r?\n:::[ \t]*$/gm, type: 'trace-subset' },
     { fence: /^:::trace-bs\r?\n([\s\S]*?)\r?\n:::[ \t]*$/gm, type: 'trace-bs' },
+    { fence: /^:::trace-parse\r?\n([\s\S]*?)\r?\n:::[ \t]*$/gm, type: 'trace-parse' },
   ];
 
   for (const seg of segments) {
@@ -157,7 +165,8 @@ function splitTrace(segments: BaseSegment[]): BaseSegment[] {
         | 'trace-dll'
         | 'trace-sq'
         | 'trace-subset'
-        | 'trace-bs';
+        | 'trace-bs'
+        | 'trace-parse';
     };
     const matches: RawMatch[] = [];
     for (const { fence, type } of configs) {
@@ -343,6 +352,10 @@ export default function MarkdownRenderer({
         if (seg.type === 'trace-bs')
           return (
             <BinarySearchTrace key={i} steps={(seg as TraceBSSegment).steps} />
+          );
+        if (seg.type === 'trace-parse')
+          return (
+            <ParserTrace key={i} steps={(seg as TraceParseSegment).steps} />
           );
         if (seg.type === 'stackblitz') {
           const s = seg as StackBlitzSegment;

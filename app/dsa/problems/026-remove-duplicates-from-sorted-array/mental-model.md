@@ -5,12 +5,14 @@
 Given an integer array `nums` sorted in non-decreasing order, remove the duplicates **in-place** such that each unique element appears only once. The relative order of the elements should be kept the same. Then return the number of unique elements in `nums`.
 
 **Example 1:**
+
 ```
 Input: nums = [1,1,2]
 Output: 2, nums = [1,2,_]
 ```
 
 **Example 2:**
+
 ```
 Input: nums = [0,0,1,1,1,2,2,3,3,4]
 Output: 5, nums = [0,1,2,3,4,_,_,_,_,_]
@@ -20,7 +22,7 @@ Output: 5, nums = [0,1,2,3,4,_,_,_,_,_]
 
 ## The Librarian's Two Hands Analogy
 
-Imagine a librarian standing before a long sorted bookshelf where some titles appear more than once — perhaps three copies of *Dune*, two copies of *1984*, and a single copy of *Brave New World*. Her job: rearrange the shelf so that every unique title appears exactly once at the front, and report how many unique titles she found.
+Imagine a librarian standing before a long sorted bookshelf where some titles appear more than once — perhaps three copies of _Dune_, two copies of _1984_, and a single copy of _Brave New World_. Her job: rearrange the shelf so that every unique title appears exactly once at the front, and report how many unique titles she found.
 
 She uses two hands to accomplish this without touching any other shelf. Her **reading hand** slides along the shelf from left to right, examining each book in turn. Her **writing hand** advances more slowly — it only moves when the reading hand discovers a title that's genuinely different from the last title already placed in the curated section. When that happens, the writing hand places the new book in the next open slot and steps forward.
 
@@ -62,13 +64,13 @@ Take `[0, 0, 1, 1, 1, 2, 2, 3, 3, 4]`.
 
 :::trace-lr
 [
-  {"chars":[0,0,1,1,1,2,2,3,3,4],"L":1,"R":1,"action":null,"label":"k=1 (writing hand), i=1 (reading hand). nums[i]=0 matches nums[k-1]=0 — skip."},
-  {"chars":[0,1,1,1,1,2,2,3,3,4],"L":1,"R":2,"action":"match","label":"i=2: nums[i]=1 ≠ nums[k-1]=0 → write 1 to nums[1], k=2."},
-  {"chars":[0,1,1,1,1,2,2,3,3,4],"L":2,"R":3,"action":null,"label":"i=3: nums[i]=1 matches nums[k-1]=1 — skip."},
-  {"chars":[0,1,2,1,1,2,2,3,3,4],"L":2,"R":5,"action":"match","label":"i=5: nums[i]=2 ≠ nums[k-1]=1 → write 2 to nums[2], k=3."},
-  {"chars":[0,1,2,3,1,2,2,3,3,4],"L":3,"R":7,"action":"match","label":"i=7: nums[i]=3 ≠ nums[k-1]=2 → write 3 to nums[3], k=4."},
-  {"chars":[0,1,2,3,4,2,2,3,3,4],"L":4,"R":9,"action":"match","label":"i=9: nums[i]=4 ≠ nums[k-1]=3 → write 4 to nums[4], k=5."},
-  {"chars":[0,1,2,3,4,2,2,3,3,4],"L":4,"R":9,"action":"done","label":"Loop ends. Return k=5. Front: [0,1,2,3,4,...] ✓"}
+{"chars":[0,0,1,1,1,2,2,3,3,4],"L":1,"R":1,"action":null,"label":"`k=1` (writing hand), `i=1` (reading hand). \n `nums[i] = 0` matches `nums[k-1] = 0` \n skip."},
+{"chars":[0,1,1,1,1,2,2,3,3,4],"L":1,"R":2,"action":"null","label":"`i = 2` \n `nums[i] = 1` does not equal `nums[k-1] = 0` → write `1` to `nums[1]` \n `k = 2`."},
+{"chars":[0,1,1,1,1,2,2,3,3,4],"L":2,"R":3,"action":null,"label":"`i = 3` \n `nums[i] = 1` matches `nums[k-1] = 1` — skip."},
+{"chars":[0,1,2,1,1,2,2,3,3,4],"L":2,"R":5,"action":"match","label":"i=5: nums[i]=2 ≠ nums[k-1]=1 → write 2 to nums[2], k=3."},
+{"chars":[0,1,2,3,1,2,2,3,3,4],"L":3,"R":7,"action":"match","label":"i=7: nums[i]=3 ≠ nums[k-1]=2 → write 3 to nums[3], k=4."},
+{"chars":[0,1,2,3,4,2,2,3,3,4],"L":4,"R":9,"action":"match","label":"i=9: nums[i]=4 ≠ nums[k-1]=3 → write 4 to nums[4], k=5."},
+{"chars":[0,1,2,3,4,2,2,3,3,4],"L":4,"R":9,"action":"done","label":"Loop ends. Return k=5. Front: [0,1,2,3,4,...] ✓"}
 ]
 :::
 
@@ -99,19 +101,19 @@ Now the reading hand sweeps through every book from index `1` to the end. At eac
 
 Input: `[0, 0, 1, 1, 1, 2, 2, 3, 3, 4]`
 
-| Step | Reading Hand (i) | nums[i] | Writing Hand (k) | Last Placed (nums[k-1]) | New Title? | Action | Curated Section |
-|------|-----------------|---------|-----------------|------------------------|------------|--------|-----------------|
-| Start | 1 | 0 | 1 | 0 | — | initialize | [0, ...] |
-| i=1 | 1 | 0 | 1 | 0 | No | skip | [0, ...] |
-| i=2 | 2 | 1 | 1 | 0 | Yes | write 1 → nums[1], k=2 | [0, 1, ...] |
-| i=3 | 3 | 1 | 2 | 1 | No | skip | [0, 1, ...] |
-| i=4 | 4 | 1 | 2 | 1 | No | skip | [0, 1, ...] |
-| i=5 | 5 | 2 | 2 | 1 | Yes | write 2 → nums[2], k=3 | [0, 1, 2, ...] |
-| i=6 | 6 | 2 | 3 | 2 | No | skip | [0, 1, 2, ...] |
-| i=7 | 7 | 3 | 3 | 2 | Yes | write 3 → nums[3], k=4 | [0, 1, 2, 3, ...] |
-| i=8 | 8 | 3 | 4 | 3 | No | skip | [0, 1, 2, 3, ...] |
-| i=9 | 9 | 4 | 4 | 3 | Yes | write 4 → nums[4], k=5 | [0, 1, 2, 3, 4] |
-| Done | — | — | 5 | — | — | return 5 | [0, 1, 2, 3, 4] |
+| Step  | Reading Hand (i) | nums[i] | Writing Hand (k) | Last Placed (nums[k-1]) | New Title? | Action                 | Curated Section   |
+| ----- | ---------------- | ------- | ---------------- | ----------------------- | ---------- | ---------------------- | ----------------- |
+| Start | 1                | 0       | 1                | 0                       | —          | initialize             | [0, ...]          |
+| i=1   | 1                | 0       | 1                | 0                       | No         | skip                   | [0, ...]          |
+| i=2   | 2                | 1       | 1                | 0                       | Yes        | write 1 → nums[1], k=2 | [0, 1, ...]       |
+| i=3   | 3                | 1       | 2                | 1                       | No         | skip                   | [0, 1, ...]       |
+| i=4   | 4                | 1       | 2                | 1                       | No         | skip                   | [0, 1, ...]       |
+| i=5   | 5                | 2       | 2                | 1                       | Yes        | write 2 → nums[2], k=3 | [0, 1, 2, ...]    |
+| i=6   | 6                | 2       | 3                | 2                       | No         | skip                   | [0, 1, 2, ...]    |
+| i=7   | 7                | 3       | 3                | 2                       | Yes        | write 3 → nums[3], k=4 | [0, 1, 2, 3, ...] |
+| i=8   | 8                | 3       | 4                | 3                       | No         | skip                   | [0, 1, 2, 3, ...] |
+| i=9   | 9                | 4       | 4                | 3                       | Yes        | write 4 → nums[4], k=5 | [0, 1, 2, 3, 4]   |
+| Done  | —                | —       | 5                | —                       | —          | return 5               | [0, 1, 2, 3, 4]   |
 
 ---
 
@@ -119,11 +121,11 @@ Input: `[0, 0, 1, 1, 1, 2, 2, 3, 3, 4]`
 
 **"I need to actually delete the duplicate elements"** — The librarian never physically removes books from the shelf; she just overwrites slots. The problem only asks you to return `k` and ensure the first `k` elements are unique. What happens to the elements beyond index `k` doesn't matter. You're not shrinking the array — you're partitioning it.
 
-**"The writing hand compares against the reading hand's current book"** — The writing hand doesn't look at what the reading hand is holding; it looks at the last book it *placed* (`nums[k-1]`). The reading hand could be several positions ahead. Comparing `nums[i]` to `nums[i-1]` instead of `nums[k-1]` would work only for this specific problem (since input is sorted), but misses the invariant: "everything before k is final." Understanding `nums[k-1]` as "the last catalogued title" is the correct mental model.
+**"The writing hand compares against the reading hand's current book"** — The writing hand doesn't look at what the reading hand is holding; it looks at the last book it _placed_ (`nums[k-1]`). The reading hand could be several positions ahead. Comparing `nums[i]` to `nums[i-1]` instead of `nums[k-1]` would work only for this specific problem (since input is sorted), but misses the invariant: "everything before k is final." Understanding `nums[k-1]` as "the last catalogued title" is the correct mental model.
 
 **"Both hands need to start at 0"** — The writing hand starts at `1`, not `0`. The first book is already in the curated section by definition — it has no predecessor to duplicate. Starting k at `0` would cause the writing hand to overwrite `nums[0]` with `nums[1]` on the first new title found, discarding the very first element.
 
-**"This only works because the array is sorted"** — Exactly right, and it's worth understanding *why*. Because the shelf is sorted, all copies of a title are adjacent. The only comparison needed is against the immediately last-placed book. If the shelf were unsorted, the reading hand might encounter a title that appeared earlier but not most recently — a simple `nums[i] !== nums[k-1]` check would miss that duplicate entirely.
+**"This only works because the array is sorted"** — Exactly right, and it's worth understanding _why_. Because the shelf is sorted, all copies of a title are adjacent. The only comparison needed is against the immediately last-placed book. If the shelf were unsorted, the reading hand might encounter a title that appeared earlier but not most recently — a simple `nums[i] !== nums[k-1]` check would miss that duplicate entirely.
 
 **"The writing hand can catch up to or pass the reading hand"** — It never can. The reading hand advances every single iteration. The writing hand only advances when it finds a new title, which requires the reading hand to have already moved past the last written position. So `i >= k` always holds, and `nums[k] = nums[i]` is always a safe overwrite — you're never stomping on a value you still need to read.
 

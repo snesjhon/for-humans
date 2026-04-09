@@ -52,8 +52,9 @@ The downstream skills already contain the detailed narrative and algorithm-build
 
 - one analogy only
 - conceptual understanding before code scaffolding
+- `## How I Think Through This` is a pre-build bridge: short phase paragraphs plus a compact preview visualization, not a second full walkthrough
 - trace components for execution, mermaid for conceptual structure
-- do not generate a standalone `Tracing through an Example` section
+- if `## Tracing through an Example` exists, it comes after `## Building the Algorithm`, uses a different example from the preview trace, and runs the full algorithm
 - no summary docs outside the problem package
 - `mental-model.md` must match the step files exactly
 - validations are required, not optional
@@ -80,6 +81,7 @@ Before switching to `dsa-build-algorithm`, retain this contract in working conte
 - chosen analogy and vocabulary
 - final algorithm choice
 - core invariant
+- the intended role of `## How I Think Through This` as a bridge into the build section
 - primary data structure and exact trace component
 - trace example input
 - proposed step decomposition
@@ -133,7 +135,7 @@ A finished problem package must satisfy all of these:
 
 - the analogy is strong and consistent
 - the algorithm steps are independently teachable and testable
-- there is no standalone `Tracing through an Example` section in the final markdown
+- if `## Tracing through an Example` exists, it uses a fresh example and earns its place as a full execution walkthrough
 - every `stepN-problem.ts` exits 0 and prints only `TODO`, `PASS`, or `FAIL` lines
 - every `stepN-solution.ts` exits 0 and prints only `PASS` lines
 - `solution.ts` exits 0 and prints only `PASS` lines

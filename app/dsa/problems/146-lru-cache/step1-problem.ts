@@ -13,6 +13,7 @@ class LRUCache {
   }
 }
 
+// ---Tests
 runCase(
   'constructor stores the key and value on a shelf box',
   () => {
@@ -61,7 +62,10 @@ runCase(
   0,
 );
 
+// ---End Tests
+
 // ---Helpers
+
 function runCase(desc: string, fn: () => unknown, expected: unknown): void {
   try {
     const actual = fn();
@@ -79,4 +83,4 @@ function runCase(desc: string, fn: () => unknown, expected: unknown): void {
     }
   }
 }
-// ---End Helpers
+// ---EndHelpers

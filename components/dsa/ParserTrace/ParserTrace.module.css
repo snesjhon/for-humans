@@ -1,0 +1,158 @@
+.cellConsumed {
+  background: var(--ms-bg-pane-secondary);
+  border-color: var(--ms-surface);
+  color: var(--ms-text-faint);
+  opacity: 0.35;
+}
+
+.cellLabel {
+  background: var(--ms-blue-surface);
+  border-color: var(--ms-blue);
+  color: var(--ms-blue);
+}
+
+.cellSeparator {
+  background: var(--ms-orange-surface);
+  border-color: var(--ms-orange);
+  color: var(--ms-orange);
+}
+
+.cellPayload {
+  background: var(--ms-green-surface);
+  border-color: var(--ms-green);
+  color: var(--ms-green);
+}
+
+.cellActive {
+  background:
+    linear-gradient(
+      135deg,
+      var(--ms-green-surface) 0%,
+      var(--ms-green-surface) 60%,
+      color-mix(in srgb, var(--ms-green) 20%, transparent) 100%
+    );
+  border-color: var(--ms-green);
+  color: var(--ms-green);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--ms-green) 35%, transparent);
+}
+
+.cellUpcoming {
+  background: var(--ms-bg-pane-secondary);
+  border-color: var(--ms-surface);
+  color: var(--ms-text-muted);
+  opacity: 0.58;
+}
+
+.ptrBlue {
+  background: var(--ms-blue-surface);
+  color: var(--ms-blue);
+}
+
+.ptrOrange {
+  background: var(--ms-orange-surface);
+  color: var(--ms-orange);
+}
+
+.ptrGreen {
+  background: var(--ms-green-surface);
+  color: var(--ms-green);
+}
+
+.ptrPurple {
+  background: var(--ms-mauve-surface);
+  color: var(--ms-mauve);
+}
+
+.legendLabel {
+  background: var(--ms-blue-surface);
+  color: var(--ms-blue);
+}
+
+.legendSeparator {
+  background: var(--ms-orange-surface);
+  color: var(--ms-orange);
+}
+
+.legendPayload {
+  background: var(--ms-green-surface);
+  color: var(--ms-green);
+}
+
+.legendConsumed {
+  background: var(--ms-bg-pane-secondary);
+  color: var(--ms-text-faint);
+  border: 1px solid var(--ms-surface);
+}
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 1rem;
+}
+
+.fact {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  padding: 4px 10px;
+  border: 1px solid var(--ms-surface);
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 11px;
+}
+
+.factNeutral {
+  background: var(--ms-bg-pane);
+  color: var(--ms-text-subtle);
+}
+
+.factBlue {
+  background: var(--ms-blue-surface);
+  color: var(--ms-blue);
+  border-color: color-mix(in srgb, var(--ms-blue) 35%, var(--ms-surface));
+}
+
+.factOrange {
+  background: var(--ms-orange-surface);
+  color: var(--ms-orange);
+  border-color: color-mix(in srgb, var(--ms-orange) 35%, var(--ms-surface));
+}
+
+.factGreen {
+  background: var(--ms-green-surface);
+  color: var(--ms-green);
+  border-color: color-mix(in srgb, var(--ms-green) 35%, var(--ms-surface));
+}
+
+.factPurple {
+  background: var(--ms-mauve-surface);
+  color: var(--ms-mauve);
+  border-color: color-mix(in srgb, var(--ms-mauve) 35%, var(--ms-surface));
+}
+
+.factName {
+  opacity: 0.8;
+}
+
+.factValue {
+  font-weight: 700;
+}
+
+.badgeRead {
+  background: var(--ms-blue-surface);
+  color: var(--ms-blue);
+  border: 1px solid var(--ms-blue);
+}
+
+.badgeEmit {
+  background: var(--ms-orange-surface);
+  color: var(--ms-orange);
+  border: 1px solid var(--ms-orange);
+}
+
+.badgeJump {
+  background: var(--ms-mauve-surface);
+  color: var(--ms-mauve);
+  border: 1px solid var(--ms-mauve);
+}

@@ -49,6 +49,15 @@ Current mappings:
 - `components/dsa/HashMapTrace.tsx` → `:::trace-map`
 - `components/dsa/LinkedListTrace.tsx` → `:::trace-ll`
 - `components/dsa/DoublyLinkedListTrace/DoublyLinkedListTrace.tsx` → `:::trace-dll`
+- `components/dsa/ParserTrace/ParserTrace.tsx` → `:::trace-parse`
+
+Use `:::trace-parse` for cursor-based parsing problems where the learner reads structure from a local boundary, derives metadata such as a length or token type, and then jumps forward by a computed amount. Typical fits:
+
+- length-prefixed string decoding
+- delimiter parsing where only the current delimiter matters
+- tokenization / lexer-style scans
+- deserialize / decode walks over one linear buffer
+- compression formats that read a header then consume a payload span
 
 If the correct component does not exist, stop and ask exactly:
 
@@ -81,6 +90,7 @@ Requirements:
 - `## The Problem` contains the verbatim problem statement and examples only
 - `## Understanding the Analogy` is concept-only, no code
 - `## How I Think Through This` contains:
+  - a short bridge from the analogy into the build section
   - a whiteboard walkthrough in short paragraph phases
   - one compact trace block introduced by `Take \`[example]\`.`
 
@@ -93,10 +103,15 @@ Use these section rules:
   - `### The Setup`
   - one or more key mechanism subsections
   - `### Why This Approach`
+- `## How I Think Through This` sits before `## Building the Algorithm` and should feel like a bridge, not a second full algorithm lesson
 - `## How I Think Through This` block 1 names important variables inline in prose, but never uses code blocks
 - each algorithmic phase gets its own paragraph; if the algorithm changes direction or starts a new pass, start a new paragraph
+- keep block 1 to short paragraph phases only; do not turn it into a wall of text or a pseudo-implementation
+- the goal is to give the learner the mental checklist and invariant they should carry into the build section
 - the trace block is mandatory; never replace it with prose like "index 0 does X, then index 1 does Y"
-- do not add a separate `## Tracing through an Example` section; example tracing lives inside `## How I Think Through This`
+- the trace block must be visually compact: prefer a single-state or otherwise lightweight snapshot that reinforces the analogy and structural boundaries
+- do not use the `## How I Think Through This` trace to walk through the entire algorithm end-to-end; save the detailed execution walkthrough for `## Building the Algorithm` or a later full-example section
+- if the problem package later includes `## Tracing through an Example`, the preview trace here should use a different example from that full walkthrough
 
 ### Step 4: Write `## Common Misconceptions`
 

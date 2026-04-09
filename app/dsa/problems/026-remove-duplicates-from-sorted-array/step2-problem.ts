@@ -17,11 +17,11 @@ test('[1, 1, 2] → 2', () => removeDuplicates([1, 1, 2]), 2);
 test('[1, 1, 1] → 1', () => removeDuplicates([1, 1, 1]), 1);
 test('[1, 2, 3] → 3', () => removeDuplicates([1, 2, 3]), 3);
 test(
-// ---End Tests
   '[0,0,1,1,1,2,2,3,3,4] → 5',
   () => removeDuplicates([0, 0, 1, 1, 1, 2, 2, 3, 3, 4]),
   5,
 );
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
