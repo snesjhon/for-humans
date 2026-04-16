@@ -84,7 +84,6 @@ export function SiteNav({
 
   return (
     <nav className="sticky left-0 top-0 z-50 flex h-screen w-full flex-col border-r border-r-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)]">
-      {/* Branding */}
       <div className="shrink-0 px-4 pb-[14px] pt-[18px]">
         <Link
           href="/"

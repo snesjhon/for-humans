@@ -75,7 +75,7 @@ export function loadReferencedDsaCodeFiles(
   slug: string,
   base: DsaCodeBase,
 ): Record<string, string> {
-  const dir = path.join(process.cwd(), 'app', 'dsa', base, slug)
+  const dir = path.join(process.cwd(), 'src', 'app', 'dsa', base, slug)
   const files = collectStackBlitzFiles(content)
 
   return Object.fromEntries(

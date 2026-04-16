@@ -3,7 +3,7 @@ import path from 'path';
 import matter from 'gray-matter';
 import { JOURNEY } from './journey';
 
-const FUNDAMENTALS_DIR = path.join(process.cwd(), 'app', 'dsa', 'fundamentals');
+const FUNDAMENTALS_DIR = path.join(process.cwd(), 'src', 'app', 'dsa', 'fundamentals');
 
 export interface FundamentalsGuide {
   slug: string; // "binary-trees"

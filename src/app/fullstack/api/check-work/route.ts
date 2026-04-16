@@ -4,7 +4,7 @@ import path from 'path'
 import fs from 'fs'
 import { parseFilesFromPrompt, readChessAppFiles } from '@/lib/fullstack/checkWork'
 
-const SCENARIOS_DIR = path.join(process.cwd(), 'app', 'scenarios')
+const SCENARIOS_DIR = path.join(process.cwd(), 'src', 'app', 'scenarios')
 
 export async function POST(req: NextRequest) {
   const { slug, projectPath, apiKey } = await req.json()

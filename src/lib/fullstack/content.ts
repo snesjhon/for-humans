@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
 
-const SCENARIOS_DIR = path.join(process.cwd(), 'app', 'fullstack', 'scenarios')
+const SCENARIOS_DIR = path.join(process.cwd(), 'src', 'app', 'fullstack', 'scenarios')
 
 export interface ScenarioContent {
   slug: string

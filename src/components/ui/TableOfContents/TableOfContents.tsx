@@ -54,7 +54,6 @@ export default function TableOfContents({
       </p>
       <div className="space-y-0.5">
         {visible.map((heading) => {
-          console.log({ heading });
           const isActive = activeId === heading.id;
           const isH3 = heading.level === 3;
           return (

@@ -4,7 +4,7 @@ import matter from 'gray-matter'
 import type { Problem } from './types'
 import { PROBLEM_TITLES as TITLE_MAP } from './titles'
 
-const STUDY_GUIDES_DIR = path.join(process.cwd(), 'app', 'dsa', 'problems')
+const STUDY_GUIDES_DIR = path.join(process.cwd(), 'src', 'app', 'dsa', 'problems')
 
 function extractIdFromSlug(slug: string): string | null {
   const match = slug.match(/^(\d+)-/)

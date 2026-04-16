@@ -62,6 +62,7 @@ interface Props {
 const getStepNumbers = cache((problemSlug: string) => {
   const problemDir = path.join(
     process.cwd(),
+    'src',
     'app',
     'dsa',
     'problems',

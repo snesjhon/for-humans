@@ -4,7 +4,7 @@ import matter from 'gray-matter'
 import { JOURNEY } from './journey'
 import type { JourneySection, Phase } from './types'
 
-const FUNDAMENTALS_DIR = path.join(process.cwd(), 'app', 'system-design', 'fundamentals')
+const FUNDAMENTALS_DIR = path.join(process.cwd(), 'src', 'app', 'system-design', 'fundamentals')
 
 export interface FundamentalsGuide {
   slug: string

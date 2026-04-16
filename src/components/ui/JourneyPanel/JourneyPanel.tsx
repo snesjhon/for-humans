@@ -35,6 +35,7 @@ import {
   Compass,
   Code2,
   type LucideIcon,
+  CircleChevronRight,
 } from 'lucide-react';
 import { pColor } from '../pathUtils';
 import { ProgressMark } from '../ProgressMark/ProgressMark';
@@ -323,7 +324,9 @@ export function JourneyPanel({
                   onToggle={() => toggleSection(section.id)}
                 >
                   {section.fundamentalsSlug &&
-                    availableFundamentalsSlugs.has(section.fundamentalsSlug) && (
+                    availableFundamentalsSlugs.has(
+                      section.fundamentalsSlug,
+                    ) && (
                       <NavItem
                         itemRef={
                           activeFundamentalsSlug === section.fundamentalsSlug
@@ -366,19 +369,16 @@ export function JourneyPanel({
                     <>
                       <button
                         onClick={() => toggleRevisit(section.id)}
-                        className="appearance-none flex w-full items-center gap-2 rounded-md border-none bg-transparent px-[10px] py-[6px] text-left outline-none hover:bg-[var(--ms-primary-surface)] focus:outline-none"
+                        className="appearance-none flex w-full items-center gap-2 rounded-md border-none bg-transparent px-[10px] py-[6px] text-left outline-none hover:bg-[var(--ms-primary-surface)] focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
                       >
-                        <ChevronRight
+                        <CircleChevronRight
                           aria-hidden="true"
-                          className={`h-3 w-3 shrink-0 text-[var(--ms-text-faint)] transition-transform duration-200 ${
+                          className={`h-3.5 w-3.5 shrink-0 text-[var(--ms-text-subtle)] transition-transform duration-200 ${
                             collapsedRevisits.has(section.id) ? '' : 'rotate-90'
                           }`}
                         />
                         <span className="text-xs font-normal text-[var(--ms-text-muted)]">
                           Advanced
-                        </span>
-                        <span className="ml-auto whitespace-nowrap rounded-full border border-[var(--ms-surface)] px-2 py-0.5 text-[10px] text-[var(--ms-text-faint)]">
-                          After {section.revisitPrerequisiteLabel ?? section.revisitFromLabel}
                         </span>
                       </button>
                       {!collapsedRevisits.has(section.id) &&
