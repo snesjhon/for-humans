@@ -34,7 +34,6 @@ import {
   Type,
   Compass,
   Code2,
-  RefreshCw,
   type LucideIcon,
 } from 'lucide-react';
 import { pColor } from '../pathUtils';
@@ -54,6 +53,7 @@ export interface JourneyPanelSection {
   items: JourneyPanelItem[];
   revisitItems?: JourneyPanelItem[];
   revisitFromLabel?: string;
+  revisitPrerequisiteLabel?: string;
 }
 
 export interface JourneyPanelPhase {
@@ -252,6 +252,19 @@ export function JourneyPanel({
     () => new Set(),
   );
 
+  const [collapsedRevisits, setCollapsedRevisits] = useState<Set<string>>(
+    () => new Set(phases.flatMap((p) => p.sections.map((s) => s.id))),
+  );
+
+  const toggleRevisit = (sectionId: string) => {
+    setCollapsedRevisits((prev) => {
+      const next = new Set(prev);
+      if (next.has(sectionId)) next.delete(sectionId);
+      else next.add(sectionId);
+      return next;
+    });
+  };
+
   const activeItemRef = useRef<HTMLAnchorElement>(null);
   useEffect(() => {
     activeItemRef.current?.scrollIntoView({
@@ -293,8 +306,6 @@ export function JourneyPanel({
             {/* Sections */}
             {phase.sections.map((section) => {
               const isCollapsed = collapsedSections.has(section.id);
-              const revisitKey = `revisit-${section.id}`;
-              const isRevisitCollapsed = collapsedSections.has(revisitKey);
               const availableItems = section.items.filter((i) =>
                 availableItemKeys.has(i.key),
               );
@@ -304,85 +315,94 @@ export function JourneyPanel({
               const SectionIcon = SECTION_ICONS[section.id];
 
               return (
-                <React.Fragment key={section.id}>
-                  <NavSection
-                    icon={SectionIcon}
-                    label={section.label}
-                    isCollapsed={isCollapsed}
-                    onToggle={() => toggleSection(section.id)}
-                  >
-                    {section.fundamentalsSlug &&
-                      availableFundamentalsSlugs.has(
-                        section.fundamentalsSlug,
-                      ) && (
-                        <NavItem
-                          itemRef={
-                            activeFundamentalsSlug === section.fundamentalsSlug
-                              ? activeItemRef
-                              : undefined
-                          }
-                          href={getFundamentalsHref(section.fundamentalsSlug)}
-                          isActive={
-                            activeFundamentalsSlug === section.fundamentalsSlug
-                          }
-                          mark={
-                            <ProgressMark
-                              completed={isFundamentalsComplete(
-                                section.fundamentalsSlug,
-                              )}
-                              fundamentals
-                            />
-                          }
-                          label="Fundamentals"
-                        />
-                      )}
-                    {availableItems.map((item) => (
+                <NavSection
+                  key={section.id}
+                  icon={SectionIcon}
+                  label={section.label}
+                  isCollapsed={isCollapsed}
+                  onToggle={() => toggleSection(section.id)}
+                >
+                  {section.fundamentalsSlug &&
+                    availableFundamentalsSlugs.has(section.fundamentalsSlug) && (
                       <NavItem
-                        key={item.key}
                         itemRef={
-                          activeItemKey === item.key ? activeItemRef : undefined
+                          activeFundamentalsSlug === section.fundamentalsSlug
+                            ? activeItemRef
+                            : undefined
                         }
-                        href={getItemHref(item.key)}
-                        isActive={activeItemKey === item.key}
+                        href={getFundamentalsHref(section.fundamentalsSlug)}
+                        isActive={
+                          activeFundamentalsSlug === section.fundamentalsSlug
+                        }
                         mark={
                           <ProgressMark
-                            completed={completedProblemIds.has(item.key)}
+                            completed={isFundamentalsComplete(
+                              section.fundamentalsSlug,
+                            )}
+                            fundamentals
                           />
                         }
-                        label={item.label}
+                        label="Fundamentals"
                       />
-                    ))}
-                  </NavSection>
+                    )}
+                  {availableItems.map((item) => (
+                    <NavItem
+                      key={item.key}
+                      itemRef={
+                        activeItemKey === item.key ? activeItemRef : undefined
+                      }
+                      href={getItemHref(item.key)}
+                      isActive={activeItemKey === item.key}
+                      mark={
+                        <ProgressMark
+                          completed={completedProblemIds.has(item.key)}
+                        />
+                      }
+                      label={item.label}
+                    />
+                  ))}
 
                   {availableRevisits.length > 0 && (
-                    <NavSection
-                      icon={RefreshCw}
-                      label={`Revisit: ${section.revisitFromLabel ?? 'Previous'}`}
-                      isCollapsed={isRevisitCollapsed}
-                      onToggle={() => toggleSection(revisitKey)}
-                      compact
-                    >
-                      {availableRevisits.map((item) => (
-                        <NavItem
-                          key={item.key}
-                          itemRef={
-                            activeItemKey === item.key
-                              ? activeItemRef
-                              : undefined
-                          }
-                          href={getItemHref(item.key)}
-                          isActive={activeItemKey === item.key}
-                          mark={
-                            <ProgressMark
-                              completed={completedProblemIds.has(item.key)}
-                            />
-                          }
-                          label={item.label}
+                    <>
+                      <button
+                        onClick={() => toggleRevisit(section.id)}
+                        className="appearance-none flex w-full items-center gap-2 rounded-md border-none bg-transparent px-[10px] py-[6px] text-left outline-none hover:bg-[var(--ms-primary-surface)] focus:outline-none"
+                      >
+                        <ChevronRight
+                          aria-hidden="true"
+                          className={`h-3 w-3 shrink-0 text-[var(--ms-text-faint)] transition-transform duration-200 ${
+                            collapsedRevisits.has(section.id) ? '' : 'rotate-90'
+                          }`}
                         />
-                      ))}
-                    </NavSection>
+                        <span className="text-xs font-normal text-[var(--ms-text-muted)]">
+                          Advanced
+                        </span>
+                        <span className="ml-auto whitespace-nowrap rounded-full border border-[var(--ms-surface)] px-2 py-0.5 text-[10px] text-[var(--ms-text-faint)]">
+                          After {section.revisitPrerequisiteLabel ?? section.revisitFromLabel}
+                        </span>
+                      </button>
+                      {!collapsedRevisits.has(section.id) &&
+                        availableRevisits.map((item) => (
+                          <NavItem
+                            key={item.key}
+                            itemRef={
+                              activeItemKey === item.key
+                                ? activeItemRef
+                                : undefined
+                            }
+                            href={getItemHref(item.key)}
+                            isActive={activeItemKey === item.key}
+                            mark={
+                              <ProgressMark
+                                completed={completedProblemIds.has(item.key)}
+                              />
+                            }
+                            label={item.label}
+                          />
+                        ))}
+                    </>
                   )}
-                </React.Fragment>
+                </NavSection>
               );
             })}
           </div>

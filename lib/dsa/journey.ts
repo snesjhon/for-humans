@@ -16,6 +16,7 @@ export interface JourneySection {
   fundamentalsBlurb?: string;
   firstPass: JourneyProblem[];
   reinforce: JourneyProblem[];
+  reinforcePrerequisiteLabel?: string;
 }
 
 export interface Phase {
@@ -59,6 +60,7 @@ export const JOURNEY: Phase[] = [
           { id: '238', isFirstPass: false, difficulty: 'medium' },
           { id: '271', isFirstPass: false, difficulty: 'medium' },
         ],
+        reinforcePrerequisiteLabel: 'Hash Maps & Sets',
       },
       {
         id: 'hash-maps',

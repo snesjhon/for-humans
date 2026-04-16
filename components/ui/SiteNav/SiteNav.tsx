@@ -14,25 +14,14 @@ import type { JourneyPanelPhase } from '../JourneyPanel/JourneyPanel';
 
 const DSA_FUNDAMENTALS_TO_SECTION: Record<string, string> = {};
 const DSA_PROBLEM_TO_SECTION: Record<string, string> = {};
-const DSA_SECTION_REVISIT: Record<
-  string,
-  { ids: string[]; fromLabel: string }
-> = {};
-
-let _dsaPrev: { reinforce: { id: string }[]; label: string } | null = null;
 for (const phase of DSA_JOURNEY) {
   for (const section of phase.sections) {
     if (section.fundamentalsSlug)
       DSA_FUNDAMENTALS_TO_SECTION[section.fundamentalsSlug] = section.id;
     for (const p of section.firstPass)
       DSA_PROBLEM_TO_SECTION[p.id] = section.id;
-    if (_dsaPrev && _dsaPrev.reinforce.length > 0) {
-      DSA_SECTION_REVISIT[section.id] = {
-        ids: _dsaPrev.reinforce.map((p) => p.id),
-        fromLabel: _dsaPrev.label,
-      };
-    }
-    _dsaPrev = section;
+    for (const p of section.reinforce)
+      DSA_PROBLEM_TO_SECTION[p.id] = section.id;
   }
 }
 
@@ -42,8 +31,8 @@ const DSA_PHASES: JourneyPanelPhase[] = DSA_JOURNEY.map((phase) => ({
   number: phase.number,
   label: phase.label,
   emoji: phase.emoji,
-  sections: phase.sections.map((section) => {
-    const revisit = DSA_SECTION_REVISIT[section.id];
+  sections: phase.sections.map((section, idx) => {
+    const nextSection = phase.sections[idx + 1];
     return {
       id: section.id,
       label: section.label,
@@ -53,12 +42,14 @@ const DSA_PHASES: JourneyPanelPhase[] = DSA_JOURNEY.map((phase) => ({
         label: PROBLEM_TITLES[p.id] ?? `Problem ${p.id}`,
         prefix: p.id,
       })),
-      revisitItems: revisit?.ids.map((id) => ({
-        key: id,
-        label: PROBLEM_TITLES[id] ?? `Problem ${id}`,
-        prefix: id,
+      revisitItems: section.reinforce.map((p) => ({
+        key: p.id,
+        label: PROBLEM_TITLES[p.id] ?? `Problem ${p.id}`,
+        prefix: p.id,
       })),
-      revisitFromLabel: revisit?.fromLabel,
+      revisitFromLabel: section.label,
+      revisitPrerequisiteLabel:
+        section.reinforcePrerequisiteLabel ?? nextSection?.label,
     };
   }),
 }));

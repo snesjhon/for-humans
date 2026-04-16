@@ -5,13 +5,13 @@ yarn.lock
 .obsidian
 
 # Claude Code — ignore personal settings, keep shared skills
-.claude/settings.local.json
-.claude/settings.json
-.claude/sessions
-.claude/claudian-settings.json
+.claude
+.agents
 docs/superpowers/
 .superpowers/
 tsconfig.tsbuildinfo
 .env.local
 .env
 .git
+
+
