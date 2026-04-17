@@ -281,7 +281,28 @@ export function JourneyPanel({
     });
   }, [pathname]);
 
-  const toggleSection = (sectionId: string) => {
+  const toggleSection = (sectionId: string, phaseNumber: number) => {
+    const phaseIsCollapsed = collapsedPhases.has(phaseNumber);
+
+    if (phaseIsCollapsed) {
+      setCollapsedPhases((prev) => {
+        const next = new Set(prev);
+        next.delete(phaseNumber);
+        return next;
+      });
+      setCollapsedSections((prev) => {
+        const next = new Set(prev);
+        phases
+          .find((phase) => phase.number === phaseNumber)
+          ?.sections.forEach((section) => {
+            if (section.id === sectionId) next.delete(section.id);
+            else next.add(section.id);
+          });
+        return next;
+      });
+      return;
+    }
+
     setCollapsedSections((prev) => {
       const next = new Set(prev);
       if (next.has(sectionId)) next.delete(sectionId);
@@ -291,10 +312,24 @@ export function JourneyPanel({
   };
 
   const togglePhase = (phaseNumber: number) => {
+    const phase = phases.find((item) => item.number === phaseNumber);
+    if (!phase) return;
+
+    const phaseIsCollapsed = collapsedPhases.has(phaseNumber);
+
     setCollapsedPhases((prev) => {
       const next = new Set(prev);
-      if (next.has(phaseNumber)) next.delete(phaseNumber);
+      if (phaseIsCollapsed) next.delete(phaseNumber);
       else next.add(phaseNumber);
+      return next;
+    });
+
+    setCollapsedSections((prev) => {
+      const next = new Set(prev);
+      phase.sections.forEach((section) => {
+        if (phaseIsCollapsed) next.delete(section.id);
+        else next.add(section.id);
+      });
       return next;
     });
   };
@@ -422,7 +457,7 @@ export function JourneyPanel({
                   icon={SectionIcon}
                   label={section.label}
                   isCollapsed={isCollapsed}
-                  onToggle={() => toggleSection(section.id)}
+                  onToggle={() => toggleSection(section.id, phase.number)}
                 >
                   {section.fundamentalsSlug &&
                     availableFundamentalsSlugs.has(
