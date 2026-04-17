@@ -163,9 +163,7 @@ function NavSection({
       </button>
 
       {!isCollapsed && children && (
-        <div className="mb-1 ml-4 border-l border-l-[var(--ms-surface)] flex flex-col gap-2">
-          {children}
-        </div>
+        <div className="mb-1 ml-4 flex flex-col">{children}</div>
       )}
     </div>
   );
@@ -185,20 +183,22 @@ function NavItem({
   itemRef?: React.RefObject<HTMLAnchorElement>;
 }) {
   return (
-    <Link
-      ref={itemRef}
-      href={href}
-      className={`flex items-center gap-2 rounded-md px-[10px] py-[6px] text-xs no-underline transition-[color,background] duration-150 focus:outline-none hover:bg-[var(--ms-primary-surface)] ${
-        isActive
-          ? 'font-semibold text-[var(--ms-primary)]'
-          : 'font-normal text-[var(--ms-text-subtle)]'
-      }`}
-    >
-      {mark}
-      <span className="overflow-hidden text-ellipsis whitespace-nowrap">
-        {label}
-      </span>
-    </Link>
+    <div className="border-l py-1 border-l-[var(--ms-surface)]">
+      <Link
+        ref={itemRef}
+        href={href}
+        className={`flex items-center gap-2 rounded-md px-[10px] py-[6px] text-xs no-underline transition-[color,background] duration-150 focus:outline-none hover:bg-[var(--ms-primary-surface)] ${
+          isActive
+            ? 'font-semibold text-[var(--ms-primary)]'
+            : 'font-normal text-[var(--ms-text-subtle)]'
+        }`}
+      >
+        {mark}
+        <span className="overflow-hidden text-ellipsis whitespace-nowrap">
+          {label}
+        </span>
+      </Link>
+    </div>
   );
 }
 
@@ -333,7 +333,7 @@ export function JourneyPanel({
                         : `Collapse ${phase.label}`
                     }
                     aria-expanded={!isPhaseCollapsed}
-                    className="appearance-none shadow-none flex items-center justify-between rounded-md border-none bg-transparent font-semibold transition-[background,color] duration-150 outline-none ring-0 hover:bg-[var(--ms-primary-surface)] focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 p-2 text-[var(--ms-text-body)] mb-0"
+                    className="appearance-none shadow-none flex items-center justify-between rounded-md border-none bg-transparent font-semibold transition-[background,color] duration-150 outline-none ring-0 hover:bg-[var(--ms-primary-surface)] focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 p-2 text-[var(--ms-text-body)] mb-0 "
                   >
                     {isPhaseCollapsed ? (
                       <ChevronsUpDown
@@ -467,7 +467,13 @@ export function JourneyPanel({
                   ))}
 
                   {availableRevisits.length > 0 && (
-                    <>
+                    <div
+                      className={
+                        collapsedRevisits.has(section.id)
+                          ? 'border-l border-l-[var(--ms-surface)]'
+                          : ''
+                      }
+                    >
                       <button
                         onClick={() => toggleRevisit(section.id)}
                         className="appearance-none flex w-full items-center gap-2 rounded-md border-none bg-transparent px-[10px] py-[6px] text-left outline-none hover:bg-[var(--ms-primary-surface)] focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
@@ -484,24 +490,26 @@ export function JourneyPanel({
                       </button>
                       {!collapsedRevisits.has(section.id) &&
                         availableRevisits.map((item) => (
-                          <NavItem
-                            key={item.key}
-                            itemRef={
-                              activeItemKey === item.key
-                                ? activeItemRef
-                                : undefined
-                            }
-                            href={getItemHref(item.key)}
-                            isActive={activeItemKey === item.key}
-                            mark={
-                              <ProgressMark
-                                completed={completedProblemIds.has(item.key)}
-                              />
-                            }
-                            label={item.label}
-                          />
+                          <div className="pl-4">
+                            <NavItem
+                              key={item.key}
+                              itemRef={
+                                activeItemKey === item.key
+                                  ? activeItemRef
+                                  : undefined
+                              }
+                              href={getItemHref(item.key)}
+                              isActive={activeItemKey === item.key}
+                              mark={
+                                <ProgressMark
+                                  completed={completedProblemIds.has(item.key)}
+                                />
+                              }
+                              label={item.label}
+                            />
+                          </div>
                         ))}
-                    </>
+                    </div>
                   )}
                 </NavSection>
               );
