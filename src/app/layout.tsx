@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Newsreader, Plus_Jakarta_Sans } from 'next/font/google';
+import { Newsreader, Plus_Jakarta_Sans, JetBrains_Mono, Caveat } from 'next/font/google';
 import { LayoutShell } from '@/components/ui/LayoutShell/LayoutShell';
 import { getAllProblems } from '@/lib/dsa/content';
 import { getAllFundamentalsSlugs } from '@/lib/dsa/fundamentals';
@@ -20,6 +20,18 @@ const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
   variable: '--font-body',
   weight: ['400', '500', '600', '700'],
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-mono',
+  weight: ['400', '500', '600'],
+});
+
+const caveat = Caveat({
+  subsets: ['latin'],
+  variable: '--font-hand',
+  weight: ['400', '600'],
 });
 
 export const metadata: Metadata = {
@@ -43,7 +55,7 @@ export default async function RootLayout({
     <html
       lang="en"
       data-theme={DEFAULT_THEME_FLAVOR}
-      className={`${newsreader.variable} ${plusJakarta.variable}`}
+      className={`${newsreader.variable} ${plusJakarta.variable} ${jetbrainsMono.variable} ${caveat.variable}`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: getThemeInitScript() }} />
