@@ -130,127 +130,146 @@ export default function HomePage() {
   return (
     <main>
       {/* ─── Hero ─────────────────────────────────────────────────────── */}
-      <section className={`${sectionBase} border-t-0 pt-0`}>
-        <div className={W}>
-          <div
-            className="grid gap-[60px] items-center pt-24 pb-20 min-h-[520px]"
-            style={{ gridTemplateColumns: '1fr 1fr' }}
+      <section
+        data-home-hero
+        className="relative overflow-hidden border-t-0 text-center flex items-start justify-center"
+        style={{ padding: '100px 0 60px', minHeight: '600px' }}
+      >
+        {/* Animated concept-web background */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{ zIndex: 0 }}
+          aria-hidden
+        >
+          <svg
+            viewBox="0 0 1200 720"
+            preserveAspectRatio="xMidYMid slice"
+            className="absolute inset-0 w-full h-full"
           >
-            <div>
-              <Kicker>The atlas for senior reasoning</Kicker>
-              <h1
-                className="font-[var(--font-display)] font-light leading-[0.98] tracking-[-0.03em] mt-5 mb-6 text-[var(--ms-text-heading)]"
-                style={{ fontSize: 'clamp(48px,6vw,88px)' }}
-              >
-                Learn to think{' '}
-                <em className="text-[var(--ms-text-muted)] italic">deeper.</em>
-              </h1>
-              <p className="font-[var(--font-display)] italic text-[20px] leading-[1.6] text-[var(--ms-text-muted)] max-w-[460px] m-0 mb-8">
-                A map of the fundamentals every senior engineer eventually
-                circles back to &mdash; and a place to actually practice them.
-              </p>
-              <div className="flex gap-3 items-center flex-wrap mb-12">
-                <Btn primary>
-                  Open the atlas{' '}
-                  <span className="font-[var(--font-mono)] text-[11px] px-1.5 py-0.5 rounded bg-white/20">
-                    ⏎
-                  </span>
-                </Btn>
-                <Btn>How this works</Btn>
-              </div>
-              <div
-                className="grid gap-9 font-[var(--font-mono)] text-[11px] text-[var(--ms-text-subtle)] tracking-[0.06em]"
-                style={{ gridTemplateColumns: 'repeat(3,auto)' }}
-              >
-                {[
-                  { val: '128', label: 'concepts mapped' },
-                  { val: '3', label: 'paths · DSA · SysDes · FS' },
-                  { val: 'Free', label: 'while we build it' },
-                ].map((s) => (
-                  <div key={s.label}>
-                    <b className="block font-[var(--font-display)] italic font-normal text-[22px] text-[var(--ms-text-heading)] tracking-[0]">
-                      {s.val}
-                    </b>
-                    {s.label}
-                  </div>
-                ))}
-              </div>
-            </div>
+            {/* edges */}
+            <g>
+              <path className="web-edge" d="M 80 200 L 200 180"/>
+              <path className="web-edge" d="M 200 180 L 360 140"/>
+              <path className="web-edge active" d="M 200 180 Q 360 140 520 260"/>
+              <path className="web-edge" d="M 360 140 L 520 260"/>
+              <path className="web-edge" d="M 520 260 L 680 180"/>
+              <path className="web-edge" d="M 680 180 L 860 240"/>
+              <path className="web-edge" d="M 860 240 L 1040 180"/>
+              <path className="web-edge" d="M 1040 180 L 1160 260"/>
+              <path className="web-edge active" d="M 1020 220 Q 880 340 720 300"/>
+              <path className="web-edge" d="M 200 180 L 140 360"/>
+              <path className="web-edge" d="M 360 140 L 420 340"/>
+              <path className="web-edge" d="M 520 260 L 600 440"/>
+              <path className="web-edge" d="M 680 180 L 820 540"/>
+              <path className="web-edge" d="M 860 240 L 820 540"/>
+              <path className="web-edge" d="M 1040 180 L 1020 440"/>
+              <path className="web-edge" d="M 60 420 L 140 360"/>
+              <path className="web-edge active" d="M 140 360 Q 300 300 460 380"/>
+              <path className="web-edge" d="M 140 360 L 260 500"/>
+              <path className="web-edge" d="M 260 500 L 420 340"/>
+              <path className="web-edge" d="M 420 340 L 600 440"/>
+              <path className="web-edge" d="M 600 440 L 820 540"/>
+              <path className="web-edge active" d="M 420 520 Q 600 440 820 540"/>
+              <path className="web-edge" d="M 820 540 L 1020 440"/>
+              <path className="web-edge" d="M 1020 440 L 1160 500"/>
+              <path className="web-edge" d="M 260 500 L 360 620"/>
+              <path className="web-edge" d="M 600 440 L 540 640"/>
+              <path className="web-edge" d="M 820 540 L 900 660"/>
+            </g>
+            {/* nodes */}
+            <g>
+              <circle className="web-node"        cx="80"   cy="200" r="3"/>
+              <circle className="web-node anchor" cx="200"  cy="180" r="6"/>
+              <circle className="web-halo"        cx="200"  cy="180" r="6"/>
+              <circle className="web-node done"   cx="360"  cy="140" r="5"/>
+              <circle className="web-node"        cx="520"  cy="260" r="5"/>
+              <circle className="web-node"        cx="680"  cy="180" r="4"/>
+              <circle className="web-node"        cx="860"  cy="240" r="5"/>
+              <circle className="web-node"        cx="1040" cy="180" r="5"/>
+              <circle className="web-node"        cx="1160" cy="260" r="3"/>
+              <circle className="web-node"        cx="60"   cy="420" r="3"/>
+              <circle className="web-node"        cx="140"  cy="360" r="5"/>
+              <circle className="web-node"        cx="260"  cy="500" r="4"/>
+              <circle className="web-node anchor" cx="420"  cy="340" r="6"/>
+              <circle className="web-halo"        cx="420"  cy="340" r="6"/>
+              <circle className="web-node"        cx="600"  cy="440" r="5"/>
+              <circle className="web-node done"   cx="820"  cy="540" r="5"/>
+              <circle className="web-node"        cx="1020" cy="440" r="5"/>
+              <circle className="web-node"        cx="1160" cy="500" r="3"/>
+              <circle className="web-node"        cx="360"  cy="620" r="3"/>
+              <circle className="web-node"        cx="540"  cy="640" r="3"/>
+              <circle className="web-node"        cx="900"  cy="660" r="3"/>
+              <circle className="web-node"        cx="160"  cy="90"  r="2"/>
+              <circle className="web-node"        cx="940"  cy="100" r="2"/>
+              <circle className="web-node"        cx="1100" cy="360" r="2"/>
+              <circle className="web-node"        cx="40"   cy="540" r="2"/>
+            </g>
+            {/* labels */}
+            <g fontFamily="var(--font-mono)">
+              <text className="web-label near" x="212" y="172">invariants</text>
+              <text className="web-label"      x="368" y="132">two pointers</text>
+              <text className="web-label"      x="528" y="252">hashing</text>
+              <text className="web-label"      x="688" y="172">recursion</text>
+              <text className="web-label"      x="868" y="232">trees</text>
+              <text className="web-label"      x="1046" y="172">graphs</text>
+              <text className="web-label"      x="148" y="352">primitives</text>
+              <text className="web-label near" x="428" y="332">load · capacity</text>
+              <text className="web-label"      x="608" y="432">queues</text>
+              <text className="web-label"      x="828" y="532">CAP</text>
+              <text className="web-label"      x="1028" y="432">coordination</text>
+            </g>
+            {/* sparks */}
+            <circle className="web-spark s1" r="2.2"/>
+            <circle className="web-spark s2" r="2.2"/>
+            <circle className="web-spark s3" r="2.2"/>
+            <circle className="web-spark s4" r="2.2"/>
+          </svg>
+          {/* vignette — keeps type readable */}
+          <div className="hero-vignette" />
+        </div>
 
-            {/* Mini atlas */}
-            <div className="relative aspect-square border border-[var(--ms-surface)] rounded-2xl bg-[var(--ms-bg-pane-secondary)] overflow-hidden">
-              <div className="absolute top-3.5 left-3.5 font-[var(--font-mono)] text-[10px] text-[var(--ms-text-faint)] tracking-[0.1em]">
-                ATLAS · hero preview
+        {/* Hero text */}
+        <div
+          className="relative flex flex-col items-center max-w-[820px] mx-auto px-6"
+          style={{ zIndex: 2 }}
+        >
+          <Kicker>The atlas for senior reasoning</Kicker>
+          <h1
+            className="font-[var(--font-display)] font-light leading-[0.96] tracking-[-0.035em] mt-5 mb-7 text-[var(--ms-text-heading)]"
+            style={{ fontSize: 'clamp(56px,8vw,112px)' }}
+          >
+            Learn to think{' '}
+            <em className="text-[var(--ms-text-muted)] italic">deeper.</em>
+          </h1>
+          <p className="font-[var(--font-display)] italic text-[21px] leading-[1.55] text-[var(--ms-text-muted)] max-w-[560px] mx-auto m-0 mb-9">
+            A map of the fundamentals every senior engineer eventually circles
+            back to &mdash; and a place to actually practice them.
+          </p>
+          <div className="flex gap-3 items-center flex-wrap justify-center">
+            <Btn primary>
+              Open the atlas{' '}
+              <span className="font-[var(--font-mono)] text-[11px] px-1.5 py-0.5 rounded bg-white/20">
+                ⏎
+              </span>
+            </Btn>
+            <Btn>How this works</Btn>
+          </div>
+          <div
+            className="grid gap-12 mt-14 font-[var(--font-mono)] text-[11px] text-[var(--ms-text-subtle)] tracking-[0.06em] text-center"
+            style={{ gridTemplateColumns: 'repeat(3,auto)' }}
+          >
+            {[
+              { val: '128', label: 'concepts mapped' },
+              { val: '3', label: 'paths · DSA · SysDes · FS' },
+              { val: 'Free', label: 'while we build it' },
+            ].map((s) => (
+              <div key={s.label}>
+                <b className="block font-[var(--font-display)] italic font-normal text-[22px] text-[var(--ms-text-heading)] tracking-[0]">
+                  {s.val}
+                </b>
+                {s.label}
               </div>
-              <svg
-                viewBox="0 0 400 400"
-                className="absolute inset-0 w-full h-full"
-                aria-hidden
-              >
-                <g
-                  stroke="var(--ms-surface1)"
-                  strokeWidth="1"
-                  fill="none"
-                  opacity=".7"
-                >
-                  <path d="M200,60 L110,140 L160,240 L260,240 L300,150 Z" />
-                  <path d="M110,140 L60,220 L160,240" />
-                  <path d="M260,240 L340,290 L220,340 L160,240" />
-                  <path d="M160,240 L220,340" />
-                  <path d="M260,240 L300,150" />
-                </g>
-                <g>
-                  <circle cx="200" cy="60" r="14" fill="var(--ms-blue)" opacity=".85" />
-                  <circle cx="110" cy="140" r="10" fill="var(--ms-text-body)" opacity=".35" />
-                  <circle cx="300" cy="150" r="10" fill="var(--ms-text-body)" opacity=".35" />
-                  <circle cx="60" cy="220" r="7" fill="var(--ms-text-body)" opacity=".25" />
-                  <circle cx="160" cy="240" r="12" fill="var(--ms-green)" opacity=".7" />
-                  <circle cx="260" cy="240" r="10" fill="var(--ms-text-body)" opacity=".35" />
-                  <circle cx="340" cy="290" r="7" fill="var(--ms-text-body)" opacity=".25" />
-                  <circle cx="220" cy="340" r="9" fill="var(--ms-text-body)" opacity=".3" />
-                </g>
-                <g
-                  fill="var(--ms-text-subtle)"
-                  fontFamily="var(--font-mono)"
-                  fontSize="9"
-                >
-                  <text x="215" y="55">
-                    invariants
-                  </text>
-                  <text x="118" y="130" textAnchor="end">
-                    recursion
-                  </text>
-                  <text x="315" y="148">
-                    graphs
-                  </text>
-                  <text x="170" y="258">
-                    CAP
-                  </text>
-                  <text x="270" y="236">
-                    queues
-                  </text>
-                </g>
-              </svg>
-              <div className="absolute bottom-3.5 left-3.5 right-3.5 flex gap-3.5 justify-between font-[var(--font-mono)] text-[10px] text-[var(--ms-text-subtle)]">
-                {[
-                  { color: 'var(--ms-blue)', label: 'anchor' },
-                  { color: 'var(--ms-green)', label: 'mastered' },
-                  {
-                    color: 'var(--ms-text-body)',
-                    label: 'queued',
-                    opacity: '0.35',
-                  },
-                ].map((l) => (
-                  <span key={l.label} className="flex items-center gap-1.5">
-                    <span
-                      className="inline-block w-2 h-2 rounded-full"
-                      style={{ background: l.color, opacity: l.opacity }}
-                    />
-                    {l.label}
-                  </span>
-                ))}
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>

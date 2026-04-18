@@ -9,3 +9,115 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ── Hero concept-web animations ─────────────────────────────────────────── */
+.web-edge {
+  stroke: var(--ms-overlay1);
+  stroke-width: 1;
+  fill: none;
+  opacity: 0.22;
+}
+.web-edge.active {
+  stroke: var(--ms-blue);
+  opacity: 0.55;
+  stroke-dasharray: 3 6;
+  animation: web-flow 6s linear infinite;
+}
+@keyframes web-flow {
+  from { stroke-dashoffset: 0 }
+  to   { stroke-dashoffset: -180 }
+}
+.web-node {
+  fill: var(--ms-text-body);
+  opacity: 0.28;
+}
+.web-node.anchor {
+  fill: var(--ms-blue);
+  opacity: 0.7;
+  animation: web-pulse 3.6s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.web-node.done {
+  fill: var(--ms-green);
+  opacity: 0.55;
+}
+.web-halo {
+  fill: none;
+  stroke: var(--ms-blue);
+  stroke-width: 1;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: web-halo 3.6s ease-out infinite;
+}
+@keyframes web-pulse {
+  0%, 100% { opacity: 0.55 }
+  50%       { opacity: 0.95 }
+}
+@keyframes web-halo {
+  0%        { opacity: 0.45; r: 6  }
+  80%, 100% { opacity: 0;    r: 22 }
+}
+.web-label {
+  font-size: 9px;
+  fill: var(--ms-text-faint);
+  letter-spacing: 0.04em;
+}
+.web-label.near {
+  fill: var(--ms-text-subtle);
+}
+.web-spark {
+  fill: var(--ms-blue);
+  opacity: 0.9;
+  offset-rotate: 0deg;
+}
+.web-spark.s1 {
+  offset-path: path('M 200 180 Q 360 140 520 260');
+  animation: spark-run 5.2s linear infinite;
+}
+.web-spark.s2 {
+  offset-path: path('M 1020 220 Q 880 340 720 300');
+  animation: spark-run 6.4s linear infinite -1.8s;
+}
+.web-spark.s3 {
+  offset-path: path('M 420 520 Q 600 440 820 540');
+  animation: spark-run 7.1s linear infinite -3.2s;
+}
+.web-spark.s4 {
+  offset-path: path('M 140 360 Q 300 300 460 380');
+  animation: spark-run 5.8s linear infinite -2.4s;
+}
+@keyframes spark-run {
+  0%          { offset-distance: 0%;    opacity: 0   }
+  10%         { opacity: 0.9 }
+  90%         { opacity: 0.9 }
+  100%        { offset-distance: 100%;  opacity: 0   }
+}
+@media (prefers-reduced-motion: reduce) {
+  .web-edge.active,
+  .web-node.anchor,
+  .web-halo,
+  .web-spark { animation: none; }
+  .web-spark  { opacity: 0; }
+}
+/* vignette overlay on the concept-web background */
+.hero-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse 46% 42% at 50% 52%,
+      var(--ms-bg-pane) 0%,
+      color-mix(in srgb, var(--ms-bg-pane) 92%, transparent) 30%,
+      color-mix(in srgb, var(--ms-bg-pane) 60%, transparent) 55%,
+      transparent 78%
+    ),
+    linear-gradient(
+      to bottom,
+      transparent 0%,
+      transparent 70%,
+      var(--ms-bg-pane) 100%
+    );
+}

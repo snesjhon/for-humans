@@ -32,7 +32,9 @@ export function LayoutShell({
   const pathname = usePathname();
   const mainRef = useRef<HTMLElement | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const isFullwidth = FULLWIDTH_ROUTES.has(pathname);
+  const isHome = pathname === '/';
   const topLevelNavLinks = [
     { href: '/dsa', label: 'DSA', active: pathname.startsWith('/dsa') },
     {
@@ -46,10 +48,31 @@ export function LayoutShell({
     mainRef.current?.focus({ preventScroll: true });
   }, [pathname]);
 
+  useEffect(() => {
+    setScrolled(false);
+    const onScroll = () => setScrolled(window.scrollY > 80);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [pathname]);
+
   if (isFullwidth) {
     return (
       <>
-        <header className="sticky top-0 z-50 bg-[var(--ms-bg-pane-secondary)] border-b border-b-[var(--ms-surface)]">
+        <header
+          className="sticky top-0 z-50 transition-[background-color,border-color,backdrop-filter] duration-500"
+          style={{
+            backgroundColor:
+              isHome && !scrolled
+                ? 'transparent'
+                : 'var(--ms-bg-pane-secondary)',
+            borderBottom:
+              isHome && !scrolled
+                ? '1px solid transparent'
+                : '1px solid var(--ms-surface)',
+            backdropFilter: isHome && !scrolled ? 'none' : 'blur(8px)',
+          }}
+        >
           <div className="max-w-[1152px] mx-auto px-6 min-h-14 py-3 flex items-center justify-between gap-6">
             <div className="flex items-center gap-6">
               <Link
@@ -60,7 +83,7 @@ export function LayoutShell({
                   <TDIcon size={22} />
                 </span>
                 <span className="font-normal text-[1.05rem] text-[var(--ms-text-body)] tracking-[-0.01em] [font-family:var(--font-display)]">
-                  thinkdeep.systems
+                  thinkdeep
                 </span>
               </Link>
 
