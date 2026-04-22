@@ -1,27 +1,23 @@
-// =============================================================================
-// Binary Trees — Level 3, Exercise 2: Record the First Room on Each Floor
-// =============================================================================
-// Goal: Practice the floor-sweep queue by capturing the leftmost room at every level.
+// Goal: Practice clipping bad wings while the notebook tracks the richest route.
 //
-// As the docent processes one floor at a time, record the first room removed
-// from the rope line for that floor.
+// Each room has a score. Return the maximum score of any route in the archive,
+// where a route may start and end at any rooms connected by hallways.
 //
 // Example:
-//   leftmostByFloor(room(7, room(3), room(11)))                  → [7, 3]
-//   leftmostByFloor(room(8, room(4, room(2), room(6)), room(12))) → [8, 4, 2]
-// =============================================================================
+//   richestRoute(room(1, room(2), room(3)))   → 6
+//   richestRoute(room(-3, room(-2), room(-5))) → -2
 type TreeNode = { value: number; left: TreeNode | null; right: TreeNode | null };
 
-function leftmostByFloor(root: TreeNode | null): number[] {
+function richestRoute(root: TreeNode | null): number {
   throw new Error('not implemented');
 }
 
 // ---Tests
-test('empty museum', () => leftmostByFloor(null), []);
-test('single room', () => leftmostByFloor(room(7)), [7]);
-test('two floors', () => leftmostByFloor(room(7, room(3), room(11))), [7, 3]);
-test('three floors mixed', () => leftmostByFloor(room(8, room(4, room(2), room(6)), room(12, null, room(14)))), [8, 4, 2]);
-test('right-leaning hallway still records first room', () => leftmostByFloor(room(5, null, room(9, null, room(12)))), [5, 9, 12]);
+test('single room', () => richestRoute(room(5)), 5);
+test('all positive bend', () => richestRoute(room(1, room(2), room(3))), 6);
+test('negative wings clipped', () => richestRoute(room(2, room(-1), room(4))), 6);
+test('best route below entrance', () => richestRoute(room(-10, room(9), room(20, room(15), room(7)))), 42);
+test('all negative archive', () => richestRoute(room(-3, room(-2), room(-5))), -2);
 // ---End Tests
 
 // ---Helpers

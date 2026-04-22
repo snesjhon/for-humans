@@ -1,27 +1,23 @@
-// =============================================================================
-// Binary Trees — Level 3, Exercise 1: Sum Each Floor
-// =============================================================================
-// Goal: Practice the museum rope-line sweep by computing one total per floor.
+// Goal: Practice returning one hallway depth while the notebook tracks the best route.
 //
-// The docent processes rooms floor by floor.
-// Return an array where each entry is the sum of plaque values on that floor.
+// Return the length, in edges, of the longest hallway route anywhere in the archive.
+// A route may bend through a room from one wing into the other.
 //
 // Example:
-//   levelSums(room(7, room(3), room(11)))                    → [7, 14]
-//   levelSums(room(8, room(4, room(2), room(6)), room(12))) → [8, 16, 8]
-// =============================================================================
+//   longestHallway(room(1, room(2), room(3))) → 2
+//   longestHallway(room(1))                    → 0
 type TreeNode = { value: number; left: TreeNode | null; right: TreeNode | null };
 
-function levelSums(root: TreeNode | null): number[] {
+function longestHallway(root: TreeNode | null): number {
   throw new Error('not implemented');
 }
 
 // ---Tests
-test('empty museum', () => levelSums(null), []);
-test('single floor', () => levelSums(room(7)), [7]);
-test('two floors', () => levelSums(room(7, room(3), room(11))), [7, 14]);
-test('three floors mixed', () => levelSums(room(8, room(4, room(2), room(6)), room(12, null, room(14)))), [8, 16, 22]);
-test('one long hallway', () => levelSums(room(5, room(4, room(3)))), [5, 4, 3]);
+test('empty archive', () => longestHallway(null), 0);
+test('single room', () => longestHallway(room(1)), 0);
+test('simple bend through entrance', () => longestHallway(room(1, room(2), room(3))), 2);
+test('deep left route', () => longestHallway(room(1, room(2, room(4, room(7)), room(5)), room(3))), 4);
+test('route bends below entrance', () => longestHallway(room(1, room(2, room(4), room(5)), room(3, null, room(6, null, room(7))))), 5);
 // ---End Tests
 
 // ---Helpers

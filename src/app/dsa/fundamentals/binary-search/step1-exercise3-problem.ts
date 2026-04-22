@@ -1,25 +1,23 @@
-// =============================================================================
-// Binary Search — Level 1, Exercise 3: Probe a Mixed Ledger
-// =============================================================================
-// Goal: Keep the exact-hit search working even when the rail includes negatives.
+// Goal: Keep the exact-mark probe working when the surveyor's rail crosses from negative to positive.
 //
-// The surveyor's ledger is still sorted, but it crosses from negative to positive.
-// Return the index of target, or -1 if the mark is absent.
+// The surveyor's ledger is still sorted, but it includes negative and positive marks.
+// Return the index of `target`, or `-1` if the mark is absent.
 //
 // Example:
 //   findLedgerMark([-12, -3, 0, 4, 9, 18], -3) → 1
 //   findLedgerMark([-12, -3, 0, 4, 9, 18], 5)  → -1
-// =============================================================================
 function findLedgerMark(marks: number[], target: number): number {
   throw new Error('not implemented');
 }
 
+// ---Tests
 test('negative mark present', () => findLedgerMark([-12, -3, 0, 4, 9, 18], -3), 1);
 test('zero mark present', () => findLedgerMark([-12, -3, 0, 4, 9, 18], 0), 2);
 test('positive mark present', () => findLedgerMark([-12, -3, 0, 4, 9, 18], 18), 5);
-test('missing negative mark', () => findLedgerMark([-12, -3, 0, 4, 9, 18], -7), -1);
-test('missing positive mark', () => findLedgerMark([-12, -3, 0, 4, 9, 18], 5), -1);
-test('single negative rail', () => findLedgerMark([-4], -4), 0);
+test('mark missing between negatives', () => findLedgerMark([-12, -3, 0, 4, 9, 18], -5), -1);
+test('mark missing above all values', () => findLedgerMark([-12, -3, 0, 4, 9, 18], 30), -1);
+test('single negative mark', () => findLedgerMark([-7], -7), 0);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

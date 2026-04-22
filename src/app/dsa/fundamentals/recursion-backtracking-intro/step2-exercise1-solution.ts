@@ -1,21 +1,24 @@
-// =============================================================================
-// Recursion & Backtracking Intro — Level 2, Exercise 1: Three Sub-Peaks — SOLUTION
-// =============================================================================
-// Goal: Implement tribonacci WITHOUT memoization to feel the cost of
-//       re-climbing the same sub-peaks repeatedly.
-function tribonacci(n: number): number {
-  if (n === 0 || n === 1) return 0;  // base camp — flat ground
-  if (n === 2) return 1;             // base camp — second flat ground
-  return tribonacci(n - 1) + tribonacci(n - 2) + tribonacci(n - 3);
+// Goal: Practice binary branching by dispatching two scouts per junction with independent state.
+
+function allSubsets(nums: number[]): number[][] {
+  function backtrack(i: number, current: number[]): number[][] {
+    if (i >= nums.length) return [current];
+    return [
+      ...backtrack(i + 1, [...current, nums[i]]),
+      ...backtrack(i + 1, current),
+    ];
+  }
+  return backtrack(0, []);
 }
 
-test('base camp: T(0) = 0', () => tribonacci(0), 0);
-test('base camp: T(1) = 0', () => tribonacci(1), 0);
-test('base camp: T(2) = 1', () => tribonacci(2), 1);
-test('T(3) = 1', () => tribonacci(3), 1);
-test('T(4) = 2', () => tribonacci(4), 2);
-test('T(5) = 4', () => tribonacci(5), 4);
-test('T(7) = 13', () => tribonacci(7), 13);
+// ---Tests
+test('empty array', () => allSubsets([]).length, 1);
+test('single element count', () => allSubsets([1]).length, 2);
+test('two elements count', () => allSubsets([1, 2]).length, 4);
+test('three elements count', () => allSubsets([1, 2, 3]).length, 8);
+test('contains empty subset', () => allSubsets([1, 2]).some((s) => s.length === 0), true);
+test('contains full subset', () => allSubsets([1, 2]).some((s) => JSON.stringify([...s].sort()) === '[1,2]'), true);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

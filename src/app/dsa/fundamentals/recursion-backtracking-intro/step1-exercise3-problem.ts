@@ -1,31 +1,27 @@
-// =============================================================================
-// Recursion & Backtracking Intro — Level 1, Exercise 3: Sum the Waypoints
-// =============================================================================
-// Goal: Recursively sum all digits of a non-negative integer.
-//       Each digit is one waypoint on the mountain; the guide collects them
-//       by peeling off the last digit and delegating the rest.
+// Goal: Practice the Summit Rule with an indexed array instead of a single integer.
 //
-// The mountain guide rule:
-//   - Base camp: n < 10 → return n (single digit, answered directly)
-//   - Recursive case: dispatch sumDigits(Math.floor(n / 10)), add last digit (n % 10)
+// The guide at index i dispatches one scout to index i+1. Compare arr[i] against
+// the scout's report and return the larger value. The base fires when the index
+// reaches the end of the array — return -Infinity so any real element wins the
+// first comparison.
 //
 // Example:
-//   sumDigits(0)   → 0
-//   sumDigits(9)   → 9
-//   sumDigits(12)  → 3   (1 + 2)
-//   sumDigits(456) → 15  (4 + 5 + 6)
-//   sumDigits(999) → 27
-// =============================================================================
-function sumDigits(n: number): number {
+//   trailMax([3, 1, 5, 2], 0)  → 5
+//   trailMax([3, 1, 5, 2], 2)  → 5
+//   trailMax([], 0)            → -Infinity
+
+function trailMax(arr: number[], i: number): number {
   throw new Error('not implemented');
 }
 
-test('single digit 0', () => sumDigits(0), 0);
-test('single digit 9', () => sumDigits(9), 9);
-test('two digits: 12 → 3', () => sumDigits(12), 3);
-test('three digits: 456 → 15', () => sumDigits(456), 15);
-test('repeated nines: 999 → 27', () => sumDigits(999), 27);
-test('trailing zeros: 1000 → 1', () => sumDigits(1000), 1);
+// ---Tests
+test('empty range', () => trailMax([], 0), -Infinity);
+test('single element', () => trailMax([7], 0), 7);
+test('max at front', () => trailMax([9, 3, 1], 0), 9);
+test('max at back', () => trailMax([1, 3, 9], 0), 9);
+test('max in middle', () => trailMax([3, 9, 1], 0), 9);
+test('start mid-range', () => trailMax([3, 9, 1], 1), 9);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

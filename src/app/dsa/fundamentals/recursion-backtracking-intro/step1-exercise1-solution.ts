@@ -1,18 +1,17 @@
-// =============================================================================
-// Recursion & Backtracking Intro — Level 1, Exercise 1: Climb to Base Camp — SOLUTION
-// =============================================================================
-// Goal: Write a linear recursion that sums all integers from 1 to n by
-//       dispatching an apprentice to the peak just below and taking one step.
-function sumRange(n: number): number {
-  if (n === 0) return 0;           // base camp — return the known answer
-  return n + sumRange(n - 1);     // dispatch apprentice, take one step up
+// Goal: Practice dispatching one scout per junction and combining its report.
+
+function sumDownFrom(n: number): number {
+  if (n === 0) return 0;
+  return n + sumDownFrom(n - 1);
 }
 
-test('base camp: n=0 returns 0', () => sumRange(0), 0);
-test('n=1 returns 1', () => sumRange(1), 1);
-test('n=4 returns 10', () => sumRange(4), 10);
-test('n=5 returns 15', () => sumRange(5), 15);
-test('n=10 returns 55', () => sumRange(10), 55);
+// ---Tests
+test('base junction (n=0)', () => sumDownFrom(0), 0);
+test('single junction (n=1)', () => sumDownFrom(1), 1);
+test('three junctions', () => sumDownFrom(3), 6);
+test('five junctions', () => sumDownFrom(5), 15);
+test('ten junctions', () => sumDownFrom(10), 55);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

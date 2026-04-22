@@ -1,27 +1,23 @@
-// =============================================================================
-// Binary Trees — Level 3, Exercise 3: Find the First Floor With the Target Plaque
-// =============================================================================
-// Goal: Practice a queue-driven floor sweep by stopping at the earliest floor that contains a target plaque.
+// Goal: Practice returning two alternating hallway reports while the notebook tracks the longest turn pattern.
 //
-// Return the floor number of the first room whose plaque equals target.
-// The lobby is floor 0. If the plaque never appears, return -1.
+// A route alternates left turn, right turn, left turn, and so on.
+// Return the largest number of edges in any alternating hallway route.
 //
 // Example:
-//   firstFloorWithPlaque(room(7, room(3), room(11)), 11) → 1
-//   firstFloorWithPlaque(room(7, room(3), room(11)), 9)  → -1
-// =============================================================================
+//   longestAlternatingHallway(room(1, room(2, null, room(4)), room(3))) → 2
+//   longestAlternatingHallway(room(1))                                   → 0
 type TreeNode = { value: number; left: TreeNode | null; right: TreeNode | null };
 
-function firstFloorWithPlaque(root: TreeNode | null, target: number): number {
+function longestAlternatingHallway(root: TreeNode | null): number {
   throw new Error('not implemented');
 }
 
 // ---Tests
-test('empty museum', () => firstFloorWithPlaque(null, 7), -1);
-test('target in lobby', () => firstFloorWithPlaque(room(7, room(3), room(11)), 7), 0);
-test('target on second floor', () => firstFloorWithPlaque(room(7, room(3), room(11)), 11), 1);
-test('target on third floor', () => firstFloorWithPlaque(room(8, room(4, room(2), room(6)), room(12, null, room(14))), 14), 2);
-test('missing plaque', () => firstFloorWithPlaque(room(8, room(4, room(2), room(6)), room(12, null, room(14))), 5), -1);
+test('empty archive', () => longestAlternatingHallway(null), 0);
+test('single room', () => longestAlternatingHallway(room(1)), 0);
+test('one clean left-right turn', () => longestAlternatingHallway(room(1, room(2, null, room(4)), room(3))), 2);
+test('long alternating chain', () => longestAlternatingHallway(room(1, room(2, null, room(4, room(6), null)), room(3))), 3);
+test('best route starts below entrance', () => longestAlternatingHallway(room(1, room(2, room(5), null), room(3, room(4, null, room(6)), null))), 3);
 // ---End Tests
 
 // ---Helpers

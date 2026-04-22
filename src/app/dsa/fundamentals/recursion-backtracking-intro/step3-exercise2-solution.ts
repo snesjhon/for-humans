@@ -1,37 +1,37 @@
-// =============================================================================
-// Recursion & Backtracking Intro — Level 3, Exercise 2: Collect Matching Waypoints — SOLUTION
-// =============================================================================
-// Goal: Find all subsets of nums that sum to exactly target.
-function collectSumK(nums: number[], target: number): number[][] {
-  const results: number[][] = [];
-  const pack: number[] = [];
+// Goal: Practice the choose-explore-undo cycle with a boolean marker array instead of a pack.
 
-  function backtrack(start: number, currentSum: number): void {
-    if (currentSum === target) {
-      results.push([...pack]);  // snapshot — never push the live pack reference
+function allPermutations(nums: number[]): number[][] {
+  const results: number[][] = [];
+  const current: number[] = [];
+  const used: boolean[] = new Array(nums.length).fill(false);
+
+  function backtrack(): void {
+    if (current.length === nums.length) {
+      results.push([...current]);
       return;
     }
-    for (let i = start; i < nums.length; i++) {
-      pack.push(nums[i]);                           // pack the item (go down the fork)
-      backtrack(i + 1, currentSum + nums[i]);       // explore everything from here
-      pack.pop();                                   // unpack (return to the fork)
+    for (let i = 0; i < nums.length; i++) {
+      if (used[i]) continue;
+      used[i] = true;
+      current.push(nums[i]);
+      backtrack();
+      current.pop();
+      used[i] = false;
     }
   }
 
-  backtrack(0, 0);
+  backtrack();
   return results;
 }
 
-function sortedSubsets(r: number[][]): number[][] {
-  return r.sort((a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b)));
-}
-
-test('sums to 3: [1,2] and [3]', () => sortedSubsets(collectSumK([1, 2, 3], 3)), [[1, 2], [3]]);
-test('sums to 6: full array only', () => sortedSubsets(collectSumK([1, 2, 3], 6)), [[1, 2, 3]]);
-test('target=0: empty subset', () => sortedSubsets(collectSumK([1, 2, 3], 0)), [[]]);
-test('empty array, target=0', () => sortedSubsets(collectSumK([], 0)), [[]]);
-test('no subset sums to 10', () => sortedSubsets(collectSumK([1, 2, 3], 10)), []);
-test('[1,2,3,4] sums to 4: [1,3] and [4]', () => sortedSubsets(collectSumK([1, 2, 3, 4], 4)), [[1, 3], [4]]);
+// ---Tests
+test('empty array', () => JSON.stringify(allPermutations([])), '[[]]');
+test('single element', () => JSON.stringify(allPermutations([1])), '[[1]]');
+test('two elements count', () => allPermutations([1, 2]).length, 2);
+test('three elements count', () => allPermutations([1, 2, 3]).length, 6);
+test('contains [1,2]', () => allPermutations([1, 2]).some((p) => JSON.stringify(p) === '[1,2]'), true);
+test('contains [2,1]', () => allPermutations([1, 2]).some((p) => JSON.stringify(p) === '[2,1]'), true);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

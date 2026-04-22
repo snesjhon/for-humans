@@ -1,27 +1,25 @@
-// =============================================================================
-// Recursion & Backtracking Intro — Level 1, Exercise 1: Climb to Base Camp
-// =============================================================================
-// Goal: Write a linear recursion that sums all integers from 1 to n by
-//       dispatching an apprentice to the peak just below and taking one step.
+// Goal: Practice dispatching one scout per junction and combining its report.
 //
-// The mountain guide rule:
-//   - Base camp: n === 0 → return 0 (flat ground, answered directly)
-//   - Recursive case: dispatch sumRange(n-1), then take one step: n + result
+// The guide at junction n needs the sum of all integers from n down to 1.
+// Dispatch one scout to junction n-1 and trust its report. Add n to the
+// scout's report and return the combined total. The base junction (n=0)
+// contributes nothing — the trail is empty.
 //
 // Example:
-//   sumRange(4) → 10   (4 + 3 + 2 + 1 + 0 = 10)
-//   sumRange(0) → 0    (already at base camp)
-//   sumRange(1) → 1
-// =============================================================================
-function sumRange(n: number): number {
+//   sumDownFrom(5)  → 15
+//   sumDownFrom(0)  → 0
+
+function sumDownFrom(n: number): number {
   throw new Error('not implemented');
 }
 
-test('base camp: n=0 returns 0', () => sumRange(0), 0);
-test('n=1 returns 1', () => sumRange(1), 1);
-test('n=4 returns 10', () => sumRange(4), 10);
-test('n=5 returns 15', () => sumRange(5), 15);
-test('n=10 returns 55', () => sumRange(10), 55);
+// ---Tests
+test('base junction (n=0)', () => sumDownFrom(0), 0);
+test('single junction (n=1)', () => sumDownFrom(1), 1);
+test('three junctions', () => sumDownFrom(3), 6);
+test('five junctions', () => sumDownFrom(5), 15);
+test('ten junctions', () => sumDownFrom(10), 55);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

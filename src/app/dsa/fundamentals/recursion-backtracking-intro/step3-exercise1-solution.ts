@@ -1,34 +1,30 @@
-// =============================================================================
-// Recursion & Backtracking Intro — Level 3, Exercise 1: Scout All Binary Trails — SOLUTION
-// =============================================================================
-// Goal: Generate all binary strings of length n using backtracking.
-function generateBinaryStrings(n: number): string[] {
-  const results: string[] = [];
+// Goal: Practice the choose-explore-undo cycle using one shared pack and explicit push/pop.
 
-  function scout(current: string): void {
-    if (current.length === n) {  // base camp — full trail reached
-      results.push(current);
-      return;
+function buildSubsets(nums: number[]): number[][] {
+  const results: number[][] = [];
+  const pack: number[] = [];
+
+  function backtrack(i: number): void {
+    results.push([...pack]);
+    for (let j = i; j < nums.length; j++) {
+      pack.push(nums[j]);
+      backtrack(j + 1);
+      pack.pop();
     }
-    scout(current + '0');  // fork left
-    scout(current + '1');  // fork right
-    // No pop needed — strings are immutable, each fork gets its own copy
   }
 
-  scout('');
+  backtrack(0);
   return results;
 }
 
-function sorted(arr: string[]): string[] {
-  return [...arr].sort();
-}
-
-test('n=0 → single empty string', () => sorted(generateBinaryStrings(0)), ['']);
-test('n=1 → two strings', () => sorted(generateBinaryStrings(1)), ['0', '1']);
-test('n=2 → four strings in order', () => sorted(generateBinaryStrings(2)), ['00', '01', '10', '11']);
-test('n=3 → eight strings', () => sorted(generateBinaryStrings(3)).length, 8);
-test('n=3 starts with 000', () => sorted(generateBinaryStrings(3))[0], '000');
-test('n=3 ends with 111', () => sorted(generateBinaryStrings(3))[7], '111');
+// ---Tests
+test('empty array', () => buildSubsets([]).length, 1);
+test('single element count', () => buildSubsets([1]).length, 2);
+test('two elements count', () => buildSubsets([1, 2]).length, 4);
+test('three elements count', () => buildSubsets([1, 2, 3]).length, 8);
+test('contains empty subset', () => buildSubsets([1, 2]).some((s) => s.length === 0), true);
+test('contains full subset', () => buildSubsets([1, 2]).some((s) => JSON.stringify([...s].sort()) === '[1,2]'), true);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

@@ -1,8 +1,7 @@
-// =============================================================================
-// Binary Search — Level 1, Exercise 1: Probe the Exact Checkpoint — SOLUTION
-// =============================================================================
 // Goal: Use the surveyor's midpoint probe to find one exact mark on the rail.
-// =============================================================================
+//
+// The surveyor has a sorted rail of checkpoint numbers.
+// Return the index of `target`, or `-1` if the exact checkpoint is not present.
 function findCheckpoint(checkpoints: number[], target: number): number {
   let left = 0;
   let right = checkpoints.length - 1;
@@ -17,12 +16,14 @@ function findCheckpoint(checkpoints: number[], target: number): number {
   return -1;
 }
 
+// ---Tests
 test('exact checkpoint in middle', () => findCheckpoint([4, 8, 12, 16, 23, 31], 23), 4);
 test('exact checkpoint at start', () => findCheckpoint([2, 5, 9, 12], 2), 0);
 test('exact checkpoint at end', () => findCheckpoint([2, 5, 9, 12], 12), 3);
 test('checkpoint missing', () => findCheckpoint([2, 5, 9, 12], 7), -1);
 test('single mark present', () => findCheckpoint([11], 11), 0);
 test('empty rail', () => findCheckpoint([], 11), -1);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

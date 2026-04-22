@@ -1,8 +1,7 @@
-// =============================================================================
-// Binary Search — Level 2, Exercise 1: Find the First Passing Mark — SOLUTION
-// =============================================================================
-// Goal: Squeeze toward the first rail mark that is not less than the target.
-// =============================================================================
+// Goal: Squeeze toward the first passing rail mark that is not less than the target.
+//
+// Return the first index `i` where `marks[i] >= target`.
+// If no such mark exists, return `-1`.
 function firstNotLessThan(marks: number[], target: number): number {
   let left = 0;
   let right = marks.length - 1;
@@ -21,12 +20,14 @@ function firstNotLessThan(marks: number[], target: number): number {
   return answer;
 }
 
+// ---Tests
 test('first passing mark with duplicates', () => firstNotLessThan([10, 14, 19, 30, 30, 42], 30), 3);
 test('first passing mark after gap', () => firstNotLessThan([10, 14, 19, 30, 30, 42], 31), 5);
 test('target below all marks', () => firstNotLessThan([10, 14, 19], 1), 0);
 test('target above all marks', () => firstNotLessThan([10, 14, 19], 25), -1);
 test('single passing mark', () => firstNotLessThan([7], 7), 0);
 test('empty rail', () => firstNotLessThan([], 7), -1);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

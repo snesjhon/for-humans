@@ -1,32 +1,22 @@
-// =============================================================================
-// Binary Trees — Level 2, Exercise 1: Count the Fork Rooms
-// =============================================================================
-// Goal: Practice child reports by counting rooms that open into two wings.
+// Goal: Practice sweeping the archive one floor at a time with a cart line.
 //
-// A fork room has both a left doorway and a right doorway.
-// Each child wing returns its own fork-room count, and the current room decides
-// whether to add 1 for itself before reporting upward.
+// Return the room labels grouped by floor from top to bottom.
 //
 // Example:
-//   countForkRooms(room(7, room(3), room(11)))                → 1
-//   countForkRooms(room(8, room(4, room(2), room(6)), null)) → 1
-// =============================================================================
+//   floorPlans(room(1, room(2), room(3))) → [[1], [2, 3]]
+//   floorPlans(null)                       → []
 type TreeNode = { value: number; left: TreeNode | null; right: TreeNode | null };
 
-function countForkRooms(root: TreeNode | null): number {
+function floorPlans(root: TreeNode | null): number[][] {
   throw new Error('not implemented');
 }
 
 // ---Tests
-test('empty museum', () => countForkRooms(null), 0);
-test('single room', () => countForkRooms(room(7)), 0);
-test('one fork at lobby', () => countForkRooms(room(7, room(3), room(11))), 1);
-test(
-  'two fork rooms',
-  () => countForkRooms(room(8, room(4, room(2), room(6)), room(12, null, room(14)))),
-  2,
-);
-test('long hallway has no forks', () => countForkRooms(room(5, room(4, room(3)))), 0);
+test('empty archive', () => floorPlans(null), []);
+test('single floor', () => floorPlans(room(1)), [[1]]);
+test('two floors', () => floorPlans(room(1, room(2), room(3))), [[1], [2, 3]]);
+test('mixed archive', () => floorPlans(room(1, room(2, room(4), room(5)), room(3, null, room(6)))), [[1], [2, 3], [4, 5, 6]]);
+test('lopsided archive', () => floorPlans(room(1, room(2, room(3), null), null)), [[1], [2], [3]]);
 // ---End Tests
 
 // ---Helpers

@@ -1,27 +1,23 @@
-// =============================================================================
-// Binary Trees — Level 1, Exercise 2: Find the Target Plaque
-// =============================================================================
-// Goal: Practice hallway descent by searching for one plaque anywhere in the museum.
+// Goal: Practice returning a terminal-room count from each wing.
 //
-// The docent checks the current room's plaque, then explores both wings.
-// Return true if any room contains the target plaque.
+// Count how many archive rooms are true dead ends, meaning they have no smaller
+// left or right wings attached to them.
 //
 // Example:
-//   hasPlaque(room(7, room(3), room(11)), 11) → true
-//   hasPlaque(room(7, room(3), room(11)), 9)  → false
-// =============================================================================
+//   countTerminalRooms(room(5, room(3), room(8))) → 2
+//   countTerminalRooms(room(5))                    → 1
 type TreeNode = { value: number; left: TreeNode | null; right: TreeNode | null };
 
-function hasPlaque(root: TreeNode | null, target: number): boolean {
+function countTerminalRooms(root: TreeNode | null): number {
   throw new Error('not implemented');
 }
 
 // ---Tests
-test('empty museum', () => hasPlaque(null, 4), false);
-test('finds lobby plaque', () => hasPlaque(room(7), 7), true);
-test('finds left wing plaque', () => hasPlaque(room(7, room(3), room(11)), 3), true);
-test('finds deep right plaque', () => hasPlaque(room(8, room(4), room(12, room(10), room(14))), 14), true);
-test('missing plaque', () => hasPlaque(room(8, room(4), room(12, room(10), room(14))), 5), false);
+test('empty archive', () => countTerminalRooms(null), 0);
+test('single room is terminal', () => countTerminalRooms(room(5)), 1);
+test('two terminal rooms', () => countTerminalRooms(room(5, room(3), room(8))), 2);
+test('one terminal deep on left', () => countTerminalRooms(room(5, room(3, room(1)), null)), 1);
+test('mixed archive terminals', () => countTerminalRooms(room(5, room(3, room(1), room(4)), room(8, null, room(9)))), 3);
 // ---End Tests
 
 // ---Helpers

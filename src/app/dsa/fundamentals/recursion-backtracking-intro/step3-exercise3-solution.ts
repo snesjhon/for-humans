@@ -1,40 +1,34 @@
-// =============================================================================
-// Recursion & Backtracking Intro — Level 3, Exercise 3: Combinations of Exact Size — SOLUTION
-// =============================================================================
-// Goal: Find all subsets of nums of exactly size k using backtracking with pruning.
-function combinationsOfSize(nums: number[], k: number): number[][] {
+// Goal: Practice the choose-explore-undo cycle with constraint pruning to eliminate dead branches.
+
+function generateCombinations(n: number, k: number): number[][] {
   const results: number[][] = [];
-  const pack: number[] = [];
+  const current: number[] = [];
 
   function backtrack(start: number): void {
-    if (pack.length === k) {
-      results.push([...pack]);  // snapshot — pack contents are correct size
+    if (current.length === k) {
+      results.push([...current]);
       return;
     }
-    // Prune: not enough items left to fill the pack to size k
-    if (pack.length + (nums.length - start) < k) return;
-
-    for (let i = start; i < nums.length; i++) {
-      pack.push(nums[i]);   // pack the item (go down the fork)
-      backtrack(i + 1);     // explore from next item forward
-      pack.pop();           // unpack (return to the fork) — mandatory
+    for (let i = start; i <= n; i++) {
+      if (n - i + 1 < k - current.length) break;
+      current.push(i);
+      backtrack(i + 1);
+      current.pop();
     }
   }
 
-  backtrack(0);
+  backtrack(1);
   return results;
 }
 
-function sortedSubsets(r: number[][]): number[][] {
-  return r.sort((a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b)));
-}
-
-test('k=2 from [1,2,3]', () => sortedSubsets(combinationsOfSize([1, 2, 3], 2)), [[1, 2], [1, 3], [2, 3]]);
-test('k=2 from [1,2,3,4]', () => sortedSubsets(combinationsOfSize([1, 2, 3, 4], 2)), [[1, 2], [1, 3], [1, 4], [2, 3], [2, 4], [3, 4]]);
-test('k=3: only full array', () => sortedSubsets(combinationsOfSize([1, 2, 3], 3)), [[1, 2, 3]]);
-test('k=0: empty combination', () => sortedSubsets(combinationsOfSize([1, 2, 3], 0)), [[]]);
-test('k > length: empty result', () => sortedSubsets(combinationsOfSize([1, 2, 3], 4)), []);
-test('k=1: each element alone', () => sortedSubsets(combinationsOfSize([1, 2, 3], 1)), [[1], [2], [3]]);
+// ---Tests
+test('k=0 returns empty combination', () => generateCombinations(4, 0), [[]]);
+test('k=1 returns singletons', () => generateCombinations(3, 1), [[1], [2], [3]]);
+test('k equals n', () => generateCombinations(3, 3), [[1, 2, 3]]);
+test('k greater than n', () => generateCombinations(2, 3), []);
+test('4 choose 2 count', () => generateCombinations(4, 2).length, 6);
+test('4 choose 2 first entry', () => generateCombinations(4, 2)[0], [1, 2]);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

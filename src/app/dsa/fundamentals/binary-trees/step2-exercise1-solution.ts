@@ -1,27 +1,35 @@
-// =============================================================================
-// Binary Trees — Level 2, Exercise 1: Count the Fork Rooms — SOLUTION
-// =============================================================================
-// Goal: Practice child reports by counting rooms that open into two wings.
+// Goal: Practice sweeping the archive one floor at a time with a cart line.
 type TreeNode = { value: number; left: TreeNode | null; right: TreeNode | null };
 
-function countForkRooms(root: TreeNode | null): number {
-  if (root === null) return 0;
-  const leftCount = countForkRooms(root.left);
-  const rightCount = countForkRooms(root.right);
-  const here = root.left !== null && root.right !== null ? 1 : 0;
-  return leftCount + rightCount + here;
+function floorPlans(root: TreeNode | null): number[][] {
+  if (root === null) return [];
+
+  const result: number[][] = [];
+  const queue: TreeNode[] = [root];
+
+  while (queue.length > 0) {
+    const floorSize = queue.length;
+    const floor: number[] = [];
+
+    for (let i = 0; i < floorSize; i++) {
+      const node = queue.shift()!;
+      floor.push(node.value);
+      if (node.left) queue.push(node.left);
+      if (node.right) queue.push(node.right);
+    }
+
+    result.push(floor);
+  }
+
+  return result;
 }
 
 // ---Tests
-test('empty museum', () => countForkRooms(null), 0);
-test('single room', () => countForkRooms(room(7)), 0);
-test('one fork at lobby', () => countForkRooms(room(7, room(3), room(11))), 1);
-test(
-  'two fork rooms',
-  () => countForkRooms(room(8, room(4, room(2), room(6)), room(12, null, room(14)))),
-  2,
-);
-test('long hallway has no forks', () => countForkRooms(room(5, room(4, room(3)))), 0);
+test('empty archive', () => floorPlans(null), []);
+test('single floor', () => floorPlans(room(1)), [[1]]);
+test('two floors', () => floorPlans(room(1, room(2), room(3))), [[1], [2, 3]]);
+test('mixed archive', () => floorPlans(room(1, room(2, room(4), room(5)), room(3, null, room(6)))), [[1], [2, 3], [4, 5, 6]]);
+test('lopsided archive', () => floorPlans(room(1, room(2, room(3), null), null)), [[1], [2], [3]]);
 // ---End Tests
 
 // ---Helpers

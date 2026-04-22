@@ -1,34 +1,26 @@
-// =============================================================================
-// Recursion & Backtracking Intro — Level 2, Exercise 1: Three Sub-Peaks
-// =============================================================================
-// Goal: Implement tribonacci WITHOUT memoization to feel the cost of
-//       re-climbing the same sub-peaks repeatedly.
+// Goal: Practice binary branching by dispatching two scouts per junction with independent state.
 //
-// Tribonacci rule: T(n) = T(n-1) + T(n-2) + T(n-3)
-// Three apprentices dispatched per step — the call tree branches three ways.
-//
-// Base camp (three separate stopping points):
-//   T(0) = 0, T(1) = 0, T(2) = 1
+// At each junction fork into two recursive calls: one passes a new array with
+// nums[i] appended (include), and one passes the unchanged current array (skip).
+// Merge the two returned lists with concatenation. The base fires when the index
+// reaches the end — return a list containing only the current pack as its sole element.
 //
 // Example:
-//   tribonacci(3) → 1   (T(2) + T(1) + T(0) = 1+0+0)
-//   tribonacci(5) → 4   (T(4) + T(3) + T(2) = 2+1+1)
-//   tribonacci(7) → 13
-//
-// Note: this version is intentionally slow for large n. That slowness is
-// the lesson — the same sub-peaks are climbed over and over.
-// =============================================================================
-function tribonacci(n: number): number {
+//   allSubsets([1, 2])  → [[], [1], [2], [1, 2]]  (any order)
+//   allSubsets([])      → [[]]
+
+function allSubsets(nums: number[]): number[][] {
   throw new Error('not implemented');
 }
 
-test('base camp: T(0) = 0', () => tribonacci(0), 0);
-test('base camp: T(1) = 0', () => tribonacci(1), 0);
-test('base camp: T(2) = 1', () => tribonacci(2), 1);
-test('T(3) = 1', () => tribonacci(3), 1);
-test('T(4) = 2', () => tribonacci(4), 2);
-test('T(5) = 4', () => tribonacci(5), 4);
-test('T(7) = 13', () => tribonacci(7), 13);
+// ---Tests
+test('empty array', () => allSubsets([]).length, 1);
+test('single element count', () => allSubsets([1]).length, 2);
+test('two elements count', () => allSubsets([1, 2]).length, 4);
+test('three elements count', () => allSubsets([1, 2, 3]).length, 8);
+test('contains empty subset', () => allSubsets([1, 2]).some((s) => s.length === 0), true);
+test('contains full subset', () => allSubsets([1, 2]).some((s) => JSON.stringify([...s].sort()) === '[1,2]'), true);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

@@ -1,24 +1,18 @@
-// =============================================================================
-// Recursion & Backtracking Intro — Level 2, Exercise 3: Tile the Valley Floor — SOLUTION
-// =============================================================================
-// Goal: Count the number of ways to tile a 2×n board using 2×1 dominoes.
-function tileDomino(n: number, memo: Map<number, number> = new Map()): number {
-  if (n === 0) return 1;  // base camp — empty board has one tiling
-  if (n === 1) return 1;  // base camp — only one vertical fits
-  if (memo.has(n)) return memo.get(n)!;  // check summit log
+// Goal: Practice binary branching on a 2D decision space instead of a linear item list.
 
-  const result = tileDomino(n - 1, memo) + tileDomino(n - 2, memo);
-  memo.set(n, result);  // record in summit log
-  return result;
+function countGridPaths(rows: number, cols: number): number {
+  if (rows === 1 || cols === 1) return 1;
+  return countGridPaths(rows - 1, cols) + countGridPaths(rows, cols - 1);
 }
 
-test('empty board: n=0 → 1', () => tileDomino(0), 1);
-test('one column: n=1 → 1', () => tileDomino(1), 1);
-test('n=2 → 2', () => tileDomino(2), 2);
-test('n=3 → 3', () => tileDomino(3), 3);
-test('n=4 → 5', () => tileDomino(4), 5);
-test('n=5 → 8', () => tileDomino(5), 8);
-test('n=10 → 89', () => tileDomino(10), 89);
+// ---Tests
+test('single cell', () => countGridPaths(1, 1), 1);
+test('one row only', () => countGridPaths(1, 5), 1);
+test('one column only', () => countGridPaths(5, 1), 1);
+test('two by two', () => countGridPaths(2, 2), 2);
+test('two by three', () => countGridPaths(2, 3), 3);
+test('three by three', () => countGridPaths(3, 3), 6);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

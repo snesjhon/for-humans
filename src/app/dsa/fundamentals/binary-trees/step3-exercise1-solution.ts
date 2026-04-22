@@ -1,38 +1,29 @@
-// =============================================================================
-// Binary Trees — Level 3, Exercise 1: Sum Each Floor — SOLUTION
-// =============================================================================
-// Goal: Practice the museum rope-line sweep by computing one total per floor.
+// Goal: Practice returning one hallway depth while the notebook tracks the best route.
 type TreeNode = { value: number; left: TreeNode | null; right: TreeNode | null };
 
-function levelSums(root: TreeNode | null): number[] {
-  if (root === null) return [];
+function longestHallway(root: TreeNode | null): number {
+  let best = 0;
 
-  const result: number[] = [];
-  const queue: TreeNode[] = [root];
+  function depth(node: TreeNode | null): number {
+    if (node === null) return 0;
 
-  while (queue.length > 0) {
-    const levelSize = queue.length;
-    let sum = 0;
+    const leftDepth = depth(node.left);
+    const rightDepth = depth(node.right);
+    best = Math.max(best, leftDepth + rightDepth);
 
-    for (let i = 0; i < levelSize; i++) {
-      const node = queue.shift()!;
-      sum += node.value;
-      if (node.left) queue.push(node.left);
-      if (node.right) queue.push(node.right);
-    }
-
-    result.push(sum);
+    return 1 + Math.max(leftDepth, rightDepth);
   }
 
-  return result;
+  depth(root);
+  return best;
 }
 
 // ---Tests
-test('empty museum', () => levelSums(null), []);
-test('single floor', () => levelSums(room(7)), [7]);
-test('two floors', () => levelSums(room(7, room(3), room(11))), [7, 14]);
-test('three floors mixed', () => levelSums(room(8, room(4, room(2), room(6)), room(12, null, room(14)))), [8, 16, 22]);
-test('one long hallway', () => levelSums(room(5, room(4, room(3)))), [5, 4, 3]);
+test('empty archive', () => longestHallway(null), 0);
+test('single room', () => longestHallway(room(1)), 0);
+test('simple bend through entrance', () => longestHallway(room(1, room(2), room(3))), 2);
+test('deep left route', () => longestHallway(room(1, room(2, room(4, room(7)), room(5)), room(3))), 4);
+test('route bends below entrance', () => longestHallway(room(1, room(2, room(4), room(5)), room(3, null, room(6, null, room(7))))), 5);
 // ---End Tests
 
 // ---Helpers

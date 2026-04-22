@@ -1,37 +1,27 @@
-// =============================================================================
-// Recursion & Backtracking Intro — Level 3, Exercise 3: Combinations of Exact Size
-// =============================================================================
-// Goal: Find all subsets of nums of exactly size k using backtracking with pruning.
-//       Prune early when there are not enough remaining items to fill the pack.
+// Goal: Practice the choose-explore-undo cycle with constraint pruning to eliminate dead branches.
 //
-// The scout pattern (size constraint + pruning):
-//   backtrack(start):
-//     if pack.length === k → record snapshot, return
-//     if pack.length + (nums.length - start) < k → return (can't fill pack)
-//     loop from start to end:
-//       pack the item (push)
-//       recurse with start = i+1
-//       unpack the item (pop) ← mandatory
+// Generate all k-length combinations of integers from 1 through n in sorted order.
+// At each junction push the next integer (place marker), recurse from the next
+// start, then pop (retrieve marker). Prune when the remaining integers cannot fill
+// the remaining slots: if n - start + 1 < k - current.length, break the loop
+// immediately — no valid combination can be completed from this junction.
 //
 // Example:
-//   combinationsOfSize([1,2,3], 2) → [[1,2], [1,3], [2,3]]
-//   combinationsOfSize([1,2,3], 0) → [[]]   (empty combination)
-//   combinationsOfSize([1,2,3], 4) → []     (can't fill — prune immediately)
-// =============================================================================
-function combinationsOfSize(nums: number[], k: number): number[][] {
+//   generateCombinations(4, 2)  → [[1,2],[1,3],[1,4],[2,3],[2,4],[3,4]]
+//   generateCombinations(3, 3)  → [[1,2,3]]
+
+function generateCombinations(n: number, k: number): number[][] {
   throw new Error('not implemented');
 }
 
-function sortedSubsets(r: number[][]): number[][] {
-  return r.sort((a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b)));
-}
-
-test('k=2 from [1,2,3]', () => sortedSubsets(combinationsOfSize([1, 2, 3], 2)), [[1, 2], [1, 3], [2, 3]]);
-test('k=2 from [1,2,3,4]', () => sortedSubsets(combinationsOfSize([1, 2, 3, 4], 2)), [[1, 2], [1, 3], [1, 4], [2, 3], [2, 4], [3, 4]]);
-test('k=3: only full array', () => sortedSubsets(combinationsOfSize([1, 2, 3], 3)), [[1, 2, 3]]);
-test('k=0: empty combination', () => sortedSubsets(combinationsOfSize([1, 2, 3], 0)), [[]]);
-test('k > length: empty result', () => sortedSubsets(combinationsOfSize([1, 2, 3], 4)), []);
-test('k=1: each element alone', () => sortedSubsets(combinationsOfSize([1, 2, 3], 1)), [[1], [2], [3]]);
+// ---Tests
+test('k=0 returns empty combination', () => generateCombinations(4, 0), [[]]);
+test('k=1 returns singletons', () => generateCombinations(3, 1), [[1], [2], [3]]);
+test('k equals n', () => generateCombinations(3, 3), [[1, 2, 3]]);
+test('k greater than n', () => generateCombinations(2, 3), []);
+test('4 choose 2 count', () => generateCombinations(4, 2).length, 6);
+test('4 choose 2 first entry', () => generateCombinations(4, 2)[0], [1, 2]);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

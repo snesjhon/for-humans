@@ -1,8 +1,7 @@
-// =============================================================================
-// Binary Search — Level 3, Exercise 1: Calibrate the Smallest Daily Load — SOLUTION
-// =============================================================================
-// Goal: Search the rail of possible capacities and keep the smallest one that works.
-// =============================================================================
+// Goal: Search the surveyor's capacity rail and keep the smallest daily load that finishes on time.
+//
+// A loader ships packages in order. Each day can carry at most one chosen capacity.
+// Return the smallest capacity that finishes all loads within the given number of days.
 function minimumDailyLoad(loads: number[], days: number): number {
   let left = Math.max(...loads);
   let right = loads.reduce((sum, load) => sum + load, 0);
@@ -36,12 +35,14 @@ function minimumDailyLoad(loads: number[], days: number): number {
   return answer;
 }
 
+// ---Tests
 test('sample capacity split', () => minimumDailyLoad([3, 2, 2, 4, 1, 4], 3), 6);
 test('two-day split', () => minimumDailyLoad([5, 5, 5], 2), 10);
 test('one day needs total sum', () => minimumDailyLoad([2, 3, 7], 1), 12);
 test('one load per day uses max load', () => minimumDailyLoad([2, 3, 7], 3), 7);
 test('single load rail', () => minimumDailyLoad([9], 4), 9);
 test('larger mixed loads', () => minimumDailyLoad([7, 2, 5, 10, 8], 2), 18);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

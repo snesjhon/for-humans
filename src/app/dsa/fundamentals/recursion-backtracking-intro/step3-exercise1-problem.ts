@@ -1,36 +1,27 @@
-// =============================================================================
-// Recursion & Backtracking Intro — Level 3, Exercise 1: Scout All Binary Trails
-// =============================================================================
-// Goal: Generate all binary strings of length n using backtracking.
-//       At each position the trail forks: go left ('0') or right ('1').
-//       Record the full string only when the scout's trail reaches length n.
+// Goal: Practice the choose-explore-undo cycle using one shared pack and explicit push/pop.
 //
-// The scout pattern (leaf-only recording):
-//   - Base camp: current.length === n → record current, return
-//   - Recursive case: fork left (append '0', recurse), then fork right (append '1', recurse)
-//
-// No undo needed here because strings are immutable — each fork passes a new
-// string down rather than mutating a shared pack.
+// At every junction — not only at leaves — snapshot the current pack into the
+// results list first. Then for each remaining item: push it onto the shared pack
+// (place marker), recurse from the next index (explore), then pop it (retrieve
+// marker). This records every partial pack as a valid subset and produces all
+// 2^N subsets through a single shared array with no copies during traversal.
 //
 // Example:
-//   generateBinaryStrings(1) → ['0', '1']             (sorted)
-//   generateBinaryStrings(2) → ['00', '01', '10', '11']  (sorted)
-//   generateBinaryStrings(3) → 8 strings               (sorted)
-// =============================================================================
-function generateBinaryStrings(n: number): string[] {
+//   buildSubsets([1, 2])  → [[], [1], [1, 2], [2]]  (any order)
+//   buildSubsets([])      → [[]]
+
+function buildSubsets(nums: number[]): number[][] {
   throw new Error('not implemented');
 }
 
-function sorted(arr: string[]): string[] {
-  return [...arr].sort();
-}
-
-test('n=0 → single empty string', () => sorted(generateBinaryStrings(0)), ['']);
-test('n=1 → two strings', () => sorted(generateBinaryStrings(1)), ['0', '1']);
-test('n=2 → four strings in order', () => sorted(generateBinaryStrings(2)), ['00', '01', '10', '11']);
-test('n=3 → eight strings', () => sorted(generateBinaryStrings(3)).length, 8);
-test('n=3 starts with 000', () => sorted(generateBinaryStrings(3))[0], '000');
-test('n=3 ends with 111', () => sorted(generateBinaryStrings(3))[7], '111');
+// ---Tests
+test('empty array', () => buildSubsets([]).length, 1);
+test('single element count', () => buildSubsets([1]).length, 2);
+test('two elements count', () => buildSubsets([1, 2]).length, 4);
+test('three elements count', () => buildSubsets([1, 2, 3]).length, 8);
+test('contains empty subset', () => buildSubsets([1, 2]).some((s) => s.length === 0), true);
+test('contains full subset', () => buildSubsets([1, 2]).some((s) => JSON.stringify([...s].sort()) === '[1,2]'), true);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

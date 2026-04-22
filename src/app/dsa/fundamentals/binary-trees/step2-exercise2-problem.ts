@@ -1,28 +1,22 @@
-// =============================================================================
-// Binary Trees — Level 2, Exercise 2: Find the Widest Wing Gap
-// =============================================================================
-// Goal: Practice child reports by comparing the sizes returned from both wings.
+// Goal: Practice using the last cart-line room on each floor.
 //
-// Each room asks its left wing and right wing how many rooms they contain.
-// The room's wing gap is the absolute difference between those two sizes.
-// Return the largest wing gap anywhere in the museum.
+// Return the label of the last room processed on every floor of the archive.
 //
 // Example:
-//   maxWingGap(room(7, room(3), room(11)))                  → 0
-//   maxWingGap(room(8, room(4, room(2), room(6)), room(12))) → 2
-// =============================================================================
+//   lastRoomOnEachFloor(room(1, room(2), room(3))) → [1, 3]
+//   lastRoomOnEachFloor(null)                       → []
 type TreeNode = { value: number; left: TreeNode | null; right: TreeNode | null };
 
-function maxWingGap(root: TreeNode | null): number {
+function lastRoomOnEachFloor(root: TreeNode | null): number[] {
   throw new Error('not implemented');
 }
 
 // ---Tests
-test('empty museum', () => maxWingGap(null), 0);
-test('single room', () => maxWingGap(room(7)), 0);
-test('perfect small museum', () => maxWingGap(room(7, room(3), room(11))), 0);
-test('lobby has gap two', () => maxWingGap(room(8, room(4, room(2), room(6)), room(12))), 2);
-test('deep left hallway dominates', () => maxWingGap(room(9, room(4, room(2, room(1))), room(12))), 2);
+test('empty archive', () => lastRoomOnEachFloor(null), []);
+test('single room', () => lastRoomOnEachFloor(room(1)), [1]);
+test('balanced archive', () => lastRoomOnEachFloor(room(1, room(2), room(3))), [1, 3]);
+test('mixed archive', () => lastRoomOnEachFloor(room(1, room(2, room(4), room(5)), room(3, null, room(6)))), [1, 3, 6]);
+test('left-only archive', () => lastRoomOnEachFloor(room(1, room(2, room(3), null), null)), [1, 2, 3]);
 // ---End Tests
 
 // ---Helpers

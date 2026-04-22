@@ -1,32 +1,35 @@
-// =============================================================================
-// Binary Trees — Level 2, Exercise 2: Find the Widest Wing Gap — SOLUTION
-// =============================================================================
-// Goal: Practice child reports by comparing the sizes returned from both wings.
+// Goal: Practice using the last cart-line room on each floor.
 type TreeNode = { value: number; left: TreeNode | null; right: TreeNode | null };
 
-function maxWingGap(root: TreeNode | null): number {
-  return summarize(root).bestGap;
-}
+function lastRoomOnEachFloor(root: TreeNode | null): number[] {
+  if (root === null) return [];
 
-function summarize(root: TreeNode | null): { size: number; bestGap: number } {
-  if (root === null) return { size: 0, bestGap: 0 };
+  const result: number[] = [];
+  const queue: TreeNode[] = [root];
 
-  const left = summarize(root.left);
-  const right = summarize(root.right);
-  const hereGap = Math.abs(left.size - right.size);
+  while (queue.length > 0) {
+    const floorSize = queue.length;
+    let lastValue = queue[0].value;
 
-  return {
-    size: left.size + right.size + 1,
-    bestGap: Math.max(hereGap, left.bestGap, right.bestGap),
-  };
+    for (let i = 0; i < floorSize; i++) {
+      const node = queue.shift()!;
+      lastValue = node.value;
+      if (node.left) queue.push(node.left);
+      if (node.right) queue.push(node.right);
+    }
+
+    result.push(lastValue);
+  }
+
+  return result;
 }
 
 // ---Tests
-test('empty museum', () => maxWingGap(null), 0);
-test('single room', () => maxWingGap(room(7)), 0);
-test('perfect small museum', () => maxWingGap(room(7, room(3), room(11))), 0);
-test('lobby has gap two', () => maxWingGap(room(8, room(4, room(2), room(6)), room(12))), 2);
-test('deep left hallway dominates', () => maxWingGap(room(9, room(4, room(2, room(1))), room(12))), 2);
+test('empty archive', () => lastRoomOnEachFloor(null), []);
+test('single room', () => lastRoomOnEachFloor(room(1)), [1]);
+test('balanced archive', () => lastRoomOnEachFloor(room(1, room(2), room(3))), [1, 3]);
+test('mixed archive', () => lastRoomOnEachFloor(room(1, room(2, room(4), room(5)), room(3, null, room(6)))), [1, 3, 6]);
+test('left-only archive', () => lastRoomOnEachFloor(room(1, room(2, room(3), null), null)), [1, 2, 3]);
 // ---End Tests
 
 // ---Helpers

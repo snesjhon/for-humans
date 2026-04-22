@@ -1,34 +1,27 @@
-// =============================================================================
-// Recursion & Backtracking Intro — Level 2, Exercise 3: Tile the Valley Floor
-// =============================================================================
-// Goal: Count the number of ways to tile a 2×n board using 2×1 dominoes.
-//       Each step of the mountain reduces the board by one column — place a
-//       vertical domino (uses 1 column) or a pair of horizontals (uses 2).
+// Goal: Practice binary branching on a 2D decision space instead of a linear item list.
 //
-// Recurrence (two sub-peaks branching at every step):
-//   tileDomino(0) = 1  (empty board: one way — do nothing)
-//   tileDomino(1) = 1  (one column: only vertical fits)
-//   tileDomino(n) = tileDomino(n-1) + tileDomino(n-2)
-//
-// The summit log (memo) is required — without it, the same board size is
-// solved repeatedly as the call tree branches.
+// The guide starts at the top-left of a rows×cols grid and must reach the
+// bottom-right corner by moving only right or down. At each position fork into two
+// scouts: one moves right, one moves down. Positions on the right or bottom edge
+// have only one valid direction. The base fires when both dimensions reach 1
+// — exactly one route exists from a 1×1 cell.
 //
 // Example:
-//   tileDomino(2) → 2   (two verticals, or two horizontals stacked)
-//   tileDomino(4) → 5
-//   tileDomino(10) → 89
-// =============================================================================
-function tileDomino(n: number, memo: Map<number, number> = new Map()): number {
+//   countGridPaths(2, 2)  → 2
+//   countGridPaths(3, 3)  → 6
+
+function countGridPaths(rows: number, cols: number): number {
   throw new Error('not implemented');
 }
 
-test('empty board: n=0 → 1', () => tileDomino(0), 1);
-test('one column: n=1 → 1', () => tileDomino(1), 1);
-test('n=2 → 2', () => tileDomino(2), 2);
-test('n=3 → 3', () => tileDomino(3), 3);
-test('n=4 → 5', () => tileDomino(4), 5);
-test('n=5 → 8', () => tileDomino(5), 8);
-test('n=10 → 89', () => tileDomino(10), 89);
+// ---Tests
+test('single cell', () => countGridPaths(1, 1), 1);
+test('one row only', () => countGridPaths(1, 5), 1);
+test('one column only', () => countGridPaths(5, 1), 1);
+test('two by two', () => countGridPaths(2, 2), 2);
+test('two by three', () => countGridPaths(2, 3), 3);
+test('three by three', () => countGridPaths(3, 3), 6);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

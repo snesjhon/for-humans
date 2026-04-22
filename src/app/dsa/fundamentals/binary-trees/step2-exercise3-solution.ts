@@ -1,35 +1,35 @@
-// =============================================================================
-// Binary Trees — Level 2, Exercise 3: Count the Balanced Display Rooms — SOLUTION
-// =============================================================================
-// Goal: Practice richer child reports by checking whether a room's two wings are evenly sized.
+// Goal: Practice keeping only the deepest floor's running total.
 type TreeNode = { value: number; left: TreeNode | null; right: TreeNode | null };
 
-function countBalancedRooms(root: TreeNode | null): number {
-  return summarize(root).balancedCount;
-}
+function deepestFloorSum(root: TreeNode | null): number {
+  if (root === null) return 0;
 
-function summarize(
-  root: TreeNode | null,
-): { size: number; balancedCount: number } {
-  if (root === null) return { size: 0, balancedCount: 0 };
+  const queue: TreeNode[] = [root];
+  let lastFloorSum = 0;
 
-  const left = summarize(root.left);
-  const right = summarize(root.right);
-  const hereBalanced = left.size === right.size ? 1 : 0;
+  while (queue.length > 0) {
+    const floorSize = queue.length;
+    let floorSum = 0;
 
-  return {
-    size: left.size + right.size + 1,
-    balancedCount:
-      left.balancedCount + right.balancedCount + hereBalanced,
-  };
+    for (let i = 0; i < floorSize; i++) {
+      const node = queue.shift()!;
+      floorSum += node.value;
+      if (node.left) queue.push(node.left);
+      if (node.right) queue.push(node.right);
+    }
+
+    lastFloorSum = floorSum;
+  }
+
+  return lastFloorSum;
 }
 
 // ---Tests
-test('empty museum', () => countBalancedRooms(null), 0);
-test('single room is balanced', () => countBalancedRooms(room(7)), 1);
-test('all rooms balanced in perfect trio', () => countBalancedRooms(room(7, room(3), room(11))), 3);
-test('uneven left wing', () => countBalancedRooms(room(8, room(4, room(2), null), room(12))), 2);
-test('larger mixed museum', () => countBalancedRooms(room(10, room(5, room(2), room(7)), room(14, null, room(18)))), 4);
+test('empty archive', () => deepestFloorSum(null), 0);
+test('single room', () => deepestFloorSum(room(7)), 7);
+test('two floors', () => deepestFloorSum(room(1, room(2), room(3))), 5);
+test('mixed archive', () => deepestFloorSum(room(1, room(2, room(4), room(5)), room(3, null, room(6)))), 15);
+test('deep left chain', () => deepestFloorSum(room(1, room(2, room(3, room(4)), null), null)), 4);
 // ---End Tests
 
 // ---Helpers

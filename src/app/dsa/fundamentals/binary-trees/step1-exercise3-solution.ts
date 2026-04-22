@@ -1,21 +1,18 @@
-// =============================================================================
-// Binary Trees — Level 1, Exercise 3: Collect the End-Gallery Plaques — SOLUTION
-// =============================================================================
-// Goal: Practice hallway descent by recording the plaques in every leaf room.
+// Goal: Practice passing a yes-or-no scout report back through the archive.
 type TreeNode = { value: number; left: TreeNode | null; right: TreeNode | null };
 
-function leafPlaques(root: TreeNode | null): number[] {
-  if (root === null) return [];
-  if (root.left === null && root.right === null) return [root.value];
-  return [...leafPlaques(root.left), ...leafPlaques(root.right)];
+function hasCatalogCode(root: TreeNode | null, target: number): boolean {
+  if (root === null) return false;
+  if (root.value === target) return true;
+  return hasCatalogCode(root.left, target) || hasCatalogCode(root.right, target);
 }
 
 // ---Tests
-test('empty museum', () => leafPlaques(null), []);
-test('single room is a leaf', () => leafPlaques(room(7)), [7]);
-test('two leaf galleries', () => leafPlaques(room(7, room(3), room(11))), [3, 11]);
-test('left-to-right order', () => leafPlaques(room(8, room(4, room(2), room(6)), room(12, null, room(14)))), [2, 6, 14]);
-test('one long hallway', () => leafPlaques(room(5, room(4, room(3)))), [3]);
+test('empty archive', () => hasCatalogCode(null, 7), false);
+test('target at entrance', () => hasCatalogCode(room(5, room(3), room(8)), 5), true);
+test('target in left wing', () => hasCatalogCode(room(5, room(3, room(1), room(4)), room(8)), 4), true);
+test('target in right wing', () => hasCatalogCode(room(5, room(3), room(8, null, room(9))), 9), true);
+test('target missing', () => hasCatalogCode(room(5, room(3, room(1), room(4)), room(8, null, room(9))), 6), false);
 // ---End Tests
 
 // ---Helpers

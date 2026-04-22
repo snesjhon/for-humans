@@ -1,28 +1,25 @@
-// =============================================================================
-// Recursion & Backtracking Intro — Level 1, Exercise 2: Multiply by Climbing
-// =============================================================================
-// Goal: Compute a × b using only addition and recursion — no * operator.
-//       Each step up the mountain adds `a` once; b levels give b additions.
+// Goal: Practice the Summit Rule with a multiplication combination instead of addition.
 //
-// The mountain guide rule:
-//   - Base camp: b === 0 → return 0 (no levels left to add)
-//   - Recursive case: dispatch multiplyByAdding(a, b-1), then add a once
+// The guide at exponent E dispatches one scout to exponent E-1. Multiply base
+// by the scout's report to get the answer for this junction. The terminal junction
+// is exponent 0: anything raised to the zero power equals 1, not 0.
 //
 // Example:
-//   multiplyByAdding(3, 4) → 12   (3 added 4 times)
-//   multiplyByAdding(7, 0) → 0    (base camp)
-//   multiplyByAdding(1, 100) → 100
-// =============================================================================
-function multiplyByAdding(a: number, b: number): number {
+//   scoutPower(2, 10)  → 1024
+//   scoutPower(3, 0)   → 1
+
+function scoutPower(base: number, exp: number): number {
   throw new Error('not implemented');
 }
 
-test('base camp: b=0 returns 0', () => multiplyByAdding(3, 0), 0);
-test('a=0 always returns 0', () => multiplyByAdding(0, 5), 0);
-test('3 × 4 = 12', () => multiplyByAdding(3, 4), 12);
-test('7 × 3 = 21', () => multiplyByAdding(7, 3), 21);
-test('1 × 100 = 100', () => multiplyByAdding(1, 100), 100);
-test('5 × 5 = 25', () => multiplyByAdding(5, 5), 25);
+// ---Tests
+test('zero exponent returns 1', () => scoutPower(2, 0), 1);
+test('exponent 1 returns base', () => scoutPower(7, 1), 7);
+test('2 to the 10th', () => scoutPower(2, 10), 1024);
+test('3 cubed', () => scoutPower(3, 3), 27);
+test('base 1 any exponent', () => scoutPower(1, 100), 1);
+test('5 squared', () => scoutPower(5, 2), 25);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

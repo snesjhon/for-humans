@@ -1,26 +1,22 @@
-// =============================================================================
-// Recursion & Backtracking Intro — Level 2, Exercise 2: Install the Summit Log — SOLUTION
-// =============================================================================
-// Goal: Add a summit log (memo Map) to tribonacci so each sub-peak is
-//       climbed at most once.
-function tribonacciMemo(n: number, memo: Map<number, number> = new Map()): number {
-  if (n === 0 || n === 1) return 0;  // base camp
-  if (n === 2) return 1;             // base camp
-  if (memo.has(n)) return memo.get(n)!;  // check the summit log first
+// Goal: Practice binary branching that accumulates a count instead of collecting routes.
 
-  const result = tribonacciMemo(n - 1, memo)
-               + tribonacciMemo(n - 2, memo)
-               + tribonacciMemo(n - 3, memo);
-  memo.set(n, result);  // write result to summit log before returning
-  return result;
+function countTargetSubsets(nums: number[], target: number): number {
+  function backtrack(i: number, sum: number): number {
+    if (i >= nums.length) return sum === target ? 1 : 0;
+    return backtrack(i + 1, sum + nums[i]) + backtrack(i + 1, sum);
+  }
+  return backtrack(0, 0);
 }
 
-test('base camp: T(0) = 0', () => tribonacciMemo(0), 0);
-test('base camp: T(1) = 0', () => tribonacciMemo(1), 0);
-test('base camp: T(2) = 1', () => tribonacciMemo(2), 1);
-test('T(5) = 4', () => tribonacciMemo(5), 4);
-test('T(10) = 81', () => tribonacciMemo(10), 81);
-test('T(20) = 35890', () => tribonacciMemo(20), 35890);
+// ---Tests
+test('empty range hits zero', () => countTargetSubsets([], 0), 1);
+test('empty range misses nonzero', () => countTargetSubsets([], 5), 0);
+test('single match', () => countTargetSubsets([5], 5), 1);
+test('single miss', () => countTargetSubsets([5], 3), 0);
+test('two paths to target', () => countTargetSubsets([1, 2, 3], 3), 2);
+test('full set only', () => countTargetSubsets([1, 2, 3], 6), 1);
+test('impossible target', () => countTargetSubsets([1, 2, 3], 10), 0);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

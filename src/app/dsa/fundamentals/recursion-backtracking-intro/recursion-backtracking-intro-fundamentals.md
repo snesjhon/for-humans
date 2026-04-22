@@ -1,433 +1,388 @@
-## 1. Overview
+## Overview
 
-Recursion is the technique of solving a problem by having a function call itself on a strictly smaller version of the same problem. Backtracking extends that idea: at each decision point you make one choice, recurse into everything reachable from that choice, then undo it and try the next. Together they unlock a whole family of problems — combinatorial enumeration, constraint satisfaction, and tree-shaped computation — that feel intractable until you see the decision structure hiding inside them.
+Recursion is the first technique where a solution delegates to itself. Instead of building a result one step at a time, you describe what the function should return and trust that a smaller version already delivers it. Backtracking extends that trust into search: at each fork in the road, make one choice, explore every path under it completely, then clean up and try the next. Together they let you map every valid route through a decision space without generating and storing all possibilities upfront. You already know linear traversal from arrays and branching structure from trees; this guide adds the decision tree that writes itself as the recursion runs, through three building blocks: **Trust the Summit Rule**, **Branch the Decision Tree**, and **Choose, Explore, Undo**.
 
-You already know how a loop processes a sequence one item at a time. Recursion does something different: it delegates the remaining work to itself and trusts that the answer will come back correct, focusing only on the single step that this level contributes. The three building-block levels here move from trusting linear recursion (factorial) through branching recursive calls and result caching (Fibonacci), to the full choose-explore-undo cycle that generates every valid subset.
+## Core Concept & Mental Model
 
-## 2. Core Concept & Mental Model
+### The Trail Guide
 
-A mountain guide follows one unbreakable rule: to summit any peak at height n, dispatch an apprentice to the peak just below — height n-1 — and wait for them to return. Once the apprentice reports back, the guide takes exactly one final step up. The guide never tries to solve the whole mountain at once. Base camp is the only exception: at height zero, the guide already knows the answer and returns immediately without calling anyone.
+Picture a trail guide mapping routes through a mountain range where each junction can branch in multiple directions. The guide's job is not to personally walk every branch. At each junction, they dispatch scouts to the smaller sub-ranges ahead and wait for each scout's report. When the reports come back, the guide combines them into one answer and reports upward to whoever sent them.
 
-Backtracking adds a second move. When the trail forks, the guide dispatches a scout down the left path with an empty pack, lets the scout explore everything reachable from there (recording every waypoint), then calls the scout back to the exact same fork with their pack emptied, and sends them down the right path. "Emptied at the fork" is the critical phrase — without it, what the scout picked up on the left path would contaminate the right path.
+- trail junction → recursive function call
+- scout report → return value from a recursive call
+- terminal junction → base case: a summit (goal reached) or dead end (nothing valid here)
+- trail marker → the current choice made before exploring a branch
+- backtrack → retrieving the marker and returning to the junction
+- decision tree → the full map of every junction and branch the recursion visits
+
+The efficiency claim: no section of trail gets surveyed twice. Each junction is visited once, makes its report, and is done.
 
 ### Understanding the Analogy
 
-**The Setup** — The guide starts at the trailhead with one job: summit the peak at height n. Every call shares the same job description, just at a different height. The guide carries two things at any moment: the current height (which subproblem they're solving), and whatever the scout has packed so far (the current path being built). Base camp is height zero — the answer is known without any delegation.
+#### The Setup
 
-**The Summit Rule** — For linear problems the rule is simple: delegate to n-1 and contribute one step on the way back. The guide does not multiply all the numbers by hand; they ask the apprentice for the product of everything below, then multiply once by their own height. This is the trust that makes recursion work — you assume the smaller call returns the right answer and you build on top of it. The combining step happens on the way back up, not on the way down.
+The guide stands at the first junction in the mountain range. From any junction, the trail can continue to smaller sub-ranges, and the guide can dispatch a scout to explore each one. A scout who reaches a terminal junction reports immediately without dispatching anyone further. The guide never personally walks a section that a scout already covered. The full range gets surveyed even though the guide only ever stands at one junction at a time.
 
-**The Fork and the Return** — Backtracking activates when the trail splits at each item: go left (include this item in the pack) or go right (skip it). The guide goes left first — the scout packs the item, recurses deeper, records the pack contents at every waypoint, then returns to this fork. The pack is then emptied of that item before the scout goes right. This undo step is mandatory. The scout's pack is a shared object mutated throughout the entire descent; if you do not empty it at each fork, the left path's choices bleed into the right path.
+#### The Summit Rule and The Decision Fork
 
-**Why These Approaches** — Why delegate rather than compute from scratch? Because the problem strictly reduces. Factorial of n depends on factorial of n-1, which depends on n-2, and so on down to base camp. That strict reduction guarantees the recursion terminates. Why explore every fork? Because for enumeration problems — all subsets, all valid parentheses — no formula shortcut exists. Every possible choice must be visited at least once to be collected.
+Two mechanisms drive every recursion and backtracking problem.
 
-### How I Think Through This
+The **Summit Rule** is the key to trusting recursion: if the answer for the current range can be built from the answer for a smaller range, assume the scouts already solved that smaller version. The guide does not need to understand how that sub-range was surveyed, only what it reported. Correctness runs backward from the smallest possible case: once the base case returns the right answer, every junction above it combines correct reports and returns a correct answer in turn.
 
-When I see a problem that defines a value of size n in terms of the same value at a smaller size — "factorial", "nth Fibonacci", "power", "count paths" — I reach for linear recursion. Two questions settle it: what is base camp (the smallest n I can answer directly)? And what single step does the current call contribute after the apprentice returns?
+The **Decision Fork** is what backtracking adds. At some junctions the guide must actively choose which branch to mark first. Each branch is explored completely before the marker is retrieved and the next branch is tried. The critical property is that after fully exploring a branch, the junction must look exactly as it did before that branch was started. Mutable state that is changed before exploring must be restored before moving on.
 
-When I see a problem asking for all valid combinations, subsets, or sequences, I reach for backtracking. The signal is "generate all" or "list every possible". I identify what constitutes one choice (include or skip this element, place a character, assign a value), what the valid range of choices is at each step, and what the stopping condition looks like. Then I write the same template every time: record the current pack, loop over remaining choices, pack one item, recurse, unpack.
+#### Why These Approaches
 
-Take `nums = [1, 2]`.
+Brute force on a decision space generates all possibilities first and filters afterward. A space with N items and two choices each has 2^N possible combinations. The recursion and backtracking approach builds each route one junction at a time, abandons routes that are already invalid before they are complete, and reuses the same state container for the current route rather than allocating memory for every candidate. The structural guarantee that makes this correct is that each branch of the decision tree is independent: once fully explored, it cannot affect any other branch, so the marker-and-undo cycle is safe.
+
+#### How I Think Through This
+
+Before I touch any code, I ask: **what does the junction need to report, and what state must be in place before and after each scout returns?**
+
+That question separates two fundamentally different shapes.
+
+**When the function only needs one summary from each sub-range:** I use the Summit Rule alone. The guide dispatches a scout to the smaller version of the problem, collects that one report, and combines it into the current answer. Height, count, and "does it exist" all fit this shape. There is no choice to make at each junction, only a report to trust and extend.
+
+**When the function must try multiple branches at one junction:** I add the Decision Fork. The guide marks a branch, dispatches a scout to explore the full sub-range under that branch, then retrieves the marker before trying the next branch. State at the junction must be identical before and after each exploration.
+
+The building blocks below work through three stages where this logic plays out differently.
+
+**Scenario 1 — Summit Rule:** A linear recursion where every junction dispatches exactly one scout and trusts the report.
 
 :::trace-subset
-[
-  {"nums":[1,2],"start":0,"basket":[],"action":"record","label":"Trailhead: pack is empty. Record [] as the first waypoint. Begin loop from item 0."},
-  {"nums":[1,2],"start":0,"basket":[1],"action":"add","label":"Left fork at item 0: pack 1 → pack = [1]. Descend with start=1."},
-  {"nums":[1,2],"start":1,"basket":[1],"action":"record","label":"Arrive at fork 1. Record [1]. Begin loop from item 1."},
-  {"nums":[1,2],"start":1,"basket":[1,2],"action":"add","label":"Left fork at item 1: pack 2 → pack = [1,2]. Descend with start=2."},
-  {"nums":[1,2],"start":2,"basket":[1,2],"action":"record","label":"start=2 equals nums.length. Record [1,2]. No items remain — return to fork."},
-  {"nums":[1,2],"start":1,"basket":[1],"action":"remove","label":"Undo: unpack 2 → pack = [1]. Loop ends — return to the outer fork."},
-  {"nums":[1,2],"start":0,"basket":[],"action":"remove","label":"Undo: unpack 1 → pack = []. Right fork: advance to item 1."},
-  {"nums":[1,2],"start":1,"basket":[2],"action":"add","label":"Right fork: pack 2 → pack = [2]. Descend with start=2."},
-  {"nums":[1,2],"start":2,"basket":[2],"action":"record","label":"start=2 equals nums.length. Record [2]. Return to fork."},
-  {"nums":[1,2],"start":1,"basket":[],"action":"remove","label":"Undo: unpack 2 → pack = []. Loop ends — return."},
-  {"nums":[1,2],"start":2,"basket":[],"action":"done","label":"All forks explored. Results: [[], [1], [1,2], [2]] — all 4 subsets collected. ✓"}
-]
+{
+  "labels": {"source": "range", "selection": "path so far", "position": "scout at"},
+  "steps": [
+{"nums":[3,2,1],"start":0,"basket":[],"action":"record","label":"Junction A: how many junctions remain? Dispatch a scout to junction B rather than counting the whole range personally."},
+{"nums":[3,2,1],"start":0,"basket":[3],"action":"add","label":"Scout heading to junction B, responsible for range [2, 1]. The guide trusts whatever it reports back."},
+{"nums":[3,2,1],"start":1,"basket":[3],"action":"record","label":"Junction B receives the same question and dispatches its own scout to junction C. It trusts junction C's answer and adds 1."},
+{"nums":[3,2,1],"start":1,"basket":[3,2],"action":"add","label":"Scout heading to junction C, responsible for range [1]."},
+{"nums":[3,2,1],"start":2,"basket":[3,2],"action":"record","label":"Junction C dispatches a scout to the base. One junction remains."},
+{"nums":[3,2,1],"start":3,"basket":[3,2,1],"action":"done","label":"Base reached: empty range, no further junctions. Report 0. Every junction above trusts this and adds 1, giving a total of 3 without re-walking any ground."}
+  ]
+}
+:::
+
+**Scenario 2 — Choose, Explore, Undo:** Every junction branches. The guide marks one path, explores all ground under it, retrieves the marker, then tries the next.
+
+:::trace-subset
+{
+  "labels": {"source": "items", "selection": "pack", "position": "junction"},
+  "steps": [
+{"nums":[1,2],"start":0,"basket":[],"action":"record","label":"Junction 0: arrive and record route {} immediately. Two branches await: include item 1, or skip it."},
+{"nums":[1,2],"start":0,"basket":[1],"action":"add","label":"Mark item 1 as packed. A scout will explore every route with item 1 included."},
+{"nums":[1,2],"start":1,"basket":[1],"action":"record","label":"Junction 1 with item 1 packed: arrive and record route {1}. One branch remains: include item 2 or skip it."},
+{"nums":[1,2],"start":1,"basket":[1,2],"action":"add","label":"Mark item 2 as packed. Scout descends to the base."},
+{"nums":[1,2],"start":2,"basket":[1,2],"action":"record","label":"Base reached: no items left. Route {1, 2} is complete and recorded."},
+{"nums":[1,2],"start":1,"basket":[1],"action":"remove","label":"Unpack item 2. The marker is retrieved. Junction 1 is restored to exactly how it looked before this branch."},
+{"nums":[1,2],"start":0,"basket":[],"action":"remove","label":"Junction 1 has no more branches. Unpack item 1. Junction 0 is restored. The left branch is fully explored."},
+{"nums":[1,2],"start":1,"basket":[2],"action":"add","label":"Mark item 2 as packed. Scout descends to the base."},
+{"nums":[1,2],"start":2,"basket":[2],"action":"record","label":"Base reached. Route {2} is complete and recorded."},
+{"nums":[1,2],"start":1,"basket":[],"action":"remove","label":"Unpack item 2. Marker retrieved. Junction 0 has no more branches."},
+{"nums":[1,2],"start":0,"basket":[],"action":"done","label":"Both branches at junction 0 explored and cleaned up. All 4 routes found: {}, {1}, {1, 2}, {2}. The choose-explore-undo cycle is complete."}
+  ]
+}
 :::
 
 ---
 
-## 3. Building Blocks — Progressive Learning
+## Building Blocks: Progressive Learning
 
-**Level 1: The Summit Rule**
+### Level 1: Trust the Summit Rule
 
-**Why this level matters**
+Given a trail of N junctions and the task of computing some value that spans the entire trail — a total distance, the largest marker encountered, a cumulative product — brute force walks every junction in a single loop. For most trail lengths that loop is fast and obvious. The problem emerges when you ask the same question from a different starting point, or when a problem's structure naturally produces repeated sub-questions. A loop computes one answer and discards all intermediate work. Recursive decomposition keeps that work available by making each junction's answer an independent fact that any other junction can request.
 
-Every recursive function is built around one insight: the current call does not have to solve everything. It delegates the hard part to a smaller version of itself and contributes exactly one step when the result comes back. Without that delegation — if you try to do all the work inside a single call — you have a loop, not recursion. The Summit Rule is the act of trust: assume the apprentice returns the right answer, and focus only on the combining step.
+The Summit Rule is the shift that makes this possible. Instead of thinking "walk from junction 1 to junction N," think "the guide at junction N only needs one piece of information: what is the result for junctions 1 through N-1?" If the scout at junction N-1 already has that answer, the guide at junction N can combine it with the local value and report upward. The base junction — the one with no sub-range left — reports a concrete answer with no sub-call at all. Every junction above it trusts that answer without re-walking.
 
-**How to think about it**
+Applying the Summit Rule is a two-step decision. First, identify the base case: what is the answer when the trail is empty or reduced to nothing? For a sum that is zero. For a maximum that is negative infinity. For a product that is one. Second, identify the combination: what does the current junction add to the scout's report? For a sum that is the current value plus the sub-range total. For a maximum that is the larger of the current marker and the sub-range maximum. Write the base case first, then the recursive case follows from it.
 
-The mountain guide receives a problem of size n. They ask: is this base camp? If yes, return the known answer immediately — no apprentice is needed. If not, dispatch an apprentice to solve the problem of size n-1 and wait. When the apprentice returns with their report, the guide takes one step up: adds n to the sum, multiplies by n, peels one digit off, or does whatever the problem requires. The guide never sees the full chain; they see only their own height and the single result returned from below.
-
-The combining step happens on the way back up, not on the way down. When the guide calls the apprentice, they are committing to a pause. The entire call stack unwinds from the bottom (base camp) upward, with each level doing its one step as it wakes up.
-
-**The one thing to get right**
-
-Write the base case first. If the recursive call executes before the base case check, the function falls into infinite recursion — the apprentice is dispatched even when n is already at base camp, which dispatches another, and so on until the call stack overflows.
-
-**Visualization**
-
-The call-stack trace makes the Summit Rule concrete: every call pushes onto the stack while it is waiting, and each frame only does its one combining step after the smaller call returns.
-
-:::trace-sq
-[
-  {
-    "structures": [
-      {"kind":"stack","label":"callStack","items":["sumRange(4)"],"color":"blue","activeIndices":[0],"pointers":[{"index":0,"label":"top"}]}
-    ],
-    "action":"push",
-    "label":"sumRange(4): not base camp. Dispatch sumRange(3) and wait."
-  },
-  {
-    "structures": [
-      {"kind":"stack","label":"callStack","items":["sumRange(4)","sumRange(3)"],"color":"blue","activeIndices":[1],"pointers":[{"index":1,"label":"top"}]}
-    ],
-    "action":"push",
-    "label":"sumRange(3): not base camp. Dispatch sumRange(2) and wait."
-  },
-  {
-    "structures": [
-      {"kind":"stack","label":"callStack","items":["sumRange(4)","sumRange(3)","sumRange(2)","sumRange(1)","sumRange(0)"],"color":"blue","activeIndices":[4],"pointers":[{"index":4,"label":"top"}]}
-    ],
-    "action":"push",
-    "label":"Chain continues down to sumRange(0). Base camp — return 0 immediately."
-  },
-  {
-    "structures": [
-      {"kind":"stack","label":"callStack","items":["sumRange(4)","sumRange(3)","sumRange(2)","sumRange(1)"],"color":"blue","activeIndices":[3],"pointers":[{"index":3,"label":"top"}]}
-    ],
-    "action":"pop",
-    "label":"sumRange(1) wakes up. Apprentice returned 0. One step: 1 + 0 = 1. Return 1."
-  },
-  {
-    "structures": [
-      {"kind":"stack","label":"callStack","items":["sumRange(4)","sumRange(3)","sumRange(2)"],"color":"blue","activeIndices":[2],"pointers":[{"index":2,"label":"top"}]}
-    ],
-    "action":"pop",
-    "label":"sumRange(2) wakes up. Apprentice returned 1. One step: 2 + 1 = 3. Return 3."
-  },
-  {
-    "structures": [
-      {"kind":"stack","label":"callStack","items":["sumRange(4)","sumRange(3)"],"color":"blue","activeIndices":[1],"pointers":[{"index":1,"label":"top"}]}
-    ],
-    "action":"pop",
-    "label":"sumRange(3) wakes up. Apprentice returned 3. One step: 3 + 3 = 6. Return 6."
-  },
-  {
-    "structures": [
-      {"kind":"stack","label":"callStack","items":["sumRange(4)"],"color":"blue","activeIndices":[0],"pointers":[{"index":0,"label":"top"}]}
-    ],
-    "action":"pop",
-    "label":"sumRange(4) wakes up. Apprentice returned 6. One step: 4 + 6 = 10. Return 10."
-  },
-  {
-    "structures": [
-      {"kind":"stack","label":"callStack","items":[],"color":"blue"}
-    ],
-    "action":"done",
-    "label":"Stack empty. Final answer: 10 ✓"
-  }
-]
-:::
-
-:::stackblitz{step=1 total=3 exercises="step1-exercise1-problem.ts,step1-exercise2-problem.ts,step1-exercise3-problem.ts" solutions="step1-exercise1-solution.ts,step1-exercise2-solution.ts,step1-exercise3-solution.ts"}
-
-> "Base camp first. Combine on the way back up."
-
-**→ Bridge to Level 2**
-
-The Summit Rule works when each call makes exactly one recursive call. Fibonacci needs two — T(n) depends on both T(n-1) and T(n-2). With two branches, the call tree fans out, and T(n-2) gets recomputed every time T(n-1) needs it. Without a summit log that caches each sub-peak's result, the guide sends a new apprentice to the same height repeatedly, making the total work grow exponentially.
-
-**Level 2: Branching Peaks**
-
-**Why this level matters**
-
-Some problems cannot reduce to a single smaller call. Fibonacci depends on two previous values; tribonacci on three. Each additional branch doubles or triples the work because sub-peaks overlap: T(5) needs T(4) and T(3), but T(4) also needs T(3). Without caching, the same peak is summited from scratch dozens, then thousands of times. Memoization installs a summit log at each peak — the first apprentice to return writes the result; every subsequent guide dispatched there just reads from the log.
-
-**How to think about it**
-
-Imagine tribonacci as three apprentices dispatched per step. The guide at peak n sends one to n-1, one to n-2, and one to n-3. Without the summit log, the guide at n-1 also sends three apprentices — one of them to n-2, which has already been dispatched by the guide at n. Two separate climbing teams are now racing up the same sub-peak simultaneously, doing the same work. At scale, this duplication becomes catastrophic.
-
-The summit log is a shared notebook. Before any guide dispatches an apprentice, they check the notebook: "Has peak k been summited before?" If yes, they copy the result out of the notebook rather than sending anyone. If no, they send the apprentice, wait, then write the result in the notebook before returning upward. Every peak is climbed at most once — the total number of unique summits is the only work that gets done.
-
-**Visualization**
-
-Take `tribonacciMemo(5)`.
-
-The trace shows the key shift: once a sub-peak is solved, later branches stop climbing and just read the saved result.
-
-:::trace-sq
-[
-  {
-    "structures": [
-      { "kind": "stack", "label": "callStack", "items": ["T(5)"], "color": "blue", "activeIndices": [0], "pointers": [{ "index": 0, "label": "top" }] },
-      { "kind": "queue", "label": "summit log", "items": [], "color": "green" }
-    ],
-    "action": "push",
-    "label": "Start at T(5). The summit log is empty, so the climb must begin from scratch."
-  },
-  {
-    "structures": [
-      { "kind": "stack", "label": "callStack", "items": ["T(5)", "T(4)", "T(3)"], "color": "blue", "activeIndices": [2], "pointers": [{ "index": 2, "label": "top" }] },
-      { "kind": "queue", "label": "summit log", "items": [], "color": "green" }
-    ],
-    "action": "push",
-    "label": "The first branch keeps descending until a smaller sub-peak like T(3) is reached and solved."
-  },
-  {
-    "structures": [
-      { "kind": "stack", "label": "callStack", "items": ["T(5)", "T(4)"], "color": "blue", "activeIndices": [1], "pointers": [{ "index": 1, "label": "top" }] },
-      { "kind": "queue", "label": "summit log", "items": ["T(3)=1"], "color": "green", "activeIndices": [0], "pointers": [{ "index": 0, "label": "saved" }] }
-    ],
-    "action": "pop",
-    "label": "T(3) finishes and writes its answer into the summit log before returning upward."
-  },
-  {
-    "structures": [
-      { "kind": "stack", "label": "callStack", "items": ["T(5)", "T(4)"], "color": "blue", "activeIndices": [1], "pointers": [{ "index": 1, "label": "top" }] },
-      { "kind": "queue", "label": "summit log", "items": ["T(3)=1", "T(2)=1"], "color": "green", "activeIndices": [0, 1], "pointers": [{ "index": 1, "label": "saved" }] }
-    ],
-    "action": "peek",
-    "label": "Now T(4) needs T(3) and T(2), but both answers are already saved. No second climb is needed."
-  },
-  {
-    "structures": [
-      { "kind": "stack", "label": "callStack", "items": ["T(5)"], "color": "blue", "activeIndices": [0], "pointers": [{ "index": 0, "label": "top" }] },
-      { "kind": "queue", "label": "summit log", "items": ["T(3)=1", "T(2)=1", "T(4)=2"], "color": "green", "activeIndices": [2], "pointers": [{ "index": 2, "label": "saved" }] }
-    ],
-    "action": "pop",
-    "label": "T(4) resolves once, records T(4)=2, and returns to the original call."
-  },
-  {
-    "structures": [
-      { "kind": "stack", "label": "callStack", "items": [], "color": "blue" },
-      { "kind": "queue", "label": "summit log", "items": ["T(3)=1", "T(2)=1", "T(4)=2", "T(5)=4"], "color": "green", "activeIndices": [3], "pointers": [{ "index": 3, "label": "saved" }] }
-    ],
-    "action": "done",
-    "label": "T(5) combines saved answers and finishes. Each sub-peak was solved once, then reused from the log."
-  }
-]
-:::
-
-**The one thing to get right**
-
-Pass the memo object into every recursive call — or close over it. If the memo is created fresh on each call (`= new Map()` in the default parameter without threading it through), it resets to empty on every recursion and caches nothing. The same summit log must be visible to every guide on the mountain.
-
-The recursion tree below shows the same overlap structurally: repeated sub-peaks are exactly the work the summit log removes.
-
-```mermaid
-graph TD
-    T5["tribonacci(5)"] --> T4["T(4)"]
-    T5 --> T3a["T(3)"]
-    T5 --> T2a["T(2) = 1"]
-    T4 --> T3b["T(3) — read from log ✓"]
-    T4 --> T2b["T(2) — read from log ✓"]
-    T4 --> T1a["T(1) = 0"]
-    T3a --> T2c["T(2) — read from log ✓"]
-    T3a --> T1b["T(1) = 0"]
-    T3a --> T0a["T(0) = 0"]
-    style T3b fill:#d4edda,stroke:#28a745
-    style T2b fill:#d4edda,stroke:#28a745
-    style T2c fill:#d4edda,stroke:#28a745
-```
-
-:::stackblitz{step=2 total=3 exercises="step2-exercise1-problem.ts,step2-exercise2-problem.ts,step2-exercise3-problem.ts" solutions="step2-exercise1-solution.ts,step2-exercise2-solution.ts,step2-exercise3-solution.ts"}
-
-> "Check the summit log before dispatching anyone. Write to it before returning."
-
-**→ Bridge to Level 3**
-
-Both linear and branching recursion compute one answer and return it. When a problem asks for every valid combination — all subsets, all binary strings, all size-k groups — there is no single number to return. Every fork in the trail leads to a different outcome, and every outcome must be collected. That requires a different structure: instead of the apprentice returning a value, the scout carries a pack, explores every path, and records what is in the pack at the right moments.
-
-**Level 3: The Fork and Return**
-
-**Why this level matters**
-
-Backtracking solves a class of problems that recursion alone cannot: generating all valid outcomes rather than one. The pattern is always the same — pack one item, explore everything that follows, unpack — but what you record and when you return early varies by problem. Once you see the template, you can adapt it to any combinatorial enumeration problem.
-
-**How to think about it**
-
-The scout starts at the trailhead with an empty pack. At each item, the trail forks: go left (pack the item and continue) or go right (skip the item and continue). The scout goes left first. They pack the item, recurse deeper, and when they return to this fork, they unpack it exactly as it was. Then they go right. "Exactly as it was" is the guarantee the pop provides — without it, the pack at the right fork contains leftovers from the left fork.
-
-Two variations change what gets recorded:
-
-- **Record at every arrival** (subsets pattern): every time the scout arrives anywhere on the trail, the pack contents are a valid result. Record immediately, then continue exploring.
-- **Record only at a matching condition** (filtered pattern): the scout only records when the pack satisfies a rule — sum equals target, size equals k, string is complete. Keep exploring without recording otherwise.
-
-Both use the same push-recurse-pop template. Only the record step changes.
-
-**Visualization**
-
-Take `subsets([1,2,3])`.
-
-The trace makes the choose-explore-undo cycle visible: every push creates a deeper branch, every arrival records the current pack, and every pop restores the exact state before the next fork begins.
-
-**The one thing to get right**
-
-Push before the recursive call, pop immediately after — always paired, never separated by a conditional. `pack` is the same array object for the entire descent. Every push must be undone before the loop advances, or the next fork inherits a contaminated pack.
+`sumDownFrom(3)` dispatches to `sumDownFrom(2)`, which dispatches to `sumDownFrom(1)`, which dispatches to the base. The base returns 0. Each junction above adds its label and returns without re-surveying any ground.
 
 :::trace-subset
-[
-  {"nums":[1,2,3],"start":0,"basket":[],"action":"record","label":"Trailhead: pack=[], record []. Loop from item 0."},
-  {"nums":[1,2,3],"start":0,"basket":[1],"action":"add","label":"Pack item 0 (1) → pack=[1]. Descend with start=1."},
-  {"nums":[1,2,3],"start":1,"basket":[1],"action":"record","label":"Arrive: record [1]. Loop from item 1."},
-  {"nums":[1,2,3],"start":1,"basket":[1,2],"action":"add","label":"Pack item 1 (2) → pack=[1,2]. Descend with start=2."},
-  {"nums":[1,2,3],"start":2,"basket":[1,2],"action":"record","label":"Arrive: record [1,2]. Loop from item 2."},
-  {"nums":[1,2,3],"start":2,"basket":[1,2,3],"action":"add","label":"Pack item 2 (3) → pack=[1,2,3]. Descend with start=3."},
-  {"nums":[1,2,3],"start":3,"basket":[1,2,3],"action":"record","label":"start=3=nums.length. Record [1,2,3]. Return."},
-  {"nums":[1,2,3],"start":2,"basket":[1,2],"action":"remove","label":"Undo: unpack 3 → pack=[1,2]. Loop ends — return."},
-  {"nums":[1,2,3],"start":1,"basket":[1],"action":"remove","label":"Undo: unpack 2 → pack=[1]. Advance to item 2."},
-  {"nums":[1,2,3],"start":2,"basket":[1,3],"action":"add","label":"Pack item 2 (3) → pack=[1,3]. Descend with start=3."},
-  {"nums":[1,2,3],"start":3,"basket":[1,3],"action":"record","label":"Record [1,3]. Return."},
-  {"nums":[1,2,3],"start":2,"basket":[1],"action":"remove","label":"Undo: unpack 3 → pack=[1]. Return."},
-  {"nums":[1,2,3],"start":0,"basket":[],"action":"remove","label":"Undo: unpack 1 → pack=[]. Advance to item 1."},
-  {"nums":[1,2,3],"start":1,"basket":[2],"action":"add","label":"Pack item 1 (2) → pack=[2]. Descend."},
-  {"nums":[1,2,3],"start":2,"basket":[2],"action":"record","label":"Record [2]. Loop from item 2."},
-  {"nums":[1,2,3],"start":2,"basket":[2,3],"action":"add","label":"Pack item 2 (3) → pack=[2,3]. Descend."},
-  {"nums":[1,2,3],"start":3,"basket":[2,3],"action":"record","label":"Record [2,3]. Return."},
-  {"nums":[1,2,3],"start":2,"basket":[2],"action":"remove","label":"Undo: unpack 3 → pack=[2]."},
-  {"nums":[1,2,3],"start":1,"basket":[],"action":"remove","label":"Undo: unpack 2 → pack=[]. Advance to item 2."},
-  {"nums":[1,2,3],"start":2,"basket":[3],"action":"add","label":"Pack item 2 (3) → pack=[3]. Descend."},
-  {"nums":[1,2,3],"start":3,"basket":[3],"action":"record","label":"Record [3]. Return."},
-  {"nums":[1,2,3],"start":2,"basket":[],"action":"remove","label":"Undo: unpack 3 → pack=[]. Return."},
-  {"nums":[1,2,3],"start":3,"basket":[],"action":"done","label":"All forks explored. Results: [[], [1], [1,2], [1,2,3], [1,3], [2], [2,3], [3]] ✓"}
-]
+{
+  "labels": {"source": "n", "selection": "accumulated", "position": "junction"},
+  "steps": [
+{"nums":[3,2,1],"start":0,"basket":[],"action":"record","label":"sumDownFrom(3): dispatch a scout to sumDownFrom(2). The guide will add 3 to whatever the scout returns."},
+{"nums":[3,2,1],"start":0,"basket":[3],"action":"add","label":"Scout heading to sumDownFrom(2). The guide trusts its report without checking the sub-range itself."},
+{"nums":[3,2,1],"start":1,"basket":[3],"action":"record","label":"sumDownFrom(2): dispatch a scout to sumDownFrom(1). Will add 2 to the report."},
+{"nums":[3,2,1],"start":1,"basket":[3,2],"action":"add","label":"Scout heading to sumDownFrom(1)."},
+{"nums":[3,2,1],"start":2,"basket":[3,2],"action":"record","label":"sumDownFrom(1): dispatch a scout to the base. Will add 1 to the report."},
+{"nums":[3,2,1],"start":3,"basket":[3,2,1],"action":"done","label":"Base: sumDownFrom(0) returns 0. Each level above combines: 0+1=1, 1+2=3, 3+3=6. The Summit Rule: no junction re-surveys any ground."}
+  ]
+}
 :::
 
-:::stackblitz{step=3 total=3 exercises="step3-exercise1-problem.ts,step3-exercise2-problem.ts,step3-exercise3-problem.ts" solutions="step3-exercise1-solution.ts,step3-exercise2-solution.ts,step3-exercise3-solution.ts"}
+#### **Exercise 1**
 
-> "Push before recurse, pop after — always paired. Snapshot the pack, never push the live reference."
+A direct application of the Summit Rule with a running sum. The guide at junction n needs the total of all integers from n down to 1. Dispatch one scout to junction n-1, trust its report, and add n to get the current junction's answer. The base case is n=0, which contributes nothing to the trail total.
 
-## 4. Key Patterns
+:::stackblitz{file="step1-exercise1-problem.ts" step=1 total=3 solution="step1-exercise1-solution.ts"}
 
-**Pattern: Overlapping Subproblems and Memoization**
+#### **Exercise 2**
 
-**When to use**: the recursive call tree branches into two or more sub-calls, and the same sub-peak appears at multiple places in the tree. Classic signals: Fibonacci, counting paths on a grid, coin change.
+Changes the combination step from addition to multiplication. The guide at exponent E dispatches one scout to exponent E-1 and multiplies `base` by the scout's report. A scout who reaches exponent 0 is at the terminal junction: any value raised to the zero power equals 1, not 0. The base case identity element depends on the operation — and for multiplication, 0 would erase every answer above it.
 
-**How to think about it**: Fibonacci(5) requires the guide to summit peak 4 and peak 3 — but peak 3 is also required by peak 4. Without a memo, the guide sends a new apprentice to peak 3 twice, causing exponential growth in total work. Memoization installs a summit log at each peak: the first apprentice to return writes their result in the log; every subsequent guide dispatched to that height just reads from the log instead of climbing again. The summit log converts the duplicated tree into a linear chain of unique climbs.
+:::stackblitz{file="step1-exercise2-problem.ts" step=1 total=3 solution="step1-exercise2-solution.ts"}
+
+#### **Exercise 3**
+
+Shifts the input from a single integer to an indexed array. The guide at index i dispatches a scout to index i+1 and combines by returning the larger of `arr[i]` and the scout's report. The base case fires when the index reaches the end of the array and should return negative infinity — a value small enough that the first real element always wins the first comparison.
+
+:::stackblitz{file="step1-exercise3-problem.ts" step=1 total=3 solution="step1-exercise3-solution.ts"}
+
+> **Mental anchor**: Fix the base case identity value first, then the combination writes itself. The scout always has the rest; the current junction adds exactly one thing.
+
+**→ Bridge to Level 2**: Level 1 always dispatches exactly one scout. Each junction returns a single combined report upward. That works for sum, max, and power — but none of those require mapping out every possible route. When the goal is "find all valid combinations," a single scout per junction is not enough. The guide needs to send one scout down each possible branch from the same junction and merge all their results. That requires a fundamentally different structure.
+
+### Level 2: Branch the Decision Tree
+
+Level 1 dispatched exactly one scout per junction. Now the problem changes. Given a list of items, find every possible subset: every combination of included and excluded items. Brute force generates all 2^N binary strings, maps each to a subset, and filters. Branching recursion builds each route directly: at junction i, dispatch one scout with item i included and one scout with item i excluded, then merge their two result lists. The guide never generates routes it will throw away, because every leaf of the decision tree is already a complete valid subset.
+
+The simpler version of branching recursion avoids all backtracking machinery by passing a new copy of the current pack to each scout. The scout who gets a copy with item i appended explores all sub-routes with that item present. The scout who gets the original copy explores all sub-routes without it. Because each scout has an independent array, neither can corrupt the other's state. The decision tree writes itself: each branch call creates two new calls, and every path from root to leaf is one complete route.
+
+This approach makes the structure transparent. The tree has 2^N leaves for a list of N items. The combination step at each junction is just list concatenation — no sorting, no deduplication. Every route appears exactly once because every binary sequence of include-or-skip decisions maps to exactly one leaf path. The cost is memory: each branch call allocates a new array, so there are O(n) live arrays at peak depth.
+
+`allSubsets([1,2])` forks at each item. One scout carries its own copy with item 1 included; another carries a copy without it. Each of those scouts forks again at item 2.
+
+:::trace-subset
+{
+  "labels": {"source": "items", "selection": "new copy", "position": "junction"},
+  "steps": [
+{"nums":[1,2],"start":0,"basket":[],"action":"record","label":"allSubsets: fork at item 0. Scout A gets a new copy [1]. Scout B gets a copy []. They cannot interfere with each other."},
+{"nums":[1,2],"start":0,"basket":[1],"action":"add","label":"Scout A carries its own copy [1] and explores all routes from item 1 onward."},
+{"nums":[1,2],"start":1,"basket":[1],"action":"record","label":"Scout A at item 1: fork again. One sub-scout gets [1,2]; another gets [1]."},
+{"nums":[1,2],"start":2,"basket":[1,2],"action":"add","label":"Sub-scout receives new copy [1,2]. Independent of every other branch."},
+{"nums":[1,2],"start":2,"basket":[1,2],"action":"record","label":"Base: no items left. Return [[1,2]]."},
+{"nums":[1,2],"start":1,"basket":[1],"action":"remove","label":"Sub-scout [1] reaches base and returns [[1]]. Scout A merges: [[1,2],[1]]."},
+{"nums":[1,2],"start":0,"basket":[],"action":"remove","label":"Scout A done. Scout B (copy []) now explores from item 1."},
+{"nums":[1,2],"start":1,"basket":[2],"action":"add","label":"Scout B forks: one sub-scout gets [2], one gets []."},
+{"nums":[1,2],"start":2,"basket":[2],"action":"record","label":"Base: return [[2]]."},
+{"nums":[1,2],"start":1,"basket":[],"action":"remove","label":"Sub-scout [] reaches base and returns [[]]. Scout B merges: [[2],[]]."},
+{"nums":[1,2],"start":0,"basket":[],"action":"done","label":"Both scouts merged: [[1,2],[1],[2],[]]. Four subsets. No route explored twice. No shared state mutated."}
+  ]
+}
+:::
+
+> [!TIP]
+> The base case at this level fires when `i >= nums.length`. That junction returns a list containing exactly one element — the current pack — not an empty list. Returning `[]` instead of `[current]` at the base silently drops every route from the results.
+
+#### **Exercise 1**
+
+A direct application of binary branching. At each junction, fork into two recursive calls: one that passes a new array with `nums[i]` appended (include), and one that passes the unchanged array (skip). Merge the two returned lists with concatenation. The base case returns a single-element list containing only the current pack.
+
+:::stackblitz{file="step2-exercise1-problem.ts" step=2 total=3 solution="step2-exercise1-solution.ts"}
+
+#### **Exercise 2**
+
+Changes the return type from a list of routes to a count. Instead of collecting routes, count how many routes produce a specific target sum. The fork is identical — include or skip — but each branch returns a number and the junction adds the two counts together. Pass the running sum as a parameter so the junction can check it at the base without inspecting the pack array at all.
+
+:::stackblitz{file="step2-exercise2-problem.ts" step=2 total=3 solution="step2-exercise2-solution.ts"}
+
+#### **Exercise 3**
+
+Shifts the branching domain from items to grid positions. The guide starts at the top-left corner of a grid and must reach the bottom-right corner by moving only right or down. At each position, fork: one scout moves right, one scout moves down. Positions on the right or bottom edge have only one valid move. The base case is reaching the bottom-right corner, which contributes exactly one route. The total is the sum of the two scouts' counts.
+
+:::stackblitz{file="step2-exercise3-problem.ts" step=2 total=3 solution="step2-exercise3-solution.ts"}
+
+> **Mental anchor**: Two scouts, two independent copies of state, one merged result list. No shared pack, no undo step, no surprises.
+
+**→ Bridge to Level 3**: Passing copies works when the pack array is small. When N is large, each branch call allocates a new array, and the peak memory is N live arrays at once. When the problem also demands that the guide keep exploring from the same junction after recording a route — rather than returning immediately — copying becomes unwieldy. The next level uses one shared pack with explicit mark-and-retrieve to avoid all allocation during traversal.
+
+### Level 3: Choose, Explore, Undo
+
+Level 2 passed a new copy of the pack to each scout. Level 3 gives all scouts the same pack, but with a strict protocol: place a marker before exploring a branch, then retrieve it before the next branch starts. After retrieval, the pack must look exactly as it did before the marker was placed. This is the marker-and-retrieve cycle that defines backtracking.
+
+The consequence is that no route is stored as a separate object until it is complete. At any moment, the shared pack holds exactly one active partial route. When the guide reaches a terminal junction, the pack contains a full route; a snapshot is recorded (the pack is copied into the results list) and the guide returns. When the guide backtracks, the pack is already restored to what the junction above expects. The active call stack is at most N levels deep, and the pack never grows beyond N elements — versus Level 2, which needs O(n) live copies at peak depth.
+
+Constraint pruning fits naturally here. If the current partial route already violates a constraint before the guide dispatches a scout — the running sum exceeds the target, the open count has hit the limit — the guide returns immediately without placing a marker. No sub-tree below an invalid junction can produce a valid route, so the entire sub-tree cost is avoided. The pack is already correct for the junction above because no marker was placed.
+
+`buildSubsets([1,2])` pushes item 1, explores all routes under that choice, records them, pops item 1, then pushes item 2. The pack is shared across all calls; the markers are explicit push and pop operations.
+
+:::trace-subset
+{
+  "labels": {"source": "items", "selection": "pack (shared)", "position": "junction"},
+  "steps": [
+{"nums":[1,2],"start":0,"basket":[],"action":"record","label":"Arrive at junction 0. Snapshot the empty pack: record {}. Two branches remain — place marker for item 1, or skip it."},
+{"nums":[1,2],"start":0,"basket":[1],"action":"add","label":"pack.push(1). Pack is now [1]. Explore all routes with item 1 included."},
+{"nums":[1,2],"start":1,"basket":[1],"action":"record","label":"Junction 1 with pack=[1]. Snapshot: record {1}. Place marker for item 2 or skip."},
+{"nums":[1,2],"start":1,"basket":[1,2],"action":"add","label":"pack.push(2). Pack is now [1,2]. Scout descends to base."},
+{"nums":[1,2],"start":2,"basket":[1,2],"action":"record","label":"Base: no items left. Snapshot: record {1,2}. Return."},
+{"nums":[1,2],"start":1,"basket":[1],"action":"remove","label":"pack.pop(). Pack restored to [1]. Junction 1 is exactly as it was before item 2 branch."},
+{"nums":[1,2],"start":0,"basket":[],"action":"remove","label":"Junction 1 loop ends. pack.pop(). Pack restored to []. Junction 0 is exactly as it was before item 1 branch."},
+{"nums":[1,2],"start":1,"basket":[2],"action":"add","label":"pack.push(2). Pack is now [2]. Scout descends to base."},
+{"nums":[1,2],"start":2,"basket":[2],"action":"record","label":"Base: snapshot and record {2}. Return."},
+{"nums":[1,2],"start":1,"basket":[],"action":"remove","label":"pack.pop(). Pack restored to []. Junction 0 loop ends."},
+{"nums":[1,2],"start":0,"basket":[],"action":"done","label":"All markers retrieved. Pack is back to []. Results: {}, {1}, {1,2}, {2}. One snapshot per junction, one shared pack throughout — zero intermediate allocations."}
+  ]
+}
+:::
+
+#### **Exercise 1**
+
+A direct application of the marker-and-retrieve cycle with a for-loop structure. At every junction — not only at leaves — snapshot the current pack into the results list first, then for each remaining item push it, recurse from the next index, and pop it. This records every partial route as a valid subset, producing all 2^N subsets through a single shared pack with no array copies during traversal.
+
+:::stackblitz{file="step3-exercise1-problem.ts" step=3 total=3 solution="step3-exercise1-solution.ts"}
+
+#### **Exercise 2**
+
+Changes the shared state from a pack array to a `used[]` boolean array. At each junction, scan every item and try those not yet marked. For each candidate: mark it used (place marker), push it to the current sequence, recurse, then pop and unmark (retrieve marker). The base case fires when the current sequence reaches `nums.length`. Each leaf records a permutation — a route that visits every item exactly once.
+
+:::stackblitz{file="step3-exercise2-problem.ts" step=3 total=3 solution="step3-exercise2-solution.ts"}
+
+#### **Exercise 3**
+
+Adds constraint pruning to the marker-retrieve cycle. Generate all k-length combinations from the integers 1 through n in sorted order. At each junction push the next integer, recurse, then pop. Prune when the remaining integers cannot fill the remaining slots: if `n - start + 1 < k - current.length`, no valid combination can be completed from this junction and the loop should break immediately rather than continuing to dispatch scouts.
+
+:::stackblitz{file="step3-exercise3-problem.ts" step=3 total=3 solution="step3-exercise3-solution.ts"}
+
+> **Mental anchor**: Push before exploring, pop after. The pack must look identical before and after every branch — no exceptions.
+
+## Key Patterns
+
+### Pattern: Memoized Recursion
+
+**When to use**: the recursion fans out into multiple sub-calls, but the same smaller sub-problem appears at many junctions across different branches. Keywords include "how many ways," "count distinct paths," "minimum steps," and any problem where the same input would be recomputed multiple times without caching.
+
+**How to think about it**: In the trail guide model, some junctions send scouts to the exact same sub-range from different starting branches. Without a logbook, each scout independently surveys that sub-range at full cost. With a shared logbook, the first scout to complete a given junction writes down the report. Every subsequent scout for that same junction reads from the logbook instead of re-exploring. This works because the sub-range is fixed: the same input always produces the same output. Memoization applies only when the return value depends entirely on the function's input and nothing else — no mutable shared state that varies across branches.
 
 ```mermaid
 graph TD
-    F5["fib(5)"] --> F4["fib(4)"]
-    F5 --> F3a["fib(3)"]
-    F4 --> F3b["fib(3) — cached ✓"]
-    F4 --> F2a["fib(2)"]
-    F3a --> F2b["fib(2) — cached ✓"]
-    F3a --> F1a["fib(1)"]
-    style F3b fill:#d4edda,stroke:#28a745
-    style F2b fill:#d4edda,stroke:#28a745
+    Root["junction 0 (start)"] --> A["junction 2, first visit: explore fully"]
+    Root --> B["junction 1"]
+    B --> A2["junction 2, second visit: read cached report"]
+    A --> Base["base case: empty range, report 0"]
+    A2 --> Cached["logbook hit: return stored answer immediately"]
 ```
 
-**Complexity**: Time O(n) with memo (each peak climbed once), O(2ⁿ) without. Space O(n) for the summit log plus the call stack.
+**Complexity**: Without memoization, overlapping sub-problems cause exponential time. With memoization, each unique junction is explored at most once. Time `O(n)` for n unique inputs, Space `O(n)` for the logbook plus `O(n)` call stack depth.
 
-**Pattern: Pruned Backtracking with Constraints**
+### Pattern: Constraint Pruning
 
-**When to use**: you are generating all valid sequences, but not all forks are legal — some paths can be ruled out before they are fully explored. Signals: "valid", "balanced", "at most k of", or any rule that limits which choices are allowed at each step.
+**When to use**: the decision tree has branches that are guaranteed to produce no valid routes beyond a certain point. Keywords include "valid combinations," "generate all X that satisfy Y," and any problem where partial routes can be rejected before reaching a terminal junction.
 
-**How to think about it**: Generating valid parentheses (n pairs) uses the same choose-explore-undo template as subsets, but the guide checks two gauges before going down any fork: the count of open parentheses placed so far, and the count of close parentheses. A fork is valid only if open < n (you can still place more opens) or close < open (you can close without breaking balance). When either gauge is out of range, the guide turns back immediately without descending — that is the prune. Pruning is just an early return at the top of the recursive call, before the loop runs. Without it, the guide would explore every possible character sequence and filter at the end, which is far slower.
+**How to think about it**: An unpruned decision tree explores every branch all the way to the base before deciding it was invalid. Constraint pruning checks validity at each junction before dispatching scouts. If the current partial route already violates the constraint, the guide turns back immediately without placing a marker or descending. This is safe because a violation at junction K propagates to every junction below it: no further exploration can rescue the route. The earlier the prune, the more sub-trees are skipped in their entirety.
 
 ```mermaid
 graph TD
-    Start["open=0 close=0"] --> L1["( → open=1 close=0"]
-    L1 --> L2a["( → open=2 close=0"]
-    L1 --> L2b[") → open=1 close=1"]
-    L2a --> L3a[") → open=2 close=1"]
-    L2b --> L3b[") → open=1 close=2 ✗ pruned"]
-    L3a --> L4["record: (())"]
-    style L3b fill:#f8d7da,stroke:#dc3545
+    J0["junction: check constraint"] --> Valid["constraint holds: place marker, explore sub-range"]
+    J0 --> Invalid["constraint violated: return immediately, no sub-calls dispatched"]
+    Valid --> J1["next junction: check constraint again"]
+    J1 --> Valid2["still valid: continue exploring"]
+    J1 --> Invalid2["now violated: prune here, skip entire sub-tree cost"]
 ```
 
-**Complexity**: Time O(4ⁿ / √n) — the Catalan number, which counts valid sequences of n pairs. Space O(n) for the call stack depth.
+**Complexity**: Pruning does not change the worst-case time complexity, which remains exponential for problems with no constraints that eliminate branches early. In practice, pruning can cut running time dramatically by eliminating large sub-trees before any scout reaches a terminal junction.
 
 ---
 
-## 5. Decision Framework
+## Decision Framework
 
 **Concept Map**
 
 ```mermaid
 graph TD
-    Recursion["Recursion"] --> Linear["Linear Recursion"]
-    Recursion --> Backtracking["Backtracking"]
-    Linear --> BaseCase["Base Case\n(base camp)"]
-    Linear --> Trust["Trust smaller call\n(apprentice rule)"]
-    Linear --> Combine["Combine on return\n(one step up)"]
-    Linear --> Memo["Memoization\n(summit log)"]
-    Backtracking --> Record["Record at every\narrival"]
-    Backtracking --> Choose["Choose\n(pack item)"]
-    Backtracking --> Explore["Explore\n(recurse deeper)"]
-    Backtracking --> Undo["Undo\n(unpack item)"]
-    Backtracking --> Prune["Prune\n(early return\non invalid state)"]
+    R[Recursion and Backtracking]
+    R --> S[Summit Rule: trust the sub-call]
+    R --> F[Decision Fork: choose, explore, undo]
+    S --> M[Memoized Recursion: cache overlapping scout reports]
+    S --> B[Base Case: terminal junction]
+    F --> P[Constraint Pruning: reject invalid branches early]
+    F --> U[State Restoration: marker retrieved before next branch]
 ```
 
-**Complexity Reference**
+**Complexity Table**
 
-| Algorithm | Time | Space (stack) |
-|---|---|---|
-| Linear recursion — factorial | O(n) | O(n) |
-| Branching recursion — Fibonacci (no memo) | O(2ⁿ) | O(n) |
-| Branching recursion — Fibonacci (memo) | O(n) | O(n) |
-| Backtracking — subsets of n items | O(n × 2ⁿ) | O(n) |
-| Pruned backtracking — generate parentheses (n pairs) | O(4ⁿ / √n) | O(n) |
+| Technique | Time | Space | Best for |
+| --- | --- | --- | --- |
+| Summit Rule (pure recursion) | `O(k^n)` naive | `O(n)` stack | Count, check, or summarize across sub-problems |
+| Summit Rule + Memoization | `O(n)` unique inputs | `O(n)` logbook + `O(n)` stack | Overlapping sub-problems, counting paths |
+| Choose-Explore-Undo | `O(2^n)` or `O(n!)` | `O(n)` stack + `O(n)` current route | Enumerate all valid combinations |
+| Choose-Explore-Undo + Pruning | Better than `O(2^n)` in practice | `O(n)` | Valid subsets, constrained sequences, generate parentheses |
 
 **Decision Tree**
 
 ```mermaid
 graph TD
-    Q1{"Does the problem\nreduce to a smaller\nversion of itself?"}
-    Q1 -->|No| NA["Not a recursion problem\n— try iteration or a formula"]
-    Q1 -->|Yes| Q2{"One smaller call\nor multiple choices\nto explore?"}
-    Q2 -->|One call| Q3{"Subproblems\noverlap?"}
-    Q3 -->|No| LR["Linear Recursion\n— factorial pattern"]
-    Q3 -->|Yes| MEMO["Linear Recursion\nwith Memoization\n— Fibonacci pattern"]
-    Q2 -->|Multiple choices| Q4{"Constraints limit\nwhich choices\nare valid?"}
-    Q4 -->|No constraint| SUB["Subset Enumeration\n— include / exclude\nrecord at every node"]
-    Q4 -->|With constraint| PRUNE["Pruned Backtracking\n— check gauge before\ndescending each fork"]
+    Start[Recursion problem] --> Q1{"Fixed set of sub-calls at each step?"}
+    Q1 -- yes --> Summit["Summit Rule: trust sub-calls, combine reports"]
+    Summit --> Q2{"Same input computed multiple times?"}
+    Q2 -- yes --> Memo["Add memoization: cache scout reports in logbook"]
+    Q2 -- no --> Pure["Pure recursion: no extra state needed"]
+    Q1 -- no --> Fork["Decision Fork: mark, explore, undo"]
+    Fork --> Q3{"Can partial routes be rejected before reaching base?"}
+    Q3 -- yes --> Prune["Add constraint pruning at each junction"]
+    Q3 -- no --> Full["Full backtracking: explore all branches to base"]
 ```
 
 **Recognition Signals**
 
-| Problem signal | Technique |
-|---|---|
-| "nth factorial", "nth power" | Linear recursion |
-| "nth Fibonacci", "count paths" | Branching recursion with memoization |
-| "all subsets", "power set" | Subset enumeration |
-| "all valid X" with a balancing rule | Pruned backtracking |
-| "generate all combinations/permutations" | Backtracking with or without pruning |
-| Problem defined explicitly as f(n) = f(n-1) + something | Linear or branching recursion |
+| Problem signal | Reach for |
+| --- | --- |
+| "nth Fibonacci," "factorial," "count paths to base" | Summit Rule |
+| "all subsets," "all permutations," "generate all valid X" | Choose-Explore-Undo |
+| "how many ways" with repeated sub-problems | Memoized Recursion |
+| "generate valid parentheses," "letter combinations," constrained enumeration | Choose-Explore-Undo + Pruning |
+| "can you reach," "does a path exist" | Summit Rule with boolean return |
 
-**When NOT to Use**
+**When NOT to use**
 
-If you need only one answer — not all of them — backtracking is the wrong tool. BFS finds the shortest path; greedy makes the locally optimal pick; binary search finds a single target. Reserve recursion and backtracking for problems where the full set of outcomes must be collected, or where the problem structure is inherently self-similar with no iterative shortcut.
+Do not reach for backtracking when the question only asks for a count or yes-or-no answer across overlapping sub-problems — that signals memoized recursion, not enumeration. Do not use pure recursion without memoization when the same sub-range can appear from multiple branches, because the redundant exploration grows exponentially. And do not add choose-explore-undo machinery for problems that only call themselves once with a smaller input — the undo step is unnecessary complexity when there is no branching.
 
-## 6. Common Gotchas & Edge Cases
+## Common Gotchas & Edge Cases
 
-**Missing or wrong base case**
+**Gotcha 1: Missing or unreachable base case**
 
-What goes wrong: the function calls itself forever and hits a stack overflow. Why tempting: it feels like the recursion will "naturally stop" when n gets small — but without an explicit check, the guide keeps dispatching apprentices past zero, then to negative n, indefinitely. How to fix: always identify base camp first. Ask "what is the smallest input I can answer directly, without calling myself?" and write that return before anything else.
+The recursion runs until the call stack is exhausted. The symptom is a stack overflow or a maximum call stack error with no visible logic error — the function looks correct except it never stops. The input that triggers it is any valid non-base case, because every call only makes progress toward the base and never arrives.
 
-**Combining step on the way down instead of the way back up**
+Why it is tempting: when the recursive case feels obviously correct, writing the base case separately can feel redundant. The logic for combining reports seems complete even without a stopping condition.
 
-What goes wrong: the combining step runs before the recursive call returns, so you're combining n with a value you haven't computed yet — typically undefined or 0. Why tempting: if the code reads "multiply n by n-1", it's natural to write `n * factorial(n-1)` as a single expression. That expression is correct — JavaScript evaluates right-to-left and waits for the call — but writing the multiply before the call in an if-branch structure causes it to run before the result exists. How to fix: always write `const sub = recursiveCall(...); return n * sub;` mentally, even if you compress it to one line.
+Fix: always write the base case first. After writing it, verify that every possible non-base input makes at least one step toward the base — smaller n, larger i, or reduced remaining.
 
-**Forgetting to pop after the recursive call in backtracking**
+**Gotcha 2: Wrong identity value for the base case**
 
-What goes wrong: the pack carries items from the left fork into the right fork. The results contain subsets with extra elements — each reported result is longer than expected. Why tempting: the pop feels redundant after recursion "cleans up". But recursion does not reset the pack. The pack is shared across every call in the descent. How to fix: push and pop are a matched pair, always adjacent around the recursive call. Never separate them with a conditional.
+The answer is off by a constant across all inputs. For a maximum query, using 0 as the base case value means the maximum of a list of negative numbers reports 0 instead of the actual maximum. For a product query, using 0 as the base returns 0 for every input because 0 multiplied by anything is 0.
 
-**Pushing the live pack instead of a snapshot**
+Why it is tempting: 0 is the default "nothing" value for most numeric contexts, but the identity element depends on the operation. The identity for sum is 0, for product is 1, and for maximum is negative infinity.
 
-What goes wrong: all entries in the results array end up as the same empty array by the time the traversal finishes. Why tempting: `results.push(pack)` looks correct — you're pushing what's currently in the pack. But you're pushing the reference, not a copy. Every subsequent mutation of pack mutates what's already in results. How to fix: always spread when recording: `results.push([...pack])`.
+Fix: before writing the base case, name the operation and look up its identity element. The base case returns that element and nothing else.
 
-**Calling backtrack(i) instead of backtrack(i+1)**
+**Gotcha 3: Forgetting to pop after push in backtracking**
 
-What goes wrong: the same item is packed repeatedly with no progress, causing an immediate stack overflow. Why tempting: it's easy to forget that the next recursive call must advance past the current item. How to fix: after packing `nums[i]`, always recurse with `i + 1` so the scout moves forward. Never re-examine the current index.
+The shared pack accumulates markers from previous branches. The symptom is results that contain extra items that should have been excluded, or correct-looking early results followed by increasingly corrupted later ones. The pack grows without bound across branches.
 
-**Edge cases to handle explicitly**
+Why it is tempting: the push step is visible in the code immediately before the recursive call. The pop step, which must come immediately after the call returns, feels like cleanup that the recursion "should handle." It does not.
 
-- n=0 for linear recursion: always needs its own base case — zero is not always "nothing" (0! = 1, not 0)
-- Empty array for backtracking: should return `[[]]` if recording at every arrival, because the empty pack is always a valid state
-- k=0 for combinationsOfSize: there is exactly one combination of size 0 — the empty combination
-- target=0 for collectSumK: the empty subset always sums to 0 and should be included
+Fix: every `pack.push(x)` must be followed by `pack.pop()` in the same function body, after the recursive call returns. Treat push and pop as matched parentheses: if you count one more push than pop in any code path, the pack will be wrong.
+
+**Gotcha 4: Pushing a reference instead of a snapshot at leaves**
+
+The results list accumulates entries that all point to the same array object. When the traversal finishes, every entry in results is the same empty (or final-state) array. The function returns a list of identical values rather than the distinct routes.
+
+Why it is tempting: `results.push(pack)` looks correct in isolation. At the moment it executes, `pack` does contain the right values. But `pack` is a live reference that continues to be mutated by subsequent branches.
+
+Fix: always snapshot with `results.push([...pack])`. The spread operator creates a new array that captures the current contents permanently. This is the only allocation the backtracking approach requires, and it must happen at every junction that records a route.
+
+**Gotcha 5: Passing the same array reference to both scouts in Level 2**
+
+Both the include branch and the skip branch receive the same array object. Mutations in one branch corrupt the other. The symptom is subsets that contain items that should have been excluded, or the results list reporting fewer subsets than expected.
+
+Why it is tempting: when writing the two recursive calls, copying from one branch to the other by accident produces `backtrack(i+1, current)` for both, or `backtrack(i+1, [...current, nums[i]])` for one and `backtrack(i+1, current)` for the other — but `current` has already been mutated by the time the second call runs.
+
+Fix: for the include branch, construct the new array explicitly before passing it: `backtrack(i+1, [...current, nums[i]])`. Verify that the two calls pass distinct objects, not the same reference.
+
+**Edge cases to always check**
+
+- Empty input: `n=0`, `arr=[]`, `nums=[]`. Level 1 should return the identity value. Level 2 and 3 should return `[[]]` (a list containing the empty route).
+- Single element: verify the base case fires after exactly one recursive call, not zero or two.
+- All identical elements in a permutations problem: the result contains duplicate permutations unless the problem allows them.
+- Grid with one row or one column: only one path exists, moving entirely right or entirely down.
+- k greater than n in combinations: no valid combination exists; the result should be empty.
+- Large n for power or sum: verify the recursion terminates and no off-by-one causes an extra call.
 
 **Debugging tips**
 
-For linear recursion: log the value of n at the top of the function to confirm the chain is heading toward base camp. If you see n going negative, the base case condition is wrong. For backtracking: log pack at every record step to see exactly what is being collected. If results all contain the same reference (all empty), you forgot to spread. If results contain items from the wrong branch, you forgot to pop.
+- Print `(i, JSON.stringify(pack))` at the start of each recursive call to trace what state each junction receives. A growing pack that never shrinks confirms a missing pop.
+- For backtracking, also print after each pop: `'after pop:', JSON.stringify(pack)`. If the pack does not match the pre-push state, the push and pop are not in the same scope.
+- For Level 2, verify independence by logging `pack` before passing it to each branch. If both branches log the same object reference, you are sharing state accidentally.
+- For Level 1, log `(n, returnValue)` at each return to verify the chain: each level should combine its local value with exactly the value from one level below.
+- For grid paths or combination problems, log `(start, current.length)` at each call to confirm the index is advancing and the recursion is making progress toward the base.

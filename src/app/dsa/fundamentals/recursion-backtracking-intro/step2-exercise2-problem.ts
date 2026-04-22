@@ -1,29 +1,27 @@
-// =============================================================================
-// Recursion & Backtracking Intro — Level 2, Exercise 2: Install the Summit Log
-// =============================================================================
-// Goal: Add a summit log (memo Map) to tribonacci so each sub-peak is
-//       climbed at most once. The first apprentice back writes the result;
-//       every subsequent guide just reads from the log.
+// Goal: Practice binary branching that accumulates a count instead of collecting routes.
 //
-// Same recurrence as Exercise 1, but with memoization:
-//   T(0) = 0, T(1) = 0, T(2) = 1
-//   T(n) = T(n-1) + T(n-2) + T(n-3)
+// At each junction fork into two recursive calls: one includes nums[i] (running
+// sum increases), one skips it (running sum unchanged). Return the total number of
+// routes where the final sum exactly equals target. Pass the running sum as a
+// parameter — no need to inspect a pack array at the base.
 //
 // Example:
-//   tribonacciMemo(10) → 81
-//   tribonacciMemo(20) → 35890
-//   (These would hang without the summit log)
-// =============================================================================
-function tribonacciMemo(n: number, memo: Map<number, number> = new Map()): number {
+//   countTargetSubsets([1, 2, 3], 3)  → 2  ({1,2} and {3})
+//   countTargetSubsets([1, 2, 3], 0)  → 1  (empty set)
+
+function countTargetSubsets(nums: number[], target: number): number {
   throw new Error('not implemented');
 }
 
-test('base camp: T(0) = 0', () => tribonacciMemo(0), 0);
-test('base camp: T(1) = 0', () => tribonacciMemo(1), 0);
-test('base camp: T(2) = 1', () => tribonacciMemo(2), 1);
-test('T(5) = 4', () => tribonacciMemo(5), 4);
-test('T(10) = 81', () => tribonacciMemo(10), 81);
-test('T(20) = 35890', () => tribonacciMemo(20), 35890);
+// ---Tests
+test('empty range hits zero', () => countTargetSubsets([], 0), 1);
+test('empty range misses nonzero', () => countTargetSubsets([], 5), 0);
+test('single match', () => countTargetSubsets([5], 5), 1);
+test('single miss', () => countTargetSubsets([5], 3), 0);
+test('two paths to target', () => countTargetSubsets([1, 2, 3], 3), 2);
+test('full set only', () => countTargetSubsets([1, 2, 3], 6), 1);
+test('impossible target', () => countTargetSubsets([1, 2, 3], 10), 0);
+// ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {

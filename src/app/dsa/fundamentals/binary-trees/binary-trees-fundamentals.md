@@ -1,540 +1,532 @@
 ## Overview
 
-Binary trees are the first place where data stops feeling linear. Instead of marching through one sequence, you stand in one room and choose between two smaller wings, each of which contains its own smaller wings.
+Binary trees are the first place where a branching structure changes how you think. An array lets you scan linearly, but a tree makes you decide whether the answer is about one branch, one floor, or a path that bends through the middle. That choice is what separates clean tree solutions from "visit everything and hope."
 
-From recursion and stack thinking, you already know how to trust smaller subproblems. Binary trees sharpen that into one durable rule: each room can ask its left wing and right wing for help, then decide what to do with their answers. This guide builds that idea in three levels: hallway descent with DFS, child reports that combine upward, and floor-by-floor sweeps with BFS.
+You already know from recursion that a smaller subproblem can hand a result back to you, and from stacks and queues that visit order changes what you can see. Binary trees combine those habits into one structure. This guide builds that in three stages: **Return One Scout Report**, **Sweep One Floor at a Time**, and **Keep a Side Notebook**.
 
 ## Core Concept & Mental Model
 
-Picture a museum where every room can open into at most two smaller wings: a left doorway and a right doorway. A room's plaque is the value stored at that node. A missing doorway is a dead end. If you send a docent into the museum, they can inspect it in two fundamentally different ways:
+### The Archive Building
 
-- Follow one hallway all the way down before coming back up.
-- Sweep one floor of rooms at a time before descending.
+Picture an old archive building where every room can open into at most two smaller wings, one on the left and one on the right. A curator stands in a room, asks scouts to inspect any smaller wings, and then decides what that room can report upward. Some questions are about how deep the archive goes. Some are about what you can see floor by floor. Some are about the best hallway route that passes through a room before continuing elsewhere.
 
-Those two tour styles are DFS and BFS. The most important habit in tree problems is deciding which tour the question is really asking for.
+- archive room -> tree node
+- left wing / right wing -> left and right child
+- sealed doorway -> `null` child
+- scout report -> recursive return value from a subtree
+- cart line -> queue used for level-order sweeps
+- side notebook -> extra answer tracked outside the recursive return
+
+The building stays efficient because each room only asks the questions its parent actually needs. No scout revisits a finished wing, so every room is processed a constant number of times.
 
 ### Understanding the Analogy
 
 #### The Setup
 
-You start in the lobby room. Every room has three pieces of information that matter: its own plaque, its left doorway, and its right doorway. The museum keeps shrinking as you move. A child wing is not a special case of the whole museum; it is the whole museum again, just smaller. That is why tree recursion works so reliably.
+The curator starts at the entrance room. From there, each room can send a scout left, send a scout right, or place the next set of rooms into a cart line for a floor sweep. A sealed doorway means that wing does not exist. The curator never needs to invent information. Every answer is built from what smaller wings already discovered.
 
-#### Hallway Descent
+#### The Scout Report
 
-In a depth-first tour, the docent commits to one hallway, keeps going until a dead end, then backtracks and explores the other hallway. The key is that every room uses the same rule. If the docent reaches a dead end, that branch contributes nothing except the base case. If the docent reaches a real room, that room can inspect itself, ask both smaller wings for their reports, and continue.
+Many tree questions are really asking, "If I trust each smaller wing to tell me one useful fact, what can I compute at this room?" A scout might return the deepest floor below, the number of terminal rooms, or whether a target record exists anywhere in that wing. The important part is that the report is small and local. The parent room does not need the entire history of the walk, only the one summary that lets it keep going.
 
-This is why DFS feels like a conversation between a room and its two wings. A room never needs to understand the entire museum at once. It only needs to know what question to ask each child wing and how to combine the two answers.
+If you ask for too much, the report becomes messy and hard to combine. If you ask for too little, the parent room has to re-explore finished wings. Clean binary-tree solutions depend on choosing the exact report that lets each room do its own job once.
 
-#### Reports From Child Wings
+#### The Floor Sweep
 
-Some questions are not about visiting a room. They are about what comes back upward. A room might ask each wing:
+Some questions are not about one room talking to its parent. They are about what all rooms on the same floor reveal together. A scout report cannot preserve that left-to-right floor grouping, because recursion naturally dives down one wing before the other. For those questions the curator loads one floor of rooms into a cart line, processes them together, then loads the next floor.
 
-- How many rooms do you contain?
-- How tall are you?
-- Are you balanced?
-- What is the best score hidden inside you?
-
-When the two reports come back, the current room merges them into one new report for its parent. This is the postorder habit: let the smaller wings finish first, then compute the answer for the current room.
+That single change, room reports versus floor sweeps, is why DFS and BFS feel so different on trees. One is about "what can this room learn from its children?" The other is about "what can I observe when I keep every room at the same distance together?"
 
 #### Why These Approaches
 
-Tree questions become manageable because each move throws away most of the museum. You only ever stand in one room and reason about two smaller wings. DFS is ideal when the answer depends on root-to-leaf paths or on reports bubbling upward from children. BFS is ideal when the question cares about levels, nearest rooms, or the first time you encounter something floor by floor.
+Brute force on a tree often means re-asking solved questions. You measure a left wing, then later walk it again to compare depths, then later walk it a third time to collect the deepest floor. The archive structure lets you do better because every room is already the natural meeting point for its two smaller wings. If the answer is local to a room, ask for reports and combine them there. If the answer is local to a floor, use the cart line and process each floor exactly once. If the answer bends through a room but the parent only needs one smaller fact, keep that full answer in a side notebook instead of polluting the return report.
 
-### How I Think Through This
+#### How I Think Through This
 
-When I see a binary tree problem, the first thing I ask is: does the answer belong to a path, to a room, or to a whole level? If it belongs to a path or depends on child reports, I start thinking recursively. If it belongs to a level or asks for the first thing seen at each depth, I switch to a queue and think floor by floor. Then I ask one more question: is this top-down state I carry into each room, or bottom-up information each room returns to its parent?
+Before I touch code, I ask one question: **what is the smallest useful fact each room needs to hand upward so the archive never gets walked twice?**
 
-Take `[8, 4, 12, 2, 6, 10, 14]`.
+**When one room only needs one summary from each wing:** I use a scout report. Height, leaf count, or "did we find it?" all fit this shape because the parent room can combine small answers from left and right and move on.
+
+**When the question is about all rooms on the same floor:** I stop thinking recursively and switch to a cart line. The answer depends on distance from the entrance, not on what one parent can learn from one child.
+
+**When the real answer is bigger than the report the parent needs:** I keep a side notebook. Each room still returns the one report its parent depends on, but while the room has both wing reports in hand it updates the notebook with a larger candidate answer.
+
+The building blocks below work through those three situations where the same archive behaves differently.
+
+**Scenario 1 — One summary per wing:** This archive asks for its height, so each room only needs the deepest floor reported by its smaller wings.
 
 :::trace-tree
 [
-{
-"nodes": [
-{"index": 0, "value": 8, "tone": "focus", "badge": "lobby"},
-{"index": 1, "value": 4, "tone": "default"},
-{"index": 2, "value": 12, "tone": "default"},
-{"index": 3, "value": 2, "tone": "default"},
-{"index": 4, "value": 6, "tone": "default"},
-{"index": 5, "value": 10, "tone": "default"},
-{"index": 6, "value": 14, "tone": "default"}
-],
-"facts": [
-{"name": "tour", "value": "DFS", "tone": "orange"},
-{"name": "goal", "value": "follow one hallway", "tone": "blue"}
-],
-"action": "visit",
-"label": "Start in the lobby room 8. A depth-first docent chooses one hallway and trusts that each smaller wing can be toured with the same rule."
-},
-{
-"nodes": [
-{"index": 0, "value": 8, "tone": "active"},
-{"index": 1, "value": 4, "tone": "focus", "badge": "next"},
-{"index": 2, "value": 12, "tone": "muted"},
-{"index": 3, "value": 2, "tone": "default"},
-{"index": 4, "value": 6, "tone": "default"},
-{"index": 5, "value": 10, "tone": "muted"},
-{"index": 6, "value": 14, "tone": "muted"}
-],
-"facts": [
-{"name": "tour", "value": "DFS", "tone": "orange"},
-{"name": "active wing", "value": "left", "tone": "orange"}
-],
-"action": "branch",
-"label": "The docent commits to the left wing first. The right wing still exists, but it can wait because recursion remembers where to return."
-},
-{
-"nodes": [
-{"index": 0, "value": 8, "tone": "active"},
-{"index": 1, "value": 4, "tone": "active"},
-{"index": 2, "value": 12, "tone": "muted"},
-{"index": 3, "value": 2, "tone": "focus", "badge": "dead end next"},
-{"index": 4, "value": 6, "tone": "muted"},
-{"index": 5, "value": 10, "tone": "muted"},
-{"index": 6, "value": 14, "tone": "muted"}
-],
-"facts": [
-{"name": "tour", "value": "DFS", "tone": "orange"},
-{"name": "base case", "value": "missing doorway = stop", "tone": "green"}
-],
-"action": "visit",
-"label": "At room 2 the docent is nearly at a dead end. Missing doorways do not break the tour; they are the signal to return the base-case report."
-},
-{
-"nodes": [
-{"index": 0, "value": 8, "tone": "active"},
-{"index": 1, "value": 4, "tone": "focus", "badge": "merge"},
-{"index": 2, "value": 12, "tone": "muted"},
-{"index": 3, "value": 2, "tone": "done"},
-{"index": 4, "value": 6, "tone": "done"},
-{"index": 5, "value": 10, "tone": "muted"},
-{"index": 6, "value": 14, "tone": "muted"}
-],
-"facts": [
-{"name": "left report", "value": "done", "tone": "green"},
-{"name": "right report", "value": "done", "tone": "green"}
-],
-"action": "combine",
-"label": "Once both child wings of room 4 have reported back, room 4 can compute its own answer and hand a single combined report upward."
-},
-{
-"nodes": [
-{"index": 0, "value": 8, "tone": "answer", "badge": "whole museum"},
-{"index": 1, "value": 4, "tone": "done"},
-{"index": 2, "value": 12, "tone": "done"},
-{"index": 3, "value": 2, "tone": "done"},
-{"index": 4, "value": 6, "tone": "done"},
-{"index": 5, "value": 10, "tone": "done"},
-{"index": 6, "value": 14, "tone": "done"}
-],
-"facts": [
-{"name": "rule", "value": "room + child reports", "tone": "purple"}
-],
-"action": "done",
-"label": "That is the tree habit in one picture: descend, stop cleanly at dead ends, let child wings finish, then let each room hand one report to its parent."
-}
+  {
+    "nodes": [
+      {"index": 0, "value": "A", "tone": "focus", "badge": "entrance"},
+      {"index": 1, "value": "B", "tone": "default"},
+      {"index": 2, "value": "C", "tone": "default"},
+      {"index": 3, "value": "D", "tone": "muted"},
+      {"index": 4, "value": "E", "tone": "muted"},
+      {"index": 5, "value": "F", "tone": "default"}
+    ],
+    "facts": [
+      {"name": "question", "value": "archive height", "tone": "blue"}
+    ],
+    "action": "visit",
+    "label": "Room A waits for one scout report from each wing: how many floors remain below B and below C."
+  },
+  {
+    "nodes": [
+      {"index": 0, "value": "A", "tone": "focus", "badge": "combine"},
+      {"index": 1, "value": "B", "tone": "done", "badge": "2"},
+      {"index": 2, "value": "C", "tone": "done", "badge": "2"},
+      {"index": 3, "value": "D", "tone": "muted"},
+      {"index": 4, "value": "E", "tone": "muted"},
+      {"index": 5, "value": "F", "tone": "muted"}
+    ],
+    "facts": [
+      {"name": "left report", "value": 2, "tone": "green"},
+      {"name": "right report", "value": 2, "tone": "green"}
+    ],
+    "action": "combine",
+    "label": "With both scout reports in hand, room A returns max(2, 2) + 1 = 3 floors."
+  },
+  {
+    "nodes": [
+      {"index": 0, "value": "A", "tone": "answer", "badge": "3"},
+      {"index": 1, "value": "B", "tone": "done"},
+      {"index": 2, "value": "C", "tone": "done"},
+      {"index": 3, "value": "D", "tone": "muted"},
+      {"index": 4, "value": "E", "tone": "muted"},
+      {"index": 5, "value": "F", "tone": "muted"}
+    ],
+    "action": "done",
+    "label": "The whole archive height is now known without rewalking any wing."
+  }
+]
+:::
+
+**Scenario 2 — One floor at a time:** This archive wants the last room visible on each floor, so the curator processes rooms by distance from the entrance instead of diving down one wing.
+
+:::trace-tree
+[
+  {
+    "nodes": [
+      {"index": 0, "value": "A", "tone": "frontier", "badge": "q"},
+      {"index": 1, "value": "B", "tone": "default"},
+      {"index": 2, "value": "C", "tone": "default"},
+      {"index": 3, "value": "D", "tone": "muted"},
+      {"index": 4, "value": "E", "tone": "muted"},
+      {"index": 5, "value": "F", "tone": "muted"},
+      {"index": 6, "value": "G", "tone": "muted"}
+    ],
+    "facts": [
+      {"name": "cart line", "value": "[A]", "tone": "orange"},
+      {"name": "visible rooms", "value": "[]", "tone": "blue"}
+    ],
+    "action": "queue",
+    "label": "Start with only the entrance room in the cart line. One whole floor will be processed before the next floor is loaded."
+  },
+  {
+    "nodes": [
+      {"index": 0, "value": "A", "tone": "done"},
+      {"index": 1, "value": "B", "tone": "frontier", "badge": "q"},
+      {"index": 2, "value": "C", "tone": "frontier", "badge": "last"},
+      {"index": 3, "value": "D", "tone": "muted"},
+      {"index": 4, "value": "E", "tone": "muted"},
+      {"index": 5, "value": "F", "tone": "muted"},
+      {"index": 6, "value": "G", "tone": "muted"}
+    ],
+    "facts": [
+      {"name": "cart line", "value": "[B, C]", "tone": "orange"},
+      {"name": "visible rooms", "value": "[A]", "tone": "green"}
+    ],
+    "action": "queue",
+    "label": "After finishing floor 0, the next cart line holds B and C. The last room processed on that floor is what stays visible."
+  },
+  {
+    "nodes": [
+      {"index": 0, "value": "A", "tone": "done"},
+      {"index": 1, "value": "B", "tone": "done"},
+      {"index": 2, "value": "C", "tone": "done"},
+      {"index": 3, "value": "D", "tone": "default"},
+      {"index": 4, "value": "E", "tone": "default"},
+      {"index": 5, "value": "F", "tone": "default"},
+      {"index": 6, "value": "G", "tone": "answer", "badge": "visible"}
+    ],
+    "facts": [
+      {"name": "visible rooms", "value": "[A, C, G]", "tone": "green"}
+    ],
+    "action": "done",
+    "label": "Processing one floor at a time reveals the rightmost room on every floor: A, then C, then G."
+  }
+]
+:::
+
+**Scenario 3 — The answer is bigger than the report:** This archive wants the longest hallway route, so each room returns a one-sided height report while also updating a notebook with any route that bends through that room.
+
+:::trace-tree
+[
+  {
+    "nodes": [
+      {"index": 0, "value": "A", "tone": "focus", "badge": "check"},
+      {"index": 1, "value": "B", "tone": "default"},
+      {"index": 2, "value": "C", "tone": "default"},
+      {"index": 3, "value": "D", "tone": "muted"},
+      {"index": 4, "value": "E", "tone": "muted"},
+      {"index": 5, "value": "F", "tone": "muted"}
+    ],
+    "facts": [
+      {"name": "notebook best", "value": 0, "tone": "orange"}
+    ],
+    "action": "visit",
+    "label": "Room A asks for the deepest hallway down its left and right wings. The parent still only needs one side, but the notebook can record both."
+  },
+  {
+    "nodes": [
+      {"index": 0, "value": "A", "tone": "focus", "badge": "update"},
+      {"index": 1, "value": "B", "tone": "done", "badge": "2"},
+      {"index": 2, "value": "C", "tone": "done", "badge": "1"},
+      {"index": 3, "value": "D", "tone": "muted"},
+      {"index": 4, "value": "E", "tone": "muted"},
+      {"index": 5, "value": "F", "tone": "muted"}
+    ],
+    "facts": [
+      {"name": "left depth", "value": 2, "tone": "green"},
+      {"name": "right depth", "value": 1, "tone": "green"},
+      {"name": "notebook best", "value": 3, "tone": "purple"}
+    ],
+    "action": "combine",
+    "label": "At room A the hallway can bend from the deepest left route into the deepest right route, so the notebook records 2 + 1 = 3 edges."
+  },
+  {
+    "nodes": [
+      {"index": 0, "value": "A", "tone": "answer", "badge": "3"},
+      {"index": 1, "value": "B", "tone": "done"},
+      {"index": 2, "value": "C", "tone": "done"},
+      {"index": 3, "value": "D", "tone": "muted"},
+      {"index": 4, "value": "E", "tone": "muted"},
+      {"index": 5, "value": "F", "tone": "muted"}
+    ],
+    "facts": [
+      {"name": "report upward", "value": 3, "tone": "blue"},
+      {"name": "notebook best", "value": 3, "tone": "green"}
+    ],
+    "action": "done",
+    "label": "The room returns one downward height to its parent, but the notebook keeps the full best hallway for the whole archive."
+  }
 ]
 :::
 
 ---
 
-## Building Blocks — Progressive Learning
+## Building Blocks: Progressive Learning
 
-### Level 1: Hallway Descent
+### Level 1: Return One Scout Report
 
-**Why this level matters**
+A small archive with rooms `[A, B, C, D]` might ask, "How many floors deep is this wing?" The brute-force instinct is to measure one side, then restart and measure the other, or to keep a full path history for every room. That works, but it is wasteful. For a large archive, rewalking every wing turns a clean structural question into repeated bookkeeping.
 
-This is the foundation of tree thinking. If you cannot trust yourself to stand in one room, handle the dead-end case cleanly, and recurse into the two smaller wings, every later tree pattern feels chaotic. Hallway descent is the move behind counting rooms, finding a plaque, collecting leaves, and any root-to-leaf walk.
+The exploitable property is that every room is already the natural meeting point for its two smaller wings. If each smaller wing can hand back one scout report, the current room can finish its own work immediately. For depth, the report is "how many floors are below me." For leaf count, it is "how many terminal rooms are below me." For search, it is "did my wing ever find the target record?" The key is that the report stays small.
 
-**How to think about it**
+Mechanically, the scout walks until it reaches a sealed doorway, which returns the neutral answer for the question. Then each real room waits for its left report and right report, combines them with the current room, and returns exactly one new report upward. The root room's report becomes the answer for the whole archive.
 
-Pretend the docent only has one job: arrive in a room, do the small piece of work that belongs to that room, then send the same docent into the left doorway and the right doorway. The room is never responsible for the whole museum. It only follows the tour rule once.
-
-The dead-end case is what keeps the whole museum from falling apart. A missing doorway is not an error. It is a valid tiny wing whose report is immediate and predictable. Once you stop treating `null` as a weird exception, recursive DFS becomes stable.
-
-**The one thing to get right**
-
-Decide exactly what the dead end returns before you write anything else. If the empty wing returns the wrong neutral value, every real room inherits that mistake and the whole tour drifts off course.
-
-**Visualization**
-
-Take `[7, 3, 11, 1, 5, null, 13]`.
+Use archive `A(B(D, E), C(., F))` and ask for its height.
 
 :::trace-tree
 [
-{
-"nodes": [
-{"index": 0, "value": 7, "tone": "focus", "badge": "start"},
-{"index": 1, "value": 3, "tone": "default"},
-{"index": 2, "value": 11, "tone": "default"},
-{"index": 3, "value": 1, "tone": "default"},
-{"index": 4, "value": 5, "tone": "default"},
-{"index": 6, "value": 13, "tone": "default"}
-],
-"facts": [
-{"name": "pattern", "value": "visit then recurse", "tone": "orange"}
-],
-"action": "visit",
-"label": "The docent starts at room 7 and commits to the same tour rule for every room: inspect this room, then recurse into the left and right doorways."
-},
-{
-"nodes": [
-{"index": 0, "value": 7, "tone": "active"},
-{"index": 1, "value": 3, "tone": "focus", "badge": "left wing"},
-{"index": 2, "value": 11, "tone": "muted"},
-{"index": 3, "value": 1, "tone": "default"},
-{"index": 4, "value": 5, "tone": "default"},
-{"index": 6, "value": 13, "tone": "muted"}
-],
-"facts": [
-{"name": "call stack", "value": "7 -> 3", "tone": "orange"}
-],
-"action": "branch",
-"label": "The tour goes down the left hallway first. The rest of the museum waits on the call stack rather than disappearing."
-},
-{
-"nodes": [
-{"index": 0, "value": 7, "tone": "active"},
-{"index": 1, "value": 3, "tone": "active"},
-{"index": 2, "value": 11, "tone": "muted"},
-{"index": 3, "value": 1, "tone": "focus", "badge": "leaf"},
-{"index": 4, "value": 5, "tone": "muted"},
-{"index": 6, "value": 13, "tone": "muted"}
-],
-"facts": [
-{"name": "dead ends next", "value": "both doorways", "tone": "green"}
-],
-"action": "visit",
-"label": "Room 1 is a leaf. Its child wings are both missing, so the next recursive calls hit the base case immediately."
-},
-{
-"nodes": [
-{"index": 0, "value": 7, "tone": "active"},
-{"index": 1, "value": 3, "tone": "focus", "badge": "resume"},
-{"index": 2, "value": 11, "tone": "muted"},
-{"index": 3, "value": 1, "tone": "done"},
-{"index": 4, "value": 5, "tone": "focus", "badge": "next leaf"},
-{"index": 6, "value": 13, "tone": "muted"}
-],
-"facts": [
-{"name": "tour state", "value": "backtrack then right", "tone": "purple"}
-],
-"action": "branch",
-"label": "After the leftmost dead end reports back, the docent resumes at room 3 and takes its right doorway. DFS is just disciplined backtracking."
-},
-{
-"nodes": [
-{"index": 0, "value": 7, "tone": "answer", "badge": "resolved"},
-{"index": 1, "value": 3, "tone": "done"},
-{"index": 2, "value": 11, "tone": "done"},
-{"index": 3, "value": 1, "tone": "done"},
-{"index": 4, "value": 5, "tone": "done"},
-{"index": 6, "value": 13, "tone": "done"}
-],
-"facts": [
-{"name": "habit", "value": "same rule in every room", "tone": "purple"}
-],
-"action": "done",
-"label": "Once you can trust that repeated room rule, simple DFS problems stop feeling like special tricks and start feeling mechanical."
-}
+  {
+    "nodes": [
+      {"index": 0, "value": "A", "tone": "focus", "badge": "wait"},
+      {"index": 1, "value": "B", "tone": "default"},
+      {"index": 2, "value": "C", "tone": "default"},
+      {"index": 3, "value": "D", "tone": "muted"},
+      {"index": 4, "value": "E", "tone": "muted"},
+      {"index": 6, "value": "F", "tone": "muted"}
+    ],
+    "facts": [
+      {"name": "question", "value": "height", "tone": "blue"}
+    ],
+    "action": "visit",
+    "label": "Room A cannot answer yet. It waits for one scout report from B and one from C."
+  },
+  {
+    "nodes": [
+      {"index": 0, "value": "A", "tone": "default"},
+      {"index": 1, "value": "B", "tone": "done", "badge": "2"},
+      {"index": 2, "value": "C", "tone": "done", "badge": "2"},
+      {"index": 3, "value": "D", "tone": "muted"},
+      {"index": 4, "value": "E", "tone": "muted"},
+      {"index": 6, "value": "F", "tone": "muted"}
+    ],
+    "facts": [
+      {"name": "B report", "value": 2, "tone": "green"},
+      {"name": "C report", "value": 2, "tone": "green"}
+    ],
+    "action": "combine",
+    "label": "The smaller wings report their deepest floors back to the entrance room."
+  },
+  {
+    "nodes": [
+      {"index": 0, "value": "A", "tone": "answer", "badge": "3"},
+      {"index": 1, "value": "B", "tone": "done"},
+      {"index": 2, "value": "C", "tone": "done"},
+      {"index": 3, "value": "D", "tone": "muted"},
+      {"index": 4, "value": "E", "tone": "muted"},
+      {"index": 6, "value": "F", "tone": "muted"}
+    ],
+    "action": "done",
+    "label": "Room A returns max(2, 2) + 1, so the archive height is 3."
+  }
 ]
 :::
 
-:::stackblitz{step=1 total=3 exercises="step1-exercise1-problem.ts,step1-exercise2-problem.ts,step1-exercise3-problem.ts" solutions="step1-exercise1-solution.ts,step1-exercise2-solution.ts,step1-exercise3-solution.ts"}
+#### **Exercise 1**
 
-> The room does one small job, dead ends return the neutral answer, and the same tour rule repeats down both hallways.
+The curators only care how many floors the archive descends, not which path produced that depth. Your scout report should be "deepest floor below this room," and each room turns two child reports into `1 + max(left, right)`.
 
-**→ Bridge to Level 2**
+:::stackblitz{file="step1-exercise1-problem.ts" step=1 total=3 solution="step1-exercise1-solution.ts"}
 
-Hallway descent teaches you to visit rooms correctly, but it does not yet teach you how to build a useful report from both child wings. As soon as the answer depends on what the left and right sides each discovered, you need child reports that combine upward.
+#### **Exercise 2**
 
-### Level 2: Child Reports
+This removes the "how deep" question and asks which rooms are true dead ends. A sealed doorway still returns zero, but now a room with no smaller wings contributes one terminal room, while any other room adds together the counts reported by both wings.
 
-**Why this level matters**
+:::stackblitz{file="step1-exercise2-problem.ts" step=1 total=3 solution="step1-exercise2-solution.ts"}
 
-This level unlocks the real power of trees. Many important questions are not answered while descending. They are answered only after both child wings have come back. Height, balance, subtree counts, and many hidden-path metrics all live here.
+#### **Exercise 3**
 
-**How to think about it**
+This shifts the goal from counting to searching. The scout report becomes a yes-or-no answer, and each room checks its own label before asking whether either smaller wing already found the target record.
 
-Each child wing returns a report with exactly the information its parent needs. The parent room does not ask for raw tour history. It asks for a compact summary. Then the parent merges the left summary, the right summary, and its own plaque into one new summary for the next room above.
+:::stackblitz{file="step1-exercise3-problem.ts" step=1 total=3 solution="step1-exercise3-solution.ts"}
 
-This is postorder thinking. Children finish first. Parent computes second. If you try to compute a child-report question before both wings have answered, you are reasoning too early.
+> **Mental anchor**: A room should only return one small fact upward, exactly the fact its parent needs next.
 
-**The one thing to get right**
+**→ Bridge to Level 2**: A scout report is perfect when one room can solve the question from its children. It breaks down when the question is about all rooms at the same distance from the entrance, because recursion forgets floor boundaries the moment it dives down a wing.
 
-Be explicit about what your report contains. If a room needs both a count and a flag, return both. Trying to squeeze multiple meanings into one number usually creates a bug that only appears on uneven trees.
+### Level 2: Sweep One Floor at a Time
 
-**Visualization**
+Now imagine the question changes shape: "What does each floor of the archive look like?" A recursive scout can still visit every room, but it will naturally finish one whole wing before returning to the sibling wing. That destroys the floor grouping you need. On a wide archive, trying to reconstruct floors afterward means storing extra depth bookkeeping for every visit.
 
-Take `[9, 4, 12, 2, 6, 11, 15]`.
+The exploitable property here is distance from the entrance. Every room on the same floor should be processed together before any room on the next floor matters. A cart line does that naturally. Load the entrance room, pop exactly the current cart length, record what those rooms reveal, and while doing so load their children for the next sweep.
+
+Mechanically, the queue snapshot is the whole trick. At the start of a floor, record `queue.length`. Process exactly that many rooms, pushing their children as you go. When that batch ends, one floor is complete and any floor-level answer can be recorded cleanly before the next batch starts.
+
+Use archive `A(B(D, E), C(F, G))` and record the last room seen on each floor.
 
 :::trace-tree
 [
-{
-"nodes": [
-{"index": 0, "value": 9, "tone": "active"},
-{"index": 1, "value": 4, "tone": "active"},
-{"index": 2, "value": 12, "tone": "muted"},
-{"index": 3, "value": 2, "tone": "done", "badge": "size 1"},
-{"index": 4, "value": 6, "tone": "done", "badge": "size 1"},
-{"index": 5, "value": 11, "tone": "muted"},
-{"index": 6, "value": 15, "tone": "muted"}
-],
-"facts": [
-{"name": "left report", "value": "1", "tone": "green"},
-{"name": "right report", "value": "1", "tone": "green"}
-],
-"action": "combine",
-"label": "Both child leaves of room 4 have already finished. Each wing returns a compact report: its subtree size is 1."
-},
-{
-"nodes": [
-{"index": 0, "value": 9, "tone": "active"},
-{"index": 1, "value": 4, "tone": "focus", "badge": "merge now"},
-{"index": 2, "value": 12, "tone": "muted"},
-{"index": 3, "value": 2, "tone": "done", "badge": "1"},
-{"index": 4, "value": 6, "tone": "done", "badge": "1"},
-{"index": 5, "value": 11, "tone": "muted"},
-{"index": 6, "value": 15, "tone": "muted"}
-],
-"facts": [
-{"name": "room 4 size", "value": "3", "tone": "orange"}
-],
-"action": "combine",
-"label": "Room 4 merges left size 1, right size 1, and itself to create one new report: this whole wing has size 3."
-},
-{
-"nodes": [
-{"index": 0, "value": 9, "tone": "focus", "badge": "final merge"},
-{"index": 1, "value": 4, "tone": "done", "badge": "3"},
-{"index": 2, "value": 12, "tone": "done", "badge": "3"},
-{"index": 3, "value": 2, "tone": "done"},
-{"index": 4, "value": 6, "tone": "done"},
-{"index": 5, "value": 11, "tone": "done"},
-{"index": 6, "value": 15, "tone": "done"}
-],
-"facts": [
-{"name": "left wing", "value": "3", "tone": "green"},
-{"name": "right wing", "value": "3", "tone": "green"},
-{"name": "whole museum", "value": "7", "tone": "purple"}
-],
-"action": "combine",
-"label": "Once both wing reports arrive at the lobby, the lobby can answer a museum-wide question in one step. That is the essence of postorder aggregation."
-},
-{
-"nodes": [
-{"index": 0, "value": 9, "tone": "answer", "badge": "report up"},
-{"index": 1, "value": 4, "tone": "done"},
-{"index": 2, "value": 12, "tone": "done"},
-{"index": 3, "value": 2, "tone": "done"},
-{"index": 4, "value": 6, "tone": "done"},
-{"index": 5, "value": 11, "tone": "done"},
-{"index": 6, "value": 15, "tone": "done"}
-],
-"facts": [
-{"name": "pattern", "value": "children first, parent second", "tone": "purple"}
-],
-"action": "done",
-"label": "A child-report problem is solved when every room can summarize its wing for the room above it."
-}
+  {
+    "nodes": [
+      {"index": 0, "value": "A", "tone": "frontier", "badge": "q"},
+      {"index": 1, "value": "B", "tone": "default"},
+      {"index": 2, "value": "C", "tone": "default"},
+      {"index": 3, "value": "D", "tone": "muted"},
+      {"index": 4, "value": "E", "tone": "muted"},
+      {"index": 5, "value": "F", "tone": "muted"},
+      {"index": 6, "value": "G", "tone": "muted"}
+    ],
+    "facts": [
+      {"name": "floor size", "value": 1, "tone": "blue"},
+      {"name": "cart line", "value": "[A]", "tone": "orange"}
+    ],
+    "action": "queue",
+    "label": "Start floor 0 with one room in the cart line."
+  },
+  {
+    "nodes": [
+      {"index": 0, "value": "A", "tone": "done"},
+      {"index": 1, "value": "B", "tone": "frontier", "badge": "q"},
+      {"index": 2, "value": "C", "tone": "frontier", "badge": "last"},
+      {"index": 3, "value": "D", "tone": "muted"},
+      {"index": 4, "value": "E", "tone": "muted"},
+      {"index": 5, "value": "F", "tone": "muted"},
+      {"index": 6, "value": "G", "tone": "muted"}
+    ],
+    "facts": [
+      {"name": "floor answer", "value": "A", "tone": "green"},
+      {"name": "next cart line", "value": "[B, C]", "tone": "orange"}
+    ],
+    "action": "queue",
+    "label": "After processing exactly one room, floor 0 is complete. B and C are loaded for the next floor."
+  },
+  {
+    "nodes": [
+      {"index": 0, "value": "A", "tone": "done"},
+      {"index": 1, "value": "B", "tone": "done"},
+      {"index": 2, "value": "C", "tone": "done"},
+      {"index": 3, "value": "D", "tone": "frontier", "badge": "q"},
+      {"index": 4, "value": "E", "tone": "frontier", "badge": "q"},
+      {"index": 5, "value": "F", "tone": "frontier", "badge": "q"},
+      {"index": 6, "value": "G", "tone": "frontier", "badge": "last"}
+    ],
+    "facts": [
+      {"name": "answers so far", "value": "[A, C]", "tone": "green"},
+      {"name": "next cart line", "value": "[D, E, F, G]", "tone": "orange"}
+    ],
+    "action": "queue",
+    "label": "Floor 1 finishes with room C as the last visible room, and the deepest floor is now queued."
+  },
+  {
+    "nodes": [
+      {"index": 0, "value": "A", "tone": "done"},
+      {"index": 1, "value": "B", "tone": "done"},
+      {"index": 2, "value": "C", "tone": "done"},
+      {"index": 3, "value": "D", "tone": "done"},
+      {"index": 4, "value": "E", "tone": "done"},
+      {"index": 5, "value": "F", "tone": "done"},
+      {"index": 6, "value": "G", "tone": "answer", "badge": "visible"}
+    ],
+    "facts": [
+      {"name": "visible rooms", "value": "[A, C, G]", "tone": "green"}
+    ],
+    "action": "done",
+    "label": "One floor at a time gives the final right-side view: A, then C, then G."
+  }
 ]
 :::
 
-:::stackblitz{step=2 total=3 exercises="step2-exercise1-problem.ts,step2-exercise2-problem.ts,step2-exercise3-problem.ts" solutions="step2-exercise1-solution.ts,step2-exercise2-solution.ts,step2-exercise3-solution.ts"}
+> [!TIP]
+> At the start of each floor, snapshot the cart-line length. If you let the loop run until the queue is empty, you blur multiple floors together.
 
-> Let the child wings finish first; then each room turns two smaller reports into one report for its parent.
+#### **Exercise 1**
 
-**→ Bridge to Level 3**
+This is the direct floor-sweep template. The cart line should return one array per floor, so you snapshot the current floor size, pop exactly that many rooms, and collect their labels before moving deeper.
 
-Child reports are perfect when the answer belongs to a room and its two wings, but they lose the notion of depth-wide context. If the question asks what happens at each level or which room appears first from left to right, you need to tour the museum floor by floor instead.
+:::stackblitz{file="step2-exercise1-problem.ts" step=2 total=3 solution="step2-exercise1-solution.ts"}
 
-### Level 3: Floor Sweep
+#### **Exercise 2**
 
-**Why this level matters**
+This removes the need to store every room on a floor and asks only for the last room seen from that floor. The loop structure stays the same, but you only keep the label from the final room processed in each batch.
 
-Some tree questions care about levels rather than root-to-leaf structure. Level order listings, nearest exits, and first room seen on each floor all require you to keep rooms grouped by depth. DFS can simulate that, but BFS makes the grouping explicit and easier to trust.
+:::stackblitz{file="step2-exercise2-problem.ts" step=2 total=3 solution="step2-exercise2-solution.ts"}
 
-**How to think about it**
+#### **Exercise 3**
 
-Imagine a rope line holding the rooms you still need to inspect. Start with the lobby in the line. Remove the front room, record whatever the current floor needs, then add that room's children to the back of the line. When you know how many rooms were already in line at the start of a floor, you know exactly where one level ends and the next begins.
+This shifts the floor sweep into an aggregate question. You still process one floor at a time, but instead of recording labels you maintain the running sum for the current floor and keep only the deepest floor's total once the queue finishes.
 
-This is the queue habit: the front of the line is the current room, the back of the line is tomorrow's work. The queue preserves level order for free.
+:::stackblitz{file="step2-exercise3-problem.ts" step=2 total=3 solution="step2-exercise3-solution.ts"}
 
-**The one thing to get right**
+> **Mental anchor**: Queue length is the floor boundary. Freeze it, finish that floor, then move on.
 
-Freeze the current floor size before you start processing that floor. If you keep reading the queue's changing length while you append children, rooms from the next floor leak into the current one.
+**→ Bridge to Level 3**: Floor sweeps show what rooms share the same depth, but they do not solve answers that bend through a room and combine both wings at once. For that, each room needs a small return report plus a separate place to record the bigger answer it sees locally.
 
-**Visualization**
+### Level 3: Keep a Side Notebook
 
-Take `[8, 4, 12, 2, 6, 10, 14]`.
+Now the archive asks a harder question: "What is the longest hallway route anywhere in the building?" If a room only returns one scout report to its parent, that report can describe the best single route continuing upward, but it cannot fully describe a path that comes up from the left wing and leaves through the right wing. Trying to return the entire best path upward breaks the parent logic, because the parent still only needs one continuing route.
+
+The exploitable property is that each room is the only place where its left and right wing reports meet at the same time. That makes the room the perfect place to update a side notebook with a larger candidate answer, while still returning only the narrower one-sided report the parent depends on. This is why diameter, best path sum, and zigzag-style questions often keep a global best outside the recursive return.
+
+Mechanically, the order is consistent. First ask both wings for the report they owe this room. Then compute the local candidate that uses both reports together and write it into the notebook if it is better. Finally, return the one-sided report the parent needs next. The notebook keeps the richer answer, while the recursion stays simple.
+
+Use archive `A(B(D, E), C(., F))` and track the longest hallway in edges.
 
 :::trace-tree
 [
-{
-"nodes": [
-{"index": 0, "value": 8, "tone": "frontier", "badge": "queue"},
-{"index": 1, "value": 4, "tone": "muted"},
-{"index": 2, "value": 12, "tone": "muted"},
-{"index": 3, "value": 2, "tone": "muted"},
-{"index": 4, "value": 6, "tone": "muted"},
-{"index": 5, "value": 10, "tone": "muted"},
-{"index": 6, "value": 14, "tone": "muted"}
-],
-"facts": [
-{"name": "queue", "value": "[8]", "tone": "purple"},
-{"name": "floor", "value": "0", "tone": "blue"}
-],
-"action": "queue",
-"label": "The rope line starts with only the lobby. That means floor 0 contains exactly one room."
-},
-{
-"nodes": [
-{"index": 0, "value": 8, "tone": "focus", "badge": "pop"},
-{"index": 1, "value": 4, "tone": "frontier"},
-{"index": 2, "value": 12, "tone": "frontier"},
-{"index": 3, "value": 2, "tone": "muted"},
-{"index": 4, "value": 6, "tone": "muted"},
-{"index": 5, "value": 10, "tone": "muted"},
-{"index": 6, "value": 14, "tone": "muted"}
-],
-"facts": [
-{"name": "queue", "value": "[4,12]", "tone": "purple"},
-{"name": "next floor", "value": "1", "tone": "blue"}
-],
-"action": "queue",
-"label": "After inspecting room 8, its two children join the back of the line. The next floor is now waiting in order."
-},
-{
-"nodes": [
-{"index": 0, "value": 8, "tone": "done"},
-{"index": 1, "value": 4, "tone": "focus", "badge": "floor 1"},
-{"index": 2, "value": 12, "tone": "frontier", "badge": "same floor"},
-{"index": 3, "value": 2, "tone": "frontier"},
-{"index": 4, "value": 6, "tone": "frontier"},
-{"index": 5, "value": 10, "tone": "muted"},
-{"index": 6, "value": 14, "tone": "muted"}
-],
-"facts": [
-{"name": "frozen floor size", "value": "2", "tone": "orange"},
-{"name": "queue", "value": "[4,12]", "tone": "purple"}
-],
-"action": "queue",
-"label": "Floor 1 has exactly two rooms because the queue length was frozen before the floor began. Their children wait for the next round."
-},
-{
-"nodes": [
-{"index": 0, "value": 8, "tone": "done"},
-{"index": 1, "value": 4, "tone": "done"},
-{"index": 2, "value": 12, "tone": "done"},
-{"index": 3, "value": 2, "tone": "frontier"},
-{"index": 4, "value": 6, "tone": "frontier"},
-{"index": 5, "value": 10, "tone": "frontier"},
-{"index": 6, "value": 14, "tone": "frontier"}
-],
-"facts": [
-{"name": "queue", "value": "[2,6,10,14]", "tone": "purple"},
-{"name": "floor", "value": "2", "tone": "blue"}
-],
-"action": "queue",
-"label": "Now the entire next floor is lined up from left to right. This is why BFS is the natural answer for level-order questions."
-},
-{
-"nodes": [
-{"index": 0, "value": 8, "tone": "done"},
-{"index": 1, "value": 4, "tone": "done"},
-{"index": 2, "value": 12, "tone": "done"},
-{"index": 3, "value": 2, "tone": "done"},
-{"index": 4, "value": 6, "tone": "done"},
-{"index": 5, "value": 10, "tone": "done"},
-{"index": 6, "value": 14, "tone": "answer", "badge": "sweep done"}
-],
-"facts": [
-{"name": "habit", "value": "front is now, back is later", "tone": "purple"}
-],
-"action": "done",
-"label": "A floor sweep is complete when each level was processed using the queue snapshot that existed at that level's start."
-}
+  {
+    "nodes": [
+      {"index": 0, "value": "A", "tone": "focus", "badge": "check"},
+      {"index": 1, "value": "B", "tone": "default"},
+      {"index": 2, "value": "C", "tone": "default"},
+      {"index": 3, "value": "D", "tone": "muted"},
+      {"index": 4, "value": "E", "tone": "muted"},
+      {"index": 6, "value": "F", "tone": "muted"}
+    ],
+    "facts": [
+      {"name": "notebook best", "value": 0, "tone": "orange"}
+    ],
+    "action": "visit",
+    "label": "Room A collects one-sided depth reports from B and C. The notebook is still holding the best hallway seen so far."
+  },
+  {
+    "nodes": [
+      {"index": 0, "value": "A", "tone": "focus", "badge": "update"},
+      {"index": 1, "value": "B", "tone": "done", "badge": "2"},
+      {"index": 2, "value": "C", "tone": "done", "badge": "2"},
+      {"index": 3, "value": "D", "tone": "muted"},
+      {"index": 4, "value": "E", "tone": "muted"},
+      {"index": 6, "value": "F", "tone": "muted"}
+    ],
+    "facts": [
+      {"name": "left depth", "value": 2, "tone": "green"},
+      {"name": "right depth", "value": 2, "tone": "green"},
+      {"name": "through A", "value": 4, "tone": "purple"}
+    ],
+    "action": "combine",
+    "label": "Because room A sees both reports at once, it can record a hallway that comes up from one wing and exits through the other."
+  },
+  {
+    "nodes": [
+      {"index": 0, "value": "A", "tone": "answer", "badge": "4"},
+      {"index": 1, "value": "B", "tone": "done"},
+      {"index": 2, "value": "C", "tone": "done"},
+      {"index": 3, "value": "D", "tone": "muted"},
+      {"index": 4, "value": "E", "tone": "muted"},
+      {"index": 6, "value": "F", "tone": "muted"}
+    ],
+    "facts": [
+      {"name": "returned upward", "value": 3, "tone": "blue"},
+      {"name": "notebook best", "value": 4, "tone": "green"}
+    ],
+    "action": "done",
+    "label": "The notebook stores the full hallway length 4, while the room returns only one continuing depth report upward."
+  }
 ]
 :::
 
-:::stackblitz{step=3 total=3 exercises="step3-exercise1-problem.ts,step3-exercise2-problem.ts,step3-exercise3-problem.ts" solutions="step3-exercise1-solution.ts,step3-exercise2-solution.ts,step3-exercise3-solution.ts"}
+#### **Exercise 1**
 
-> BFS keeps a rope line of rooms: the front is what you inspect now, the back is the next floor waiting its turn.
+This is the cleanest notebook pattern. Each room returns the longest downward hallway starting there, but while both wing reports are visible you update the notebook with the best room-to-room hallway that bends through the current room.
+
+:::stackblitz{file="step3-exercise1-problem.ts" step=3 total=3 solution="step3-exercise1-solution.ts"}
+
+#### **Exercise 2**
+
+This changes the hallway length into a weighted route. The room still returns one downward route to its parent, but the notebook now tracks the best left-plus-room-plus-right sum, and negative wings must be clipped away instead of dragging the route down.
+
+:::stackblitz{file="step3-exercise2-problem.ts" step=3 total=3 solution="step3-exercise2-solution.ts"}
+
+#### **Exercise 3**
+
+This extends the notebook pattern by returning two reports instead of one: the best alternating route if the next move turns left, and the best alternating route if the next move turns right. The notebook records the longest alternating hallway seen anywhere in the archive.
+
+:::stackblitz{file="step3-exercise3-problem.ts" step=3 total=3 solution="step3-exercise3-solution.ts"}
+
+> **Mental anchor**: Return the narrow report the parent needs, but write the bigger local answer into the notebook before you leave the room.
 
 ## Key Patterns
 
-### Pattern: Carrying Rules Downward
+### Pattern: Paired Wing Inspection
 
-**When to use**: the question says a room is valid only if it respects something inherited from above. Common signals are path sums, visible rooms, lower/upper limits, or "every node on the path so far."
+**When to use**: the problem compares two structures instead of summarizing one. Keywords include "same tree," "mirror," "symmetric," "subtree shape," and "both sides must match."
 
-**How to think about it**: this is still DFS, but the important information travels downward instead of upward. Each room receives a touring rule from its parent, updates that rule with its own plaque, then passes the revised rule to both children. The room does not wait for a complex child report; it carries state into the next hallway.
-
-:::trace-tree
-[
-{
-"nodes": [
-{"index": 0, "value": 9, "tone": "focus", "badge": "best so far 9"},
-{"index": 1, "value": 4, "tone": "default"},
-{"index": 2, "value": 12, "tone": "default"},
-{"index": 3, "value": 2, "tone": "default"},
-{"index": 4, "value": 7, "tone": "default"}
-],
-"facts": [
-{"name": "carried rule", "value": "max plaque = 9", "tone": "orange"}
-],
-"action": "visit",
-"label": "The lobby hands the current best plaque value down to its children. This is a top-down instruction, not a child report."
-},
-{
-"nodes": [
-{"index": 0, "value": 9, "tone": "done"},
-{"index": 1, "value": 4, "tone": "focus", "badge": "still below"},
-{"index": 2, "value": 12, "tone": "default"},
-{"index": 3, "value": 2, "tone": "default"},
-{"index": 4, "value": 7, "tone": "default"}
-],
-"facts": [
-{"name": "carried rule", "value": "max plaque stays 9", "tone": "orange"}
-],
-"action": "branch",
-"label": "Room 4 inherits the best plaque seen so far. Since 4 does not beat it, the same rule continues unchanged into the next child wing."
-},
-{
-"nodes": [
-{"index": 0, "value": 9, "tone": "done"},
-{"index": 1, "value": 4, "tone": "done"},
-{"index": 2, "value": 12, "tone": "focus", "badge": "new max"},
-{"index": 3, "value": 2, "tone": "muted"},
-{"index": 4, "value": 7, "tone": "muted"}
-],
-"facts": [
-{"name": "carried rule", "value": "max plaque becomes 12", "tone": "green"}
-],
-"action": "visit",
-"label": "When room 12 beats the inherited rule, the carried state changes before the tour continues into that wing."
-}
-]
-:::
-
-**Complexity**: Time `O(n)`, Space `O(h)` for the recursion stack, where `h` is tree height.
-
-### Pattern: Structural Matching
-
-**When to use**: the question asks whether two trees mirror each other, match exactly, or whether one wing contains the same shape as another.
-
-**How to think about it**: now the docent is walking two museums at once. The comparison is room-by-room and doorway-by-doorway. A mismatch can happen because the plaques differ or because one museum has a doorway where the other has a dead end. Shape and value matter together.
+**How to think about it**: one scout is no longer enough, because correctness depends on how two rooms line up against each other. The right mental model is to send paired inspectors into corresponding positions and ask one yes-or-no question at every stop: are these two rooms both absent, both present with matching labels, and do their next paired wings still line up? For symmetry, the pairing crosses inward, left wing against right wing. For same-tree checks, it stays parallel. The power comes from failing fast the moment one paired comparison breaks.
 
 ```mermaid
 graph TD
-    Match[Structural matching]
-    Match --> Same[Same room value]
-    Match --> Shape[Same doorway shape]
-    Same --> Recurse["Compare left with left, right with right"]
-    Shape --> Recurse
-    Mirror[Mirror check] --> Swap["Compare left with right, right with left"]
-    Recurse --> Whole["Whole museum matches only if every paired wing matches"]
+    Pair["paired rooms"] --> Empty{"both sealed?"}
+    Empty -- yes --> Match["this pair is valid"]
+    Empty -- no --> Present{"both rooms exist?"}
+    Present -- no --> Fail["mismatch"]
+    Present -- yes --> Label{"labels align?"}
+    Label -- no --> Fail
+    Label -- yes --> Recurse["check the next paired wings"]
+    Recurse --> Match
 ```
 
-**Complexity**: Time `O(n)` for a full comparison of `n` paired rooms, Space `O(h)` for recursion.
+**Complexity**: Time `O(n)`, Space `O(h)` with recursion, because every room is checked at most once and the call stack only stores the current paired descent.
+
+### Pattern: Top-Down Path State
+
+**When to use**: the answer depends on what has happened from the entrance down to the current room. Keywords include "good nodes," "current maximum on path," "target path sum," and "ancestor constraint."
+
+**How to think about it**: bottom-up scout reports are great when children tell the parent what happened below. Top-down state flips the direction. The curator carries a running fact while descending, such as the largest label seen so far or the remaining budget to hit a target sum. Every child receives an updated copy of that path state. This works because the needed fact belongs to the route from root to current room, not to the subtree alone.
+
+```mermaid
+graph TD
+    Root["enter room with path state"] --> Update["update running state with current room"]
+    Update --> Left["send updated state to left wing"]
+    Update --> Right["send updated state to right wing"]
+    Left --> Decide["count / accept / reject at child"]
+    Right --> Decide
+```
+
+**Complexity**: Time `O(n)`, Space `O(h)`, because the running state moves along each root-to-room route once and no room is revisited.
 
 ---
 
@@ -545,75 +537,102 @@ graph TD
 ```mermaid
 graph TD
     Trees[Binary Trees]
-    Trees --> DFS[Depth-first tour]
-    Trees --> BFS[Breadth-first floor sweep]
-    DFS --> TopDown[Carry a rule downward]
-    DFS --> BottomUp[Collect child reports upward]
-    BottomUp --> Postorder[Children finish before parent]
-    TopDown --> PathState[Path sum, running max, bounds]
-    BFS --> Levels[Level order, nearest room, per-floor answers]
-    Trees --> BaseCase[Dead end returns neutral answer]
-    BaseCase --> Correctness[Stable recursion]
+    Trees --> BottomUp[Bottom-up DFS report]
+    Trees --> LevelSweep[Level-order BFS]
+    Trees --> TopDown[Top-down path state]
+    Trees --> PairCheck[Paired wing inspection]
+    Trees --> Notebook[Side notebook / global best]
+    BottomUp --> Height[height, count, search]
+    LevelSweep --> Floors[per-floor answers]
+    TopDown --> PathRules[root-to-room constraints]
+    PairCheck --> Mirror[mirror or same-structure checks]
+    Notebook --> Bend[path bends through a room]
 ```
 
-**Complexity table**
+**Complexity Table**
 
-| Technique               | Time   | Space  | Use when                                              |
-| ----------------------- | ------ | ------ | ----------------------------------------------------- |
-| Recursive DFS visit     | `O(n)` | `O(h)` | The answer depends on paths or single-room inspection |
-| Postorder child reports | `O(n)` | `O(h)` | The parent needs summaries from both wings            |
-| BFS with queue          | `O(n)` | `O(w)` | The answer depends on levels or nearest-first order   |
-| Structural comparison   | `O(n)` | `O(h)` | You are matching two trees room-by-room               |
+| Technique | Time | Space | Best for |
+| --- | --- | --- | --- |
+| Bottom-up DFS report | `O(n)` | `O(h)` | Height, counts, subtree summaries |
+| Level-order BFS | `O(n)` | `O(w)` | Per-floor values, right-side view, deepest level |
+| Paired DFS | `O(n)` | `O(h)` | Symmetry, same-tree, subtree comparison |
+| Top-down DFS state | `O(n)` | `O(h)` | Path constraints from root to current room |
+| DFS + side notebook | `O(n)` | `O(h)` | Diameter, max path sum, zigzag global best |
 
-`h` = height of the tree, `w` = maximum width of any level.
-
-**Decision tree**
+**Decision Tree**
 
 ```mermaid
 graph TD
-    Start[Binary tree problem] --> Q1{"Does the answer care about levels?"}
-    Q1 -- Yes --> BFSLeaf[Use BFS with a queue]
-    Q1 -- No --> Q2{"Does a room need reports from both child wings before it can answer?"}
-    Q2 -- Yes --> PostLeaf[Use postorder child reports]
-    Q2 -- No --> Q3{"Does each room inherit a rule from the path above?"}
-    Q3 -- Yes --> TopLeaf[Use top-down DFS with carried state]
-    Q3 -- No --> VisitLeaf[Use direct DFS visit and base case]
+    Start[Tree problem] --> Q1{"Does the answer depend on floors?"}
+    Q1 -- yes --> BFS["Use level-order BFS with a queue"]
+    Q1 -- no --> Q2{"Does each room only need one summary from its children?"}
+    Q2 -- yes --> Bottom["Use bottom-up DFS report"]
+    Q2 -- no --> Q3{"Are you comparing two aligned rooms?"}
+    Q3 -- yes --> Pair["Use paired DFS"]
+    Q3 -- no --> Q4{"Does the answer bend through a room or need a global best?"}
+    Q4 -- yes --> Note["Use DFS plus a side notebook"]
+    Q4 -- no --> Top["Carry top-down path state"]
 ```
 
-**Recognition signals table**
+**Recognition Signals**
 
-| Problem signal                                                   | Technique               |
-| ---------------------------------------------------------------- | ----------------------- |
-| "for each level", "nearest", "leftmost/rightmost on every floor" | BFS queue               |
-| "height", "balanced", "best hidden inside a subtree"             | Postorder child reports |
-| "path sum", "good nodes", "bounds from ancestors"                | Top-down DFS            |
-| "count nodes", "find value", "collect leaves"                    | Direct DFS visit        |
-| "same tree", "mirror", "subtree shape"                           | Structural matching     |
+| Problem signal | Reach for |
+| --- | --- |
+| "maximum depth", "leaf count", "does it exist" | Bottom-up DFS report |
+| "each level", "right side view", "deepest level" | Level-order BFS |
+| "same tree", "mirror", "symmetric" | Paired DFS |
+| "good nodes", "path sum from root", "ancestor rule" | Top-down path state |
+| "diameter", "best path anywhere", "global longest" | DFS plus side notebook |
 
 **When NOT to use**
 
-Do not use BFS when the answer depends on a child wing's finished report rather than on level order; the queue adds noise without helping. Do not force DFS when the question is explicitly level-based; you can simulate levels with recursion, but the bookkeeping becomes more fragile than a simple queue.
+Do not force a floor sweep when the answer is purely local to each room, because queue bookkeeping adds noise without new information. Do not force a bottom-up scout report when the question is about aligned pairs or root-to-room history, because the needed context is in the comparison or the path state, not in a single child summary. And do not stuff a whole global answer into the recursive return when the parent only needs one narrow report, because that is how tree code becomes brittle and confusing.
 
 ## Common Gotchas & Edge Cases
 
-- Treating a missing doorway like an error instead of a valid base case. This is tempting because `null` feels like missing data, but in trees it is part of the structure. Fix it by deciding the neutral return for an empty wing before writing the recursive case.
-- Computing the parent room too early. In child-report problems, the parent cannot answer until both wings have finished. Fix it by writing the recursive calls first and naming the two returned summaries before combining them.
-- Mixing top-down and bottom-up state in one variable. This is tempting because both are "information about the tree," but they travel in opposite directions. Fix it by separating carried path state from returned child reports.
-- Reading the queue length after adding children during BFS. This quietly merges two floors into one. Fix it by freezing the floor size at the beginning of each level.
-- Forgetting that extremely unbalanced trees make recursion depth large. Fix it by tracing the height separately from the node count and by considering iterative BFS or stack-based DFS when depth becomes part of the constraint.
+**Gotcha 1: Mixing edge count and node count**
 
-**Edge cases**
+Diameter and depth problems often look almost identical, so it is easy to count rooms in one place and hallways in another. The symptom is an answer that is off by exactly one on every non-empty archive.
 
-- Empty museum
-- Single room
-- Only left doorways
-- Only right doorways
-- Repeated plaque values
-- Negative plaque values when sums or best scores are involved
+Why it is tempting: many tree traces naturally talk about rooms, while the prompt may measure the hallways between them.
+
+Fix: decide the unit before writing code. If the answer is in edges, a sealed doorway should usually contribute `0` or `-1` depending on the formula, and the combine step should be checked against a tiny three-room archive by hand.
+
+**Gotcha 2: Forgetting the floor boundary in BFS**
+
+If you keep popping until the queue is empty, you silently merge multiple floors together. The symptom is that "level order" outputs flatten into one long list or the right-side view records the last room in the whole archive instead of the last room on each floor.
+
+Why it is tempting: the queue already knows future rooms, so it feels natural to keep draining it.
+
+Fix: snapshot `queue.length` at the start of each floor and run the inner loop exactly that many times before recording the floor answer.
+
+**Gotcha 3: Returning the notebook answer instead of the parent answer**
+
+In diameter and max-path problems, the room often sees a two-sided candidate locally. If that full two-sided value gets returned upward, the parent combines impossible routes and the answer inflates without crashing.
+
+Why it is tempting: the local two-sided candidate looks like the most interesting number in the room.
+
+Fix: separate the two roles. Update the notebook with the rich local candidate, then return only the one-sided report the parent can legally extend.
+
+**Gotcha 4: Treating `null` like a real room**
+
+Tree bugs often start at the sealed doorway. Using the wrong neutral value makes every real room combine bad data. The symptom is weird answers on empty archives, single-room archives, or lopsided wings.
+
+Why it is tempting: every problem has a different neutral value, so copying one base case into another problem feels almost right.
+
+Fix: define what a sealed doorway should mean for this exact question before writing recursion. For search it is `false`, for counts it is `0`, and for max-path-style returns it may need clipping logic.
+
+**Edge cases to always check**
+
+- Empty archive: the function should return the neutral answer immediately.
+- Single room: height, leaf count, and path-style problems should be checked by hand.
+- Completely lopsided archive: verifies recursion depth assumptions and off-by-one counting.
+- Perfectly balanced archive: verifies the combine step when both wings are equally strong.
+- Negative room values for path-sum questions: confirms you clip or keep values correctly.
 
 **Debugging tips**
 
-- Print the current room plaque together with the report returned from the left and right wings.
-- For top-down DFS, print the carried rule before descending into each child.
-- For BFS, print the queue contents at the start of every floor, not after each child append.
-- When a result is off by one, trace the exact neutral value you return for a dead end; tree bugs often start there.
+- Print `(room.value, leftReport, rightReport, returnedReport)` during DFS to see whether each room is returning the correct small fact upward.
+- For notebook problems, print both the returned report and the notebook value after each room so you can catch accidental mixing of the two.
+- For BFS, print the queue contents at the start of each floor. If a floor starts with nodes from two different depths, the boundary logic is wrong.
+- For paired DFS, print both room labels together before recursing so mismatched alignment is obvious.
