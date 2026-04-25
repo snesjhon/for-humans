@@ -38,6 +38,7 @@ export const config = {
     '/login',
     '/auth/callback',
     '/api/:path*',
+    '/settings',
     '/fullstack/settings',
     '/system-design/settings',
   ],

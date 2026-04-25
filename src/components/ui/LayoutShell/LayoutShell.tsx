@@ -15,6 +15,7 @@ const FULLWIDTH_ROUTES = new Set([
   '/',
   '/dsa',
   '/dsa/path',
+  '/settings',
   '/system-design',
   '/system-design/path',
 ]);
@@ -25,6 +26,7 @@ interface LayoutShellProps {
   availableDsaFundamentalsSlugs: string[];
   availableSystemDesignScenarioSlugs: string[];
   availableSystemDesignFundamentalsSlugs: string[];
+  availableSystemDesignPracticeSlugs: string[];
 }
 
 export function LayoutShell({
@@ -33,6 +35,7 @@ export function LayoutShell({
   availableDsaFundamentalsSlugs,
   availableSystemDesignScenarioSlugs,
   availableSystemDesignFundamentalsSlugs,
+  availableSystemDesignPracticeSlugs,
 }: LayoutShellProps) {
   const pathname = usePathname();
   const mainRef = useRef<HTMLElement | null>(null);
@@ -157,6 +160,7 @@ export function LayoutShell({
         availableSystemDesignFundamentalsSlugs={
           availableSystemDesignFundamentalsSlugs
         }
+        availableSystemDesignPracticeSlugs={availableSystemDesignPracticeSlugs}
         collapsed={sidebarCollapsed}
         onToggleCollapsed={() => setSidebarCollapsed((prev) => !prev)}
       />

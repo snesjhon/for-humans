@@ -11,6 +11,7 @@ export interface JourneySection {
   analogies: string[]
   fundamentalsSlug?: string
   fundamentalsBlurb?: string
+  practiceSlug?: string
   firstPass: JourneyScenario[]
   reinforce: JourneyScenario[]
 }

@@ -57,11 +57,15 @@ const DSA_PHASES: JourneyPanelPhase[] = DSA_JOURNEY.map((phase) => ({
 
 const SYSTEM_DESIGN_FUNDAMENTALS_TO_SECTION: Record<string, string> = {};
 const SYSTEM_DESIGN_SCENARIO_TO_SECTION: Record<string, string> = {};
+const SYSTEM_DESIGN_PRACTICE_TO_SECTION: Record<string, string> = {};
 for (const phase of SYSTEM_DESIGN_JOURNEY) {
   for (const section of phase.sections) {
     if (section.fundamentalsSlug) {
       SYSTEM_DESIGN_FUNDAMENTALS_TO_SECTION[section.fundamentalsSlug] =
         section.id;
+    }
+    if (section.practiceSlug) {
+      SYSTEM_DESIGN_PRACTICE_TO_SECTION[section.practiceSlug] = section.id;
     }
     for (const scenario of section.firstPass) {
       SYSTEM_DESIGN_SCENARIO_TO_SECTION[scenario.slug] = section.id;
@@ -83,6 +87,7 @@ const SYSTEM_DESIGN_PHASES: JourneyPanelPhase[] = SYSTEM_DESIGN_JOURNEY.map(
         id: section.id,
         label: section.label,
         fundamentalsSlug: section.fundamentalsSlug,
+        practiceSlug: section.practiceSlug,
         items: section.firstPass.map((scenario) => ({
           key: scenario.slug,
           label: scenario.label,
@@ -111,6 +116,8 @@ function dsaActiveSection(path: string): string | null {
 }
 
 function systemDesignActiveSection(path: string): string | null {
+  const practice = path.match(/^\/system-design\/fundamentals\/practice\/([^/]+)/)?.[1];
+  if (practice) return SYSTEM_DESIGN_PRACTICE_TO_SECTION[practice] ?? null;
   const fund = path.match(/^\/system-design\/fundamentals\/([^/]+)/)?.[1];
   if (fund) return SYSTEM_DESIGN_FUNDAMENTALS_TO_SECTION[fund] ?? null;
   const scenario = path.match(/^\/system-design\/scenarios\/([^/]+)/)?.[1];
@@ -125,6 +132,7 @@ interface SiteNavProps {
   availableDsaFundamentalsSlugs: string[];
   availableSystemDesignScenarioSlugs: string[];
   availableSystemDesignFundamentalsSlugs: string[];
+  availableSystemDesignPracticeSlugs: string[];
   collapsed: boolean;
   onToggleCollapsed: () => void;
 }
@@ -135,6 +143,7 @@ export function SiteNav({
   availableSystemDesignScenarioSlugs: availableSystemDesignScenarioSlugsArr,
   availableSystemDesignFundamentalsSlugs:
     availableSystemDesignFundamentalsSlugsArr,
+  availableSystemDesignPracticeSlugs: availableSystemDesignPracticeSlugsArr,
   collapsed,
   onToggleCollapsed,
 }: SiteNavProps) {
@@ -145,6 +154,9 @@ export function SiteNav({
   );
   const availableSystemDesignFundamentals = new Set(
     availableSystemDesignFundamentalsSlugsArr,
+  );
+  const availableSystemDesignPractice = new Set(
+    availableSystemDesignPracticeSlugsArr,
   );
 
   const pathname = usePathname();
@@ -239,9 +251,15 @@ export function SiteNav({
                 }
                 activeFundamentalsSlug={
                   isSystemDesignPage
-                    ? pathname.match(/^\/system-design\/fundamentals\/([^/]+)/)?.[1] ??
+                    ? pathname.match(/^\/system-design\/fundamentals\/(?!practice\/)([^/]+)/)?.[1] ??
                       null
                     : pathname.match(/^\/dsa\/fundamentals\/([^/]+)/)?.[1] ?? null
+                }
+                activePracticeSlug={
+                  isSystemDesignPage
+                    ? pathname.match(/^\/system-design\/fundamentals\/practice\/([^/]+)/)?.[1] ??
+                      null
+                    : null
                 }
                 availableItemKeys={
                   isSystemDesignPage
@@ -253,6 +271,11 @@ export function SiteNav({
                     ? availableSystemDesignFundamentals
                     : availableDsaFundamentals
                 }
+                availablePracticeSlugs={
+                  isSystemDesignPage
+                    ? availableSystemDesignPractice
+                    : new Set<string>()
+                }
                 getItemHref={(key) =>
                   isSystemDesignPage
                     ? `/system-design/scenarios/${key}`
@@ -262,6 +285,9 @@ export function SiteNav({
                   isSystemDesignPage
                     ? `/system-design/fundamentals/${slug}`
                     : `/dsa/fundamentals/${slug}`
+                }
+                getPracticeHref={(slug) =>
+                  `/system-design/fundamentals/practice/${slug}`
                 }
                 progressItemIdPrefix={isSystemDesignPage ? 'sd-' : 'dsa-'}
                 progressFundamentalsIdPrefix={

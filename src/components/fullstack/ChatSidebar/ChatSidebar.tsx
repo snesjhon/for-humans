@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import ReactMarkdown from 'react-markdown'
 import { CircleCheck } from 'lucide-react'
-import { getApiKey } from '@/lib/fullstack/apiKey'
+import { getApiKey } from '@/lib/claudeApiKey'
 import Anthropic from '@anthropic-ai/sdk'
 import { stripWrapToken } from '@/lib/fullstack/chat'
 import dynamic from 'next/dynamic'
@@ -587,7 +587,7 @@ Shape:
                         <p className="m-0 text-[0.8125rem]" style={{ color: 'var(--red, #e06c75)' }}>
                           {error}{' '}
                           {error.includes('API key') && (
-                            <a href="/fullstack/settings" className="text-[var(--ms-blue)]">Go to Settings →</a>
+                            <a href="/settings" className="text-[var(--ms-blue)]">Go to Settings →</a>
                           )}
                         </p>
                         {error.includes('Summary failed') && (

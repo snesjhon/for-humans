@@ -53,6 +53,7 @@ export interface JourneyPanelSection {
   id: string;
   label: string;
   fundamentalsSlug?: string;
+  practiceSlug?: string;
   items: JourneyPanelItem[];
   revisitItems?: JourneyPanelItem[];
   revisitFromLabel?: string;
@@ -72,10 +73,13 @@ export interface JourneyPanelProps {
   activeSectionId: string | null;
   activeItemKey: string | null;
   activeFundamentalsSlug: string | null;
+  activePracticeSlug: string | null;
   availableItemKeys: Set<string>;
   availableFundamentalsSlugs: Set<string>;
+  availablePracticeSlugs: Set<string>;
   getItemHref: (key: string) => string;
   getFundamentalsHref: (slug: string) => string;
+  getPracticeHref: (slug: string) => string;
   progressItemIdPrefix?: string;
   progressFundamentalsIdPrefix?: string;
   compact?: boolean;
@@ -212,10 +216,13 @@ export function JourneyPanel({
   activeSectionId,
   activeItemKey,
   activeFundamentalsSlug,
+  activePracticeSlug,
   availableItemKeys,
   availableFundamentalsSlugs,
+  availablePracticeSlugs,
   getItemHref,
   getFundamentalsHref,
+  getPracticeHref,
   progressItemIdPrefix = 'dsa-',
   progressFundamentalsIdPrefix = 'dsa-fundamentals-',
   compact = false,
@@ -492,6 +499,20 @@ export function JourneyPanel({
                           />
                         }
                         label="Fundamentals"
+                      />
+                    )}
+                  {section.practiceSlug &&
+                    availablePracticeSlugs.has(section.practiceSlug) && (
+                      <NavItem
+                        itemRef={
+                          activePracticeSlug === section.practiceSlug
+                            ? activeItemRef
+                            : undefined
+                        }
+                        href={getPracticeHref(section.practiceSlug)}
+                        isActive={activePracticeSlug === section.practiceSlug}
+                        mark={<ProgressMark completed={false} fundamentals />}
+                        label="Practice"
                       />
                     )}
                   {availableItems.map((item) => (

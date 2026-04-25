@@ -5,7 +5,7 @@ import { getAllProblems } from '@/lib/dsa/content';
 import { getAllFundamentalsSlugs } from '@/lib/dsa/fundamentals';
 import { getSidebarStateInitScript } from '@/lib/sidebarState';
 import { getAllScenarioSlugsFromDisk } from '@/lib/system-design/content';
-import { getAllFundamentalsSlugs as getAllSystemDesignFundamentalsSlugs } from '@/lib/system-design/fundamentals';
+import { getAllFundamentalsSlugs as getAllSystemDesignFundamentalsSlugs, getAllPracticeSlugs } from '@/lib/system-design/fundamentals';
 import { DEFAULT_THEME_FLAVOR, getThemeInitScript } from '@/lib/theme';
 import '../styles/globals.css';
 
@@ -51,6 +51,7 @@ export default async function RootLayout({
   const availableSystemDesignScenarioSlugs = getAllScenarioSlugsFromDisk();
   const availableSystemDesignFundamentalsSlugs =
     getAllSystemDesignFundamentalsSlugs();
+  const availableSystemDesignPracticeSlugs = getAllPracticeSlugs();
 
   return (
     <html
@@ -70,6 +71,7 @@ export default async function RootLayout({
           availableSystemDesignFundamentalsSlugs={
             availableSystemDesignFundamentalsSlugs
           }
+          availableSystemDesignPracticeSlugs={availableSystemDesignPracticeSlugs}
         >
           {children}
         </LayoutShell>

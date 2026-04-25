@@ -55,6 +55,62 @@ export function getFundamentalsGuide(slug: string): FundamentalsGuide | null {
   }
 }
 
+export interface PracticeGuide {
+  slug: string
+  title: string
+  content: string
+  exercisePrompts: string[]
+}
+
+function parsePracticePrompts(raw: string): string[] {
+  const re = /^## Exercise \d+:/gm
+  const starts: number[] = []
+  let m: RegExpExecArray | null
+
+  re.lastIndex = 0
+  while ((m = re.exec(raw)) !== null) {
+    starts.push(m.index)
+  }
+
+  if (starts.length === 0) return [raw.trim()]
+
+  return starts.map((start, i) => {
+    const end = i + 1 < starts.length ? starts[i + 1] : raw.length
+    return raw.slice(start, end).trim()
+  })
+}
+
+export function getFundamentalsPractice(slug: string): PracticeGuide | null {
+  const dir = path.join(FUNDAMENTALS_DIR, slug)
+  const practicePath = path.join(dir, 'practice.md')
+  const promptPath = path.join(dir, 'practice-prompt.md')
+
+  if (!fs.existsSync(practicePath) || !fs.existsSync(promptPath)) return null
+
+  const { content } = matter(fs.readFileSync(practicePath, 'utf-8')) as { content: string }
+  const promptRaw = fs.readFileSync(promptPath, 'utf-8')
+
+  return {
+    slug,
+    title: extractTitle(content, `${slug.replace(/-/g, ' ')} Practice`),
+    content,
+    exercisePrompts: parsePracticePrompts(promptRaw),
+  }
+}
+
+export function getAllPracticeSlugs(): string[] {
+  if (!fs.existsSync(FUNDAMENTALS_DIR)) return []
+
+  return fs
+    .readdirSync(FUNDAMENTALS_DIR, { withFileTypes: true })
+    .filter(entry => entry.isDirectory() && entry.name !== '[slug]')
+    .filter(entry =>
+      fs.existsSync(path.join(FUNDAMENTALS_DIR, entry.name, 'practice.md')) &&
+      fs.existsSync(path.join(FUNDAMENTALS_DIR, entry.name, 'practice-prompt.md'))
+    )
+    .map(entry => entry.name)
+}
+
 export function getAllFundamentalsSlugs(): string[] {
   if (!fs.existsSync(FUNDAMENTALS_DIR)) return []
 

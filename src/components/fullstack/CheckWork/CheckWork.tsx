@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { Circle, CircleCheck } from 'lucide-react'
-import { getApiKey } from '@/lib/fullstack/apiKey'
+import { getApiKey } from '@/lib/claudeApiKey'
 import { getProjectPath } from '@/lib/fullstack/projectPath'
 
 interface CheckResult {
