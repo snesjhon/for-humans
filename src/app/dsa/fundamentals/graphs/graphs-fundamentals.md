@@ -58,7 +58,7 @@ The building blocks below work through those three situations where the same cit
     "nodes": [
       {"id": "A", "label": "A", "x": 18, "y": 48, "tone": "current", "badge": "start"},
       {"id": "B", "label": "B", "x": 40, "y": 24, "tone": "frontier"},
-      {"id": "C", "label": "C", "x": 40, "y": 72, "tone": "frontier"},
+      {"id": "C", "label": "C", "x": 40, "y": 66, "tone": "frontier"},
       {"id": "D", "label": "D", "x": 66, "y": 48, "tone": "default"},
       {"id": "E", "label": "E", "x": 86, "y": 48, "tone": "muted"}
     ],
@@ -80,7 +80,7 @@ The building blocks below work through those three situations where the same cit
     "nodes": [
       {"id": "A", "label": "A", "x": 18, "y": 48, "tone": "visited"},
       {"id": "B", "label": "B", "x": 40, "y": 24, "tone": "visited"},
-      {"id": "C", "label": "C", "x": 40, "y": 72, "tone": "visited"},
+      {"id": "C", "label": "C", "x": 40, "y": 66, "tone": "visited"},
       {"id": "D", "label": "D", "x": 66, "y": 48, "tone": "current", "badge": "new"},
       {"id": "E", "label": "E", "x": 86, "y": 48, "tone": "muted"}
     ],
@@ -102,7 +102,7 @@ The building blocks below work through those three situations where the same cit
     "nodes": [
       {"id": "A", "label": "A", "x": 18, "y": 48, "tone": "done"},
       {"id": "B", "label": "B", "x": 40, "y": 24, "tone": "done"},
-      {"id": "C", "label": "C", "x": 40, "y": 72, "tone": "done"},
+      {"id": "C", "label": "C", "x": 40, "y": 66, "tone": "done"},
       {"id": "D", "label": "D", "x": 66, "y": 48, "tone": "done"},
       {"id": "E", "label": "E", "x": 86, "y": 48, "tone": "muted"}
     ],
@@ -196,7 +196,7 @@ The building blocks below work through those three situations where the same cit
     "nodes": [
       {"id": "Prep", "label": "P", "x": 16, "y": 50, "tone": "frontier", "badge": "0 in"},
       {"id": "Cook", "label": "C", "x": 40, "y": 26, "tone": "default", "badge": "1 in"},
-      {"id": "Pack", "label": "K", "x": 40, "y": 74, "tone": "default", "badge": "1 in"},
+      {"id": "Pack", "label": "K", "x": 40, "y": 66, "tone": "default", "badge": "1 in"},
       {"id": "Ship", "label": "S", "x": 72, "y": 50, "tone": "default", "badge": "2 in"}
     ],
     "edges": [
@@ -216,7 +216,7 @@ The building blocks below work through those three situations where the same cit
     "nodes": [
       {"id": "Prep", "label": "P", "x": 16, "y": 50, "tone": "visited"},
       {"id": "Cook", "label": "C", "x": 40, "y": 26, "tone": "frontier", "badge": "0 in"},
-      {"id": "Pack", "label": "K", "x": 40, "y": 74, "tone": "frontier", "badge": "0 in"},
+      {"id": "Pack", "label": "K", "x": 40, "y": 66, "tone": "frontier", "badge": "0 in"},
       {"id": "Ship", "label": "S", "x": 72, "y": 50, "tone": "default", "badge": "2 in"}
     ],
     "edges": [
@@ -236,7 +236,7 @@ The building blocks below work through those three situations where the same cit
     "nodes": [
       {"id": "Prep", "label": "P", "x": 16, "y": 50, "tone": "done"},
       {"id": "Cook", "label": "C", "x": 40, "y": 26, "tone": "done"},
-      {"id": "Pack", "label": "K", "x": 40, "y": 74, "tone": "done"},
+      {"id": "Pack", "label": "K", "x": 40, "y": 66, "tone": "done"},
       {"id": "Ship", "label": "S", "x": 72, "y": 50, "tone": "answer", "badge": "0 in"}
     ],
     "edges": [
@@ -274,7 +274,7 @@ Use intersections `0-1`, `0-2`, `1-3`, `2-3`, `3-4` and start from `0`.
     "nodes": [
       {"id": "0", "label": "0", "x": 16, "y": 50, "tone": "current", "badge": "start"},
       {"id": "1", "label": "1", "x": 38, "y": 24, "tone": "frontier"},
-      {"id": "2", "label": "2", "x": 38, "y": 76, "tone": "frontier"},
+      {"id": "2", "label": "2", "x": 38, "y": 66, "tone": "frontier"},
       {"id": "3", "label": "3", "x": 64, "y": 50, "tone": "default"},
       {"id": "4", "label": "4", "x": 86, "y": 50, "tone": "default"}
     ],
@@ -296,7 +296,7 @@ Use intersections `0-1`, `0-2`, `1-3`, `2-3`, `3-4` and start from `0`.
     "nodes": [
       {"id": "0", "label": "0", "x": 16, "y": 50, "tone": "visited"},
       {"id": "1", "label": "1", "x": 38, "y": 24, "tone": "visited"},
-      {"id": "2", "label": "2", "x": 38, "y": 76, "tone": "visited"},
+      {"id": "2", "label": "2", "x": 38, "y": 66, "tone": "visited"},
       {"id": "3", "label": "3", "x": 64, "y": 50, "tone": "current", "badge": "new"},
       {"id": "4", "label": "4", "x": 86, "y": 50, "tone": "default"}
     ],
@@ -318,7 +318,7 @@ Use intersections `0-1`, `0-2`, `1-3`, `2-3`, `3-4` and start from `0`.
     "nodes": [
       {"id": "0", "label": "0", "x": 16, "y": 50, "tone": "done"},
       {"id": "1", "label": "1", "x": 38, "y": 24, "tone": "done"},
-      {"id": "2", "label": "2", "x": 38, "y": 76, "tone": "done"},
+      {"id": "2", "label": "2", "x": 38, "y": 66, "tone": "done"},
       {"id": "3", "label": "3", "x": 64, "y": 50, "tone": "done"},
       {"id": "4", "label": "4", "x": 86, "y": 50, "tone": "answer", "badge": "last"}
     ],
@@ -379,7 +379,7 @@ Use districts `0-1-2`, `3-4`, and isolated `5`.
       {"id": "2", "label": "2", "x": 30, "y": 58, "tone": "done"},
       {"id": "3", "label": "3", "x": 58, "y": 42, "tone": "current", "badge": "new"},
       {"id": "4", "label": "4", "x": 76, "y": 42, "tone": "frontier"},
-      {"id": "5", "label": "5", "x": 88, "y": 74, "tone": "default"}
+      {"id": "5", "label": "5", "x": 88, "y": 65, "tone": "default"}
     ],
     "edges": [
       {"from": "0", "to": "1", "tone": "traversed"},
@@ -400,7 +400,7 @@ Use districts `0-1-2`, `3-4`, and isolated `5`.
       {"id": "2", "label": "2", "x": 30, "y": 58, "tone": "done"},
       {"id": "3", "label": "3", "x": 58, "y": 42, "tone": "done"},
       {"id": "4", "label": "4", "x": 76, "y": 42, "tone": "done"},
-      {"id": "5", "label": "5", "x": 88, "y": 74, "tone": "current", "badge": "solo"}
+      {"id": "5", "label": "5", "x": 88, "y": 65, "tone": "current", "badge": "solo"}
     ],
     "edges": [
       {"from": "0", "to": "1", "tone": "traversed"},
@@ -421,7 +421,7 @@ Use districts `0-1-2`, `3-4`, and isolated `5`.
       {"id": "2", "label": "2", "x": 30, "y": 58, "tone": "done"},
       {"id": "3", "label": "3", "x": 58, "y": 42, "tone": "done"},
       {"id": "4", "label": "4", "x": 76, "y": 42, "tone": "done"},
-      {"id": "5", "label": "5", "x": 88, "y": 74, "tone": "answer", "badge": "3"}
+      {"id": "5", "label": "5", "x": 88, "y": 65, "tone": "answer", "badge": "3"}
     ],
     "edges": [
       {"from": "0", "to": "1", "tone": "traversed"},
@@ -478,7 +478,7 @@ Use arrows `0 -> 1`, `0 -> 2`, `1 -> 3`, `2 -> 3`.
     "nodes": [
       {"id": "0", "label": "0", "x": 14, "y": 50, "tone": "frontier", "badge": "0 in"},
       {"id": "1", "label": "1", "x": 40, "y": 26, "tone": "default", "badge": "1 in"},
-      {"id": "2", "label": "2", "x": 40, "y": 74, "tone": "default", "badge": "1 in"},
+      {"id": "2", "label": "2", "x": 40, "y": 66, "tone": "default", "badge": "1 in"},
       {"id": "3", "label": "3", "x": 74, "y": 50, "tone": "default", "badge": "2 in"}
     ],
     "edges": [
@@ -498,7 +498,7 @@ Use arrows `0 -> 1`, `0 -> 2`, `1 -> 3`, `2 -> 3`.
     "nodes": [
       {"id": "0", "label": "0", "x": 14, "y": 50, "tone": "visited"},
       {"id": "1", "label": "1", "x": 40, "y": 26, "tone": "frontier", "badge": "0 in"},
-      {"id": "2", "label": "2", "x": 40, "y": 74, "tone": "frontier", "badge": "0 in"},
+      {"id": "2", "label": "2", "x": 40, "y": 66, "tone": "frontier", "badge": "0 in"},
       {"id": "3", "label": "3", "x": 74, "y": 50, "tone": "default", "badge": "2 in"}
     ],
     "edges": [
@@ -518,7 +518,7 @@ Use arrows `0 -> 1`, `0 -> 2`, `1 -> 3`, `2 -> 3`.
     "nodes": [
       {"id": "0", "label": "0", "x": 14, "y": 50, "tone": "done"},
       {"id": "1", "label": "1", "x": 40, "y": 26, "tone": "done"},
-      {"id": "2", "label": "2", "x": 40, "y": 74, "tone": "done"},
+      {"id": "2", "label": "2", "x": 40, "y": 66, "tone": "done"},
       {"id": "3", "label": "3", "x": 74, "y": 50, "tone": "answer", "badge": "0 in"}
     ],
     "edges": [
