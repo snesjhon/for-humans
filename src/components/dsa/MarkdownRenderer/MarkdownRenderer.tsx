@@ -18,6 +18,7 @@ import type {
 import type { BinarySearchStep } from '../BinarySearchTrace/BinarySearchTrace';
 import type { BinaryTreeTraceStep } from '../BinaryTreeTrace/BinaryTreeTrace';
 import type { ParserTraceStep } from '../ParserTrace/ParserTrace';
+import type { GraphTraceStep } from '../GraphTrace/GraphTrace';
 
 const WebContainerEmbed = dynamic(
   () => import('../WebContainerEmbed/WebContainerEmbed'),
@@ -51,6 +52,7 @@ const BinarySearchTrace = dynamic(
 );
 const BinaryTreeTrace = dynamic(() => import('../BinaryTreeTrace/BinaryTreeTrace'));
 const ParserTrace = dynamic(() => import('../ParserTrace/ParserTrace'));
+const GraphTrace = dynamic(() => import('../GraphTrace/GraphTrace'));
 
 interface MarkdownRendererProps {
   content: string;
@@ -104,6 +106,10 @@ type TraceParseSegment = BaseSegment & {
   type: 'trace-parse';
   steps: ParserTraceStep[];
 };
+type TraceGraphSegment = BaseSegment & {
+  type: 'trace-graph';
+  steps: GraphTraceStep[];
+};
 type StackBlitzSegment = BaseSegment & {
   type: 'stackblitz';
   file: string;
@@ -134,7 +140,8 @@ function splitTrace(segments: BaseSegment[]): BaseSegment[] {
       | 'trace-subset'
       | 'trace-bs'
       | 'trace-tree'
-      | 'trace-parse';
+      | 'trace-parse'
+      | 'trace-graph';
   }> = [
     { fence: /^:::trace\r?\n([\s\S]*?)\r?\n:::[ \t]*$/gm, type: 'trace' },
     { fence: /^:::trace-lr\r?\n([\s\S]*?)\r?\n:::[ \t]*$/gm, type: 'trace-lr' },
@@ -150,6 +157,10 @@ function splitTrace(segments: BaseSegment[]): BaseSegment[] {
     { fence: /^:::trace-bs\r?\n([\s\S]*?)\r?\n:::[ \t]*$/gm, type: 'trace-bs' },
     { fence: /^:::trace-tree\r?\n([\s\S]*?)\r?\n:::[ \t]*$/gm, type: 'trace-tree' },
     { fence: /^:::trace-parse\r?\n([\s\S]*?)\r?\n:::[ \t]*$/gm, type: 'trace-parse' },
+    {
+      fence: /^:::trace-graph\r?\n([\s\S]*?)\r?\n:::[ \t]*$/gm,
+      type: 'trace-graph',
+    },
   ];
 
   for (const seg of segments) {
@@ -175,7 +186,8 @@ function splitTrace(segments: BaseSegment[]): BaseSegment[] {
         | 'trace-subset'
         | 'trace-bs'
         | 'trace-tree'
-        | 'trace-parse';
+        | 'trace-parse'
+        | 'trace-graph';
     };
     const matches: RawMatch[] = [];
     for (const { fence, type } of configs) {
@@ -370,6 +382,8 @@ export default function MarkdownRenderer({
           return (
             <ParserTrace key={i} steps={(seg as TraceParseSegment).steps} />
           );
+        if (seg.type === 'trace-graph')
+          return <GraphTrace key={i} steps={(seg as TraceGraphSegment).steps} />;
         if (seg.type === 'stackblitz') {
           const s = seg as StackBlitzSegment;
           const slug = problemSlug ?? fundamentalsSlug;

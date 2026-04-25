@@ -1,0 +1,223 @@
+.map {
+  position: relative;
+  height: 290px;
+  margin-bottom: 1.25rem;
+  border: 1px solid var(--ms-surface);
+  border-radius: 12px;
+  background:
+    radial-gradient(circle at top, rgb(148 163 184 / 0.08), transparent 55%),
+    linear-gradient(180deg, rgb(15 23 42 / 0.18), transparent 35%),
+    var(--ms-bg-pane);
+  overflow: hidden;
+}
+
+.canvas {
+  position: absolute;
+  inset: 0;
+}
+
+.edgeLabel {
+  fill: var(--ms-text-faint);
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 10px;
+}
+
+.nodeWrap {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.node {
+  width: 52px;
+  height: 52px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid transparent;
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 16px;
+  font-weight: 700;
+  transition:
+    background 0.16s,
+    border-color 0.16s,
+    color 0.16s,
+    opacity 0.16s;
+}
+
+.nodeDefault {
+  background: var(--ms-bg-pane-secondary);
+  border-color: var(--ms-surface);
+  color: var(--ms-text-body);
+}
+
+.nodeCurrent {
+  background: var(--ms-orange-surface);
+  border-color: var(--ms-orange);
+  color: var(--ms-orange);
+}
+
+.nodeFrontier {
+  background: var(--ms-blue-surface);
+  border-color: var(--ms-blue);
+  color: var(--ms-blue);
+}
+
+.nodeVisited {
+  background: var(--ms-green-surface);
+  border-color: var(--ms-green);
+  color: var(--ms-green);
+}
+
+.nodeDone {
+  background: var(--ms-mauve-surface);
+  border-color: var(--ms-mauve);
+  color: var(--ms-mauve);
+}
+
+.nodeBlocked {
+  background: var(--ms-red-surface);
+  border-color: var(--ms-red);
+  color: var(--ms-red);
+}
+
+.nodeAnswer {
+  background: var(--ms-peach-surface);
+  border-color: var(--ms-peach);
+  color: var(--ms-peach);
+}
+
+.nodeMuted {
+  background: var(--ms-bg-pane-secondary);
+  border-color: var(--ms-surface);
+  color: var(--ms-text-faint);
+  opacity: 0.5;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 18px;
+}
+
+.nodeId {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 10px;
+  color: var(--ms-text-faint);
+}
+
+.nodeBadge {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--ms-text-subtle);
+  background: var(--ms-bg-pane-secondary);
+  border: 1px solid var(--ms-surface);
+  border-radius: 999px;
+  padding: 1px 6px;
+}
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 1rem;
+}
+
+.fact {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  padding: 4px 9px;
+  border: 1px solid var(--ms-surface);
+  font-size: 12px;
+}
+
+.factName {
+  color: var(--ms-text-faint);
+}
+
+.factValue {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-weight: 700;
+}
+
+.factNeutral {
+  background: var(--ms-bg-pane);
+  color: var(--ms-text-body);
+}
+
+.factBlue {
+  background: var(--ms-blue-surface);
+  border-color: var(--ms-blue);
+  color: var(--ms-blue);
+}
+
+.factOrange {
+  background: var(--ms-orange-surface);
+  border-color: var(--ms-orange);
+  color: var(--ms-orange);
+}
+
+.factGreen {
+  background: var(--ms-green-surface);
+  border-color: var(--ms-green);
+  color: var(--ms-green);
+}
+
+.factPurple {
+  background: var(--ms-mauve-surface);
+  border-color: var(--ms-mauve);
+  color: var(--ms-mauve);
+}
+
+.badgeVisit {
+  background: var(--ms-orange-surface);
+  color: var(--ms-orange);
+  border: 1px solid var(--ms-orange);
+}
+
+.badgeQueue {
+  background: var(--ms-blue-surface);
+  color: var(--ms-blue);
+  border: 1px solid var(--ms-blue);
+}
+
+.badgeExpand {
+  background: var(--ms-peach-surface);
+  color: var(--ms-peach);
+  border: 1px solid var(--ms-peach);
+}
+
+.badgeMark {
+  background: var(--ms-green-surface);
+  color: var(--ms-green);
+  border: 1px solid var(--ms-green);
+}
+
+.badgeCycle {
+  background: var(--ms-red-surface);
+  color: var(--ms-red);
+  border: 1px solid var(--ms-red);
+}
+
+.legendCurrent {
+  background: var(--ms-orange-surface);
+  color: var(--ms-orange);
+}
+
+.legendFrontier {
+  background: var(--ms-blue-surface);
+  color: var(--ms-blue);
+}
+
+.legendVisited {
+  background: var(--ms-green-surface);
+  color: var(--ms-green);
+}
