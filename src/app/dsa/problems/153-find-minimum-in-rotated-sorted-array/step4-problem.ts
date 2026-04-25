@@ -1,5 +1,5 @@
-// Goal: Open the search loop and compute the midpoint of the current live
-//       trail before adding any Binary Search branch logic.
+// Goal: Add the second Binary Search decision so the search keeps the lower
+//       valley alive when the midpoint is not larger than the right anchor.
 
 function findMin(nums: number[]): number {
   let left = 0;
@@ -9,15 +9,27 @@ function findMin(nums: number[]): number {
     return nums[left];
   }
 
-  throw new Error('not implemented');
+  while (left < right) {
+    const mid = Math.floor((left + right) / 2);
+
+    if (nums[mid] > nums[right]) {
+      left = mid + 1;
+    } else {
+      throw new Error('not implemented');
+    }
+  }
+
+  return nums[left];
 }
 
 // ---Tests
 runCase('single point is already the minimum', () => findMin([7]), 7);
 runCase('already sorted trail returns the first point', () => findMin([11, 13, 15, 17]), 11);
-runCase('first probe lands on the middle ridge point', () => findMin([3, 4, 5, 1, 2]), 5);
-runCase('first probe can also land on the tallest ridge point', () => findMin([4, 5, 6, 7, 0, 1, 2]), 7);
-runCase('first probe can land in the lower valley', () => findMin([5, 1, 2, 3, 4]), 2);
+runCase('rotation near the end keeps discarding the high ridge', () => findMin([2, 3, 4, 5, 1]), 1);
+runCase('example 1: pivot in the middle uses both rules', () => findMin([3, 4, 5, 1, 2]), 1);
+runCase('example 2: pivot near the end uses both rules', () => findMin([4, 5, 6, 7, 0, 1, 2]), 0);
+runCase('rotation near the front still finds the minimum', () => findMin([5, 1, 2, 3, 4]), 1);
+runCase('handles negative values across the drop', () => findMin([2, 4, -9, -7, -3, 0]), -9);
 // ---End Tests
 
 // ---Helpers

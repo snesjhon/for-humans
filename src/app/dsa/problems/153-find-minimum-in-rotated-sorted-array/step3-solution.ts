@@ -1,5 +1,5 @@
-// Goal: Open the search loop and compute the midpoint of the current live
-//       trail before adding any Binary Search branch logic.
+// Goal: Add the first Binary Search decision by discarding the higher ridge
+//       when the midpoint is larger than the right anchor.
 
 function findMin(nums: number[]): number {
   let left = 0;
@@ -11,18 +11,23 @@ function findMin(nums: number[]): number {
 
   while (left < right) {
     const mid = Math.floor((left + right) / 2);
-    return nums[mid];
+
+    if (nums[mid] > nums[right]) {
+      left = mid + 1;
+      return left;
+    } else {
+      throw new Error('not implemented');
+    }
   }
 
-  return nums[left];
+  throw new Error('not implemented');
 }
 
 // ---Tests
 runCase('single point is already the minimum', () => findMin([7]), 7);
 runCase('already sorted trail returns the first point', () => findMin([11, 13, 15, 17]), 11);
-runCase('first probe lands on the middle ridge point', () => findMin([3, 4, 5, 1, 2]), 5);
-runCase('first probe can also land on the tallest ridge point', () => findMin([4, 5, 6, 7, 0, 1, 2]), 7);
-runCase('first probe can land in the lower valley', () => findMin([5, 1, 2, 3, 4]), 2);
+runCase('high-ridge probe moves the left boundary to index 3', () => findMin([2, 3, 4, 5, 1]), 3);
+runCase('high-ridge discard can move the left boundary deep into the array', () => findMin([10, 20, 30, 40, 50, 60, 5]), 4);
 // ---End Tests
 
 // ---Helpers

@@ -10,6 +10,11 @@ function isDarkMode(): boolean {
   return document.documentElement.classList.contains('dark');
 }
 
+function readThemeToken(name: string, fallback: string): string {
+  const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  return value || fallback;
+}
+
 export default function MermaidChart({ chart }: MermaidChartProps) {
   const innerRef = useRef<HTMLDivElement>(null);
   const id = useId().replace(/:/g, '');
@@ -30,9 +35,37 @@ export default function MermaidChart({ chart }: MermaidChartProps) {
 
     async function run() {
       const mermaid = (await import('mermaid')).default;
+      const fontFamily = getComputedStyle(document.body).fontFamily || 'system-ui, sans-serif';
+      const background = readThemeToken('--ms-bg-pane', dark ? '#1e1e2e' : '#eff1f5');
+      const text = readThemeToken('--ms-text-body', dark ? '#cdd6f4' : '#4c4f69');
+      const muted = readThemeToken('--ms-text-muted', dark ? '#a6adc8' : '#5c5f77');
+      const surface = readThemeToken('--ms-surface', dark ? '#45475a' : '#ccd0da');
+      const surfaceStrong = readThemeToken('--ms-surface-strong', dark ? '#585b70' : '#acb0be');
+      const accent = readThemeToken('--ms-blue', dark ? '#89b4fa' : '#1e66f5');
+
       mermaid.initialize({
         startOnLoad: false,
-        theme: dark ? 'dark' : 'default',
+        theme: 'base',
+        themeVariables: {
+          darkMode: dark,
+          background,
+          textColor: text,
+          lineColor: surfaceStrong,
+          fontFamily,
+          xyChart: {
+            backgroundColor: background,
+            titleColor: text,
+            xAxisLabelColor: muted,
+            xAxisTitleColor: text,
+            xAxisTickColor: surfaceStrong,
+            xAxisLineColor: surface,
+            yAxisLabelColor: muted,
+            yAxisTitleColor: text,
+            yAxisTickColor: surfaceStrong,
+            yAxisLineColor: surface,
+            plotColorPalette: accent,
+          },
+        },
       });
 
       try {

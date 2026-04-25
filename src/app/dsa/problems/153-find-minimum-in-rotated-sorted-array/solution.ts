@@ -1,5 +1,5 @@
-// Goal: Find the rotation seam with Binary Search and return the first value
-//       in the lower sorted chunk.
+// Goal: Find the rotation drop with Binary Search and return the first value
+//       in the lower sorted segment.
 
 function findMin(nums: number[]): number {
   let left = 0;
@@ -25,11 +25,11 @@ function findMin(nums: number[]): number {
 // ---Tests
 runCase('example 1: pivot in the middle', () => findMin([3, 4, 5, 1, 2]), 1);
 runCase('example 2: pivot near the end', () => findMin([4, 5, 6, 7, 0, 1, 2]), 0);
-runCase('example 3: already sorted shelf', () => findMin([11, 13, 15, 17]), 11);
+runCase('example 3: already sorted trail', () => findMin([11, 13, 15, 17]), 11);
 runCase('single element array returns that value', () => findMin([7]), 7);
 runCase('rotation near the front still finds the minimum', () => findMin([5, 1, 2, 3, 4]), 1);
 runCase('rotation near the end still finds the minimum', () => findMin([2, 3, 4, 5, 1]), 1);
-runCase('handles negative values across the seam', () => findMin([2, 4, -9, -7, -3, 0]), -9);
+runCase('handles negative values across the drop', () => findMin([2, 4, -9, -7, -3, 0]), -9);
 // ---End Tests
 
 // ---Helpers
