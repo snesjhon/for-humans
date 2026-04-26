@@ -78,9 +78,16 @@ function circlePositions(ids: string[]): Map<string, { x: number; y: number }> {
   );
 }
 
+function resolvePositions(nodes: GraphTraceNode[]): Map<string, { x: number; y: number }> {
+  if (nodes.every((n) => n.x != null && n.y != null)) {
+    return new Map(nodes.map((n) => [n.id, { x: (n.x! / 100) * VW, y: (n.y! / 100) * VH }]));
+  }
+  return circlePositions(nodes.map((n) => n.id));
+}
+
 const EDGE_COLOR: Record<GraphEdgeTone, string> = {
   default: 'var(--ms-surface)',
-  active: 'var(--ms-orange)',
+  active: 'var(--ms-peach)',
   traversed: 'var(--ms-green)',
   queued: 'var(--ms-blue)',
   blocked: 'var(--ms-red)',
@@ -89,7 +96,7 @@ const EDGE_COLOR: Record<GraphEdgeTone, string> = {
 
 const NODE_COLOR: Record<GraphNodeTone, { fill: string; stroke: string; text: string }> = {
   default:  { fill: 'var(--ms-bg-pane-secondary)', stroke: 'var(--ms-surface)',  text: 'var(--ms-text-body)'    },
-  current:  { fill: 'var(--ms-orange-surface)',    stroke: 'var(--ms-orange)',   text: 'var(--ms-orange)'       },
+  current:  { fill: 'var(--ms-peach-surface)',     stroke: 'var(--ms-peach)',    text: 'var(--ms-peach)'        },
   frontier: { fill: 'var(--ms-blue-surface)',      stroke: 'var(--ms-blue)',     text: 'var(--ms-blue)'         },
   visited:  { fill: 'var(--ms-green-surface)',     stroke: 'var(--ms-green)',    text: 'var(--ms-green)'        },
   done:     { fill: 'var(--ms-mauve-surface)',     stroke: 'var(--ms-mauve)',    text: 'var(--ms-mauve)'        },
@@ -130,9 +137,8 @@ export default function GraphTrace({ steps }: { steps: GraphTraceStep[] }) {
   const [idx, setIdx] = useState(0);
   const step = steps[idx];
 
-  // Stable layout derived once from first step's node order
-  const nodeIds = steps[0].nodes.map((n) => n.id);
-  const positions = circlePositions(nodeIds);
+  // Stable layout derived from first step — use explicit x/y when provided
+  const positions = resolvePositions(steps[0].nodes);
 
   return (
     <div className={shared.root}>

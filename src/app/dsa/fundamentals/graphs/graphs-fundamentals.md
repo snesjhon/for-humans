@@ -62,7 +62,7 @@ The same mark-and-expand loop powers three different traversal algorithms. The d
 
 **DFS** uses a stack — LIFO, or equivalently recursion — so it goes as deep as possible before backtracking. No shortest-path guarantee, but DFS is simpler to implement recursively and works well for reachability, cycle detection, and connected components.
 
-**Kahn's algorithm** is a BFS variant for directed graphs with dependencies. Instead of seeding from a start node, it seeds the queue with every node whose in-degree is zero — no unresolved prerequisites. Processing a node decrements the in-degree of each of its neighbors. Any neighbor that hits zero joins the queue. If the total number of processed nodes equals `n`, the graph is acyclic and the processing order is valid. If any nodes remain unprocessed, they are locked in a cycle.
+**Kahn's algorithm** is a BFS variant for directed graphs with dependencies. Rather than starting from one node, it initializes the queue with every node whose in-degree is zero — nothing is blocking them yet. Processing a node decrements the in-degree of each of its neighbors; any neighbor that reaches zero joins the queue. If the total processed count equals `n`, the graph is acyclic and the order is valid. If any nodes remain unprocessed, they are locked in a cycle.
 
 ```mermaid
 graph TD
@@ -173,31 +173,95 @@ No edge crosses between {0,1,2} and {3,4} — two separate components. The outer
 [
   {
     "nodes": [
-      {"id": "A", "label": "A", "x": 20, "y": 38, "tone": "done"},
-      {"id": "B", "label": "B", "x": 42, "y": 38, "tone": "done"},
-      {"id": "C", "label": "C", "x": 30, "y": 68, "tone": "done"},
-      {"id": "D", "label": "D", "x": 70, "y": 38, "tone": "current", "badge": "new"},
-      {"id": "E", "label": "E", "x": 86, "y": 62, "tone": "frontier"}
+      {"id": "A", "label": "0", "x": 14, "y": 42, "tone": "current", "badge": "start"},
+      {"id": "B", "label": "1", "x": 32, "y": 24, "tone": "default"},
+      {"id": "C", "label": "2", "x": 32, "y": 62, "tone": "default"},
+      {"id": "D", "label": "3", "x": 64, "y": 42, "tone": "default"},
+      {"id": "E", "label": "4", "x": 80, "y": 58, "tone": "default"}
     ],
     "edges": [
-      {"from": "A", "to": "B", "tone": "traversed"},
-      {"from": "A", "to": "C", "tone": "traversed"},
-      {"from": "D", "to": "E", "tone": "active"}
+      {"from": "A", "to": "B", "tone": "default"},
+      {"from": "A", "to": "C", "tone": "default"},
+      {"from": "D", "to": "E", "tone": "default"}
     ],
     "facts": [
-      {"name": "districts counted", "value": 2, "tone": "purple"},
-      {"name": "outer scan", "value": "first unstamped = D", "tone": "blue"}
+      {"name": "districts", "value": 1, "tone": "purple"},
+      {"name": "queue", "value": "[0]", "tone": "orange"},
+      {"name": "visited", "value": "{0}", "tone": "green"}
     ],
     "action": "queue",
-    "label": "After finishing A-B-C, the outer scan keeps moving. D is the first unstamped intersection, so that means a second district."
+    "label": "Outer scan starts at 0. It's unvisited — district 1 begins. Mark 0 and enqueue it."
   },
   {
     "nodes": [
-      {"id": "A", "label": "A", "x": 20, "y": 38, "tone": "done"},
-      {"id": "B", "label": "B", "x": 42, "y": 38, "tone": "done"},
-      {"id": "C", "label": "C", "x": 30, "y": 68, "tone": "done"},
-      {"id": "D", "label": "D", "x": 70, "y": 38, "tone": "visited"},
-      {"id": "E", "label": "E", "x": 86, "y": 62, "tone": "current", "badge": "sweep"}
+      {"id": "A", "label": "0", "x": 14, "y": 42, "tone": "visited"},
+      {"id": "B", "label": "1", "x": 32, "y": 24, "tone": "frontier"},
+      {"id": "C", "label": "2", "x": 32, "y": 62, "tone": "frontier"},
+      {"id": "D", "label": "3", "x": 64, "y": 42, "tone": "default"},
+      {"id": "E", "label": "4", "x": 80, "y": 58, "tone": "default"}
+    ],
+    "edges": [
+      {"from": "A", "to": "B", "tone": "active"},
+      {"from": "A", "to": "C", "tone": "active"},
+      {"from": "D", "to": "E", "tone": "default"}
+    ],
+    "facts": [
+      {"name": "districts", "value": 1, "tone": "purple"},
+      {"name": "queue", "value": "[1, 2]", "tone": "orange"},
+      {"name": "visited", "value": "{0, 1, 2}", "tone": "green"}
+    ],
+    "action": "expand",
+    "label": "Dequeue 0. Neighbors 1 and 2 are unvisited — mark both and enqueue. The visited set ensures neither can be enqueued again."
+  },
+  {
+    "nodes": [
+      {"id": "A", "label": "0", "x": 14, "y": 42, "tone": "done"},
+      {"id": "B", "label": "1", "x": 32, "y": 24, "tone": "done"},
+      {"id": "C", "label": "2", "x": 32, "y": 62, "tone": "done"},
+      {"id": "D", "label": "3", "x": 64, "y": 42, "tone": "default"},
+      {"id": "E", "label": "4", "x": 80, "y": 58, "tone": "default"}
+    ],
+    "edges": [
+      {"from": "A", "to": "B", "tone": "traversed"},
+      {"from": "A", "to": "C", "tone": "traversed"},
+      {"from": "D", "to": "E", "tone": "default"}
+    ],
+    "facts": [
+      {"name": "districts", "value": 1, "tone": "purple"},
+      {"name": "queue", "value": "[]", "tone": "orange"},
+      {"name": "visited", "value": "{0, 1, 2}", "tone": "green"}
+    ],
+    "action": "mark",
+    "label": "Dequeue 1 and 2. Each has only node 0 as a neighbor, already visited — skip. Queue empties. Component {0,1,2} is complete."
+  },
+  {
+    "nodes": [
+      {"id": "A", "label": "0", "x": 14, "y": 42, "tone": "done"},
+      {"id": "B", "label": "1", "x": 32, "y": 24, "tone": "done"},
+      {"id": "C", "label": "2", "x": 32, "y": 62, "tone": "done"},
+      {"id": "D", "label": "3", "x": 64, "y": 42, "tone": "current", "badge": "new"},
+      {"id": "E", "label": "4", "x": 80, "y": 58, "tone": "default"}
+    ],
+    "edges": [
+      {"from": "A", "to": "B", "tone": "traversed"},
+      {"from": "A", "to": "C", "tone": "traversed"},
+      {"from": "D", "to": "E", "tone": "default"}
+    ],
+    "facts": [
+      {"name": "districts", "value": 2, "tone": "purple"},
+      {"name": "outer scan", "value": "first unstamped = 3", "tone": "blue"},
+      {"name": "queue", "value": "[3]", "tone": "orange"}
+    ],
+    "action": "queue",
+    "label": "Outer scan resumes: 1 and 2 are visited, skip. Node 3 is unvisited — second district begins. Mark 3 and enqueue."
+  },
+  {
+    "nodes": [
+      {"id": "A", "label": "0", "x": 14, "y": 42, "tone": "done"},
+      {"id": "B", "label": "1", "x": 32, "y": 24, "tone": "done"},
+      {"id": "C", "label": "2", "x": 32, "y": 62, "tone": "done"},
+      {"id": "D", "label": "3", "x": 64, "y": 42, "tone": "visited"},
+      {"id": "E", "label": "4", "x": 80, "y": 58, "tone": "frontier"}
     ],
     "edges": [
       {"from": "A", "to": "B", "tone": "traversed"},
@@ -205,19 +269,20 @@ No edge crosses between {0,1,2} and {3,4} — two separate components. The outer
       {"from": "D", "to": "E", "tone": "active"}
     ],
     "facts": [
-      {"name": "dispatch line", "value": "[E]", "tone": "orange"},
-      {"name": "stamped", "value": "{A,B,C,D,E}", "tone": "green"}
+      {"name": "districts", "value": 2, "tone": "purple"},
+      {"name": "queue", "value": "[4]", "tone": "orange"},
+      {"name": "visited", "value": "{0,1,2,3,4}", "tone": "green"}
     ],
     "action": "expand",
-    "label": "That second sweep covers D and E. The two districts are counted once each, not once per road."
+    "label": "Dequeue 3. Neighbor 4 is unvisited — mark and enqueue. All 5 nodes are now stamped."
   },
   {
     "nodes": [
-      {"id": "A", "label": "A", "x": 20, "y": 38, "tone": "done"},
-      {"id": "B", "label": "B", "x": 42, "y": 38, "tone": "done"},
-      {"id": "C", "label": "C", "x": 30, "y": 68, "tone": "done"},
-      {"id": "D", "label": "D", "x": 70, "y": 38, "tone": "done"},
-      {"id": "E", "label": "E", "x": 86, "y": 62, "tone": "done"}
+      {"id": "A", "label": "0", "x": 14, "y": 42, "tone": "done"},
+      {"id": "B", "label": "1", "x": 32, "y": 24, "tone": "done"},
+      {"id": "C", "label": "2", "x": 32, "y": 62, "tone": "done"},
+      {"id": "D", "label": "3", "x": 64, "y": 42, "tone": "done"},
+      {"id": "E", "label": "4", "x": 80, "y": 58, "tone": "done"}
     ],
     "edges": [
       {"from": "A", "to": "B", "tone": "traversed"},
@@ -228,7 +293,7 @@ No edge crosses between {0,1,2} and {3,4} — two separate components. The outer
       {"name": "final districts", "value": 2, "tone": "green"}
     ],
     "action": "done",
-    "label": "The whole city is covered after the outer scan plus two district sweeps."
+    "label": "Dequeue 4. Neighbor 3 is already visited — skip. Queue empties. Outer scan finds no more unvisited nodes. 2 districts total."
   }
 ]
 :::
@@ -238,70 +303,72 @@ No edge crosses between {0,1,2} and {3,4} — two separate components. The outer
 **Graph:** directed, unweighted
 **Input:** `n = 4`, `edges = [[0,1],[0,2],[1,3],[2,3]]` (directed: `[from, to]`)
 
-In-degrees: node 0 = 0, node 1 = 1, node 2 = 1, node 3 = 2. Kahn's seeds the queue with every node whose in-degree is 0 — only node 0. Processing node 0 removes its two outgoing edges, decrementing nodes 1 and 2 to in-degree 0. Both become ready. When they are processed, node 3 drops to 0 and becomes the final dispatch.
+To start, count how many arrows point *into* each node: node 0 has none, nodes 1 and 2 each have one, and node 3 has two. Kahn's puts every node with zero incoming arrows into the queue first — that's only node 0, since nothing needs to happen before it.
 
-The trace uses task labels (P, C, K, S) to make the dependency relationship easier to read — P must happen before C and K, and both must finish before S.
+When node 0 is processed, its two outgoing arrows are removed. That frees nodes 1 and 2 — they now have zero incoming arrows and join the queue. Once both are processed, node 3's two incoming arrows are gone and it becomes the last node ready to go.
+
+The trace labels the nodes I, L, B, and D (Install, Lint, Build, Deploy) — a realistic CI pipeline: I must run first to get dependencies in place, then L and B can run in parallel since neither depends on the other, and D only ships once both pass.
 
 :::trace-graph
 [
   {
     "nodes": [
-      {"id": "Prep", "label": "P", "x": 16, "y": 50, "tone": "frontier", "badge": "0 in"},
-      {"id": "Cook", "label": "C", "x": 40, "y": 26, "tone": "default", "badge": "1 in"},
-      {"id": "Pack", "label": "K", "x": 40, "y": 66, "tone": "default", "badge": "1 in"},
-      {"id": "Ship", "label": "S", "x": 72, "y": 50, "tone": "default", "badge": "2 in"}
+      {"id": "Install", "label": "I", "x": 16, "y": 50, "tone": "frontier", "badge": "0 in"},
+      {"id": "Lint", "label": "L", "x": 40, "y": 26, "tone": "default", "badge": "1 in"},
+      {"id": "Build", "label": "B", "x": 40, "y": 66, "tone": "default", "badge": "1 in"},
+      {"id": "Deploy", "label": "D", "x": 72, "y": 50, "tone": "default", "badge": "2 in"}
     ],
     "edges": [
-      {"from": "Prep", "to": "Cook", "tone": "queued", "directed": true},
-      {"from": "Prep", "to": "Pack", "tone": "queued", "directed": true},
-      {"from": "Cook", "to": "Ship", "tone": "default", "directed": true},
-      {"from": "Pack", "to": "Ship", "tone": "default", "directed": true}
+      {"from": "Install", "to": "Lint", "tone": "queued", "directed": true},
+      {"from": "Install", "to": "Build", "tone": "queued", "directed": true},
+      {"from": "Lint", "to": "Deploy", "tone": "default", "directed": true},
+      {"from": "Build", "to": "Deploy", "tone": "default", "directed": true}
     ],
     "facts": [
-      {"name": "ready now", "value": "[Prep]", "tone": "orange"},
+      {"name": "ready now", "value": "[Install]", "tone": "orange"},
       {"name": "remaining arrows", "value": 4, "tone": "blue"}
     ],
     "action": "queue",
-    "label": "Prep has no unfinished incoming arrows, so it is safe to dispatch first."
+    "label": "Install has no incoming arrows — nothing blocks it. The CI pipeline must start here."
   },
   {
     "nodes": [
-      {"id": "Prep", "label": "P", "x": 16, "y": 50, "tone": "visited"},
-      {"id": "Cook", "label": "C", "x": 40, "y": 26, "tone": "frontier", "badge": "0 in"},
-      {"id": "Pack", "label": "K", "x": 40, "y": 66, "tone": "frontier", "badge": "0 in"},
-      {"id": "Ship", "label": "S", "x": 72, "y": 50, "tone": "default", "badge": "2 in"}
+      {"id": "Install", "label": "I", "x": 16, "y": 50, "tone": "visited"},
+      {"id": "Lint", "label": "L", "x": 40, "y": 26, "tone": "frontier", "badge": "0 in"},
+      {"id": "Build", "label": "B", "x": 40, "y": 66, "tone": "frontier", "badge": "0 in"},
+      {"id": "Deploy", "label": "D", "x": 72, "y": 50, "tone": "default", "badge": "2 in"}
     ],
     "edges": [
-      {"from": "Prep", "to": "Cook", "tone": "traversed", "directed": true},
-      {"from": "Prep", "to": "Pack", "tone": "traversed", "directed": true},
-      {"from": "Cook", "to": "Ship", "tone": "queued", "directed": true},
-      {"from": "Pack", "to": "Ship", "tone": "queued", "directed": true}
+      {"from": "Install", "to": "Lint", "tone": "traversed", "directed": true},
+      {"from": "Install", "to": "Build", "tone": "traversed", "directed": true},
+      {"from": "Lint", "to": "Deploy", "tone": "queued", "directed": true},
+      {"from": "Build", "to": "Deploy", "tone": "queued", "directed": true}
     ],
     "facts": [
-      {"name": "ready now", "value": "[Cook, Pack]", "tone": "orange"},
-      {"name": "order so far", "value": "[Prep]", "tone": "green"}
+      {"name": "ready now", "value": "[Lint, Build]", "tone": "orange"},
+      {"name": "order so far", "value": "[Install]", "tone": "green"}
     ],
     "action": "expand",
-    "label": "Processing Prep removes its arrows. Cook and Pack now drop to zero incoming arrows and become safe."
+    "label": "Processing Install removes its arrows. Lint and Build both drop to zero incoming arrows — neither depends on the other, so they can run in parallel."
   },
   {
     "nodes": [
-      {"id": "Prep", "label": "P", "x": 16, "y": 50, "tone": "done"},
-      {"id": "Cook", "label": "C", "x": 40, "y": 26, "tone": "done"},
-      {"id": "Pack", "label": "K", "x": 40, "y": 66, "tone": "done"},
-      {"id": "Ship", "label": "S", "x": 72, "y": 50, "tone": "answer", "badge": "0 in"}
+      {"id": "Install", "label": "I", "x": 16, "y": 50, "tone": "done"},
+      {"id": "Lint", "label": "L", "x": 40, "y": 26, "tone": "done"},
+      {"id": "Build", "label": "B", "x": 40, "y": 66, "tone": "done"},
+      {"id": "Deploy", "label": "D", "x": 72, "y": 50, "tone": "answer", "badge": "0 in"}
     ],
     "edges": [
-      {"from": "Prep", "to": "Cook", "tone": "traversed", "directed": true},
-      {"from": "Prep", "to": "Pack", "tone": "traversed", "directed": true},
-      {"from": "Cook", "to": "Ship", "tone": "traversed", "directed": true},
-      {"from": "Pack", "to": "Ship", "tone": "traversed", "directed": true}
+      {"from": "Install", "to": "Lint", "tone": "traversed", "directed": true},
+      {"from": "Install", "to": "Build", "tone": "traversed", "directed": true},
+      {"from": "Lint", "to": "Deploy", "tone": "traversed", "directed": true},
+      {"from": "Build", "to": "Deploy", "tone": "traversed", "directed": true}
     ],
     "facts": [
-      {"name": "valid order", "value": "[Prep, Cook, Pack, Ship]", "tone": "green"}
+      {"name": "valid order", "value": "[Install, Lint, Build, Deploy]", "tone": "green"}
     ],
     "action": "done",
-    "label": "Once Cook and Pack finish, Ship becomes safe. Every intersection is dispatched, so there is no dependency loop."
+    "label": "Once Lint and Build finish, Deploy drops to zero and ships. All nodes processed — no dependency cycle."
   }
 ]
 :::
@@ -310,13 +377,13 @@ The trace uses task labels (P, C, K, S) to make the dependency relationship easi
 
 ## Building Blocks: Progressive Learning
 
-### Level 1: Draw the Street Ledger
+### Level 1: Adjacency List and Single-Source BFS
 
-Suppose the city says, "Start at intersection 0 and report every place reachable from it." The brute-force instinct is to keep scanning the whole road list every time you stand at a new intersection. On a map with ten thousand roads, that means doing the same lookup work again and again just to rediscover neighboring streets you already saw before.
+The input is an edge list — every connection as a pair `[a, b]`. Scanning the full edge list every time you need a node's neighbors costs O(E) per step. For a graph with ten thousand edges, that's ten thousand scans repeated for every node you visit. The adjacency list converts this once: walk every edge and record each endpoint in the other's neighbor bucket. Build cost is O(V + E); after that, each neighbor lookup is O(degree). In the city map, this is the street ledger — each intersection already knows its own roads.
 
-The exploitable property is that graph movement is local. Once you rewrite the road list into a street ledger, each intersection can answer the only question that matters at that moment: who are my immediate neighbors? Pair that with a stamp sheet, and every neighbor lookup becomes cheap while every repeated arrival becomes harmless because a stamped intersection is skipped immediately.
+Graph traversal is local: at any node, the only thing that matters is its immediate neighbors. The adjacency list delivers those in constant time. The other essential piece is the visited set — a boolean array, one slot per node. Without it, any graph with a cycle would loop forever, re-enqueuing the same nodes indefinitely. The visited set makes each node a one-time entry: mark it the moment you discover it, and any future arrival is a no-op.
 
-Mechanically, you first draw the ledger so each intersection points to its outgoing streets. Then you seed the dispatch line with one start intersection, stamp it, and repeatedly pull the next intersection to expand. For each neighbor in its ledger entry, if the neighbor is not stamped yet, you stamp it immediately and add it to the line. The sweep stops when the line empties, and the stamped set is the whole reachable district.
+To run a BFS, build the adjacency list, allocate the visited array, push the start node, and mark it visited immediately — before the loop, not inside it. Then loop: dequeue a node, and for each neighbor check the visited array. If unvisited, mark it and enqueue it right there. That one-line-earlier mark is what keeps duplicates out of the queue. When the queue empties, every node that was marked is reachable from the start.
 
 Use intersections `0-1`, `0-2`, `1-3`, `2-3`, `3-4` and start from `0`.
 
@@ -406,7 +473,9 @@ Then walk every edge. For each `[a, b]`, `b` is a neighbor of `a`. Because this 
 
 #### **Exercise 2**
 
-The BFS loop needs three pieces of state before it starts: a visited array, a queue seeded with the start node, and a result collector. The order of operations at setup matters — start must be marked visited before the loop, not inside it.
+You're given `n` nodes, a road list, and a `start` intersection — the node to sweep from. The goal is to return every intersection reachable from `start`.
+
+The BFS loop needs three pieces of state before it starts: a visited array, a queue seeded with `start`, and a result collector. The order of operations at setup matters — start must be marked visited before the loop, not inside it.
 
 ```typescript
 const visited = new Array(n).fill(false);
@@ -431,6 +500,8 @@ For each neighbor, the question is one check: has it been visited? If not, two t
 
 #### **Exercise 3**
 
+You're given the same inputs as Exercise 2, plus a `target` — the destination intersection you want to reach. The goal is to return `true` if `target` is reachable from `start`, `false` otherwise.
+
 The loop from Exercise 2 does not change. One line is added: after dequeuing a node, check whether it is the target before expanding neighbors. If it matches, you are done.
 
 ```typescript
@@ -447,13 +518,13 @@ If the queue empties without a match, what do you return?
 
 **→ Bridge to Level 2**: Level 1 assumes the city is one connected place from the chosen start. The moment the map contains multiple disconnected districts, one perfect sweep is still only one district, so you need an outer scan that knows when to launch a fresh traversal.
 
-### Level 2: Sweep Every District
+### Level 2: Connected Components
 
-Level 1 gave you a clean way to cover one reachable district. Now the problem changes shape: the city may contain several disconnected districts, and the question asks about the whole map. A brute-force response is to start a fresh traversal from every intersection. That works, but it repeats the same district many times. On a graph with six districts and thousands of intersections, that repeated restarting is the real waste.
+Level 1 gives you full coverage of one connected component — every node reachable from a single start. But if the graph is disconnected, BFS from node 0 never touches the other components. The naive fix is to restart BFS from every node, but that re-traverses already-visited components. On a graph with one large component and many small ones, that's redundant work proportional to the number of already-settled nodes.
 
-The exploitable property is that one traversal already covers an entire district. Once a district sweep finishes, every stamped intersection inside it is globally settled. That means the only starts that matter are the first unstamped intersections you encounter during an outer scan. Each of those starts is proof that you have discovered a brand-new district.
+The key insight is that BFS marks every node it visits as visited — and that marking is globally valid. Those nodes are settled for the rest of the algorithm. So the only starts that actually matter are nodes that are still unvisited when the outer loop reaches them. Each unvisited node at that moment is the entry point to a component you haven't explored yet. In the city map, each such node is the first intersection of a new district.
 
-Mechanically, you keep the exact same inner traversal from Level 1. The only new control flow is an outer loop from `0` through `n - 1`. If the current intersection is already stamped, skip it because its district is done. If it is unstamped, increment the district counter, launch one full sweep from it, and let that traversal stamp the entire component before continuing the scan.
+The inner BFS does not change. Add an outer loop from `0` to `n - 1`. At each step: if the node is already visited, skip it. If it's unvisited, increment the component count, launch a full BFS from it, and let that BFS mark everything reachable before the outer loop continues. The component count at the end is exact — each launch corresponds to exactly one component.
 
 Use districts `0-1-2`, `3-4`, and isolated `5`.
 
@@ -571,13 +642,13 @@ What replaces `largest = Math.max(largest, size)`?
 
 **→ Bridge to Level 3**: Level 2 still treats every road as symmetric. Once streets become one-way, reachability is no longer enough. The map starts encoding prerequisites, and the next question becomes which intersections are safe to dispatch before others.
 
-### Level 3: Respect One-Way Streets
+### Level 3: Directed Graphs and Topological Order
 
-Level 2 let you count districts, but it does not tell you how to schedule work when roads are arrows. Imagine package steps where `Prep -> Cook`, `Prep -> Pack`, and both `Cook -> Ship` and `Pack -> Ship`. A brute-force attempt would repeatedly scan every arrow asking, "is this now allowed?" That works, but it burns time rescanning blocked steps that have not changed yet.
+Level 2 handled undirected graphs — edges that work both ways. Directed graphs break that symmetry: an edge `A → B` means B depends on A, not the reverse. BFS reachability no longer answers the useful question, which is: in what order can you safely process all nodes respecting those dependencies? Scanning every edge on every pass to check "is this node unblocked yet?" is O(E) per node at worst — the same repeated-scan problem the adjacency list was built to avoid.
 
-The exploitable property is that an intersection with zero unfinished incoming arrows is safe right now. Nothing upstream can still delay it. Instead of guessing a legal order, you track how many incoming arrows each intersection still has. Every time you dispatch a zero-arrow intersection, you remove its outgoing arrows from the ledger. Some neighbors then drop to zero and become newly safe.
+A node is safe to process the moment all of its predecessors have already been processed. In-degree tracks this exactly: it's the count of edges still pointing into a node. When in-degree reaches zero, the node has no remaining prerequisites. Instead of checking every node on every iteration, you maintain a queue of zero-in-degree nodes. Process one, decrement each of its neighbors' in-degrees, and immediately enqueue any that hit zero. The work is O(V + E) — each edge causes exactly one decrement. In the city map, zero incoming arrows means the one-way street system has cleared every prerequisite for that intersection.
 
-Mechanically, you build a directed street ledger plus an indegree count for every intersection. Seed the dispatch line with all intersections whose indegree is zero. Repeatedly pop one, append it to the answer, and subtract one from each outgoing neighbor's indegree. If a neighbor drops to zero, push it into the line. When the line empties, if you processed all intersections, the order is valid. If some intersections remain unprocessed, those intersections are trapped in a cycle of mutual dependency.
+Build the adjacency list directed — only push `b` into `adj[a]`, not the reverse — and simultaneously increment `indegree[b]` for each edge `[a, b]`. Seed the queue with every node whose in-degree is already zero. Dequeue one node at a time, record it in the output, then for each outgoing neighbor decrement its in-degree and enqueue it if it hits zero. After the loop, if processed count equals `n`, the output is a valid topological order. If it's less than `n`, at least one cycle exists and the remaining nodes are stuck waiting for each other indefinitely.
 
 Use arrows `0 -> 1`, `0 -> 2`, `1 -> 3`, `2 -> 3`.
 

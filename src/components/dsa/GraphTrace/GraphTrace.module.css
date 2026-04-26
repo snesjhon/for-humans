@@ -58,9 +58,9 @@
 }
 
 .factOrange {
-  background: var(--ms-orange-surface);
-  border-color: var(--ms-orange);
-  color: var(--ms-orange);
+  background: var(--ms-peach-surface);
+  border-color: var(--ms-peach);
+  color: var(--ms-peach);
 }
 
 .factGreen {
@@ -76,9 +76,9 @@
 }
 
 .badgeVisit {
-  background: var(--ms-orange-surface);
-  color: var(--ms-orange);
-  border: 1px solid var(--ms-orange);
+  background: var(--ms-peach-surface);
+  color: var(--ms-peach);
+  border: 1px solid var(--ms-peach);
 }
 
 .badgeQueue {
@@ -106,8 +106,8 @@
 }
 
 .legendCurrent {
-  background: var(--ms-orange-surface);
-  color: var(--ms-orange);
+  background: var(--ms-peach-surface);
+  color: var(--ms-peach);
 }
 
 .legendFrontier {
