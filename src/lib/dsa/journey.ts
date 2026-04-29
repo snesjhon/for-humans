@@ -331,7 +331,7 @@ export const JOURNEY: Phase[] = [
       },
       {
         id: 'graphs',
-        label: 'Graphs — Fundamentals + DFS',
+        label: 'Graphs - Fund. + DFS',
         patternIds: ['graphs'],
         mentalModelHook:
           'Graphs are tree recursion with 4 neighbors instead of 2 — master the representation first, then let DFS loose.',

@@ -21,9 +21,9 @@ test(
   [1, 2, 3],
 );
 test(
-  'returns only the start node when it has no neighbors',
-  () => dfsVisitOrder([[], [0]], 1),
-  [1, 0],
+  'returns only the reachable nodes from the chosen start',
+  () => dfsVisitOrder([[1], [], [3], []], 0),
+  [0, 1],
 );
 test(
   'skips revisiting nodes through a cycle',

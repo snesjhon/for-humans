@@ -1,6 +1,6 @@
 ## Overview
 
-Graphs stop looking like arrays the moment one value can point to many others, and they stop looking like trees the moment paths can reconnect or loop back on themselves. DFS breaks that barrier by giving you one disciplined rule: from where you stand, keep going deeper until you cannot, then backtrack without losing your place.
+Depth-first search is a graph traversal algorithm with one rule: from the current node, follow one neighbor as deep as possible before backtracking to try the next. It needs two things to work: a visited marker so it never re-enters a node, and a record of the path taken so backtracking lands in the right place. Together those two pieces let DFS explore any graph in O(V + E) time without revisiting work.
 
 You already know recursion from the earlier recursion guide and you already know how a grid can be indexed like a 2D array. This guide adds the graph layer on top: first a grid where neighbors come from row and column movement, then an explicit adjacency list for general graphs, then directed DFS with color states to detect cycles and produce a safe processing order. We will build that in three stages: **Grid DFS**, **Adjacency-List DFS**, and **Directed DFS with Colors**.
 
@@ -8,34 +8,24 @@ You already know recursion from the earlier recursion guide and you already know
 
 ### The Maze Explorer
 
-Picture a maze explorer carrying chalk and a spool of rope. Every intersection they reach gets a chalk mark so they never treat the same spot as unexplored twice. The rope records the path they took, so when a corridor dead-ends they can backtrack to the last unfinished choice instead of starting over from the entrance.
+Think of a maze explorer with chalk and a spool of rope. The chalk is the visited marker. Every room gets marked on entry so the explorer never re-enters it. The rope is the path record. When a corridor dead-ends, the explorer follows the rope back to the last room with unexplored corridors and picks up from there. That is the DFS loop made physical.
 
-- **maze room or cell** -> node
-- **corridor** -> edge
-- **chalk mark** -> visited state
-- **rope path** -> recursion stack
-- **room map** -> adjacency list
-- **blocked loop** -> directed cycle
+- **node**: a room; a cell in a grid or a vertex in a graph
+- **edge**: a corridor between two rooms
+- **visited state**: the chalk mark; set on entry, prevents loops
+- **recursion stack**: the rope; the currently active path
+- **adjacency list**: the room map; needed when corridors don't follow a fixed coordinate grid
+- **directed cycle**: a corridor that leads back to a room still on the active rope
 
-The efficiency claim is simple: each room gets claimed once, each corridor is examined a constant number of times, and each backtrack step happens only because some earlier forward step put rope there in the first place. That is why DFS runs in O(V + E) on an explicit graph and O(rows × cols) on a grid.
+Each room is marked once and each corridor is examined once, which is where O(V + E) comes from. The concepts below fall into two groups. The visited mark and the recursion stack are universal. Every DFS needs them regardless of the graph type. Grids and adjacency lists are the two ways a graph can be represented, which determines how DFS finds its neighbors. Color states are an extension that only applies when the graph is directed and detecting cycles requires more than a visited boolean.
 
-### Grid DFS
+### How DFS Works
 
-A grid is a graph even when the problem never says the word "graph." Each cell is a node, and the movement rule, usually up, right, down, left, defines the possible edges. You do not build an adjacency list because the neighbor formula already exists in the row and column arithmetic.
+These two mechanisms are present in every DFS regardless of the graph type. Understanding them first makes the graph-specific variations below easier to follow.
 
-In the maze explorer picture, this is a maze drawn on square floor tiles where each tile can open into the four orthogonal tiles beside it.
+#### The Visited Mark
 
-```mermaid
-graph TD
-    Cell["cell (r,c)"] --> Up["(r-1,c) if in bounds"]
-    Cell --> Right["(r,c+1) if in bounds"]
-    Cell --> Down["(r+1,c) if in bounds"]
-    Cell --> Left["(r,c-1) if in bounds"]
-```
-
-### The Visited Mark
-
-DFS is not "just recurse on neighbors." The visited mark is the invariant that turns recursion into a graph algorithm instead of an infinite loop. The moment a node becomes part of the current exploration, you mark it visited. Every later edge that reaches the same node sees that mark and skips duplicate work.
+Without a visited mark, DFS has no way to know it has already been somewhere. On any graph with a cycle or with two paths that converge on the same node, unguarded recursion keeps re-entering the same nodes until the call stack overflows. The visited mark is what prevents that. It is not an optimization but a correctness requirement. You mark the node the moment you enter it, before recursing into any neighbor, so no later call can treat an already-claimed node as fresh territory.
 
 In the maze, the chalk mark is not decoration. It is the proof that a corridor leading back to a known room should not spawn a second expedition.
 
@@ -47,22 +37,9 @@ graph TD
     Claim --> Explore["explore deeper"]
 ```
 
-### The Adjacency List
+#### The Recursion Stack
 
-Once the graph is no longer a grid, you need a stored map of neighbors. An adjacency list gives every node its own outgoing neighbor bucket. Building it once costs O(V + E). After that, DFS can ask "where can I go next from here?" in time proportional to the current node's degree instead of rescanning the whole edge list.
-
-In the maze picture, the adjacency list is the explorer's room map. Each room lists the corridors that leave it. Undirected graphs write both directions. Directed graphs write only the outgoing arrow.
-
-```mermaid
-graph LR
-    EdgeList["edge list"] --> Build["write neighbors once"]
-    Build --> Adj["adjacency list"]
-    Adj --> DFS["DFS reads one room's corridors at a time"]
-```
-
-### The Recursion Stack
-
-DFS goes deep because every recursive call pauses the current room, pushes a new room onto the call stack, and continues from there. When a branch finishes, returning from the call pops that room and resumes the unfinished parent room.
+DFS backtracks automatically because of how the call stack works. Each recursive call suspends the current node, moves into a neighbor, and picks up from there. When that branch is fully explored the call returns, resuming the parent node at exactly the point it left off. You do not write explicit backtracking logic. The call stack is doing it. This also means the nodes currently on the call stack at any moment are exactly the nodes on the active DFS path, which becomes important when color states need to distinguish "still on the path" from "already finished."
 
 In the maze, the rope is that stack. Going deeper lays out more rope. Backtracking follows the rope back to the last room that still has an unexplored corridor.
 
@@ -74,11 +51,65 @@ graph TD
     Return --> Pop["pop and backtrack"]
 ```
 
-### Color States for Directed DFS
+### How the Graph is Represented
 
-On a directed graph, a plain visited boolean is enough for reachability but not for cycle detection. You need three states: unvisited `0`, in-progress `1`, and done `2`. Entering a node paints it in-progress. Finishing all outgoing neighbors paints it done. If DFS sees an edge to another in-progress node, it found a back edge, which means a directed cycle.
+The graph's representation determines how DFS finds its neighbors. There are two forms: grids, where the neighbor rule is encoded in the coordinates themselves, and explicit graphs, where neighbors must be stored in an adjacency list before traversal can begin.
 
-In the maze, white rooms have not been entered, gray rooms are on the rope right now, and black rooms are completely cleared. A corridor from one gray room to another gray room means the explorer found a loop inside the active path.
+#### Grids as Implicit Graphs
+
+Many graph problems arrive as a matrix rather than a list of nodes and edges. Before you can run DFS you need to know what counts as a neighbor, and on a grid that answer comes free from the coordinates. Each cell is a node, and moving up, right, down, or left from `(r, c)` produces the four candidate neighbors without building any separate structure. Recognizing that a grid already encodes a graph is what lets you skip the adjacency-list build step entirely.
+
+In the maze explorer picture, this is a maze drawn on square floor tiles where each tile can open into the four orthogonal tiles beside it.
+
+```mermaid
+graph TD
+    Cell["cell (r,c)"] --> Up["(r-1,c) if in bounds"]
+    Cell --> Right["(r,c+1) if in bounds"]
+    Cell --> Down["(r+1,c) if in bounds"]
+    Cell --> Left["(r,c-1) if in bounds"]
+```
+
+#### The Adjacency List
+
+On a non-grid graph there is no formula for "who are my neighbors?" DFS needs to answer that question at every node, and without a structure for it you would have to scan the full edge list on every step. The adjacency list solves this by building the answer once upfront: each node gets its own bucket of neighbors, written by iterating the edge list in O(E). After that, every DFS step reads only the current node's bucket in time proportional to its degree.
+
+In the maze picture, the adjacency list is the explorer's room map. Each room lists the corridors that leave it. Undirected graphs write both directions. Directed graphs write only the outgoing arrow.
+
+```mermaid
+graph LR
+    EdgeList["edge list"] --> Build["write neighbors once"]
+    Build --> Adj["adjacency list"]
+    Adj --> DFS["DFS reads one room's corridors at a time"]
+```
+
+### When You Need More State
+
+A boolean visited flag is enough for most DFS problems, but directed graphs introduce a case it cannot handle.
+
+#### Color States for Directed Cycle Detection
+
+A boolean visited flag stops DFS from revisiting nodes, but on a directed graph it cannot tell the difference between two situations: a node finished by an earlier path, and a node still active on the current path. The first is harmless. The second is a cycle. Three color states make the distinction explicit.
+
+**Color `0`: unvisited.** DFS has not entered this node yet.
+
+**Color `1`: in-progress.** DFS has entered this node but has not finished it. It is part of the path DFS is actively walking right now.
+
+**Color `2`: done.** DFS fully finished this node. Every outgoing edge was explored and the node was left behind.
+
+**The state flow.** A node holds color `1` until every one of its neighbors finishes. That means every node currently on the active call stack is color `1` at the same time.
+
+```mermaid
+graph LR
+    A["0: unvisited"] -->|"DFS enters"| B["1: in-progress"]
+    B -->|"all neighbors finish"| C["2: done"]
+    B -->|"neighbor is color 1"| D["cycle"]
+```
+
+**Why finding a color `1` neighbor means a cycle.** When DFS finds a neighbor with color `1`, that neighbor has not finished yet. It has not finished because DFS is still processing its descendants, which eventually led to the current node. That means there is a forward path from that neighbor to the current node (the route DFS took to get here), and the current node has a directed edge pointing back to that neighbor. Follow the path forward, then take that edge back. You return to the same node. That is a directed cycle.
+
+**Why color `2` is safe.** A color `2` neighbor is completely off the active stack. DFS entered it, finished all of its outgoing edges, and returned. There is no forward path from it back to the current node, so an edge into a color `2` node is just two paths converging, not a loop.
+
+In the maze, white rooms have not been entered, gray rooms are on the rope right now, and black rooms are completely cleared. A corridor from a current room to any gray room means the rope has looped back on itself, which is a cycle. A corridor to a black room is safe because that room is no longer on the rope.
 
 ```mermaid
 graph TD
@@ -99,7 +130,7 @@ Before I touch code, I ask one question: **what exactly am I exploring from each
 
 The building blocks below work through those three situations in order.
 
-**Scenario 1 — Grid flood fill**
+**Scenario 1: Grid flood fill**
 
 **Graph:** implicit grid, orthogonal neighbors  
 **Input:** `grid = [[1,1,0],[1,1,0],[0,1,1]]`, `start = (0,0)`
@@ -186,7 +217,7 @@ The key observation is that every recursive step comes from the same fixed four-
 ]
 :::
 
-**Scenario 2 — DFS from one start node**
+**Scenario 2: DFS from one start node**
 
 **Graph:** undirected adjacency list  
 **Input:** `n = 6`, `edges = [[0,1],[0,2],[1,3],[2,4],[4,5]]`, `start = 0`
@@ -270,7 +301,7 @@ The key observation is that the adjacency list turns "where can I go next?" into
 ]
 :::
 
-**Scenario 3 — Directed cycle detection with colors**
+**Scenario 3: Directed cycle detection with colors**
 
 **Graph:** directed adjacency list  
 **Input:** `n = 4`, `edges = [[0,1],[1,2],[2,1],[2,3]]`
