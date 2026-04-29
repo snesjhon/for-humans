@@ -27,7 +27,7 @@ Every bug in Phase 2 and 3 has its root in something from this phase. Stale stat
 
 ---
 
-### Step 1: Generics in Depth *(TypeScript)*
+### Step 1: Generics in Depth _(TypeScript)_
 
 **What You Learn**:
 
@@ -51,7 +51,7 @@ Every bug in Phase 2 and 3 has its root in something from this phase. Stale stat
 
 ---
 
-### Step 2: Closure Captures & Stale State *(React)*
+### Step 2: Closure Captures & Stale State _(React)_
 
 **What You Learn**:
 
@@ -75,7 +75,7 @@ Every bug in Phase 2 and 3 has its root in something from this phase. Stale stat
 
 ---
 
-### Step 3: Effect Semantics & Cleanup *(React)*
+### Step 3: Effect Semantics & Cleanup _(React)_
 
 **What You Learn**:
 
@@ -99,7 +99,7 @@ Every bug in Phase 2 and 3 has its root in something from this phase. Stale stat
 
 ---
 
-### Step 4: Conditional Types & `infer` *(TypeScript)*
+### Step 4: Conditional Types & `infer` _(TypeScript)_
 
 **What You Learn**:
 
@@ -123,7 +123,7 @@ Every bug in Phase 2 and 3 has its root in something from this phase. Stale stat
 
 ---
 
-### Step 5: Dependency Arrays *(React)*
+### Step 5: Dependency Arrays _(React)_
 
 **What You Learn**:
 
@@ -150,6 +150,7 @@ Every bug in Phase 2 and 3 has its root in something from this phase. Stale stat
 ## 🎓 Checkpoint: Novice → Studied
 
 **You should now be able to**:
+
 - Reproduce a stale closure bug on demand
 - Write effects with correct cleanup for any subscription or async operation
 - Explain dep array issues at the root cause level — not just "add it to the array"
@@ -163,7 +164,7 @@ Every bug in Phase 2 and 3 has its root in something from this phase. Stale stat
 
 ---
 
-### Step 6: Mapped Types & Modifiers *(TypeScript)*
+### Step 6: Mapped Types & Modifiers _(TypeScript)_
 
 **What You Learn**:
 
@@ -187,7 +188,7 @@ Every bug in Phase 2 and 3 has its root in something from this phase. Stale stat
 
 ---
 
-### Step 7: `ref` vs `state` *(React)*
+### Step 7: `ref` vs `state` _(React)_
 
 **What You Learn**:
 
@@ -211,7 +212,7 @@ Every bug in Phase 2 and 3 has its root in something from this phase. Stale stat
 
 ---
 
-### Step 8: Template Literal Types *(TypeScript)*
+### Step 8: Template Literal Types _(TypeScript)_
 
 **What You Learn**:
 
@@ -235,7 +236,7 @@ Every bug in Phase 2 and 3 has its root in something from this phase. Stale stat
 
 ---
 
-### Step 9: Custom Hook Composition *(React)*
+### Step 9: Custom Hook Composition _(React)_
 
 **What You Learn**:
 
@@ -259,7 +260,7 @@ Every bug in Phase 2 and 3 has its root in something from this phase. Stale stat
 
 ---
 
-### Step 10: Branded & Opaque Types *(TypeScript)*
+### Step 10: Branded & Opaque Types _(TypeScript)_
 
 **What You Learn**:
 
@@ -286,6 +287,7 @@ Every bug in Phase 2 and 3 has its root in something from this phase. Stale stat
 ## 🎓 Checkpoint: Studied → Advanced
 
 **You should now be able to**:
+
 - Write and compose custom hooks with correct types and dep semantics
 - Explain the ref/state boundary without hedging
 - Use mapped and template literal types to model real API shapes
@@ -299,7 +301,7 @@ Every bug in Phase 2 and 3 has its root in something from this phase. Stale stat
 
 ---
 
-### Step 11: `useReducer` & State Machines *(React)*
+### Step 11: `useReducer` & State Machines _(React)_
 
 **What You Learn**:
 
@@ -321,7 +323,7 @@ Every bug in Phase 2 and 3 has its root in something from this phase. Stale stat
 
 ---
 
-### Step 12: Variance & Function Types *(TypeScript)*
+### Step 12: Variance & Function Types _(TypeScript)_
 
 **What You Learn**:
 
@@ -345,7 +347,7 @@ Every bug in Phase 2 and 3 has its root in something from this phase. Stale stat
 
 ---
 
-### Step 13: Context Performance *(React)*
+### Step 13: Context Performance _(React)_
 
 **What You Learn**:
 
@@ -367,7 +369,7 @@ Every bug in Phase 2 and 3 has its root in something from this phase. Stale stat
 
 ---
 
-### Step 14: Concurrent Mode *(React)*
+### Step 14: Concurrent Mode _(React)_
 
 **What You Learn**:
 
@@ -393,6 +395,7 @@ Every bug in Phase 2 and 3 has its root in something from this phase. Stale stat
 ## 🎓 Final Checkpoint
 
 **You should now be able to**:
+
 - Design a state architecture for any feature spec and defend the tradeoffs
 - Write utility types from scratch, including recursive and variance-aware variants
 - Identify every class of hook bug — closure, cleanup, dep array, render timing — at the root cause level

@@ -6,7 +6,19 @@ This document is the canonical reference for building out the frontend (TypeScri
 
 ## What We're Building
 
-A new `frontend` track that lives alongside `dsa`, `fullstack`, and `system-design`. Same platform primitives (fundamentals guides + exercise files + journey wiring), but adapted for TypeScript type system depth and React hook mechanics. No browser rendering required — all exercises run through the test runner (`jest` + `ts-jest`, with `@testing-library/react` for hook exercises).
+A new `frontend` track that lives alongside `dsa`, `fullstack`, and `system-design`. Same platform primitives, but adapted for TypeScript type system depth and React hook mechanics. No browser rendering required — all exercises run through the test runner (`jest` + `ts-jest`, with `@testing-library/react` for hook exercises).
+
+The frontend track now has two distinct content layers:
+
+- fundamentals guides under `src/app/frontend/fundamentals/{slug}/`
+- standalone practice problem packages under `src/app/frontend/problems/{id}-{slug}/`
+
+The path doc separates each section into:
+
+- `Practice` — first-pass drills that reinforce the section's core mechanism
+- `Advanced` — second-pass drills that come back later for edge cases, composition, or interview-style variants
+
+An older version of this plan assumed the fundamentals exercises were enough and that no standalone `problems/` directory was needed. That assumption is no longer correct. The app already has a placeholder `src/app/frontend/problems/[id]/page.tsx` route, so frontend problems should be treated as first-class content.
 
 ---
 
@@ -61,7 +73,9 @@ Phase 3: Advanced
     - concurrent-mode       (Step 14) — React
 ```
 
-The `JourneySection` interface for the frontend track does not need `firstPass`/`reinforce` problem arrays (no LeetCode IDs). It needs:
+The frontend journey model should carry both fundamentals and standalone problem references. These problem IDs do not need to be LeetCode numbers, but they do need to be stable keys that line up across journey wiring, route params, and content folders.
+
+Use a shape like:
 
 ```ts
 interface FrontendJourneySection {
@@ -70,14 +84,46 @@ interface FrontendJourneySection {
   mentalModelHook: string;
   fundamentalsSlug: string;
   fundamentalsBlurb: string;
+  practice: string[];
+  advanced: string[];
 }
 ```
 
-### 1.3 Content Loader
+Example:
+
+```ts
+{
+  id: 'generics',
+  label: 'Generics',
+  mentalModelHook: 'A generic keeps input and output shapes linked across a call.',
+  fundamentalsSlug: 'generics',
+  fundamentalsBlurb: 'Inference, constraints, and when to add a type parameter.',
+  practice: ['101-generics-pick', '102-generics-group-by', '103-generics-map-values'],
+  advanced: ['151-generics-use-local-storage', '152-generics-overloads'],
+}
+```
+
+The exact numbering scheme can change, but the relationship cannot:
+
+- `practice` items are the first-pass drills attached to the section
+- `advanced` items are the return-later drills attached to the section
+- both arrays point to real folders under `src/app/frontend/problems/`
+
+### 1.3 Content Loaders
 
 Create `src/lib/frontend/fundamentals.ts` — same shape as `src/lib/dsa/fundamentals.ts` but reads from `src/app/frontend/fundamentals/{slug}/`.
 
-### 1.4 Content Directory
+Also add `src/lib/frontend/problems.ts`.
+
+Responsibilities:
+
+- load `mental-model.md` from `src/app/frontend/problems/{id}-{slug}/`
+- expose step counts for a problem package
+- enumerate available frontend problem IDs
+- map a problem ID back to its owning section
+- support the `frontend/problems/[id]` route
+
+### 1.4 Content Directories
 
 Fundamentals output path:
 ```
@@ -90,13 +136,36 @@ src/app/frontend/fundamentals/{slug}/
   step3-exercise3-solution.ts
 ```
 
-No `problems/` directory for now — the fundamentals exercises cover the same ground.
+Frontend problem output path:
+```
+src/app/frontend/problems/{id}-{slug}/
+  mental-model.md
+  step1-problem.ts
+  step1-solution.ts
+  step2-problem.ts
+  step2-solution.ts
+  ...
+  solution.ts
+```
+
+Keep the split clean:
+
+- fundamentals teach the section concept in a broad, guided way
+- practice problems package one narrower drill into a dedicated page
+- advanced problems return later with harder variants, edge cases, or cross-topic composition
+
+Do not fold advanced problems back into fundamentals files. The route structure and the learning-path structure should tell the same story.
 
 ---
 
 ## Part 2: Content Skills (thinkdeep-agents)
 
-Two new skill families need to be created in `thinkdeep-agents/skills/`. They mirror `dsa-fundamentals` and `dsa-problem` exactly, adapted for the frontend content domain.
+The frontend track needs two skill families:
+
+- the fundamentals family for section guides
+- the problem family for standalone frontend problem packages
+
+The fundamentals family already exists in `thinkdeep-agents/skills/`. The missing piece is the frontend problem family.
 
 ### 2.1 `fe-fundamentals` (orchestrator)
 
@@ -176,6 +245,170 @@ Mirrors `dsa-validate-fundamentals`. Checks:
 
 Mirrors `dsa-fix-fundamentals`. Patches shallow drift in-place, rebuilds deep failures via `fe-fundamentals`. Same shallow vs deep threshold logic.
 
+### 2.6 `fe-problem` (orchestrator)
+
+**File**: `skills/fe-problem/SKILL.md`
+
+Owns the end-to-end workflow for one standalone frontend problem package:
+
+`fe-problem` → `fe-problem-intuition` → `fe-problem-build` → `fe-problem`
+
+This should mirror `dsa-problem` structurally, but the frontend problem types are different:
+
+- TypeScript type-system drills
+- React hook/debugging drills
+- mixed frontend drills that combine a type-system idea with a React mechanism
+
+Produces:
+
+- `mental-model.md`
+- `stepN-problem.ts`
+- `stepN-solution.ts`
+- `solution.ts`
+
+Output path:
+
+- `src/app/frontend/problems/{id}-{slug}/`
+
+### 2.7 `fe-problem-intuition` (phase 1)
+
+**File**: `skills/fe-problem-intuition/SKILL.md`
+
+Owns the narrative and teaching half of a frontend problem package:
+
+- `## The Problem`
+- one analogy or one concrete mechanism model
+- `## Understanding the Mechanism`
+- `## How I Think Through This`
+- `## Common Misconceptions`
+- the handoff contract for `fe-problem-build`
+
+Rules:
+
+- TypeScript problems teach the type-level mechanism before any utility implementation
+- React problems teach the render/closure/effect mechanism before any fix is scaffolded
+- mixed problems pick one primary teaching axis so the package does not become two unrelated mini-lessons
+- the narrative must be strong enough that the build phase does not need to rediscover the problem
+
+### 2.8 `fe-problem-build` (phase 2)
+
+**File**: `skills/fe-problem-build/SKILL.md`
+
+Owns:
+
+- `## Building the Solution`
+- step decomposition
+- `stepN-problem.ts`
+- `stepN-solution.ts`
+- `solution.ts`
+- validation
+
+Rules:
+
+- each step must unlock one real new capability
+- problem files must not pre-seed future scaffolding
+- the learner should reproduce the bug or failure first, then repair it
+- TypeScript problems validate with `tsc --noEmit`
+- React problems validate with `jest`
+- mixed problems may use both when the drill includes type and runtime behavior
+
+### 2.9 `fe-validate-problems` (validator)
+
+**File**: `skills/fe-validate-problems/SKILL.md`
+
+Mirrors `dsa-validate-problems`, adapted for frontend problem packages. Checks:
+
+- required files exist under `src/app/frontend/problems/{id}-{slug}/`
+- markdown and step files agree on step count
+- TypeScript solutions compile with `tsc --noEmit`
+- React solutions pass `jest`
+- the owning section exists in `src/lib/frontend/journey.ts`
+- the problem ID appears in either `practice` or `advanced` for exactly one section
+
+### 2.10 `fe-fix-problems` (fixer)
+
+**File**: `skills/fe-fix-problems/SKILL.md`
+
+Mirrors `dsa-fix-problems`. Patches shallow drift in-place, rebuilds deep failures via `fe-problem`.
+
+### 2.11 Problem Metadata Contract
+
+The skill family needs a small metadata contract so content generation and route wiring stay aligned.
+
+Use a structure like:
+
+```ts
+interface FrontendProblemRef {
+  id: string;
+  slug: string;
+  title: string;
+  sectionId: string;
+  tier: 'practice' | 'advanced';
+  kind: 'typescript' | 'react' | 'mixed';
+  prompt: string;
+}
+```
+
+This can live in `src/lib/frontend/problems.ts` or adjacent to the frontend journey. One source of truth should define:
+
+- the route key
+- the owning section
+- whether the problem is `practice` or `advanced`
+- whether validation should run `tsc`, `jest`, or both
+
+### 2.12 How the Problem Skill Family Should Work
+
+The frontend problem skill family should not be a thin copy of `dsa-problem`. It needs frontend-specific generation rules.
+
+Use this workflow:
+
+1. Read the owning section in `src/lib/frontend/journey.ts`
+2. Read the path entry in `src/docs/00-complete-frontend-path.md`
+3. Read the sibling fundamentals guide for the section if it already exists
+4. Decide whether the problem is `practice` or `advanced`
+5. Decide whether the problem is `typescript`, `react`, or `mixed`
+6. Generate the narrative contract first
+7. Generate the step files second
+8. Validate with the correct toolchain
+9. Verify the problem ID is wired in the section metadata
+
+The tier affects problem design:
+
+- `practice` problems stay close to the section's core mechanism
+- `advanced` problems widen the scope: edge cases, composition, tradeoffs, or interview-style twists
+
+The kind affects validation and teaching style:
+
+- `typescript`: compile-time failures and utility-type reasoning
+- `react`: runtime behavior, stale closures, effect timing, or hook structure
+- `mixed`: composition problems such as a typed hook with closure correctness and cleanup behavior
+
+### 2.13 Example Mapping for One Section
+
+For `generics`, the section could map like this:
+
+```ts
+{
+  id: 'generics',
+  practice: [
+    '101-generics-pick',
+    '102-generics-group-by',
+    '103-generics-map-values',
+  ],
+  advanced: [
+    '151-generics-use-local-storage',
+    '152-generics-overloads',
+  ],
+}
+```
+
+This gives the skill family concrete targets:
+
+- the three `Practice` bullets from the path become first-pass problem packages
+- the two `Advanced` bullets become second-pass problem packages
+
+Apply the same pattern section by section instead of inventing ad hoc problem sets later.
+
 ---
 
 ## Part 3: Build Order
@@ -184,10 +417,12 @@ Execute in this sequence. Each step depends on the previous.
 
 ### Step A: Platform scaffold (do once)
 
-1. Create `src/lib/frontend/journey.ts` with all 14 sections stubbed (no fundamentalsSlug yet)
-2. Create `src/lib/frontend/fundamentals.ts` content loader
-3. Create `src/app/frontend/` page scaffold
-4. Verify the frontend path page renders (no content yet, just the route)
+1. Extend `src/lib/frontend/journey.ts` so each section has `practice` and `advanced` arrays
+2. Add `src/lib/frontend/problems.ts` as the frontend problem metadata and loader source
+3. Create or finish `src/lib/frontend/fundamentals.ts`
+4. Create or finish `src/app/frontend/problems/[id]/page.tsx` so it reads real problem content
+5. Verify the frontend path page renders with fundamentals links and problem links
+6. Verify one frontend problem page resolves from its route key
 
 ### Step B: Create skill files in thinkdeep-agents
 
@@ -196,11 +431,16 @@ Execute in this sequence. Each step depends on the previous.
 3. Write `skills/fe-fundamentals/SKILL.md`
 4. Write `skills/fe-validate-fundamentals/SKILL.md`
 5. Write `skills/fe-fix-fundamentals/SKILL.md`
-6. Update `thinkdeep-agents/CLAUDE.md` skill table with all five
+6. Write `skills/fe-problem-intuition/SKILL.md`
+7. Write `skills/fe-problem-build/SKILL.md`
+8. Write `skills/fe-problem/SKILL.md`
+9. Write `skills/fe-validate-problems/SKILL.md`
+10. Write `skills/fe-fix-problems/SKILL.md`
+11. Update `thinkdeep-agents/AGENTS.md` skill table with all frontend skills
 
 ### Step C: Generate Phase 1 content (Novice)
 
-Run in order — each section's level calibration informs the next:
+Run fundamentals first so the vocabulary settles before the standalone problem packages:
 
 ```
 /fe-fundamentals generics
@@ -209,6 +449,14 @@ Run in order — each section's level calibration informs the next:
 /fe-fundamentals conditional-types
 /fe-fundamentals dependency-arrays
 ```
+
+Then generate the Phase 1 practice and advanced problem packages referenced from the journey metadata.
+
+Recommended rollout rule:
+
+- create all `practice` problems for a section immediately after its fundamentals guide
+- create that section's `advanced` problems next while the context is still local
+- move to the next section only after both tiers are generated
 
 ### Step D: Generate Phase 2 content (Studied)
 
@@ -220,6 +468,8 @@ Run in order — each section's level calibration informs the next:
 /fe-fundamentals branded-types
 ```
 
+Then generate the Phase 2 practice and advanced problem packages referenced from the journey metadata.
+
 ### Step E: Generate Phase 3 content (Advanced)
 
 ```
@@ -229,11 +479,15 @@ Run in order — each section's level calibration informs the next:
 /fe-fundamentals concurrent-mode
 ```
 
+Then generate the Phase 3 practice and advanced problem packages referenced from the journey metadata.
+
 ### Step F: Validate and fix
 
 ```
 /fe-validate-fundamentals all
+/fe-validate-problems all
 /fe-fix-fundamentals          # only if validation found drift
+/fe-fix-problems              # only if validation found drift
 ```
 
 ---
