@@ -69,6 +69,38 @@ function foldMarkedBlocks(view: EditorView) {
 // Strip ANSI escape codes from terminal output
 const stripAnsi = (s: string) => s.replace(/\x1b\[[0-9;]*[a-zA-Z]/g, '');
 
+function normalizeTerminalChunk(chunk: string) {
+  const cleaned = stripAnsi(chunk).replace(/\r\n/g, '\n');
+  const parts = cleaned.split('\r');
+
+  if (parts.length === 1) return cleaned;
+
+  return parts
+    .map((part, index) => {
+      if (index === 0) return part;
+      return `\r${part}`;
+    })
+    .join('');
+}
+
+function applyTerminalChunk(previous: string, chunk: string) {
+  const normalized = normalizeTerminalChunk(chunk);
+  if (!normalized.includes('\r')) return previous + normalized;
+
+  let next = previous;
+  for (const part of normalized.split('\r')) {
+    if (part === normalized.split('\r')[0]) {
+      next += part;
+      continue;
+    }
+
+    const lastNewline = next.lastIndexOf('\n');
+    next = `${lastNewline >= 0 ? next.slice(0, lastNewline + 1) : ''}${part}`;
+  }
+
+  return next;
+}
+
 const RUN_TIMEOUT_MS = 5000;
 
 // Singleton — one WebContainer per browsing context.
@@ -156,11 +188,42 @@ async function getWebContainer(): Promise<WebContainer> {
 
       await wc.fs.writeFile('.npmrc', 'registry=http://registry.npmjs.org/');
       await wc.fs.writeFile(
+        'tsconfig.json',
+        JSON.stringify(
+          {
+            compilerOptions: {
+              target: 'ES2020',
+              module: 'commonjs',
+              jsx: 'react-jsx',
+              esModuleInterop: true,
+              allowSyntheticDefaultImports: true,
+              moduleResolution: 'node',
+              skipLibCheck: true,
+            },
+          },
+          null,
+          2,
+        ),
+      );
+      await wc.fs.writeFile(
         'package.json',
         JSON.stringify(
           {
             name: 'dsa',
-            dependencies: { tsx: 'latest' },
+            dependencies: {
+              react: '^18.3.1',
+              'react-dom': '^18.3.1',
+              '@testing-library/dom': '^10.4.1',
+              '@testing-library/react': '^16.3.0',
+              jest: '^29.7.0',
+              'jest-environment-jsdom': '^29.7.0',
+              'ts-jest': '^29.2.5',
+              tsx: '^4.19.2',
+              typescript: '^5.6.3',
+            },
+            devDependencies: {
+              '@types/jest': '^29.5.14',
+            },
           },
           null,
           2,
@@ -172,7 +235,7 @@ async function getWebContainer(): Promise<WebContainer> {
       install.output.pipeTo(
         new WritableStream({
           write(data) {
-            installLog.push(stripAnsi(data));
+            installLog.push(normalizeTerminalChunk(data).replace(/\r/g, ''));
           },
         }),
       );
@@ -706,6 +769,17 @@ export default function WebContainerEmbed({
     foldMarkedBlocks(view);
   }, [code]);
 
+  function shouldRunWithJest(file: string, content: string) {
+    if (!file.endsWith('.ts')) return false;
+
+    return (
+      content.includes('@testing-library/react') ||
+      content.includes('@jest-environment') ||
+      /\btest\s*\(/.test(content) ||
+      /\bexpect\s*\(/.test(content)
+    );
+  }
+
   async function runCode() {
     // Read directly from editor — not from stale React state
     const currentCode = viewRef.current?.state.doc.toString() || code;
@@ -731,10 +805,41 @@ export default function WebContainerEmbed({
         clearTimeout(runTimeoutRef.current);
       }
       await wc.fs.writeFile(file, currentCode);
-      const proc = await wc.spawn('node', [
-        'node_modules/tsx/dist/cli.mjs',
-        file,
-      ]);
+      const proc = shouldRunWithJest(file, currentCode)
+        ? await (async () => {
+            const jestConfigFile = '.jest.webcontainer.json';
+            await wc.fs.writeFile(
+              jestConfigFile,
+              JSON.stringify(
+                {
+                  testEnvironment: 'node',
+                  rootDir: '.',
+                  roots: ['<rootDir>'],
+                  testMatch: [`**/${file}`],
+                  transform: {
+                    '^.+\\.tsx?$': [
+                      'ts-jest',
+                      {
+                        tsconfig: 'tsconfig.json',
+                      },
+                    ],
+                  },
+                },
+                null,
+                2,
+              ),
+            );
+
+            return wc.spawn('node', [
+              'node_modules/jest/bin/jest.js',
+              '--runInBand',
+              '--ci',
+              '--watchman=false',
+              '--config',
+              jestConfigFile,
+            ]);
+          })()
+        : await wc.spawn('node', ['node_modules/tsx/dist/cli.mjs', file]);
       processRef.current = proc;
       runTimeoutRef.current = setTimeout(() => {
         if (currentRunIdRef.current !== runId || processRef.current !== proc) {
@@ -752,7 +857,7 @@ export default function WebContainerEmbed({
       proc.output.pipeTo(
         new WritableStream({
           write(data) {
-            setOutput((p) => p + stripAnsi(data));
+            setOutput((previous) => applyTerminalChunk(previous, data));
           },
         }),
       );

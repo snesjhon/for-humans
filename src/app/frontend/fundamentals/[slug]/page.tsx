@@ -8,6 +8,7 @@ import {
   getFundamentalsStepNumbers,
 } from '@/lib/frontend/fundamentals';
 import { extractHeadings } from '@/lib/frontend/headings';
+import { loadReferencedFrontendCodeFiles } from '@/lib/frontend/stackblitz';
 import MarkdownRenderer from '@/components/dsa/MarkdownRenderer/MarkdownRenderer';
 import TableOfContents from '@/components/ui/TableOfContents/TableOfContents';
 import { PageHero } from '@/components/ui/PageHero/PageHero';
@@ -34,6 +35,11 @@ export default function FundamentalsPage({ params }: Props) {
   const prereq = getPrecedingSection(params.slug);
   const stepNumbers = getFundamentalsStepNumbers(params.slug);
   const headings = extractHeadings(guide.content);
+  const codeFiles = loadReferencedFrontendCodeFiles(
+    guide.content,
+    params.slug,
+    'fundamentals',
+  );
 
   return (
     <ProgressProvider
@@ -115,7 +121,11 @@ export default function FundamentalsPage({ params }: Props) {
             )}
           </div>
 
-          <MarkdownRenderer content={guide.content} />
+          <MarkdownRenderer
+            content={guide.content}
+            fundamentalsSlug={params.slug}
+            codeFiles={codeFiles}
+          />
 
           <div className="flex items-center justify-between border-t border-t-[var(--ms-surface)] pt-8">
             <Link
