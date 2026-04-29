@@ -17,6 +17,8 @@ const FULLWIDTH_ROUTES = new Set([
   '/',
   '/dsa',
   '/dsa/path',
+  '/frontend',
+  '/frontend/path',
   '/settings',
   '/system-design',
   '/system-design/path',
@@ -26,6 +28,7 @@ interface LayoutShellProps {
   children: React.ReactNode;
   availableDsaProblemIds: string[];
   availableDsaFundamentalsSlugs: string[];
+  availableFrontendFundamentalsSlugs: string[];
   availableSystemDesignScenarioSlugs: string[];
   availableSystemDesignFundamentalsSlugs: string[];
   availableSystemDesignPracticeSlugs: string[];
@@ -37,6 +40,7 @@ export function LayoutShell({
   children,
   availableDsaProblemIds,
   availableDsaFundamentalsSlugs,
+  availableFrontendFundamentalsSlugs,
   availableSystemDesignScenarioSlugs,
   availableSystemDesignFundamentalsSlugs,
   availableSystemDesignPracticeSlugs,
@@ -53,6 +57,11 @@ export function LayoutShell({
   const isFullstackPage = pathname.startsWith('/fullstack');
   const topLevelNavLinks = [
     { href: '/dsa', label: 'DSA', active: pathname.startsWith('/dsa') },
+    {
+      href: '/frontend',
+      label: 'Frontend',
+      active: pathname.startsWith('/frontend'),
+    },
     {
       href: '/system-design',
       label: 'System Design',
@@ -169,6 +178,7 @@ export function LayoutShell({
       <SiteNav
         availableDsaProblemIds={availableDsaProblemIds}
         availableDsaFundamentalsSlugs={availableDsaFundamentalsSlugs}
+        availableFrontendFundamentalsSlugs={availableFrontendFundamentalsSlugs}
         availableSystemDesignScenarioSlugs={availableSystemDesignScenarioSlugs}
         availableSystemDesignFundamentalsSlugs={
           availableSystemDesignFundamentalsSlugs

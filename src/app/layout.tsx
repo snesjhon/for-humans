@@ -3,6 +3,7 @@ import { Newsreader, Plus_Jakarta_Sans, JetBrains_Mono, Caveat } from 'next/font
 import { LayoutShell } from '@/components/ui/LayoutShell/LayoutShell';
 import { getAllProblems } from '@/lib/dsa/content';
 import { getAllFundamentalsSlugs } from '@/lib/dsa/fundamentals';
+import { getAllFundamentalsSlugs as getAllFrontendFundamentalsSlugs } from '@/lib/frontend/fundamentals';
 import { getSearchEntries } from '@/lib/search';
 import { getSidebarStateInitScript } from '@/lib/sidebarState';
 import { getAllScenarioSlugsFromDisk } from '@/lib/system-design/content';
@@ -50,6 +51,7 @@ export default async function RootLayout({
 }) {
   const availableDsaProblemIds = getAllProblems().map((p) => p.id);
   const availableDsaFundamentalsSlugs = getAllFundamentalsSlugs();
+  const availableFrontendFundamentalsSlugs = getAllFrontendFundamentalsSlugs();
   const availableSystemDesignScenarioSlugs = getAllScenarioSlugsFromDisk();
   const availableSystemDesignFundamentalsSlugs =
     getAllSystemDesignFundamentalsSlugs();
@@ -71,6 +73,7 @@ export default async function RootLayout({
         <LayoutShell
           availableDsaProblemIds={availableDsaProblemIds}
           availableDsaFundamentalsSlugs={availableDsaFundamentalsSlugs}
+          availableFrontendFundamentalsSlugs={availableFrontendFundamentalsSlugs}
           availableSystemDesignScenarioSlugs={availableSystemDesignScenarioSlugs}
           availableSystemDesignFundamentalsSlugs={
             availableSystemDesignFundamentalsSlugs

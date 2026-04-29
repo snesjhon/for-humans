@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { ChevronLeft, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { TDIcon } from '@/components/ui/TDIcon/TDIcon';
 import { JOURNEY as DSA_JOURNEY } from '@/lib/dsa/journey';
+import { JOURNEY as FRONTEND_JOURNEY } from '@/lib/frontend/journey';
 import { PROBLEM_TITLES } from '@/lib/dsa/titles';
 import { JOURNEY as SYSTEM_DESIGN_JOURNEY } from '@/lib/system-design/journey';
 import type { JourneyPanelConcept } from '../JourneyPanel/JourneyPanel';
@@ -55,6 +56,25 @@ const DSA_PHASES: JourneyPanelPhase[] = DSA_JOURNEY.map((phase) => ({
         section.reinforcePrerequisiteLabel ?? nextSection?.label,
     };
   }),
+}));
+
+const FRONTEND_FUNDAMENTALS_TO_SECTION: Record<string, string> = {};
+for (const phase of FRONTEND_JOURNEY) {
+  for (const section of phase.sections) {
+    FRONTEND_FUNDAMENTALS_TO_SECTION[section.fundamentalsSlug] = section.id;
+  }
+}
+
+const FRONTEND_PHASES: JourneyPanelPhase[] = FRONTEND_JOURNEY.map((phase) => ({
+  number: phase.number,
+  label: phase.label,
+  emoji: phase.emoji,
+  sections: phase.sections.map((section) => ({
+    id: section.id,
+    label: section.label,
+    fundamentalsSlugs: [section.fundamentalsSlug],
+    items: [],
+  })),
 }));
 
 const SYSTEM_DESIGN_FUNDAMENTALS_TO_SECTION: Record<string, string> = {};
@@ -134,11 +154,18 @@ function systemDesignActiveSection(path: string): string | null {
   return null;
 }
 
+function frontendActiveSection(path: string): string | null {
+  const fund = path.match(/^\/frontend\/fundamentals\/([^/]+)/)?.[1];
+  if (fund) return FRONTEND_FUNDAMENTALS_TO_SECTION[fund] ?? null;
+  return null;
+}
+
 // ── SiteNav ───────────────────────────────────────────────────────────────────
 
 interface SiteNavProps {
   availableDsaProblemIds: string[];
   availableDsaFundamentalsSlugs: string[];
+  availableFrontendFundamentalsSlugs: string[];
   availableSystemDesignScenarioSlugs: string[];
   availableSystemDesignFundamentalsSlugs: string[];
   availableSystemDesignPracticeSlugs: string[];
@@ -150,6 +177,7 @@ interface SiteNavProps {
 export function SiteNav({
   availableDsaProblemIds: availableDsaProblemIdsArr,
   availableDsaFundamentalsSlugs: availableDsaFundamentalsArr,
+  availableFrontendFundamentalsSlugs: availableFrontendFundamentalsArr,
   availableSystemDesignScenarioSlugs: availableSystemDesignScenarioSlugsArr,
   availableSystemDesignFundamentalsSlugs:
     availableSystemDesignFundamentalsSlugsArr,
@@ -160,6 +188,9 @@ export function SiteNav({
 }: SiteNavProps) {
   const availableDsaProblemIds = new Set(availableDsaProblemIdsArr);
   const availableDsaFundamentals = new Set(availableDsaFundamentalsArr);
+  const availableFrontendFundamentals = new Set(
+    availableFrontendFundamentalsArr,
+  );
   const availableSystemDesignScenarios = new Set(
     availableSystemDesignScenarioSlugsArr,
   );
@@ -175,10 +206,13 @@ export function SiteNav({
 
   const pathname = usePathname();
   const isDsaPage = pathname.startsWith('/dsa');
+  const isFrontendPage = pathname.startsWith('/frontend');
   const isSystemDesignPage = pathname.startsWith('/system-design');
   const activeSectionId = isSystemDesignPage
     ? systemDesignActiveSection(pathname)
-    : dsaActiveSection(pathname);
+    : isFrontendPage
+      ? frontendActiveSection(pathname)
+      : dsaActiveSection(pathname);
 
   return (
     <nav className="sticky left-0 top-0 z-50 flex h-screen w-full flex-col border-r border-r-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)]">
@@ -206,7 +240,7 @@ export function SiteNav({
       </div>
 
       <div className="flex flex-1 flex-col overflow-hidden">
-        {(isDsaPage || isSystemDesignPage) && (
+        {(isDsaPage || isFrontendPage || isSystemDesignPage) && (
           <>
             <div
               data-left-sidebar-header
@@ -219,7 +253,13 @@ export function SiteNav({
               >
                 {!collapsed && (
                   <Link
-                    href={isSystemDesignPage ? '/system-design/path' : '/dsa/path'}
+                    href={
+                      isSystemDesignPage
+                        ? '/system-design/path'
+                        : isFrontendPage
+                          ? '/frontend/path'
+                          : '/dsa/path'
+                    }
                     data-left-sidebar-back-link
                     className="flex min-w-0 items-center gap-2 text-[0.775rem] font-normal text-[var(--ms-text-body)] no-underline transition-colors visited:text-[var(--ms-text-body)] hover:text-[var(--ms-primary)] focus:outline-none focus-visible:outline-none active:outline-none"
                   >
@@ -254,19 +294,30 @@ export function SiteNav({
             </div>
             <div className="min-h-0 flex-1 overflow-y-auto">
               <JourneyPanel
-                phases={isSystemDesignPage ? SYSTEM_DESIGN_PHASES : DSA_PHASES}
+                phases={
+                  isSystemDesignPage
+                    ? SYSTEM_DESIGN_PHASES
+                    : isFrontendPage
+                      ? FRONTEND_PHASES
+                      : DSA_PHASES
+                }
                 pathname={pathname}
                 activeSectionId={activeSectionId}
                 activeItemKey={
                   isSystemDesignPage
                     ? pathname.match(/^\/system-design\/scenarios\/([^/]+)/)?.[1] ??
                       null
+                    : isFrontendPage
+                      ? null
                     : pathname.match(/^\/dsa\/problems\/([^/]+)/)?.[1] ?? null
                 }
                 activeFundamentalsSlug={
                   isSystemDesignPage
                     ? pathname.match(/^\/system-design\/fundamentals\/(?!practice\/)([^/]+)/)?.[1] ??
                       null
+                    : isFrontendPage
+                      ? pathname.match(/^\/frontend\/fundamentals\/([^/]+)/)?.[1] ??
+                        null
                     : pathname.match(/^\/dsa\/fundamentals\/([^/]+)/)?.[1] ?? null
                 }
                 activePracticeSlug={
@@ -284,11 +335,15 @@ export function SiteNav({
                 availableItemKeys={
                   isSystemDesignPage
                     ? availableSystemDesignScenarios
+                    : isFrontendPage
+                      ? new Set<string>()
                     : availableDsaProblemIds
                 }
                 availableFundamentalsSlugs={
                   isSystemDesignPage
                     ? availableSystemDesignFundamentals
+                    : isFrontendPage
+                      ? availableFrontendFundamentals
                     : availableDsaFundamentals
                 }
                 availablePracticeSlugs={
@@ -304,11 +359,15 @@ export function SiteNav({
                 getItemHref={(key) =>
                   isSystemDesignPage
                     ? `/system-design/scenarios/${key}`
+                    : isFrontendPage
+                      ? `/frontend/problems/${key}`
                     : `/dsa/problems/${key}`
                 }
                 getFundamentalsHref={(slug) =>
                   isSystemDesignPage
                     ? `/system-design/fundamentals/${slug}`
+                    : isFrontendPage
+                      ? `/frontend/fundamentals/${slug}`
                     : `/dsa/fundamentals/${slug}`
                 }
                 getPracticeHref={(slug) =>
@@ -317,9 +376,15 @@ export function SiteNav({
                 getConceptHref={(slug) =>
                   `/system-design/concepts/${slug}`
                 }
-                progressItemIdPrefix={isSystemDesignPage ? 'sd-' : 'dsa-'}
+                progressItemIdPrefix={
+                  isSystemDesignPage ? 'sd-' : isFrontendPage ? 'fe-' : 'dsa-'
+                }
                 progressFundamentalsIdPrefix={
-                  isSystemDesignPage ? 'sd-fundamentals-' : 'dsa-fundamentals-'
+                  isSystemDesignPage
+                    ? 'sd-fundamentals-'
+                    : isFrontendPage
+                      ? 'fe-fundamentals-'
+                      : 'dsa-fundamentals-'
                 }
                 compact={collapsed}
               />

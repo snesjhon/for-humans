@@ -1,4 +1,5 @@
 import { getAllFundamentalsSlugs as getAllDsaFundamentalsSlugs, getFundamentalsGuide as getDsaFundamentalsGuide, getSectionForFundamentals as getDsaSectionForFundamentals } from '@/lib/dsa/fundamentals';
+import { getAllFundamentalsSlugs as getAllFrontendFundamentalsSlugs, getFundamentalsGuide as getFrontendFundamentalsGuide, getSectionForFundamentals as getFrontendSectionForFundamentals } from '@/lib/frontend/fundamentals';
 import { getAllProblems, readMarkdownFile } from '@/lib/dsa/content';
 import { getSectionsForProblem } from '@/lib/dsa/journey';
 import { getAllConceptSlugs, getConceptGuide, getSectionForConcept } from '@/lib/system-design/concepts';
@@ -96,6 +97,22 @@ export function getSearchEntries(): SearchEntry[] {
   );
   pushUniqueEntry(
     entries,
+    '/frontend',
+    'Frontend Home',
+    'Frontend',
+    'Explore the frontend track for TypeScript and React mental models.',
+    ['frontend', 'typescript', 'react'],
+  );
+  pushUniqueEntry(
+    entries,
+    '/frontend/path',
+    'Frontend Path',
+    'Frontend',
+    'Browse the frontend path by phase and fundamentals guides.',
+    ['frontend', 'typescript', 'react', 'path', 'journey'],
+  );
+  pushUniqueEntry(
+    entries,
     '/system-design',
     'System Design Home',
     'System Design',
@@ -164,6 +181,29 @@ export function getSearchEntries(): SearchEntry[] {
         ...extractHeadings(mentalModel),
       ],
       primarySection?.label,
+    );
+  }
+
+  for (const slug of getAllFrontendFundamentalsSlugs()) {
+    const guide = getFrontendFundamentalsGuide(slug);
+    const context = getFrontendSectionForFundamentals(slug);
+    if (!guide) continue;
+
+    pushUniqueEntry(
+      entries,
+      `/frontend/fundamentals/${slug}`,
+      context?.section.label ?? guide.title,
+      'Frontend Fundamentals',
+      stripMarkdown(guide.content),
+      [
+        slug,
+        guide.title,
+        context?.section.label ?? '',
+        context?.section.mentalModelHook ?? '',
+        context?.section.fundamentalsBlurb ?? '',
+        ...extractHeadings(guide.content),
+      ],
+      context?.section.label,
     );
   }
 
