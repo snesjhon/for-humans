@@ -8,31 +8,199 @@ Closure captures explain why a function in React keeps reading the values from t
 
 Imagine every render hands each callback a backpack, then zips it shut before the callback leaves the room. Whatever values were packed at that moment stay inside that backpack until the callback finally runs. React can render again, update the screen, and create newer backpacks, but the older callback still carries the older pack.
 
-- Backpack = one callback instance
-- Packed note = a state or prop value from a specific render
-- Zipper closing = the moment the callback is created
-- New backpack shipment = a later render creating newer callbacks
-- Clipboard on the wall = a ref that can be updated without replacing the callback
+- **backpack**: one callback instance
+- **packed note**: a state or prop value from a specific render
+- **zipper closing**: the moment the callback is created
+- **new backpack shipment**: a later render creating newer callbacks
+- **clipboard on the wall**: a ref that can be updated without replacing the callback
 
 In backpack terms, correctness comes from making sure a callback either gets a fresh pack for the next trip or reads from a live clipboard instead of an old sealed note.
 
-### Mechanism
+### What Actually Gets Captured
 
-#### The setup
+A React component renders, computes values, and creates functions. Each function closes over the variables that were in scope during that render. If the function runs immediately, this feels invisible. If it runs later, inside a timeout, event listener, interval, promise, or effect cleanup, the age of that captured data becomes the whole problem.
 
-A React component renders, computes values, and creates functions. Those functions close over the variables that were in scope during that render. If the function runs immediately, this feels invisible. If it runs later, inside a timeout, event listener, interval, promise, or effect cleanup, the age of that captured data suddenly matters.
+The important point is that React does not keep a callback magically wired to the newest render. The callback keeps the values from the render that created it. New render, new values, new callback. If older callbacks still run later, they still unpack older notes.
 
-#### The decision rule
+### Two Renders Can Stay Alive At Once
 
-The first question is whether the callback needs to read a value later or only describe an update. If it only describes an update, React can apply that update against the freshest state through a functional updater. If it must read a value later, you either create a fresh callback whenever that value changes, or you keep the callback stable and point it at a ref that always holds the latest value.
+The part that usually feels wrong at first is that a newer render and an older callback can both still be active. The screen may now reflect newer state, while a timeout, listener, or async continuation created by the older render is still waiting to run.
 
-#### Why this prevents real bugs
+That gives you two timelines:
 
-Most stale closure bugs are not random. A callback was created during one render, but the engineer mentally treated it as if it would read from the render where it eventually ran. That mismatch produces logs that lag behind the UI, subscriptions that keep using old filters, intervals that never see new state, and cleanup logic that tears down the wrong thing. Once you track the age of the backpack, the bug becomes mechanical instead of mysterious.
+- the **render timeline**, where React produces newer state and newer callbacks
+- the **callback timeline**, where older callbacks eventually wake up and run
 
-#### How to think before touching code
+The tracer below shows that split. A timeout from render 0 is still alive after render 1 exists, so when it runs, it still opens the older backpack.
 
-Treat every delayed callback like a package with a shipping label. Ask three questions. When was this callback packed? What values are sealed inside it? When it finally runs, does it need a fresh pack, or should it read from a live clipboard instead? That sequence tells you whether to use a functional updater, dependency-driven recreation, or a ref bridge.
+:::trace-graph
+[
+  {
+    "nodes": [
+      {"id": "R0", "label": "render 0", "x": 18, "y": 50, "tone": "current", "badge": "first render"},
+      {"id": "C0", "label": "count = 0", "x": 38, "y": 26, "tone": "visited"},
+      {"id": "T0", "label": "timeout A", "x": 38, "y": 74, "tone": "frontier"},
+      {"id": "R1", "label": "render 1", "x": 68, "y": 50, "tone": "muted"},
+      {"id": "C1", "label": "count = 1", "x": 88, "y": 26, "tone": "muted"},
+      {"id": "T1", "label": "timeout B", "x": 88, "y": 74, "tone": "muted"}
+    ],
+    "edges": [
+      {"from": "R0", "to": "C0", "tone": "traversed", "label": "reads"},
+      {"from": "R0", "to": "T0", "tone": "active", "label": "creates"},
+      {"from": "R1", "to": "C1", "tone": "muted", "label": "new state"},
+      {"from": "R1", "to": "T1", "tone": "muted", "label": "new callback"}
+    ],
+    "facts": [
+      {"name": "screen", "value": "count shows 0", "tone": "blue"},
+      {"name": "live callback", "value": "timeout A is waiting", "tone": "orange"}
+    ],
+    "action": "visit",
+    "label": "Render 0 creates timeout A. That callback seals count = 0 inside its backpack."
+  },
+  {
+    "nodes": [
+      {"id": "R0", "label": "render 0", "x": 18, "y": 50, "tone": "visited"},
+      {"id": "C0", "label": "count = 0", "x": 38, "y": 26, "tone": "visited"},
+      {"id": "T0", "label": "timeout A", "x": 38, "y": 74, "tone": "frontier"},
+      {"id": "R1", "label": "render 1", "x": 68, "y": 50, "tone": "current", "badge": "rerender"},
+      {"id": "C1", "label": "count = 1", "x": 88, "y": 26, "tone": "current"},
+      {"id": "T1", "label": "timeout B", "x": 88, "y": 74, "tone": "frontier"}
+    ],
+    "edges": [
+      {"from": "R0", "to": "T0", "tone": "queued", "label": "still pending"},
+      {"from": "R1", "to": "C1", "tone": "active", "label": "screen now reads this"},
+      {"from": "R1", "to": "T1", "tone": "active", "label": "creates"},
+      {"from": "T0", "to": "C0", "tone": "queued", "label": "still points here"}
+    ],
+    "facts": [
+      {"name": "screen", "value": "count shows 1", "tone": "blue"},
+      {"name": "older callback", "value": "timeout A still carries count = 0", "tone": "orange"}
+    ],
+    "action": "expand",
+    "label": "Render 1 exists now, but timeout A did not get rewritten. It still points back to the notes from render 0."
+  },
+  {
+    "nodes": [
+      {"id": "R0", "label": "render 0", "x": 18, "y": 50, "tone": "muted"},
+      {"id": "C0", "label": "count = 0", "x": 38, "y": 26, "tone": "visited"},
+      {"id": "T0", "label": "timeout A fires", "x": 38, "y": 74, "tone": "current"},
+      {"id": "R1", "label": "render 1", "x": 68, "y": 50, "tone": "done"},
+      {"id": "C1", "label": "count = 1", "x": 88, "y": 26, "tone": "done"},
+      {"id": "T1", "label": "timeout B", "x": 88, "y": 74, "tone": "frontier"}
+    ],
+    "edges": [
+      {"from": "T0", "to": "C0", "tone": "active", "label": "opens old note"},
+      {"from": "R1", "to": "C1", "tone": "traversed", "label": "newer render exists"},
+      {"from": "T1", "to": "C1", "tone": "queued", "label": "newer callback would read this"}
+    ],
+    "facts": [
+      {"name": "bug shape", "value": "older callback, newer UI", "tone": "purple"},
+      {"name": "question", "value": "should this callback read old notes at all?", "tone": "orange"}
+    ],
+    "action": "done",
+    "label": "When timeout A wakes up, it still reads count = 0. The stale closure bug is not that React forgot the new render. It is that the old callback is still alive."
+  }
+]
+:::
+
+### Three Callback Shapes
+
+Once you look at callbacks this way, the guide breaks into three distinct shapes.
+
+#### Packed writes
+
+Some delayed callbacks do not need to read current state. They only need to describe a state transition such as increment, append, merge, or toggle. In that case, the packed value is unnecessary baggage. The callback should carry an instruction instead of a snapshot.
+
+#### Fresh reads per render
+
+Some callbacks really are supposed to read current props or state later. A listener that logs the current label, or a debounce that commits the current search term, belongs to this group. Here the issue is not the update shape. The issue is that the callback itself has aged, so React needs to create a fresh one from the newer render.
+
+#### Stable setup, live reads
+
+Some long lived setups should stay mounted while still reading fresh values. An interval, DOM listener, or subscription may be expensive or awkward to restart on every render. In that case the callback stays stable, but its read path moves through a ref that is updated every render.
+
+### How I Sort A Closure Bug
+
+Before touching code, sort the callback by the kind of work it is doing.
+
+| Callback behavior | What is going wrong | What changes |
+|---|---|---|
+| Delayed write built from old state | The callback packed a stale snapshot it never needed | Replace the snapshot read with a functional updater |
+| Delayed read of props or state | The callback itself belongs to an older render | Recreate it when those inputs change |
+| Long lived setup with fresh reads | The setup should persist, but the read should not stay frozen | Keep the setup stable and mirror the read through a ref |
+
+The three exercise levels below use that same split. The first level stays inside packed writes. The second level moves to fresh reads. The third level keeps the setup stable and changes only where the callback reads from.
+
+### Scenario 1: Two Increments That Land as One
+
+A hook queues two delayed increments. Both timers close over `count = 0` from the current render. When they fire, each one applies `count + 1` to the same packed starting value:
+
+```ts
+// Both timers sealed count = 0 in their backpacks at creation time
+setTimeout(() => setCount(count + 1), 10); // packed count = 0 → sets to 1
+setTimeout(() => setCount(count + 1), 20); // packed count = 0 → sets to 1 again
+// Final count: 1, not 2
+```
+
+The callback only needs to describe a state transition, not read the current count. Hand React an updater instead and React applies it against live state at commit time:
+
+```ts
+setTimeout(() => setCount(c => c + 1), 10); // instruction: take whatever c is now, add 1
+setTimeout(() => setCount(c => c + 1), 20); // instruction applied against updated state
+// Final count: 2
+```
+
+Nothing about this bug requires a newer callback. The callback never needed to carry `count` in the first place. It only needed to describe "add one to whatever the current count is."
+
+### Scenario 2: A Listener Frozen On The First Label
+
+An effect installs a keydown listener with `[]` as dependencies. That tells React to keep the very first backpack forever. After the prop changes, the listener still reads from the sealed original note:
+
+```ts
+useEffect(() => {
+  const handler = (e: KeyboardEvent) => log(`${label}:${e.key}`);
+  document.addEventListener('keydown', handler);
+  return () => document.removeEventListener('keydown', handler);
+}, []); // [] = keep this backpack sealed forever
+// label = 'draft' at mount. After rerender with label = 'live': still logs 'draft:k'
+```
+
+Adding every value the callback reads to the dependency list gives it a fresh backpack each time those values change:
+
+```ts
+useEffect(() => {
+  const handler = (e: KeyboardEvent) => log(`${label}:${e.key}`);
+  document.addEventListener('keydown', handler);
+  return () => document.removeEventListener('keydown', handler);
+}, [label, log]); // React tears down old listener and reinstalls with the current label
+```
+
+Here the callback really is supposed to read the current label later. The fix is not a different write shape. The fix is a fresh callback from the newer render.
+
+### Scenario 3: One Stable Interval, Fresh Callback Reads
+
+An interval needs to call the latest callback on each tick. Adding `onTick` to the dependency array looks like the right fix after Scenario 2, but `onTick` is a new function reference every render, so the interval restarts constantly:
+
+```ts
+useEffect(() => {
+  const id = setInterval(() => onTick(), delay);
+  return () => clearInterval(id);
+}, [delay, onTick]); // onTick is new every render → interval cancels and restarts each time
+```
+
+Mirror `onTick` into a ref instead. The interval reads from the clipboard on each tick, so the effect only restarts when `delay` changes:
+
+```ts
+const latestTick = useRef(onTick);
+latestTick.current = onTick; // write the newest callback to the clipboard each render
+
+useEffect(() => {
+  const id = setInterval(() => latestTick.current(), delay);
+  return () => clearInterval(id);
+}, [delay]); // one interval, fresh callback reads on every tick
+```
+
+This is the third shape. The interval setup should stay where it is, but what it reads on each tick should come from a live bridge rather than an old backpack.
 
 ---
 
@@ -46,21 +214,43 @@ The structural rule here is simple. If a delayed callback only needs to describe
 
 Level 1 matters because it gives you the smallest correct fix. You do not need refs or subscription choreography yet. You just need to stop writing from stale notes when React already offers a fresh state handoff.
 
+`count = 0` at render time. Two timers queue before the first one fires:
+
+```ts
+// Bug: both timers sealed count = 0 at the moment queuePair() ran
+function queuePair() {
+  setTimeout(() => setCount(count + 1), 10); // count = 0 → will set to 1
+  setTimeout(() => setCount(count + 1), 20); // count = 0 → will also set to 1
+}
+// After both fire: count = 1, not 2. React applied the same write twice.
+```
+
+The fix is to stop carrying the value in the backpack and carry an instruction instead:
+
+```ts
+// Fix: each callback hands React an update rule, not a packed value
+function queuePair() {
+  setTimeout(() => setCount(c => c + 1), 10); // apply +1 to whatever count is at commit time
+  setTimeout(() => setCount(c => c + 1), 20); // apply +1 to the result of the first update
+}
+// After both fire: count = 2. React threads the updates through live state.
+```
+
 #### **Exercise 1**
 
-Why: a queued double increment looks trivial, but both timers can carry the same packed count. What: repair a hook so two delayed increments land as `2`, not `1`. How: replace direct state writes with updater-based writes that read fresh state at apply time.
+This is the most common stale closure surprise, and it looks deceptively harmless. Two scheduled increments both read `count` from the same render. React is not broken when it applies only one increment — it is doing exactly what the packed notes say. You are given a hook where two queued increments collapse into one. Repair it so both increments land. The question to ask before touching code: does this callback need to read the current count, or only tell React that count should increase by one?
 
 :::stackblitz{file="step1-exercise1-problem.ts" step=1 total=3 solution="step1-exercise1-solution.ts"}
 
 #### **Exercise 2**
 
-Why: delayed list appends often lose the first item because both callbacks spread the same packed array. What: make two queued inserts preserve both names in order. How: express each append as "take the current list, then add one more entry."
+Spreading state inside a delayed callback is a silent trap, because the spread looks safe but operates on a frozen snapshot. Both callbacks copy the same packed array and append to it independently, so the second one never sees what the first one added. You are given a hook where two queued appends both read the same packed list and only one name survives. Fix it so both names land in order. The structural move is to express each append as an instruction that takes the current list and adds one entry, rather than spreading from the sealed note.
 
 :::stackblitz{file="step1-exercise2-problem.ts" step=1 total=3 solution="step1-exercise2-solution.ts"}
 
 #### **Exercise 3**
 
-Why: object state patches are especially deceptive because each callback looks like it is merging safely. What: make two delayed profile patches preserve both fields instead of letting the last packed object win. How: merge against the live object React hands to the updater.
+Object merges feel safe because you are spreading existing state, but "existing state" here means the snapshot from when the callback was packed, not the state at commit time. Two delayed patches both spread from the same sealed profile, so the second patch overwrites whatever the first one wrote. You are given a hook where two queued patches collide and only one field survives. Fix it so both fields land intact. The key is to merge inside the updater where React passes you the live object instead of the packed one.
 
 :::stackblitz{file="step1-exercise3-problem.ts" step=1 total=3 solution="step1-exercise3-solution.ts"}
 
@@ -76,21 +266,45 @@ The fix is to recreate the callback when its inputs change. That usually means t
 
 This level teaches you to read dependency lists as closure declarations. They are not performance hints. They are the list of values that require a new backpack because the old one would speak with stale notes.
 
+`label = 'draft'` at mount. The prop changes to `'live'` on rerender:
+
+```ts
+// Bug: empty deps array tells React to keep the first backpack forever
+useEffect(() => {
+  const handler = (e: KeyboardEvent) => log(`${label}:${e.key}`);
+  document.addEventListener('keydown', handler);
+  return () => document.removeEventListener('keydown', handler);
+}, []); // label frozen at 'draft' — the listener never learns about 'live'
+// After rerender: key press logs 'draft:k', not 'live:k'
+```
+
+Adding the values the callback reads to the dependency list tells React when to repack:
+
+```ts
+// Fix: list every value the effect reads — React tears down and reinstalls when they change
+useEffect(() => {
+  const handler = (e: KeyboardEvent) => log(`${label}:${e.key}`);
+  document.addEventListener('keydown', handler);
+  return () => document.removeEventListener('keydown', handler);
+}, [label, log]); // rerender with label = 'live' → old listener removed, new one installed
+// Key press now logs 'live:k'
+```
+
 #### **Exercise 1**
 
-Why: a document listener can keep announcing an old label even after the prop changes. What: make a key listener use the latest label after rerender. How: reinstall the listener when the label it reads changes.
+The listener is installed correctly, but it never gets a new backpack. Every keypress after the prop changes still reads the label from the first render because the effect's dependency list is empty and the closure is sealed at mount. The UI can update on screen while the listener keeps announcing old information. You are given a hook where the listener logs the original label even after a rerender with a new one. Fix it so the listener reads the current label. Ask yourself: which values does this callback read, and are all of them listed as dependencies?
 
 :::stackblitz{file="step2-exercise1-problem.ts" step=2 total=3 solution="step2-exercise1-solution.ts"}
 
 #### **Exercise 2**
 
-Why: an interval can keep reporting the startup status forever if its effect never repacks. What: make a heartbeat interval announce the current status after rerender. How: treat every value read inside the interval callback as a dependency that requires a fresh setup.
+The heartbeat starts correctly on mount, but its backpack is never refreshed. After a rerender with a new status, the interval keeps calling `onTick` with the original status value because the effect has no dependencies and the closure is frozen. The caller sees ticks that are increasingly out of date. You are given a hook where the interval announces the mount-time status forever. Fix it so each tick reports the current status after a rerender. List every value the interval callback reads in the effect dependency array, and confirm the cleanup correctly cancels the old interval before a new one starts.
 
 :::stackblitz{file="step2-exercise2-problem.ts" step=2 total=3 solution="step2-exercise2-solution.ts"}
 
 #### **Exercise 3**
 
-Why: debounced work often leaks stale inputs because the timeout from the old render still fires. What: commit only the latest search term after rapid rerenders. How: rebuild the timeout when the term changes and clean up the older pending one.
+A debounce is only useful if it commits the latest value. Without a dependency on the current term, the timeout created at mount fires 300ms later with whatever term was packed then. Rapid rerenders all queue new timeouts but never cancel the original, so `onCommit` runs with stale input. You are given a hook where a debounce fires with the initial search term instead of the most recent one. Fix it so only the latest term commits after the debounce window. Notice that the cleanup function is also a backpack — it has to cancel the timer that belongs to its own render, not someone else's.
 
 :::stackblitz{file="step2-exercise3-problem.ts" step=2 total=3 solution="step2-exercise3-solution.ts"}
 
