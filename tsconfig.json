@@ -21,6 +21,7 @@
   "exclude": [
     "node_modules",
     "src/app/dsa/problems/**/*.ts",
-    "src/app/dsa/fundamentals/**/*.ts"
+    "src/app/dsa/fundamentals/**/*.ts",
+    "src/app/frontend/fundamentals/**/*.ts"
   ]
 }

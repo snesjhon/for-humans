@@ -154,6 +154,24 @@ export const JOURNEY: Phase[] = [
       },
     ],
   },
+  {
+    number: 4,
+    label: 'Data Problems',
+    emoji: '🗂️',
+    goal:
+      'Develop a repeatable approach for data parsing problems: index your source, walk the target, accumulate the answer.',
+    sections: [
+      {
+        id: 'data-parsing',
+        label: 'Data Parsing & Cross-Reference',
+        mentalModelHook:
+          'Data problems become tractable the moment you separate indexing the source from iterating the target.',
+        fundamentalsSlug: 'data-parsing',
+        fundamentalsBlurb:
+          'A progressive framework for solving dataset problems — from flat lookups through cross-reference aggregation to multi-pass pipelines.',
+      },
+    ],
+  },
 ];
 
 export function getSectionByFundamentalsSlug(
