@@ -4,6 +4,7 @@ import { LayoutShell } from '@/components/ui/LayoutShell/LayoutShell';
 import { getAllProblems } from '@/lib/dsa/content';
 import { getAllFundamentalsSlugs } from '@/lib/dsa/fundamentals';
 import { getAllFundamentalsSlugs as getAllFrontendFundamentalsSlugs } from '@/lib/frontend/fundamentals';
+import { getAllFrontendProblems } from '@/lib/frontend/problems';
 import { getSearchEntries } from '@/lib/search';
 import { getSidebarStateInitScript } from '@/lib/sidebarState';
 import { getAllScenarioSlugsFromDisk } from '@/lib/system-design/content';
@@ -50,6 +51,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const availableDsaProblemIds = getAllProblems().map((p) => p.id);
+  const availableFrontendProblemIds = getAllFrontendProblems().map((p) => p.id);
   const availableDsaFundamentalsSlugs = getAllFundamentalsSlugs();
   const availableFrontendFundamentalsSlugs = getAllFrontendFundamentalsSlugs();
   const availableSystemDesignScenarioSlugs = getAllScenarioSlugsFromDisk();
@@ -72,6 +74,7 @@ export default async function RootLayout({
       <body className="min-h-screen bg-[var(--ms-bg-pane)] text-[var(--ms-text-body)]">
         <LayoutShell
           availableDsaProblemIds={availableDsaProblemIds}
+          availableFrontendProblemIds={availableFrontendProblemIds}
           availableDsaFundamentalsSlugs={availableDsaFundamentalsSlugs}
           availableFrontendFundamentalsSlugs={availableFrontendFundamentalsSlugs}
           availableSystemDesignScenarioSlugs={availableSystemDesignScenarioSlugs}

@@ -27,6 +27,7 @@ const FULLWIDTH_ROUTES = new Set([
 interface LayoutShellProps {
   children: React.ReactNode;
   availableDsaProblemIds: string[];
+  availableFrontendProblemIds: string[];
   availableDsaFundamentalsSlugs: string[];
   availableFrontendFundamentalsSlugs: string[];
   availableSystemDesignScenarioSlugs: string[];
@@ -39,6 +40,7 @@ interface LayoutShellProps {
 export function LayoutShell({
   children,
   availableDsaProblemIds,
+  availableFrontendProblemIds,
   availableDsaFundamentalsSlugs,
   availableFrontendFundamentalsSlugs,
   availableSystemDesignScenarioSlugs,
@@ -177,6 +179,7 @@ export function LayoutShell({
     >
       <SiteNav
         availableDsaProblemIds={availableDsaProblemIds}
+        availableFrontendProblemIds={availableFrontendProblemIds}
         availableDsaFundamentalsSlugs={availableDsaFundamentalsSlugs}
         availableFrontendFundamentalsSlugs={availableFrontendFundamentalsSlugs}
         availableSystemDesignScenarioSlugs={availableSystemDesignScenarioSlugs}

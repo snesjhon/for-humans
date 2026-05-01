@@ -16,6 +16,14 @@ export const JOURNEY: Phase[] = [
         fundamentalsSlug: 'state-driven-ui',
         fundamentalsBlurb:
           'The snapshot model, batching, and how multiple pieces of interacting state stay decoupled.',
+        practice: [
+          {
+            id: '024',
+            slug: '024-like-button',
+            label: 'Like Button',
+          },
+        ],
+        advanced: [],
       },
       {
         id: 'effects-timers-cleanup',
@@ -25,6 +33,8 @@ export const JOURNEY: Phase[] = [
         fundamentalsSlug: 'effects-timers-cleanup',
         fundamentalsBlurb:
           'Lifecycle timing, interval drift, AbortController for fetch cancellation, and how StrictMode surfaces missing cleanup.',
+        practice: [],
+        advanced: [],
       },
     ],
   },
@@ -43,6 +53,8 @@ export const JOURNEY: Phase[] = [
         fundamentalsSlug: 'component-composition',
         fundamentalsBlurb:
           'Compound components, portal-based rendering, lifting state up, and recursive component trees.',
+        practice: [],
+        advanced: [],
       },
       {
         id: 'data-fetching',
@@ -52,6 +64,8 @@ export const JOURNEY: Phase[] = [
         fundamentalsSlug: 'data-fetching',
         fundamentalsBlurb:
           'Race condition cancellation, `Awaited<T>` and conditional types for typed async state, and when to extract a data-fetching hook.',
+        practice: [],
+        advanced: [],
       },
       {
         id: 'collection-hooks',
@@ -61,6 +75,8 @@ export const JOURNEY: Phase[] = [
         fundamentalsSlug: 'collection-hooks',
         fundamentalsBlurb:
           'Arrays, maps, and sets as state — immutable update patterns, stable references, and generic hook signatures with meaningful constraints.',
+        practice: [],
+        advanced: [],
       },
       {
         id: 'dom-event-hooks',
@@ -70,6 +86,8 @@ export const JOURNEY: Phase[] = [
         fundamentalsSlug: 'dom-event-hooks',
         fundamentalsBlurb:
           'useRef for DOM nodes, event listener lifecycle, SSR guards, and template literal types for typed event names and handler signatures.',
+        practice: [],
+        advanced: [],
       },
       {
         id: 'timing-hooks',
@@ -79,6 +97,8 @@ export const JOURNEY: Phase[] = [
         fundamentalsSlug: 'timing-hooks',
         fundamentalsBlurb:
           'The stale closure inside setInterval, useRef as the stable callback escape hatch, and countdown state without drift.',
+        practice: [],
+        advanced: [],
       },
       {
         id: 'rich-interactive-ui',
@@ -88,6 +108,8 @@ export const JOURNEY: Phase[] = [
         fundamentalsSlug: 'rich-interactive-ui',
         fundamentalsBlurb:
           'Image loading lifecycle, transition state layered on selection state, and input control as a dirty/touched state machine.',
+        practice: [],
+        advanced: [],
       },
     ],
   },
@@ -106,6 +128,8 @@ export const JOURNEY: Phase[] = [
         fundamentalsSlug: 'accessibility',
         fundamentalsBlurb:
           'ARIA roles and properties, focus trap mechanics, keyboard navigation per the ARIA spec, and the difference between screen reader correctness and keyboard operability.',
+        practice: [],
+        advanced: [],
       },
       {
         id: 'complex-state-reducers',
@@ -115,6 +139,8 @@ export const JOURNEY: Phase[] = [
         fundamentalsSlug: 'complex-state-reducers',
         fundamentalsBlurb:
           'Finite state modeling, discriminated union actions, undo/redo as past/present/future, and when useReducer wins over scattered useState calls.',
+        practice: [],
+        advanced: [],
       },
       {
         id: 'performance-optimization',
@@ -124,6 +150,8 @@ export const JOURNEY: Phase[] = [
         fundamentalsSlug: 'performance-optimization',
         fundamentalsBlurb:
           'Why most re-renders are free, the prerequisite of stable references for useMemo and useCallback, and minimal DOM footprint patterns.',
+        practice: [],
+        advanced: [],
       },
       {
         id: 'advanced-hook-patterns',
@@ -133,6 +161,8 @@ export const JOURNEY: Phase[] = [
         fundamentalsSlug: 'advanced-hook-patterns',
         fundamentalsBlurb:
           'Mediated state, the dirty/touched state machine in useInputControl, and when useSyncExternalStore replaces useState.',
+        practice: [],
+        advanced: [],
       },
       {
         id: 'full-feature-applications',
@@ -142,6 +172,8 @@ export const JOURNEY: Phase[] = [
         fundamentalsSlug: 'full-feature-applications',
         fundamentalsBlurb:
           'Combining reducers, async, accessibility, and performance — and deciding which problems belong in local state vs a reducer vs an external store.',
+        practice: [],
+        advanced: [],
       },
     ],
   },

@@ -59,9 +59,16 @@ const DSA_PHASES: JourneyPanelPhase[] = DSA_JOURNEY.map((phase) => ({
 }));
 
 const FRONTEND_FUNDAMENTALS_TO_SECTION: Record<string, string> = {};
+const FRONTEND_PROBLEM_TO_SECTION: Record<string, string> = {};
 for (const phase of FRONTEND_JOURNEY) {
   for (const section of phase.sections) {
     FRONTEND_FUNDAMENTALS_TO_SECTION[section.fundamentalsSlug] = section.id;
+    for (const problem of section.practice) {
+      FRONTEND_PROBLEM_TO_SECTION[problem.id] = section.id;
+    }
+    for (const problem of section.advanced) {
+      FRONTEND_PROBLEM_TO_SECTION[problem.id] = section.id;
+    }
   }
 }
 
@@ -73,7 +80,16 @@ const FRONTEND_PHASES: JourneyPanelPhase[] = FRONTEND_JOURNEY.map((phase) => ({
     id: section.id,
     label: section.label,
     fundamentalsSlugs: [section.fundamentalsSlug],
-    items: [],
+    items: section.practice.map((problem) => ({
+      key: problem.id,
+      label: problem.label,
+      prefix: problem.id,
+    })),
+    revisitItems: section.advanced.map((problem) => ({
+      key: problem.id,
+      label: problem.label,
+      prefix: problem.id,
+    })),
   })),
 }));
 
@@ -157,6 +173,8 @@ function systemDesignActiveSection(path: string): string | null {
 function frontendActiveSection(path: string): string | null {
   const fund = path.match(/^\/frontend\/fundamentals\/([^/]+)/)?.[1];
   if (fund) return FRONTEND_FUNDAMENTALS_TO_SECTION[fund] ?? null;
+  const problem = path.match(/^\/frontend\/problems\/([^/]+)/)?.[1];
+  if (problem) return FRONTEND_PROBLEM_TO_SECTION[problem] ?? null;
   return null;
 }
 
@@ -164,6 +182,7 @@ function frontendActiveSection(path: string): string | null {
 
 interface SiteNavProps {
   availableDsaProblemIds: string[];
+  availableFrontendProblemIds: string[];
   availableDsaFundamentalsSlugs: string[];
   availableFrontendFundamentalsSlugs: string[];
   availableSystemDesignScenarioSlugs: string[];
@@ -176,6 +195,7 @@ interface SiteNavProps {
 
 export function SiteNav({
   availableDsaProblemIds: availableDsaProblemIdsArr,
+  availableFrontendProblemIds: availableFrontendProblemIdsArr,
   availableDsaFundamentalsSlugs: availableDsaFundamentalsArr,
   availableFrontendFundamentalsSlugs: availableFrontendFundamentalsArr,
   availableSystemDesignScenarioSlugs: availableSystemDesignScenarioSlugsArr,
@@ -187,6 +207,7 @@ export function SiteNav({
   onToggleCollapsed,
 }: SiteNavProps) {
   const availableDsaProblemIds = new Set(availableDsaProblemIdsArr);
+  const availableFrontendProblemIds = new Set(availableFrontendProblemIdsArr);
   const availableDsaFundamentals = new Set(availableDsaFundamentalsArr);
   const availableFrontendFundamentals = new Set(
     availableFrontendFundamentalsArr,
@@ -308,7 +329,8 @@ export function SiteNav({
                     ? pathname.match(/^\/system-design\/scenarios\/([^/]+)/)?.[1] ??
                       null
                     : isFrontendPage
-                      ? null
+                      ? pathname.match(/^\/frontend\/problems\/([^/]+)/)?.[1] ??
+                        null
                     : pathname.match(/^\/dsa\/problems\/([^/]+)/)?.[1] ?? null
                 }
                 activeFundamentalsSlug={
@@ -336,7 +358,7 @@ export function SiteNav({
                   isSystemDesignPage
                     ? availableSystemDesignScenarios
                     : isFrontendPage
-                      ? new Set<string>()
+                      ? availableFrontendProblemIds
                     : availableDsaProblemIds
                 }
                 availableFundamentalsSlugs={
@@ -377,7 +399,11 @@ export function SiteNav({
                   `/system-design/concepts/${slug}`
                 }
                 progressItemIdPrefix={
-                  isSystemDesignPage ? 'sd-' : isFrontendPage ? 'fe-' : 'dsa-'
+                  isSystemDesignPage
+                    ? 'sd-'
+                    : isFrontendPage
+                      ? 'fe-problem-'
+                      : 'dsa-'
                 }
                 progressFundamentalsIdPrefix={
                   isSystemDesignPage

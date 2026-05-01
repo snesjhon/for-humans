@@ -74,6 +74,13 @@ export default async function PathPage() {
       )
       .map((row: { item_type: string; item_id: string }) => row.item_id) ?? [],
   );
+  const completedProblems = new Set(
+    progressRows
+      ?.filter(
+        (row: { item_type: string; item_id: string }) => row.item_type === 'problem',
+      )
+      .map((row: { item_type: string; item_id: string }) => row.item_id) ?? [],
+  );
 
   return (
     <>
@@ -138,8 +145,18 @@ export default async function PathPage() {
 
                         <SectionProgress
                           sectionItemId={`fe-section-${section.id}`}
-                          problemItemIds={[]}
-                          initialCompletedProblemIds={[]}
+                          problemItemIds={[
+                            ...section.practice.map((problem) => `fe-problem-${problem.id}`),
+                            ...section.advanced.map((problem) => `fe-problem-${problem.id}`),
+                          ]}
+                          initialCompletedProblemIds={[
+                            ...section.practice
+                              .map((problem) => `fe-problem-${problem.id}`)
+                              .filter((itemId) => completedProblems.has(itemId)),
+                            ...section.advanced
+                              .map((problem) => `fe-problem-${problem.id}`)
+                              .filter((itemId) => completedProblems.has(itemId)),
+                          ]}
                           initialSectionCompleted={completedSections.has(
                             `fe-section-${section.id}`,
                           )}
@@ -168,6 +185,44 @@ export default async function PathPage() {
                             </p>
                           )}
                         </div>
+
+                        {section.practice.length > 0 && (
+                          <div className="mt-5">
+                            <p className="mb-2 font-mono text-[0.6rem] font-bold uppercase tracking-[0.09em] text-[var(--ms-text-faint)]">
+                              Practice
+                            </p>
+                            <div className="space-y-2">
+                              {section.practice.map((problem) => (
+                                <Link
+                                  key={problem.id}
+                                  href={`/frontend/problems/${problem.id}`}
+                                  className="block text-sm text-[var(--ms-blue)] no-underline transition-opacity hover:opacity-80"
+                                >
+                                  {problem.id}. {problem.label} →
+                                </Link>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {section.advanced.length > 0 && (
+                          <div className="mt-5">
+                            <p className="mb-2 font-mono text-[0.6rem] font-bold uppercase tracking-[0.09em] text-[var(--ms-text-faint)]">
+                              Advanced
+                            </p>
+                            <div className="space-y-2">
+                              {section.advanced.map((problem) => (
+                                <Link
+                                  key={problem.id}
+                                  href={`/frontend/problems/${problem.id}`}
+                                  className="block text-sm text-[var(--ms-blue)] no-underline transition-opacity hover:opacity-80"
+                                >
+                                  {problem.id}. {problem.label} →
+                                </Link>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   );
