@@ -60,7 +60,7 @@ When index, walk, and accumulate collapse into one loop, there is no clear place
 
 The algorithm for data problems is almost always the same three moves: index, walk, accumulate. The hard part is not the algorithm. It is reading the problem carefully enough to know what to index, what to walk, and what counts as a match.
 
-This section works through a complete example from problem statement to code shape using a warehouse inventory scenario. The goal is to show the reasoning process, not just the answer.
+This section works through a complete example from problem statement to code shape using a product launch scenario. The goal is to show the reasoning process, not just the answer.
 
 ### The Problem Statement
 
@@ -68,269 +68,303 @@ Read this the way you would see it in a real codebase:
 
 ```
 /**
- * Warehouse managers report their current stock levels daily.
- * Your job is to identify which products are understocked at which locations.
+ * A launch plan defines which capabilities must be ready before a product release can ship.
+ * Your job is to measure how much of that launch plan is covered by the automations the team built.
  *
- * @param inventory   A list of current stock records. Each record has a warehouseId,
- *                    a productId, and a currentQuantity.
+ * @param launchPlan  An object with a name and a list of required capability IDs.
  *
- * @param thresholds  A list of minimum stock requirements. Each threshold has a
- *                    warehouseId, a productId, and a minQuantity. Not every
- *                    warehouse/product combination has a threshold — those without
- *                    one can be ignored.
+ * @param automations A list of launch automations. Each automation has a setupCost
+ *                    and a list of capability IDs it supports. Some automations may
+ *                    reference capabilities that are not part of this launch plan.
  *
- * @returns           An array of shortage records — { warehouseId, productId, shortage } —
- *                    for every inventory record where currentQuantity falls below minQuantity.
- *                    shortage is minQuantity minus currentQuantity.
+ * @returns           An object with two properties:
+ *                    - totalCost: the sum of setupCost for automations that support
+ *                      at least one required capability
+ *                    - coverage: the percentage of required capability IDs covered by
+ *                      any relevant automation
  */
-function findShortages(inventory, thresholds)
+function scoreLaunchReadiness(launchPlan, automations)
 ```
 
 ### The Sample Data
 
 ```js
-const inventory = [
-  { warehouseId: 'wh-east', productId: 'bolt-m6',     currentQuantity: 500 },
-  { warehouseId: 'wh-east', productId: 'washer-10mm', currentQuantity: 20  },
-  { warehouseId: 'wh-west', productId: 'bolt-m6',     currentQuantity: 150 },
-  { warehouseId: 'wh-west', productId: 'nut-m6',      currentQuantity: 300 },
-]
+const launchPlan = {
+  name: 'Spring Launch',
+  capabilities: [
+    { id: 'cap-search', label: 'Site search is production-ready' },
+    { id: 'cap-cache', label: 'Cache warming runs before traffic cutover' },
+    { id: 'cap-alerts', label: 'Pager alerts fire on launch regressions' },
+    { id: 'cap-rollback', label: 'Rollback can be triggered in one step' },
+  ],
+};
 
-const thresholds = [
-  { warehouseId: 'wh-east', productId: 'bolt-m6',     minQuantity: 400 },
-  { warehouseId: 'wh-east', productId: 'washer-10mm', minQuantity: 100 },
-  { warehouseId: 'wh-west', productId: 'bolt-m6',     minQuantity: 200 },
-  // no threshold for wh-west / nut-m6
-]
+const automations = [
+  { id: 'auto-preview', setupCost: 2, capabilityIds: ['cap-search'] },
+  { id: 'auto-observability', setupCost: 4, capabilityIds: ['cap-alerts', 'cap-rollback'] },
+  { id: 'auto-experiment', setupCost: 3, capabilityIds: ['cap-abtest'] }, // not part of this launch plan
+];
 ```
 
 ### Step 1: Start With the Return Value
 
-Before looking at the inputs, read what the function is supposed to return. Here it returns an array of `{ warehouseId, productId, shortage }` objects.
+Before looking at the inputs, read what the function is supposed to return. Here it returns a single object with `totalCost` and `coverage`.
 
-That tells you immediately: this is not a grouping problem. You are not building a `Map<string, number>` of totals. You are filtering and transforming a flat list, producing one output record per qualifying input record. One dataset produces results. The other dataset exists only to inform the filter.
+That tells you immediately what this problem is not, because the return shape is too small for several other problem families.
 
-That distinction — one dataset drives the output, the other provides the lookup — is the first thing to settle before you touch any code.
+If this were a grouping problem, the return type would preserve some key space in the output, usually as a `Map` or object keyed by ID, category, or name. You would expect something like `Map<string, number>` or `Record<string, Automation[]>`. But this function returns one final object, not one bucket per key.
 
-### Step 2: Find the Join Key
+If this were a "return one record per match" problem, the output would usually be an array of result objects. You would expect each matching input record to produce its own output entry. But there is no output array here, so the loop is not building a list of per-record answers.
 
-Look at both datasets and identify what field connects them. In this problem, both `inventory` and `thresholds` have `warehouseId` and `productId`.
+Instead, both return fields are summaries across the whole dataset. `totalCost` collapses many relevant automations into one number. `coverage` collapses many matched capability IDs into one percentage. That is why the problem reads like filter + aggregate, not group + store or transform + emit.
 
-Now ask: is either field unique on its own?
+That distinction is what tells you the loop will have accumulation state, not pushes into an output array. You will need a running number and a `Set` of covered IDs.
 
-- `bolt-m6` appears in both `wh-east` and `wh-west`. Not unique.
-- `wh-east` holds both `bolt-m6` and `washer-10mm`. Not unique.
+### Step 2: Find the Lookup Field
 
-Neither field alone identifies a single record. The join key is composite: `warehouseId` and `productId` together. When you see a composite key, the Map key becomes a concatenated string: `warehouseId + ':' + productId`. One string per location/product pair, unique across both datasets.
+Look at both datasets and identify what field connects them. In this problem, the connection is `capabilityId`.
 
-| Inventory record | Composite key | Has a threshold? |
+The launch plan stores those IDs inside `launchPlan.capabilities`. Each automation stores related IDs inside `automation.capabilityIds`.
+
+That means there is no joined key to construct. There is one canonical ID space, capability IDs, and both sides reference it directly.
+
+| Capability ID | In launch plan? | Referenced by automation? |
 |---|---|---|
-| wh-east, bolt-m6 | `'wh-east:bolt-m6'` | yes, min: 400 |
-| wh-east, washer-10mm | `'wh-east:washer-10mm'` | yes, min: 100 |
-| wh-west, bolt-m6 | `'wh-west:bolt-m6'` | yes, min: 200 |
-| wh-west, nut-m6 | `'wh-west:nut-m6'` | no entry |
+| `cap-search` | yes | `auto-preview` |
+| `cap-alerts` | yes | `auto-observability` |
+| `cap-rollback` | yes | `auto-observability` |
+| `cap-abtest` | no | `auto-experiment` |
 
-The table also tells you something important: the datasets are not the same size. `thresholds` has 3 records, `inventory` has 4. One inventory record has no threshold at all. You need to handle that case explicitly.
+At this step, stop at the relationship shape. Do not decide the loop direction yet.
+
+What Step 2 tells you is that this is not a one-to-one lookup like "this record has one foreign key, go fetch one matching record." One side, `automations`, stores a nested `capabilityIds` array, which means the eventual loop question will be about overlap: does some set of IDs on one side intersect with the required IDs on the other?
+
+That is enough for Step 2. You have identified the shared ID space and the kind of matching the problem requires. Step 3 is where you decide which side should actually be walked.
 
 ### Step 3: Decide Which Side to Index and Which to Walk
 
-Index the side you look things up against. Walk the side you iterate to produce results.
+This is the decision point that usually feels slippery, so make the mental logic explicit.
 
-You check each inventory record against the thresholds to see if a minimum stock requirement exists. Thresholds are what you consult — they become the Map. You walk inventory records one at a time and decide what to emit for each. Inventory is what you iterate.
+Step 2 found the shared field. Step 3 answers a different question: which dataset should the loop visit one record at a time?
+
+Use the return value to choose the unit of work. Ask: which records own the thing I update once per relevant record?
+
+```mermaid
+flowchart TD
+  A[Return shape: totalCost + coverage] --> B{What changes once per relevant record?}
+  B -->|cost| C[Automation record]
+  C --> D[Walk automations]
+  D --> E[For each automation, check overlap with required IDs]
+  E --> F[If relevant, add cost once and mark covered IDs]
+  A --> G{What stays stable during every check?}
+  G -->|required IDs| H[launchPlan.capabilities]
+  H --> I[Index as Set]
+```
+
+For this problem:
+
+- `totalCost` is charged per relevant automation
+- `coverage` is marked by required capability IDs that got covered
+- so `automations` is the natural walked side
+- `launchPlan.capabilities` is the natural indexed side
+
+That gives the loop a clear job:
+
+```ts
+const requiredIds = new Set(launchPlan.capabilities.map((c) => c.id));
+
+for (const automation of automations) {
+  const matchedIds = automation.capabilityIds.filter((id) => requiredIds.has(id));
+  if (matchedIds.length === 0) continue;
+
+  totalCost += automation.setupCost;
+  for (const id of matchedIds) coveredIds.add(id);
+}
+```
+
+Why not walk `launchPlan.capabilities` instead? Because the cost rule lives on automation records. One automation can cover more than one capability. If you walked capabilities first, you would need extra bookkeeping to avoid charging the same automation multiple times. Walking automations keeps the per-record action aligned with the data.
+
+If you want a compact test, use this:
+
+1. Which dataset provides the rule for relevance?
+2. Which dataset contains the records I must evaluate one by one?
+3. What exact yes/no question will I ask for each of those records?
+
+For this problem, the answers are:
+
+1. The launch plan provides the rule for relevance.
+2. The automations are the records to evaluate one by one.
+3. For each automation: does its `capabilityIds` list overlap with the launch plan's required IDs?
 
 ```
-thresholds  →  build Map keyed by 'warehouseId:productId'  →  look things up against this
-inventory   →  for...of loop                               →  one decision per record
+launchPlan.capabilities  →  build Set of required capability IDs  →  look things up against this
+automations              →  for...of loop                         →  one decision per automation
 ```
 
-This direction also makes sense for another reason: the return value is shaped around inventory records. Each shortage object contains the `warehouseId` and `productId` from an inventory entry, with the shortage amount computed by consulting the threshold. If you walked thresholds instead, you would have to look up the inventory side to find the current quantity, which reverses the structure without gaining anything.
+This direction also matches the return value. `totalCost` changes per relevant automation, so automations have to be visited individually. `coverage` changes when a required ID from the launch plan gets covered, so the launch plan supplies the reference Set you check against. That is the mental shape: one side defines relevance, the other side gets tested against it.
 
 ### Step 4: Enumerate What Can Happen at Each Step
 
-Before writing the loop, sketch every possible outcome for a single inventory record. There are four in this problem:
+Before writing the loop, sketch every possible outcome for a single automation. There are four in this problem:
 
-**No threshold for this location/product.** `wh-west:nut-m6` has no entry in the Map. No minimum requirement exists here — skip without emitting anything.
+**No relevant capability IDs.** `auto-experiment` only references `cap-abtest`, which is not in the launch plan. Skip the automation entirely. It contributes no cost and no coverage.
 
-**Threshold found, stock is sufficient.** `wh-east:bolt-m6` has 500 units against a minimum of 400. Stock is fine — skip without emitting anything.
+**One relevant capability ID.** `auto-preview` covers `cap-search`. Add its `setupCost`, then mark `cap-search` as covered.
 
-**Threshold found, stock is insufficient.** `wh-east:washer-10mm` has 20 units against a minimum of 100. Shortage of 80 — emit a record.
+**Multiple relevant capability IDs.** `auto-observability` covers both `cap-alerts` and `cap-rollback`. Add its cost once, then mark both IDs as covered.
 
-**Threshold found, stock is insufficient (second case).** `wh-west:bolt-m6` has 150 against 200. Shortage of 50 — emit a record.
+**A capability still missing after the walk.** `cap-cache` never appears in any automation's `capabilityIds`, so it stays uncovered. That matters when you compute the final coverage percentage.
 
-Notice that two different outcomes both result in "skip." One skips because the record is irrelevant (no threshold). The other skips because it passed the check (sufficient stock). These are two separate guard clauses, not one. Enumerating outcomes before writing the loop means your conditionals are planned, not discovered mid-implementation.
+Notice the asymmetry here: cost is tracked per relevant automation, but coverage is tracked per unique required capability ID. Those are different accumulation rules inside the same walk.
 
 ### Step 5: See It in the Data
 
-The trace below steps through every inventory record against the threshold Map built from the sample data.
+The trace below steps through every automation against the required capability Set built from the sample data.
 
 :::trace-graph
 [
   {
     "nodes": [
-      {"id": "t1", "label": "e:bolt min:400",     "x": 12, "y": 18, "tone": "frontier"},
-      {"id": "t2", "label": "e:washer min:100",   "x": 12, "y": 40, "tone": "frontier"},
-      {"id": "t3", "label": "w:bolt min:200",     "x": 12, "y": 62, "tone": "frontier"},
-      {"id": "tMap", "label": "thresholdMap",     "x": 45, "y": 40, "tone": "muted"},
-      {"id": "i1", "label": "e:bolt cur:500",     "x": 72, "y": 18, "tone": "muted"},
-      {"id": "i2", "label": "e:washer cur:20",    "x": 72, "y": 38, "tone": "muted"},
-      {"id": "i3", "label": "w:bolt cur:150",     "x": 72, "y": 58, "tone": "muted"},
-      {"id": "i4", "label": "w:nut cur:300",      "x": 72, "y": 78, "tone": "muted"},
-      {"id": "result", "label": "shortages: []",  "x": 92, "y": 48, "tone": "muted"}
+      {"id": "c1", "label": "search",         "x": 12, "y": 16, "tone": "frontier"},
+      {"id": "c2", "label": "cache",          "x": 12, "y": 32, "tone": "frontier"},
+      {"id": "c3", "label": "alerts",         "x": 12, "y": 48, "tone": "frontier"},
+      {"id": "c4", "label": "rollback",       "x": 12, "y": 64, "tone": "frontier"},
+      {"id": "requiredSet", "label": "requiredIds", "x": 42, "y": 40, "tone": "muted"},
+      {"id": "a1", "label": "preview [search]", "x": 70, "y": 20, "tone": "muted"},
+      {"id": "a2", "label": "observability [alerts, rollback]", "x": 70, "y": 42, "tone": "muted"},
+      {"id": "a3", "label": "experiment [abtest]", "x": 70, "y": 64, "tone": "muted"},
+      {"id": "result", "label": "cost:0 covered:{}", "x": 92, "y": 42, "tone": "muted"}
     ],
     "edges": [],
     "facts": [
-      {"name": "thresholds", "value": "3 records",                         "tone": "blue"},
-      {"name": "inventory",  "value": "4 records — datasets are not the same size", "tone": "blue"},
-      {"name": "join key",   "value": "warehouseId + ':' + productId",     "tone": "orange"}
+      {"name": "required IDs", "value": "4 capabilities in the launch plan", "tone": "blue"},
+      {"name": "walked side",  "value": "each automation holds a nested capabilityIds array", "tone": "blue"},
+      {"name": "lookup field", "value": "plain capabilityId, no joined key", "tone": "orange"}
     ],
     "action": "visit",
-    "label": "Two datasets, different sizes. The join key is composite — warehouseId and productId together identify a unique location/product pair. Neither field alone is sufficient."
+    "label": "Both datasets speak the same ID language, capability IDs. The launch plan owns the required set, and each automation carries a nested array of IDs to test against it."
   },
   {
     "nodes": [
-      {"id": "t1", "label": "e:bolt min:400",     "x": 12, "y": 18, "tone": "visited"},
-      {"id": "t2", "label": "e:washer min:100",   "x": 12, "y": 40, "tone": "visited"},
-      {"id": "t3", "label": "w:bolt min:200",     "x": 12, "y": 62, "tone": "visited"},
-      {"id": "tMap", "label": "thresholdMap",     "x": 45, "y": 40, "tone": "current", "badge": "built"},
-      {"id": "i1", "label": "e:bolt cur:500",     "x": 72, "y": 18, "tone": "frontier"},
-      {"id": "i2", "label": "e:washer cur:20",    "x": 72, "y": 38, "tone": "frontier"},
-      {"id": "i3", "label": "w:bolt cur:150",     "x": 72, "y": 58, "tone": "frontier"},
-      {"id": "i4", "label": "w:nut cur:300",      "x": 72, "y": 78, "tone": "frontier"},
-      {"id": "result", "label": "shortages: []",  "x": 92, "y": 48, "tone": "muted"}
+      {"id": "c1", "label": "search",         "x": 12, "y": 16, "tone": "visited"},
+      {"id": "c2", "label": "cache",          "x": 12, "y": 32, "tone": "visited"},
+      {"id": "c3", "label": "alerts",         "x": 12, "y": 48, "tone": "visited"},
+      {"id": "c4", "label": "rollback",       "x": 12, "y": 64, "tone": "visited"},
+      {"id": "requiredSet", "label": "requiredIds", "x": 42, "y": 40, "tone": "current", "badge": "built"},
+      {"id": "a1", "label": "preview [search]", "x": 70, "y": 20, "tone": "frontier"},
+      {"id": "a2", "label": "observability [alerts, rollback]", "x": 70, "y": 42, "tone": "frontier"},
+      {"id": "a3", "label": "experiment [abtest]", "x": 70, "y": 64, "tone": "frontier"},
+      {"id": "result", "label": "cost:0 covered:{}", "x": 92, "y": 42, "tone": "muted"}
     ],
     "edges": [
-      {"from": "t1", "to": "tMap", "tone": "traversed"},
-      {"from": "t2", "to": "tMap", "tone": "traversed"},
-      {"from": "t3", "to": "tMap", "tone": "traversed"}
+      {"from": "c1", "to": "requiredSet", "tone": "traversed"},
+      {"from": "c2", "to": "requiredSet", "tone": "traversed"},
+      {"from": "c3", "to": "requiredSet", "tone": "traversed"},
+      {"from": "c4", "to": "requiredSet", "tone": "traversed"}
     ],
     "facts": [
-      {"name": "step",        "value": "index thresholds into a Map",             "tone": "blue"},
-      {"name": "key format",  "value": "warehouseId + ':' + productId",           "tone": "blue"},
-      {"name": "entries",     "value": "3 composite keys mapped to minQuantity",  "tone": "blue"},
-      {"name": "w:nut",       "value": "no entry — no threshold for this product","tone": "orange"}
+      {"name": "step",    "value": "index required capability IDs into a Set", "tone": "blue"},
+      {"name": "entries", "value": "search, cache, alerts, rollback", "tone": "blue"},
+      {"name": "why Set", "value": "membership check only, no payload lookup needed", "tone": "orange"}
     ],
     "action": "expand",
-    "label": "Index thresholds into a Map. The composite string is the key, minQuantity is the value. wh-west:nut-m6 has no entry and will never appear here."
+    "label": "Build the Set once from the launch plan. After that, every ID inside every automation can be checked in O(1)."
   },
   {
     "nodes": [
-      {"id": "t1", "label": "e:bolt min:400",     "x": 12, "y": 18, "tone": "current"},
-      {"id": "t2", "label": "e:washer min:100",   "x": 12, "y": 40, "tone": "visited"},
-      {"id": "t3", "label": "w:bolt min:200",     "x": 12, "y": 62, "tone": "visited"},
-      {"id": "tMap", "label": "thresholdMap",     "x": 45, "y": 40, "tone": "active"},
-      {"id": "i1", "label": "e:bolt cur:500",     "x": 72, "y": 18, "tone": "current", "badge": "no shortage"},
-      {"id": "i2", "label": "e:washer cur:20",    "x": 72, "y": 38, "tone": "frontier"},
-      {"id": "i3", "label": "w:bolt cur:150",     "x": 72, "y": 58, "tone": "frontier"},
-      {"id": "i4", "label": "w:nut cur:300",      "x": 72, "y": 78, "tone": "frontier"},
-      {"id": "result", "label": "shortages: []",  "x": 92, "y": 48, "tone": "muted"}
+      {"id": "c1", "label": "search",         "x": 12, "y": 16, "tone": "current"},
+      {"id": "c2", "label": "cache",          "x": 12, "y": 32, "tone": "visited"},
+      {"id": "c3", "label": "alerts",         "x": 12, "y": 48, "tone": "visited"},
+      {"id": "c4", "label": "rollback",       "x": 12, "y": 64, "tone": "visited"},
+      {"id": "requiredSet", "label": "requiredIds", "x": 42, "y": 40, "tone": "current"},
+      {"id": "a1", "label": "preview [search]", "x": 70, "y": 20, "tone": "current", "badge": "relevant"},
+      {"id": "a2", "label": "observability [alerts, rollback]", "x": 70, "y": 42, "tone": "frontier"},
+      {"id": "a3", "label": "experiment [abtest]", "x": 70, "y": 64, "tone": "frontier"},
+      {"id": "result", "label": "cost:2 covered:{search}", "x": 92, "y": 42, "tone": "current"}
     ],
     "edges": [
-      {"from": "i1", "to": "tMap", "tone": "active", "label": "min: 400 found"}
+      {"from": "a1", "to": "requiredSet", "tone": "active", "label": "search found"},
+      {"from": "a1", "to": "result", "tone": "active", "label": "+2 cost"}
     ],
     "facts": [
-      {"name": "record",      "value": "wh-east:bolt-m6 · current: 500", "tone": "blue"},
-      {"name": "threshold",   "value": "min: 400",                       "tone": "blue"},
-      {"name": "500 >= 400?", "value": "yes — no shortage",              "tone": "blue"},
-      {"name": "shortages",   "value": "[] (unchanged)",                 "tone": "orange"}
+      {"name": "automation", "value": "auto-preview", "tone": "blue"},
+      {"name": "matches",    "value": "[cap-search]", "tone": "blue"},
+      {"name": "cost",       "value": "add 2 once", "tone": "orange"},
+      {"name": "coverage",   "value": "mark cap-search covered", "tone": "orange"}
     ],
     "action": "visit",
-    "label": "wh-east:bolt-m6 has a threshold. Current stock (500) meets the minimum (400). No shortage — skip this record without writing to the result."
+    "label": "auto-preview intersects the required Set once. That makes it relevant, so its setupCost counts and cap-search enters the covered Set."
   },
   {
     "nodes": [
-      {"id": "t1", "label": "e:bolt min:400",       "x": 12, "y": 18, "tone": "done"},
-      {"id": "t2", "label": "e:washer min:100",     "x": 12, "y": 40, "tone": "current"},
-      {"id": "t3", "label": "w:bolt min:200",       "x": 12, "y": 62, "tone": "visited"},
-      {"id": "tMap", "label": "thresholdMap",       "x": 45, "y": 40, "tone": "active"},
-      {"id": "i1", "label": "e:bolt cur:500",       "x": 72, "y": 18, "tone": "done"},
-      {"id": "i2", "label": "e:washer cur:20",      "x": 72, "y": 38, "tone": "current", "badge": "shortage"},
-      {"id": "i3", "label": "w:bolt cur:150",       "x": 72, "y": 58, "tone": "frontier"},
-      {"id": "i4", "label": "w:nut cur:300",        "x": 72, "y": 78, "tone": "frontier"},
-      {"id": "result", "label": "shortages: [1]",   "x": 92, "y": 48, "tone": "current"}
+      {"id": "c1", "label": "search",         "x": 12, "y": 16, "tone": "done"},
+      {"id": "c2", "label": "cache",          "x": 12, "y": 32, "tone": "visited"},
+      {"id": "c3", "label": "alerts",         "x": 12, "y": 48, "tone": "current"},
+      {"id": "c4", "label": "rollback",       "x": 12, "y": 64, "tone": "current"},
+      {"id": "requiredSet", "label": "requiredIds", "x": 42, "y": 40, "tone": "current"},
+      {"id": "a1", "label": "preview [search]", "x": 70, "y": 20, "tone": "done"},
+      {"id": "a2", "label": "observability [alerts, rollback]", "x": 70, "y": 42, "tone": "current", "badge": "relevant"},
+      {"id": "a3", "label": "experiment [abtest]", "x": 70, "y": 64, "tone": "frontier"},
+      {"id": "result", "label": "cost:6 covered:{search,alerts,rollback}", "x": 92, "y": 42, "tone": "current"}
     ],
     "edges": [
-      {"from": "i2", "to": "tMap",   "tone": "active", "label": "min: 100 found"},
-      {"from": "i2", "to": "result", "tone": "active", "label": "shortage: 80"}
+      {"from": "a2", "to": "requiredSet", "tone": "active", "label": "alerts + rollback found"},
+      {"from": "a2", "to": "result", "tone": "active", "label": "+4 cost"}
     ],
     "facts": [
-      {"name": "record",     "value": "wh-east:washer-10mm · current: 20", "tone": "blue"},
-      {"name": "threshold",  "value": "min: 100",                          "tone": "blue"},
-      {"name": "20 >= 100?", "value": "no — shortage of 80",              "tone": "orange"},
-      {"name": "shortages",  "value": "1 record added",                   "tone": "orange"}
+      {"name": "automation", "value": "auto-observability", "tone": "blue"},
+      {"name": "matches",    "value": "[cap-alerts, cap-rollback]", "tone": "blue"},
+      {"name": "cost",       "value": "add 4 once, not twice", "tone": "orange"},
+      {"name": "coverage",   "value": "mark two IDs covered", "tone": "orange"}
     ],
     "action": "visit",
-    "label": "wh-east:washer-10mm falls below its minimum. shortage = 100 - 20 = 80. Emit a shortage record and continue."
+    "label": "auto-observability matches two required IDs. Its cost is still added once because relevance is per automation, while coverage grows by both matched IDs."
   },
   {
     "nodes": [
-      {"id": "t1", "label": "e:bolt min:400",       "x": 12, "y": 18, "tone": "done"},
-      {"id": "t2", "label": "e:washer min:100",     "x": 12, "y": 40, "tone": "done"},
-      {"id": "t3", "label": "w:bolt min:200",       "x": 12, "y": 62, "tone": "current"},
-      {"id": "tMap", "label": "thresholdMap",       "x": 45, "y": 40, "tone": "active"},
-      {"id": "i1", "label": "e:bolt cur:500",       "x": 72, "y": 18, "tone": "done"},
-      {"id": "i2", "label": "e:washer cur:20",      "x": 72, "y": 38, "tone": "done"},
-      {"id": "i3", "label": "w:bolt cur:150",       "x": 72, "y": 58, "tone": "current", "badge": "shortage"},
-      {"id": "i4", "label": "w:nut cur:300",        "x": 72, "y": 78, "tone": "frontier"},
-      {"id": "result", "label": "shortages: [2]",   "x": 92, "y": 48, "tone": "current"}
+      {"id": "c1", "label": "search",         "x": 12, "y": 16, "tone": "done"},
+      {"id": "c2", "label": "cache",          "x": 12, "y": 32, "tone": "frontier"},
+      {"id": "c3", "label": "alerts",         "x": 12, "y": 48, "tone": "done"},
+      {"id": "c4", "label": "rollback",       "x": 12, "y": 64, "tone": "done"},
+      {"id": "requiredSet", "label": "requiredIds", "x": 42, "y": 40, "tone": "current"},
+      {"id": "a1", "label": "preview [search]", "x": 70, "y": 20, "tone": "done"},
+      {"id": "a2", "label": "observability [alerts, rollback]", "x": 70, "y": 42, "tone": "done"},
+      {"id": "a3", "label": "experiment [abtest]", "x": 70, "y": 64, "tone": "current", "badge": "irrelevant"},
+      {"id": "result", "label": "cost:6 covered:{search,alerts,rollback}", "x": 92, "y": 42, "tone": "muted"}
     ],
     "edges": [
-      {"from": "i3", "to": "tMap",   "tone": "active", "label": "min: 200 found"},
-      {"from": "i3", "to": "result", "tone": "active", "label": "shortage: 50"}
+      {"from": "a3", "to": "requiredSet", "tone": "queued", "label": "abtest not found"}
     ],
     "facts": [
-      {"name": "record",      "value": "wh-west:bolt-m6 · current: 150", "tone": "blue"},
-      {"name": "threshold",   "value": "min: 200",                       "tone": "blue"},
-      {"name": "150 >= 200?", "value": "no — shortage of 50",            "tone": "orange"},
-      {"name": "shortages",   "value": "2 records total",                "tone": "orange"}
+      {"name": "automation", "value": "auto-experiment", "tone": "blue"},
+      {"name": "matches",    "value": "[]", "tone": "orange"},
+      {"name": "cost",       "value": "skip, no relevant capability", "tone": "orange"},
+      {"name": "coverage",   "value": "unchanged", "tone": "blue"}
     ],
     "action": "visit",
-    "label": "wh-west:bolt-m6 also falls short. shortage = 200 - 150 = 50. Emit a second record."
+    "label": "auto-experiment never intersects the required Set. That makes it irrelevant, so it contributes neither cost nor coverage."
   },
   {
     "nodes": [
-      {"id": "t1", "label": "e:bolt min:400",       "x": 12, "y": 18, "tone": "done"},
-      {"id": "t2", "label": "e:washer min:100",     "x": 12, "y": 40, "tone": "done"},
-      {"id": "t3", "label": "w:bolt min:200",       "x": 12, "y": 62, "tone": "done"},
-      {"id": "tMap", "label": "thresholdMap",       "x": 45, "y": 40, "tone": "active"},
-      {"id": "i1", "label": "e:bolt cur:500",       "x": 72, "y": 18, "tone": "done"},
-      {"id": "i2", "label": "e:washer cur:20",      "x": 72, "y": 38, "tone": "done"},
-      {"id": "i3", "label": "w:bolt cur:150",       "x": 72, "y": 58, "tone": "done"},
-      {"id": "i4", "label": "w:nut cur:300",        "x": 72, "y": 78, "tone": "current", "badge": "no threshold"},
-      {"id": "result", "label": "shortages: [2]",   "x": 92, "y": 48, "tone": "muted"}
-    ],
-    "edges": [
-      {"from": "i4", "to": "tMap", "tone": "queued", "label": "no entry found"}
-    ],
-    "facts": [
-      {"name": "record",    "value": "wh-west:nut-m6 · current: 300",  "tone": "blue"},
-      {"name": "threshold", "value": "no entry in Map",                 "tone": "orange"},
-      {"name": "action",    "value": "skip — no minimum requirement",   "tone": "orange"},
-      {"name": "shortages", "value": "2 records (unchanged)",           "tone": "blue"}
-    ],
-    "action": "visit",
-    "label": "wh-west:nut-m6 has no threshold entry. No minimum stock requirement exists for this product at this location. Skip without emitting anything."
-  },
-  {
-    "nodes": [
-      {"id": "t1", "label": "e:bolt min:400",       "x": 12, "y": 18, "tone": "done"},
-      {"id": "t2", "label": "e:washer min:100",     "x": 12, "y": 40, "tone": "done"},
-      {"id": "t3", "label": "w:bolt min:200",       "x": 12, "y": 62, "tone": "done"},
-      {"id": "tMap", "label": "thresholdMap",       "x": 45, "y": 40, "tone": "done"},
-      {"id": "i1", "label": "e:bolt cur:500",       "x": 72, "y": 18, "tone": "done"},
-      {"id": "i2", "label": "e:washer cur:20",      "x": 72, "y": 38, "tone": "done"},
-      {"id": "i3", "label": "w:bolt cur:150",       "x": 72, "y": 58, "tone": "done"},
-      {"id": "i4", "label": "w:nut cur:300",        "x": 72, "y": 78, "tone": "muted"},
-      {"id": "result", "label": "shortages: [2]",   "x": 92, "y": 48, "tone": "done"}
+      {"id": "c1", "label": "search",         "x": 12, "y": 16, "tone": "done"},
+      {"id": "c2", "label": "cache",          "x": 12, "y": 32, "tone": "current", "badge": "uncovered"},
+      {"id": "c3", "label": "alerts",         "x": 12, "y": 48, "tone": "done"},
+      {"id": "c4", "label": "rollback",       "x": 12, "y": 64, "tone": "done"},
+      {"id": "requiredSet", "label": "requiredIds", "x": 42, "y": 40, "tone": "done"},
+      {"id": "a1", "label": "preview [search]", "x": 70, "y": 20, "tone": "done"},
+      {"id": "a2", "label": "observability [alerts, rollback]", "x": 70, "y": 42, "tone": "done"},
+      {"id": "a3", "label": "experiment [abtest]", "x": 70, "y": 64, "tone": "done"},
+      {"id": "result", "label": "cost:6 coverage:75%", "x": 92, "y": 42, "tone": "done"}
     ],
     "edges": [],
     "facts": [
-      {"name": "shortages",         "value": "2 records",                                  "tone": "orange"},
-      {"name": "wh-east:washer",    "value": "shortage: 80",                               "tone": "orange"},
-      {"name": "wh-west:bolt",      "value": "shortage: 50",                               "tone": "orange"},
-      {"name": "skipped (2)",       "value": "sufficient stock · no threshold",             "tone": "blue"}
+      {"name": "relevant automations", "value": "2 of 3", "tone": "orange"},
+      {"name": "totalCost",            "value": "2 + 4 = 6", "tone": "orange"},
+      {"name": "covered IDs",          "value": "search, alerts, rollback = 3 of 4", "tone": "orange"},
+      {"name": "missing",              "value": "cap-cache was never covered", "tone": "blue"}
     ],
     "action": "done",
-    "label": "Walk complete. Two shortages found. Two records were skipped — one for sufficient stock, one for no threshold. Both skips happened before any write to the result array."
+    "label": "Walk complete. Two relevant automations contributed cost. Three of the four required capabilities were covered, so coverage is 75%."
   }
 ]
 :::
@@ -339,13 +373,13 @@ The trace below steps through every inventory record against the threshold Map b
 
 The trace maps directly to code shape. Three things you decided before writing the loop:
 
-**Thresholds go in a Map.** The key is the composite string `warehouseId + ':' + productId`. The value is `minQuantity`. Built once, O(m).
+**Required launch capabilities go in a Set.** You only need membership checks, so a `Set<string>` is the right index. Built once, O(m).
 
-**Inventory gets walked.** One iteration per record, each resolved in O(1).
+**Automations get walked.** For each automation, inspect its nested `capabilityIds` array and keep only the IDs that exist in the required Set.
 
-**Two skip conditions, in order.** Guard 1: no threshold entry — skip immediately. Guard 2: current quantity is sufficient — skip without emitting. Only records that clear both guards reach the emit step.
+**Cost and coverage accumulate differently.** If an automation has no relevant IDs, skip it. Otherwise add its cost once, then add each matched ID into a covered Set. The final percentage comes from `coveredIds.size / launchPlan.capabilities.length`.
 
-The loop has two guard clauses at the top and one push at the bottom. That structure was visible in the trace before a single line of code was written. When you can enumerate what happens at each step before you start, the implementation becomes a transcription, not a discovery.
+The loop has one guard clause for irrelevant automations, one numeric accumulator, and one Set accumulator. That structure was visible in the trace before a single line of code was written. When you can separate "is this record relevant?" from "what do I accumulate if it is?", the implementation becomes a transcription, not a discovery.
 
 ## Building Blocks: Progressive Learning
 

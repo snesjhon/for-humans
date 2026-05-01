@@ -63,7 +63,23 @@ const VW = 500;
 const VH = 340;
 const CX = VW / 2;
 const CY = VH / 2;
-const NR = 20; // node radius in SVG units
+const NODE_HEIGHT = 40;
+const NODE_MIN_WIDTH = 40;
+const NODE_MAX_WIDTH = 156;
+const NODE_FONT_MAX = 12;
+const NODE_FONT_MIN = 8.5;
+const EDGE_LABEL_MAX_WIDTH = 104;
+const EDGE_LABEL_FONT_MAX = 9;
+const EDGE_LABEL_FONT_MIN = 8;
+
+type NodeMetrics = {
+  width: number;
+  height: number;
+  fontSize: number;
+  idFontSize: number;
+  badgeWidth: number;
+  lines: string[];
+};
 
 function circlePositions(ids: string[]): Map<string, { x: number; y: number }> {
   const n = ids.length;
@@ -80,7 +96,22 @@ function circlePositions(ids: string[]): Map<string, { x: number; y: number }> {
 
 function resolvePositions(nodes: GraphTraceNode[]): Map<string, { x: number; y: number }> {
   if (nodes.every((n) => n.x != null && n.y != null)) {
-    return new Map(nodes.map((n) => [n.id, { x: (n.x! / 100) * VW, y: (n.y! / 100) * VH }]));
+    return new Map(
+      nodes.map((n) => {
+        const rawX = (n.x! / 100) * VW;
+        const rawY = (n.y! / 100) * VH;
+        const spreadX = CX + (rawX - CX) * 1.12;
+        const spreadY = CY + (rawY - CY) * 1.08;
+
+        return [
+          n.id,
+          {
+            x: clamp(spreadX, 34, VW - 34),
+            y: clamp(spreadY, 30, VH - 30),
+          },
+        ];
+      }),
+    );
   }
   return circlePositions(nodes.map((n) => n.id));
 }
@@ -105,14 +136,101 @@ const NODE_COLOR: Record<GraphNodeTone, { fill: string; stroke: string; text: st
   muted:    { fill: 'var(--ms-bg-pane-secondary)', stroke: 'var(--ms-surface)',  text: 'var(--ms-text-faint)'   },
 };
 
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, value));
+}
+
+function estimateTextWidth(value: string, fontSize: number): number {
+  return value.length * fontSize * 0.62;
+}
+
+function getNodeLines(label: string): string[] {
+  if (label.length <= 16) return [label];
+
+  const candidates = Array.from(
+    label.matchAll(/ \[| |-|_/g),
+    (match) => match.index ?? -1,
+  ).filter((index) => index > 2 && index < label.length - 2);
+
+  if (candidates.length === 0) return [label];
+
+  const midpoint = label.length / 2;
+  const splitIndex = candidates.reduce((best, index) =>
+    Math.abs(index - midpoint) < Math.abs(best - midpoint) ? index : best,
+  );
+
+  const left = label.slice(0, splitIndex).trim();
+  const right = label.slice(splitIndex).trim();
+
+  if (!left || !right) return [label];
+  return [left, right];
+}
+
+function getNodeMetrics(node: GraphTraceNode): NodeMetrics {
+  const lines = getNodeLines(node.label);
+  const longestLine = lines.reduce(
+    (max, line) => Math.max(max, estimateTextWidth(line, NODE_FONT_MAX)),
+    0,
+  );
+  const rawWidth = longestLine + 14;
+  const width = clamp(rawWidth, NODE_MIN_WIDTH, NODE_MAX_WIDTH);
+  const shrinkRatio =
+    rawWidth <= width ? 1 : clamp(width / rawWidth, NODE_FONT_MIN / NODE_FONT_MAX, 1);
+  const fontSize = clamp(NODE_FONT_MAX * shrinkRatio, NODE_FONT_MIN, NODE_FONT_MAX);
+  const idFontSize = node.id !== node.label ? clamp(fontSize - 3, 8, 10) : 0;
+  const badgeWidth = node.badge
+    ? Math.max(28, estimateTextWidth(node.badge, 8) + 12)
+    : 0;
+
+  return {
+    width,
+    height: lines.length > 1 ? NODE_HEIGHT + 10 : NODE_HEIGHT,
+    fontSize,
+    idFontSize,
+    badgeWidth,
+    lines,
+  };
+}
+
+function getEdgeLabelMetrics(label: string) {
+  const rawWidth = estimateTextWidth(label, EDGE_LABEL_FONT_MAX);
+  const shrinkRatio =
+    rawWidth <= EDGE_LABEL_MAX_WIDTH
+      ? 1
+      : clamp(EDGE_LABEL_MAX_WIDTH / rawWidth, EDGE_LABEL_FONT_MIN / EDGE_LABEL_FONT_MAX, 1);
+
+  return {
+    fontSize: clamp(EDGE_LABEL_FONT_MAX * shrinkRatio, EDGE_LABEL_FONT_MIN, EDGE_LABEL_FONT_MAX),
+    width: Math.min(rawWidth, EDGE_LABEL_MAX_WIDTH),
+  };
+}
+
+function pointOnNodeBoundary(
+  from: { x: number; y: number },
+  to: { x: number; y: number },
+  metrics: NodeMetrics,
+) {
+  const dx = to.x - from.x;
+  const dy = to.y - from.y;
+  const len = Math.hypot(dx, dy) || 1;
+  const rx = metrics.width / 2;
+  const ry = metrics.height / 2;
+  const scale = 1 / Math.sqrt((dx * dx) / (rx * rx) + (dy * dy) / (ry * ry));
+
+  return {
+    x: from.x + (dx / len) * len * scale,
+    y: from.y + (dy / len) * len * scale,
+  };
+}
+
 function arrowHead(fx: number, fy: number, tx: number, ty: number): string {
   const dx = tx - fx;
   const dy = ty - fy;
   const len = Math.hypot(dx, dy) || 1;
   const ux = dx / len;
   const uy = dy / len;
-  const tipX = tx - ux * NR;
-  const tipY = ty - uy * NR;
+  const tipX = tx;
+  const tipY = ty;
   const bx = tipX - ux * 9;
   const by = tipY - uy * 9;
   return `${tipX},${tipY} ${bx - uy * 4},${by + ux * 4} ${bx + uy * 4},${by - ux * 4}`;
@@ -139,6 +257,9 @@ export default function GraphTrace({ steps }: { steps: GraphTraceStep[] }) {
 
   // Stable layout derived from first step — use explicit x/y when provided
   const positions = resolvePositions(steps[0].nodes);
+  const nodeMetrics = new Map(
+    steps[0].nodes.map((node) => [node.id, getNodeMetrics(node)]),
+  );
 
   return (
     <div className={shared.root}>
@@ -193,23 +314,23 @@ export default function GraphTrace({ steps }: { steps: GraphTraceStep[] }) {
               const from = positions.get(edge.from);
               const to = positions.get(edge.to);
               if (!from || !to) return null;
+              const fromMetrics = nodeMetrics.get(edge.from);
+              const toMetrics = nodeMetrics.get(edge.to);
+              if (!fromMetrics || !toMetrics) return null;
               const tone = edge.tone ?? 'default';
               const color = EDGE_COLOR[tone];
               const isMuted = tone === 'muted';
-
-              const dx = to.x - from.x;
-              const dy = to.y - from.y;
-              const len = Math.hypot(dx, dy) || 1;
-              const ux = dx / len;
-              const uy = dy / len;
+              const start = pointOnNodeBoundary(from, to, fromMetrics);
+              const end = pointOnNodeBoundary(to, from, toMetrics);
+              const labelMetrics = edge.label ? getEdgeLabelMetrics(edge.label) : null;
 
               return (
                 <g key={`${edge.from}-${edge.to}-${i}`}>
                   <line
-                    x1={from.x + ux * NR}
-                    y1={from.y + uy * NR}
-                    x2={to.x - ux * NR}
-                    y2={to.y - uy * NR}
+                    x1={start.x}
+                    y1={start.y}
+                    x2={end.x}
+                    y2={end.y}
                     stroke={color}
                     strokeWidth={tone === 'active' ? 2.5 : 1.5}
                     strokeDasharray={isMuted ? '6 4' : undefined}
@@ -217,20 +338,32 @@ export default function GraphTrace({ steps }: { steps: GraphTraceStep[] }) {
                   />
                   {edge.directed && (
                     <polygon
-                      points={arrowHead(from.x, from.y, to.x, to.y)}
+                      points={arrowHead(start.x, start.y, end.x, end.y)}
                       fill={color}
                       opacity={isMuted ? 0.4 : 1}
                     />
                   )}
-                  {edge.label && (
-                    <text
-                      x={(from.x + to.x) / 2}
-                      y={(from.y + to.y) / 2 - 7}
-                      textAnchor="middle"
-                      className={styles.edgeLabel}
-                    >
-                      {edge.label}
-                    </text>
+                  {edge.label && labelMetrics && (
+                    <g>
+                      <rect
+                        x={(start.x + end.x) / 2 - labelMetrics.width / 2 - 5}
+                        y={(start.y + end.y) / 2 - 16}
+                        width={labelMetrics.width + 10}
+                        height={16}
+                        rx={8}
+                        className={styles.edgeLabelBg}
+                      />
+                      <text
+                        x={(start.x + end.x) / 2}
+                        y={(start.y + end.y) / 2 - 8}
+                        textAnchor="middle"
+                        dominantBaseline="central"
+                        className={styles.edgeLabel}
+                        style={{ fontSize: `${labelMetrics.fontSize}px` }}
+                      >
+                        {edge.label}
+                      </text>
+                    </g>
                   )}
                 </g>
               );
@@ -240,43 +373,70 @@ export default function GraphTrace({ steps }: { steps: GraphTraceStep[] }) {
             {step.nodes.map((node) => {
               const pos = positions.get(node.id);
               if (!pos) return null;
+              const metrics = nodeMetrics.get(node.id) ?? getNodeMetrics(node);
               const tone = node.tone ?? 'default';
               const { fill, stroke, text } = NODE_COLOR[tone];
               const isMuted = tone === 'muted';
               const showId = node.id !== node.label;
-              const bw = node.badge ? Math.max(28, node.badge.length * 5.5 + 12) : 0;
+              const isCircle = metrics.width <= NODE_MIN_WIDTH;
 
               return (
                 <g key={node.id} opacity={isMuted ? 0.45 : 1}>
-                  <circle
-                    cx={pos.x}
-                    cy={pos.y}
-                    r={NR}
-                    fill={fill}
-                    stroke={stroke}
-                    strokeWidth={2}
-                  />
+                  {isCircle ? (
+                    <circle
+                      cx={pos.x}
+                      cy={pos.y}
+                      r={NODE_HEIGHT / 2}
+                      fill={fill}
+                      stroke={stroke}
+                      strokeWidth={2}
+                    />
+                  ) : (
+                    <rect
+                      x={pos.x - metrics.width / 2}
+                      y={pos.y - metrics.height / 2}
+                      width={metrics.width}
+                      height={metrics.height}
+                      rx={metrics.height / 2}
+                      fill={fill}
+                      stroke={stroke}
+                      strokeWidth={2}
+                    />
+                  )}
                   <text
                     x={pos.x}
                     y={pos.y}
                     textAnchor="middle"
-                    dominantBaseline="central"
-                    fontSize={13}
+                    fontSize={metrics.fontSize}
                     fontWeight={700}
                     fontFamily="ui-monospace, 'SF Mono', Menlo, monospace"
                     fill={text}
                   >
-                    {node.label}
+                    {metrics.lines.length === 1 ? (
+                      <tspan x={pos.x} dy="0.35em">
+                        {metrics.lines[0]}
+                      </tspan>
+                    ) : (
+                      metrics.lines.map((line, lineIndex) => (
+                        <tspan
+                          key={`${node.id}-${lineIndex}`}
+                          x={pos.x}
+                          dy={lineIndex === 0 ? '-0.2em' : '1.2em'}
+                        >
+                          {line}
+                        </tspan>
+                      ))
+                    )}
                   </text>
 
                   {/* ID below node (only when different from label) */}
                   {showId && (
                     <text
                       x={pos.x}
-                      y={pos.y + NR + 11}
+                      y={pos.y + metrics.height / 2 + 10}
                       textAnchor="middle"
                       dominantBaseline="central"
-                      fontSize={9}
+                      fontSize={metrics.idFontSize}
                       fontFamily="ui-monospace, 'SF Mono', Menlo, monospace"
                       fill="var(--ms-text-faint)"
                     >
@@ -288,9 +448,9 @@ export default function GraphTrace({ steps }: { steps: GraphTraceStep[] }) {
                   {node.badge && (
                     <>
                       <rect
-                        x={pos.x - bw / 2}
-                        y={pos.y - NR - 17}
-                        width={bw}
+                        x={pos.x - metrics.badgeWidth / 2}
+                        y={pos.y - metrics.height / 2 - 17}
+                        width={metrics.badgeWidth}
                         height={13}
                         rx={6.5}
                         fill="var(--ms-bg-pane-secondary)"
@@ -299,7 +459,7 @@ export default function GraphTrace({ steps }: { steps: GraphTraceStep[] }) {
                       />
                       <text
                         x={pos.x}
-                        y={pos.y - NR - 10.5}
+                        y={pos.y - metrics.height / 2 - 10.5}
                         textAnchor="middle"
                         dominantBaseline="central"
                         fontSize={8}

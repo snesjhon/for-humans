@@ -19,6 +19,12 @@
   font-size: 10px;
 }
 
+.edgeLabelBg {
+  fill: color-mix(in srgb, var(--ms-bg-pane) 92%, transparent);
+  stroke: var(--ms-surface);
+  stroke-width: 1px;
+}
+
 
 .facts {
   display: flex;
