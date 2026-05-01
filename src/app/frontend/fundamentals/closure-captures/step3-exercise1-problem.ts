@@ -4,8 +4,7 @@
 import { renderHook, act } from '@testing-library/react';
 import { useEffect } from 'react';
 
-// Backpack goal: keep one interval running, but let each tick read the latest
-// callback note.
+// Goal: keep one interval running, but let each tick read the latest callback.
 function useStableInterval(
   onTick: () => void,
   delay: number,
@@ -18,6 +17,7 @@ function useStableInterval(
   }, [delay, onStart]);
 }
 
+// ---Tests
 test('stable interval starts once and calls the latest callback', () => {
   jest.useFakeTimers();
   const starts = jest.fn();
@@ -39,3 +39,4 @@ test('stable interval starts once and calls the latest callback', () => {
   expect(oldTick).not.toHaveBeenCalled();
   expect(newTick).toHaveBeenCalledTimes(1);
 });
+// ---End Tests

@@ -1,0 +1,648 @@
+{
+  "source": "https://www.greatfrontend.com/questions/react-interview-questions",
+  "section": "React Interview Playbook",
+  "total_listed_on_site": 91,
+  "questions_captured": 80,
+  "questions": [
+    {
+      "id": 1,
+      "title": "Counter",
+      "description": "Build a simple counter that increments whenever a button is clicked",
+      "format": "UI coding",
+      "difficulty": "Easy",
+      "premium": false
+    },
+    {
+      "id": 2,
+      "title": "Todo List",
+      "description": "Build a Todo list that lets users add new tasks and delete existing tasks",
+      "format": "UI coding",
+      "difficulty": "Medium",
+      "premium": false
+    },
+    {
+      "id": 3,
+      "title": "useQuery",
+      "description": "Implement a hook that manages a promise resolution",
+      "format": "JS functions",
+      "difficulty": "Medium",
+      "premium": false
+    },
+    {
+      "id": 4,
+      "title": "Job Board",
+      "description": "Build a job board that displays the latest job postings from Hacker News",
+      "format": "UI coding",
+      "difficulty": "Medium",
+      "premium": false
+    },
+    {
+      "id": 5,
+      "title": "Contact Form",
+      "description": "Build a contact form which submits user feedback and contact details to a back end API",
+      "format": "UI coding",
+      "difficulty": "Easy",
+      "premium": false
+    },
+    {
+      "id": 6,
+      "title": "useBoolean",
+      "description": "Implement a hook that manages a boolean state, with additional convenience utility methods",
+      "format": "JS functions",
+      "difficulty": "Easy",
+      "premium": false
+    },
+    {
+      "id": 7,
+      "title": "useDefault",
+      "description": "Implement a hook that returns the default value when state is null or undefined",
+      "format": "JS functions",
+      "difficulty": "Easy",
+      "premium": true
+    },
+    {
+      "id": 8,
+      "title": "Tabs",
+      "description": "Build a tabs component that displays a list of tab elements and one associated panel of content at a time",
+      "format": "UI coding",
+      "difficulty": "Medium",
+      "premium": false
+    },
+    {
+      "id": 9,
+      "title": "Tabs II",
+      "description": "Build a semi-accessible tabs component that has the right ARIA roles, states, and properties",
+      "format": "UI coding",
+      "difficulty": "Medium",
+      "premium": true
+    },
+    {
+      "id": 10,
+      "title": "Tabs III",
+      "description": "Build a fully accessible tabs component that has keyboard support according to ARIA specifications",
+      "format": "UI coding",
+      "difficulty": "Medium",
+      "premium": true
+    },
+    {
+      "id": 11,
+      "title": "Accordion",
+      "description": "Build an accordion component that displays a list of vertically stacked sections with each containing a title and content snippet",
+      "format": "UI coding",
+      "difficulty": "Easy",
+      "premium": false
+    },
+    {
+      "id": 12,
+      "title": "Accordion II",
+      "description": "Build an accessible accordion component that has the right ARIA roles, states, and properties",
+      "format": "UI coding",
+      "difficulty": "Medium",
+      "premium": true
+    },
+    {
+      "id": 13,
+      "title": "Accordion III",
+      "description": "Build a fully accessible accordion component that has keyboard support according to ARIA specifications",
+      "format": "UI coding",
+      "difficulty": "Medium",
+      "premium": true
+    },
+    {
+      "id": 14,
+      "title": "useArray",
+      "description": "Implement a hook that manages an array of items",
+      "format": "JS functions",
+      "difficulty": "Medium",
+      "premium": false
+    },
+    {
+      "id": 15,
+      "title": "useCounter",
+      "description": "Implement a hook that manages a counter state, with some additional convenience utility methods",
+      "format": "JS functions",
+      "difficulty": "Easy",
+      "premium": false
+    },
+    {
+      "id": 16,
+      "title": "useCounter II",
+      "description": "Implement an optimized version of the useCounter hook",
+      "format": "JS functions",
+      "difficulty": "Easy",
+      "premium": false
+    },
+    {
+      "id": 17,
+      "title": "Holy Grail",
+      "description": "Build the famous holy grail layout consisting of a header, 3 columns, and a footer",
+      "format": "UI coding",
+      "difficulty": "Easy",
+      "premium": false
+    },
+    {
+      "id": 18,
+      "title": "useCycle",
+      "description": "Implement a hook that cycles through a sequence of values",
+      "format": "JS functions",
+      "difficulty": "Easy",
+      "premium": false
+    },
+    {
+      "id": 19,
+      "title": "Progress Bars",
+      "description": "Build a list of progress bars that fill up gradually when they are added to the page",
+      "format": "UI coding",
+      "difficulty": "Easy",
+      "premium": false
+    },
+    {
+      "id": 20,
+      "title": "useStateWithReset",
+      "description": "Implement a hook that's similar to useState but with an additional reset function that resets the state to its initial value",
+      "format": "JS functions",
+      "difficulty": "Easy",
+      "premium": true
+    },
+    {
+      "id": 21,
+      "title": "useMap",
+      "description": "Implement a hook that manages a JavaScript map",
+      "format": "JS functions",
+      "difficulty": "Medium",
+      "premium": true
+    },
+    {
+      "id": 22,
+      "title": "Star Rating",
+      "description": "Build a star rating component that shows a row of star icons for users to select the number of filled stars corresponding to the rating",
+      "format": "UI coding",
+      "difficulty": "Medium",
+      "premium": false
+    },
+    {
+      "id": 23,
+      "title": "Stopwatch",
+      "description": "Build a stopwatch widget that can measure how much time has passed",
+      "format": "UI coding",
+      "difficulty": "Medium",
+      "premium": false
+    },
+    {
+      "id": 24,
+      "title": "Like Button",
+      "description": "Build a Like button that changes appearance based on its state",
+      "format": "UI coding",
+      "difficulty": "Medium",
+      "premium": false
+    },
+    {
+      "id": 25,
+      "title": "Image Carousel",
+      "description": "Build an image carousel that displays a sequence of images",
+      "format": "UI coding",
+      "difficulty": "Medium",
+      "premium": false
+    },
+    {
+      "id": 26,
+      "title": "Image Carousel II",
+      "description": "Build an image carousel that smoothly transitions between images",
+      "format": "UI coding",
+      "difficulty": "Medium",
+      "premium": true
+    },
+    {
+      "id": 27,
+      "title": "Image Carousel III",
+      "description": "Build an image carousel that smoothly transitions between images and has a minimal DOM footprint",
+      "format": "UI coding",
+      "difficulty": "Hard",
+      "premium": true
+    },
+    {
+      "id": 28,
+      "title": "Traffic Light",
+      "description": "Build a traffic light where the lights switch from green to yellow to red after predetermined intervals and loop indefinitely",
+      "format": "UI coding",
+      "difficulty": "Medium",
+      "premium": false
+    },
+    {
+      "id": 29,
+      "title": "Digital Clock",
+      "description": "Build a 7-segment digital clock that shows the current time",
+      "format": "UI coding",
+      "difficulty": "Medium",
+      "premium": false
+    },
+    {
+      "id": 30,
+      "title": "useTimeout",
+      "description": "Implement a hook that invokes a callback function after a specified delay",
+      "format": "JS functions",
+      "difficulty": "Medium",
+      "premium": false
+    },
+    {
+      "id": 31,
+      "title": "useCountdown",
+      "description": "Implement a hook that manages a countdown",
+      "format": "JS functions",
+      "difficulty": "Medium",
+      "premium": true
+    },
+    {
+      "id": 32,
+      "title": "File Explorer",
+      "description": "Build a file explorer component to navigate files and directories in a tree-like hierarchical viewer",
+      "format": "UI coding",
+      "difficulty": "Medium",
+      "premium": false
+    },
+    {
+      "id": 33,
+      "title": "Tic-tac-toe",
+      "description": "Build a tic-tac-toe game that is playable by two players",
+      "format": "UI coding",
+      "difficulty": "Medium",
+      "premium": false
+    },
+    {
+      "id": 34,
+      "title": "Tic-tac-toe II",
+      "description": "Build an N x N tic-tac-toe game that requires M consecutive marks to win",
+      "format": "UI coding",
+      "difficulty": "Hard",
+      "premium": true
+    },
+    {
+      "id": 35,
+      "title": "Transfer List",
+      "description": "Build a component that allows transferring items between two lists",
+      "format": "UI coding",
+      "difficulty": "Medium",
+      "premium": false
+    },
+    {
+      "id": 36,
+      "title": "Transfer List II",
+      "description": "Build a component that allows transferring items between two lists, bulk selection/unselection of items, and adding new items",
+      "format": "UI coding",
+      "difficulty": "Hard",
+      "premium": true
+    },
+    {
+      "id": 37,
+      "title": "Nested Checkboxes",
+      "description": "Build a nested checkboxes component with parent-child selection logic",
+      "format": "UI coding",
+      "difficulty": "Hard",
+      "premium": false
+    },
+    {
+      "id": 38,
+      "title": "Modal Dialog",
+      "description": "Build a reusable modal dialog component that can be opened and closed",
+      "format": "UI coding",
+      "difficulty": "Medium",
+      "premium": false
+    },
+    {
+      "id": 39,
+      "title": "Modal Dialog II",
+      "description": "Build a semi-accessible modal dialog component that has the right ARIA roles, states, and properties",
+      "format": "UI coding",
+      "difficulty": "Medium",
+      "premium": true
+    },
+    {
+      "id": 40,
+      "title": "Modal Dialog III",
+      "description": "Build a moderately-accessible modal dialog component that supports common ways to close the dialog",
+      "format": "UI coding",
+      "difficulty": "Medium",
+      "premium": true
+    },
+    {
+      "id": 41,
+      "title": "Modal Dialog IV",
+      "description": "Build a fully-accessible modal dialog component that supports all required keyboard interactions",
+      "format": "UI coding",
+      "difficulty": "Hard",
+      "premium": true
+    },
+    {
+      "id": 42,
+      "title": "Data Table",
+      "description": "Build a users data table with pagination features",
+      "format": "UI coding",
+      "difficulty": "Medium",
+      "premium": false
+    },
+    {
+      "id": 43,
+      "title": "Data Table II",
+      "description": "Build a users data table with sorting features",
+      "format": "UI coding",
+      "difficulty": "Medium",
+      "premium": true
+    },
+    {
+      "id": 44,
+      "title": "Data Table III",
+      "description": "Build a generalized data table with pagination and sorting features",
+      "format": "UI coding",
+      "difficulty": "Hard",
+      "premium": true
+    },
+    {
+      "id": 45,
+      "title": "Undoable Counter",
+      "description": "Build a counter with a history of the values and ability to undo/redo actions",
+      "format": "UI coding",
+      "difficulty": "Medium",
+      "premium": true
+    },
+    {
+      "id": 46,
+      "title": "Connect Four",
+      "description": "Build a game for two players who take turns to drop colored discs from the top into a vertically suspended board/grid",
+      "format": "UI coding",
+      "difficulty": "Medium",
+      "premium": true
+    },
+    {
+      "id": 47,
+      "title": "Users Database",
+      "description": "Build a UI to filter, create, update, and delete users",
+      "format": "UI coding",
+      "difficulty": "Medium",
+      "premium": true
+    },
+    {
+      "id": 48,
+      "title": "Whack-A-Mole",
+      "description": "Build a popular arcade game where players attempt to hit moles as they pop up from holes in a board",
+      "format": "UI coding",
+      "difficulty": "Medium",
+      "premium": true
+    },
+    {
+      "id": 49,
+      "title": "Memory Game",
+      "description": "Build a memory game where the player needs to match pairs of cards",
+      "format": "UI coding",
+      "difficulty": "Medium",
+      "premium": true
+    },
+    {
+      "id": 50,
+      "title": "Selectable Cells",
+      "description": "Build an interface where users can drag to select multiple cells within a grid",
+      "format": "UI coding",
+      "difficulty": "Hard",
+      "premium": true
+    },
+    {
+      "id": 51,
+      "title": "Wordle",
+      "description": "Build Wordle, the word-guessing game that took the world by storm",
+      "format": "UI coding",
+      "difficulty": "Hard",
+      "premium": true
+    },
+    {
+      "id": 52,
+      "title": "useBoolean II",
+      "description": "Implement an optimized version of the useBoolean hook",
+      "format": "JS functions",
+      "difficulty": "Easy",
+      "premium": true
+    },
+    {
+      "id": 53,
+      "title": "useClickAnywhere",
+      "description": "Implement a hook that handles click events anywhere in the window",
+      "format": "JS functions",
+      "difficulty": "Easy",
+      "premium": false
+    },
+    {
+      "id": 54,
+      "title": "useEffectOnce",
+      "description": "Implement a hook that runs an effect only once",
+      "format": "JS functions",
+      "difficulty": "Easy",
+      "premium": true
+    },
+    {
+      "id": 55,
+      "title": "useFocus",
+      "description": "Implement a hook that enables programmatic focusing of an element",
+      "format": "JS functions",
+      "difficulty": "Easy",
+      "premium": true
+    },
+    {
+      "id": 56,
+      "title": "usePrevious",
+      "description": "Implement a hook that returns the previous value of a state",
+      "format": "JS functions",
+      "difficulty": "Easy",
+      "premium": true
+    },
+    {
+      "id": 57,
+      "title": "useToggle",
+      "description": "Implement a hook that manages a boolean toggle state",
+      "format": "JS functions",
+      "difficulty": "Easy",
+      "premium": true
+    },
+    {
+      "id": 58,
+      "title": "useBreakpoint",
+      "description": "Implement a hook that returns the current breakpoint name based on the current window width",
+      "format": "JS functions",
+      "difficulty": "Medium",
+      "premium": true
+    },
+    {
+      "id": 59,
+      "title": "useClickOutside",
+      "description": "Implement a hook that detects clicks outside of a specified element",
+      "format": "JS functions",
+      "difficulty": "Medium",
+      "premium": true
+    },
+    {
+      "id": 60,
+      "title": "useDebounce",
+      "description": "Implement a hook that debounces a value",
+      "format": "JS functions",
+      "difficulty": "Medium",
+      "premium": false
+    },
+    {
+      "id": 61,
+      "title": "useEventListener",
+      "description": "Implement a hook that subscribes to browser events",
+      "format": "JS functions",
+      "difficulty": "Medium",
+      "premium": true
+    },
+    {
+      "id": 62,
+      "title": "useHover",
+      "description": "Implement a hook that tracks whether an element is being hovered",
+      "format": "JS functions",
+      "difficulty": "Medium",
+      "premium": true
+    },
+    {
+      "id": 63,
+      "title": "useInterval",
+      "description": "Implement a hook that creates an interval that invokes a callback function at a specified delay",
+      "format": "JS functions",
+      "difficulty": "Medium",
+      "premium": true
+    },
+    {
+      "id": 64,
+      "title": "useKeyPress",
+      "description": "Implement a hook that subscribes to keyboard events",
+      "format": "JS functions",
+      "difficulty": "Medium",
+      "premium": true
+    },
+    {
+      "id": 65,
+      "title": "useObject",
+      "description": "Implement a hook that manages an object value",
+      "format": "JS functions",
+      "difficulty": "Medium",
+      "premium": true
+    },
+    {
+      "id": 66,
+      "title": "useSet",
+      "description": "Implement a hook that manages a JavaScript set",
+      "format": "JS functions",
+      "difficulty": "Medium",
+      "premium": false
+    },
+    {
+      "id": 67,
+      "title": "useStep",
+      "description": "Implement a hook that manages a step counter for a multi-step process",
+      "format": "JS functions",
+      "difficulty": "Medium",
+      "premium": true
+    },
+    {
+      "id": 68,
+      "title": "useThrottle",
+      "description": "Implement a hook that throttles a value",
+      "format": "JS functions",
+      "difficulty": "Medium",
+      "premium": true
+    },
+    {
+      "id": 69,
+      "title": "useWindowSize",
+      "description": "Implement a hook that returns the current height and width of the window",
+      "format": "JS functions",
+      "difficulty": "Medium",
+      "premium": false
+    },
+    {
+      "id": 70,
+      "title": "useIdle",
+      "description": "Implement a hook that detects user inactivity",
+      "format": "JS functions",
+      "difficulty": "Medium",
+      "premium": true
+    },
+    {
+      "id": 71,
+      "title": "useInputControl",
+      "description": "Implement a hook that manages a controlled input value and tracks its dirty & touched state",
+      "format": "JS functions",
+      "difficulty": "Medium",
+      "premium": false
+    },
+    {
+      "id": 72,
+      "title": "useMediaQuery",
+      "description": "Implement a hook that subscribes and responds to media query changes (e.g. screen size, resolution, orientation, etc.)",
+      "format": "JS functions",
+      "difficulty": "Medium",
+      "premium": false
+    },
+    {
+      "id": 73,
+      "title": "useMediatedState",
+      "description": "Implement a hook that is similar to useState, but supports a mediation process",
+      "format": "JS functions",
+      "difficulty": "Medium",
+      "premium": false
+    },
+    {
+      "id": 74,
+      "title": "Flight Booker",
+      "description": "Build a component that books a flight for specified dates",
+      "format": "UI coding",
+      "difficulty": "Easy",
+      "premium": true
+    },
+    {
+      "id": 75,
+      "title": "Generate Table",
+      "description": "Generate a table of numbers given the rows and columns",
+      "format": "UI coding",
+      "difficulty": "Easy",
+      "premium": true
+    },
+    {
+      "id": 76,
+      "title": "Progress Bar",
+      "description": "Build a progress bar component that shows the percentage completion of an operation",
+      "format": "UI coding",
+      "difficulty": "Easy",
+      "premium": true
+    },
+    {
+      "id": 77,
+      "title": "Temperature Converter",
+      "description": "Build a temperature converter widget that converts temperature values between Celsius and Fahrenheit",
+      "format": "UI coding",
+      "difficulty": "Easy",
+      "premium": true
+    },
+    {
+      "id": 78,
+      "title": "Mortgage Calculator",
+      "description": "Build a calculator that computes the monthly mortgage for a loan",
+      "format": "UI coding",
+      "difficulty": "Easy",
+      "premium": false
+    },
+    {
+      "id": 79,
+      "title": "Tweet",
+      "description": "Build a component that resembles a Tweet from Twitter",
+      "format": "UI coding",
+      "difficulty": "Easy",
+      "premium": true
+    },
+    {
+      "id": 80,
+      "title": "Analog Clock",
+      "description": "Build an analog clock where the hands update and move like a real clock",
+      "format": "UI coding",
+      "difficulty": "Medium",
+      "premium": true
+    }
+  ]
+}

@@ -4,8 +4,7 @@
 import { renderHook, act } from '@testing-library/react';
 import { useState } from 'react';
 
-// Backpack goal: let React read the live counter when each packed instruction
-// lands.
+// Goal: let React read the live counter when each packed instruction lands.
 function useQueuedCounter() {
   const [count, setCount] = useState(0);
 
@@ -17,6 +16,7 @@ function useQueuedCounter() {
   return { count, queuePair };
 }
 
+// ---Tests
 test('queued increments stack to 2', () => {
   jest.useFakeTimers();
 
@@ -29,3 +29,4 @@ test('queued increments stack to 2', () => {
 
   expect(result.current.count).toBe(2);
 });
+// ---End Tests

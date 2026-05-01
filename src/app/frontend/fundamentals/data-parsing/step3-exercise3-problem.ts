@@ -1,8 +1,8 @@
 export {};
-// Customs Checkpoint — Level 3: Filter + Aggregate
-// Multiple frameworks each define their own set of requirements.
-// One set of implemented controls is assessed against every framework independently.
-// The officer runs a separate checkpoint for each framework manifest
+// CI Requirements Gate, Level 3: Filter + Aggregate
+// Multiple frameworks each define their own requirements.
+// One set of implemented controls is evaluated against every framework independently.
+// The runner processes a separate pass for each requirements index
 // and records the tally in a Map keyed by framework name.
 
 interface Requirement {
@@ -41,8 +41,11 @@ function multiFrameworkReport(
   throw new Error('not implemented');
 }
 
-/*
-Sample data:
+// ---Tests
+function assert(condition: boolean, message: string): void {
+  if (!condition) throw new Error(`FAIL: ${message}`);
+  console.log(`PASS: ${message}`);
+}
 
 const frameworks: Framework[] = [
   {
@@ -68,12 +71,12 @@ const implementedControls: Control[] = [
   { id: 'ctrl-3', cost: 1, requirements: ['nist-1'] }, // irrelevant to both frameworks
 ];
 
-Expected:
-  Map {
-    'PCI-DSS' => { totalCost: 4, coverage: 100 },
-    'SOC 2'   => { totalCost: 2, coverage: 66.66... },
-  }
-  PCI-DSS: ctrl-1 covers pci-1 + pci-2 (both reqs), cost 4. coverage = 2/2 * 100 = 100.
-  SOC 2:   ctrl-2 covers soc-1 + soc-2 (2 of 3 reqs), cost 2. coverage = 2/3 * 100 = 66.67.
-           ctrl-3 irrelevant. ctrl-1 has no soc-* reqs, also irrelevant.
-*/
+const result = multiFrameworkReport(frameworks, implementedControls);
+const pci = result.get('PCI-DSS');
+const soc = result.get('SOC 2');
+assert(result.size === 2, 'Map has 2 frameworks');
+assert(pci?.totalCost === 4, 'PCI-DSS totalCost is 4');
+assert(pci?.coverage === 100, 'PCI-DSS coverage is 100%');
+assert(soc?.totalCost === 2, 'SOC 2 totalCost is 2');
+assert(Math.abs((soc?.coverage ?? 0) - 66.67) < 0.01, 'SOC 2 coverage is ~66.67%');
+// ---End Tests

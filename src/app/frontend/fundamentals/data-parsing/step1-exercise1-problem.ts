@@ -1,7 +1,7 @@
 export {};
-// Customs Checkpoint — Level 1: Flat Lookup
-// The customs manifest is built from a single passenger list.
-// Your job: scan each passenger once and tally by department.
+// CI Requirements Gate, Level 1: Flat Lookup
+// A pipeline run produces one job result per employee.
+// Walk the job manifest once and tally results by department.
 
 interface Employee {
   id: string;
@@ -16,8 +16,11 @@ function countByDepartment(employees: Employee[]): Map<string, number> {
   throw new Error('not implemented');
 }
 
-/*
-Sample data:
+// ---Tests
+function assert(condition: boolean, message: string): void {
+  if (!condition) throw new Error(`FAIL: ${message}`);
+  console.log(`PASS: ${message}`);
+}
 
 const employees: Employee[] = [
   { id: 'e1', name: 'Alice', department: 'Engineering' },
@@ -27,5 +30,9 @@ const employees: Employee[] = [
   { id: 'e5', name: 'Eve',   department: 'Product' },
 ];
 
-Expected: Map { 'Engineering' => 2, 'Design' => 2, 'Product' => 1 }
-*/
+const result = countByDepartment(employees);
+assert(result.get('Engineering') === 2, 'Engineering has 2 employees');
+assert(result.get('Design') === 2, 'Design has 2 employees');
+assert(result.get('Product') === 1, 'Product has 1 employee');
+assert(result.size === 3, 'Map has exactly 3 departments');
+// ---End Tests

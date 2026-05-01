@@ -4,8 +4,7 @@
 import { renderHook, act } from '@testing-library/react';
 import { useEffect } from 'react';
 
-// Backpack goal: restart the heartbeat when its spoken status changes, so the
-// next tick carries a fresh pack.
+// Goal: restart the heartbeat when its status changes so the next tick carries a fresh pack.
 function useHeartbeat(status: string, onTick: (status: string) => void) {
   useEffect(() => {
     const id = setInterval(() => onTick(status), 1000);
@@ -13,6 +12,7 @@ function useHeartbeat(status: string, onTick: (status: string) => void) {
   }, [status, onTick]);
 }
 
+// ---Tests
 test('interval announces the latest status after rerender', () => {
   jest.useFakeTimers();
   const onTick = jest.fn();
@@ -30,3 +30,4 @@ test('interval announces the latest status after rerender', () => {
 
   expect(onTick).toHaveBeenCalledWith('live');
 });
+// ---End Tests

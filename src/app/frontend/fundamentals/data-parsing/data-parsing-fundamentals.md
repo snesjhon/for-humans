@@ -13,7 +13,7 @@ That is the exact shape of a well-structured data problem.
 - **requirements list** = the source dataset you index into a Set or Map
 - **requirements index** = the Set or Map lookup structure itself
 - **job results** = the target dataset you walk
-- **the gate** = the iteration loop that checks each item
+- **the evaluator** = the iteration loop that checks each item
 - **the status report** = the accumulated result, whether that is a count, a sum, or a percentage
 
 When you think in these terms, the three-step pattern becomes a process you can follow without guessing.
@@ -24,7 +24,7 @@ Every data problem in this guide follows the same three moves.
 
 **Step 1: Index the source.** Build a Set or Map from the dataset that will be consulted repeatedly. This is the requirements index. You pay O(n) once.
 
-**Step 2: Walk the target.** Iterate over the other dataset. This is the job results list. Each item gets one pass through the gate.
+**Step 2: Walk the target.** Iterate over the other dataset. This is the job results list. Each item gets one pass through the evaluator.
 
 **Step 3: Accumulate the result.** Inside the walk, look up the current item in your indexed structure and update whatever you are tracking. This is the status report. Each lookup costs O(1).
 
@@ -52,7 +52,7 @@ The indexing line lives before the loop. The walk and accumulation live inside i
 
 ### Why Keeping the Steps Separate Matters
 
-When index, walk, and accumulate collapse into one loop, there is no clear place to add a filter, no clean way to change what you are accumulating, and no obvious boundary for debugging. Keeping them separate gives each step one job. Adding a relevance filter before the accumulation becomes a single guard clause in the walk. Changing the accumulation target is isolated to one block. The gate only has to make one decision per item.
+When index, walk, and accumulate collapse into one loop, there is no clear place to add a filter, no clean way to change what you are accumulating, and no obvious boundary for debugging. Keeping them separate gives each step one job. Adding a relevance filter before the accumulation becomes a single guard clause in the walk. Changing the accumulation target is isolated to one block. The evaluator only has to make one decision per item.
 
 ---
 
@@ -122,11 +122,7 @@ That distinction is what tells you the loop will have accumulation state, not pu
 
 ### Step 2: Find the Lookup Field
 
-Look at both datasets and identify what field connects them. In this problem, the connection is `capabilityId`.
-
-The launch plan stores those IDs inside `launchPlan.capabilities`. Each automation stores related IDs inside `automation.capabilityIds`.
-
-That means there is no joined key to construct. There is one canonical ID space, capability IDs, and both sides reference it directly.
+Scan both datasets for a field that appears on both sides. Here, both sides reference the same capability ID space — `launchPlan.capabilities` holds the primary list, and each automation carries a nested `capabilityIds` array.
 
 | Capability ID | In launch plan? | Referenced by automation? |
 |---|---|---|
@@ -135,73 +131,40 @@ That means there is no joined key to construct. There is one canonical ID space,
 | `cap-rollback` | yes | `auto-observability` |
 | `cap-abtest` | no | `auto-experiment` |
 
-At this step, stop at the relationship shape. Do not decide the loop direction yet.
+The automations side holds an *array* of IDs, not a single ID field. That distinction changes how you match.
 
-What Step 2 tells you is that this is not a one-to-one lookup like "this record has one foreign key, go fetch one matching record." One side, `automations`, stores a nested `capabilityIds` array, which means the eventual loop question will be about overlap: does some set of IDs on one side intersect with the required IDs on the other?
+When a record carries one ID, the match question is binary: does `order.productId` exist in the product list? One lookup, one answer.
 
-That is enough for Step 2. You have identified the shared ID space and the kind of matching the problem requires. Step 3 is where you decide which side should actually be walked.
+When a record carries an array of IDs, the question becomes: does *any* ID in this list appear in the required set? `auto-observability` carries `['cap-alerts', 'cap-rollback']`. You are not asking whether it matches one specific capability. You are asking whether it touches *at least one* capability the launch plan requires. That is an overlap check — you have to test the whole list to get the same yes-or-no answer.
+
+Step 3 uses that shape to decide the loop direction.
 
 ### Step 3: Decide Which Side to Index and Which to Walk
 
-This is the decision point that usually feels slippery, so make the mental logic explicit.
+The return value answers the direction question. Ask: *which dataset owns the thing that changes once per relevant record?*
 
-Step 2 found the shared field. Step 3 answers a different question: which dataset should the loop visit one record at a time?
-
-Use the return value to choose the unit of work. Ask: which records own the thing I update once per relevant record?
+`totalCost` is charged per relevant automation. `coverage` is measured against the launch plan's required IDs. Both answers point the same way:
 
 ```mermaid
-flowchart TD
-  A[Return shape: totalCost + coverage] --> B{What changes once per relevant record?}
-  B -->|cost| C[Automation record]
-  C --> D[Walk automations]
-  D --> E[For each automation, check overlap with required IDs]
-  E --> F[If relevant, add cost once and mark covered IDs]
-  A --> G{What stays stable during every check?}
-  G -->|required IDs| H[launchPlan.capabilities]
-  H --> I[Index as Set]
+flowchart LR
+  A["Return value"] --> B["totalCost: charged per automation"]
+  A --> C["coverage: measured against required IDs"]
+  B --> D["Walk automations"]
+  C --> E["Index launch plan as Set"]
 ```
 
-For this problem:
+Three questions to confirm the direction:
 
-- `totalCost` is charged per relevant automation
-- `coverage` is marked by required capability IDs that got covered
-- so `automations` is the natural walked side
-- `launchPlan.capabilities` is the natural indexed side
-
-That gives the loop a clear job:
-
-```ts
-const requiredIds = new Set(launchPlan.capabilities.map((c) => c.id));
-
-for (const automation of automations) {
-  const matchedIds = automation.capabilityIds.filter((id) => requiredIds.has(id));
-  if (matchedIds.length === 0) continue;
-
-  totalCost += automation.setupCost;
-  for (const id of matchedIds) coveredIds.add(id);
-}
-```
-
-Why not walk `launchPlan.capabilities` instead? Because the cost rule lives on automation records. One automation can cover more than one capability. If you walked capabilities first, you would need extra bookkeeping to avoid charging the same automation multiple times. Walking automations keeps the per-record action aligned with the data.
-
-If you want a compact test, use this:
-
-1. Which dataset provides the rule for relevance?
-2. Which dataset contains the records I must evaluate one by one?
-3. What exact yes/no question will I ask for each of those records?
-
-For this problem, the answers are:
-
-1. The launch plan provides the rule for relevance.
-2. The automations are the records to evaluate one by one.
-3. For each automation: does its `capabilityIds` list overlap with the launch plan's required IDs?
+1. **What provides the relevance rule?** The launch plan. An automation qualifies only if its `capabilityIds` list overlaps with the required Set.
+2. **What records get evaluated one by one?** Automations. Each gets one pass through the evaluator.
+3. **What does the evaluator ask per record?** Does this automation's `capabilityIds` list intersect with the required Set?
 
 ```
-launchPlan.capabilities  →  build Set of required capability IDs  →  look things up against this
-automations              →  for...of loop                         →  one decision per automation
+launchPlan.capabilities  →  build Set of required IDs  →  O(1) membership lookups
+automations              →  for…of loop                →  one decision per automation
 ```
 
-This direction also matches the return value. `totalCost` changes per relevant automation, so automations have to be visited individually. `coverage` changes when a required ID from the launch plan gets covered, so the launch plan supplies the reference Set you check against. That is the mental shape: one side defines relevance, the other side gets tested against it.
+Walking capabilities first would mean charging the same automation's cost multiple times — one automation can cover several capabilities. Walking automations keeps each record's action to one cost addition and any number of coverage marks.
 
 ### Step 4: Enumerate What Can Happen at Each Step
 
@@ -580,7 +543,7 @@ for (const order of orders) {
 
 **What it prevents:** when filter and accumulate collapse into one expression, it becomes easy to count the wrong items, accumulate against the wrong key, or miss the case where an item is partially relevant. Separating the steps means each one has one job and one place to be wrong.
 
-**How to think about it:** not every item in the target needs to reach the accumulation step. The gate first checks whether the item's internal list intersects with the requirements index. If there is no intersection, the gate skips it without tallying anything. Only items with a relevant intersection reach the accumulation step.
+**How to think about it:** not every item in the target needs to reach the accumulation step. The evaluator first checks whether the item's internal list intersects with the requirements index. If there is no intersection, the evaluator skips it without tallying anything. Only items with a relevant intersection reach the accumulation step.
 
 **Complexity:** O(n) to build the source index, O(m * k) to check intersection where k is the number of sub-items per target item, O(1) per accumulation. For most real data, k is small and bounded.
 
@@ -629,7 +592,7 @@ flowchart TD
 
 ### When NOT to use
 
-Do not reach for a Map or Set just because the data happens to have IDs. If you only need one item from one array (a simple find), a linear scan is fine and the upfront indexing pass is wasted work. Do not pre-build a Map inside a loop, that recreates the structure on every iteration and erases the performance benefit. Do not store render-visible values in a local Map and then derive state from it without going through React state, because that hides the source of truth from the component.
+Do not reach for a Map or Set just because the data happens to have IDs. If you only need one item from one array (a simple find), a linear scan is fine and the upfront indexing pass is wasted work. Do not pre-build a Map inside a loop, that recreates the structure on every iteration and erases the performance benefit. Do not use a Map to deduplicate values when membership testing is the only goal. A Set is the right structure for that job and signals the intent more clearly.
 
 ## Common Gotchas & Edge Cases
 

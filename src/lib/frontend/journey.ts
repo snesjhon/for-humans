@@ -6,52 +6,25 @@ export const JOURNEY: Phase[] = [
     label: 'Novice',
     emoji: '🌱',
     goal:
-      'Build the core mental models behind TypeScript inference and React hook behavior before the tricky bugs compound.',
+      'Confirm that the mental models senior engineers think they have are actually solid. State-as-snapshot, effect cleanup, and the closure trap are the root cause of the majority of Phase 2 and 3 bugs.',
     sections: [
       {
-        id: 'generics',
-        label: 'Generics',
+        id: 'state-driven-ui',
+        label: 'State-Driven UI',
         mentalModelHook:
-          'A generic is a function whose input and output shapes stay linked across a call.',
-        fundamentalsSlug: 'generics',
+          'State is a snapshot of what React rendered — the value you read in a handler belongs to the render where it was created, not the render where it runs.',
+        fundamentalsSlug: 'state-driven-ui',
         fundamentalsBlurb:
-          'Inference, constraints, and when to add a type parameter instead of forcing an annotation.',
+          'The snapshot model, batching, and how multiple pieces of interacting state stay decoupled.',
       },
       {
-        id: 'closure-captures',
-        label: 'Closure Captures',
+        id: 'effects-timers-cleanup',
+        label: 'Effects, Timers & Cleanup',
         mentalModelHook:
-          'A closure keeps the values from the render where it was created, not the render where it eventually runs.',
-        fundamentalsSlug: 'closure-captures',
+          'An effect is a synchronization step with a setup and a required cleanup — the pair is the contract, not just the setup.',
+        fundamentalsSlug: 'effects-timers-cleanup',
         fundamentalsBlurb:
-          'How stale state appears in handlers, timers, and effects, and what React actually preserves.',
-      },
-      {
-        id: 'effect-semantics',
-        label: 'Effect Semantics',
-        mentalModelHook:
-          'Effects are synchronization steps with setup and cleanup, not a second render phase.',
-        fundamentalsSlug: 'effect-semantics',
-        fundamentalsBlurb:
-          'Lifecycle timing, cleanup correctness, Strict Mode behavior, and when an effect is the wrong tool.',
-      },
-      {
-        id: 'conditional-types',
-        label: 'Conditional Types',
-        mentalModelHook:
-          'A conditional type is a branch at the type level: inspect the input shape, then produce the matching output shape.',
-        fundamentalsSlug: 'conditional-types',
-        fundamentalsBlurb:
-          'Distribution over unions, `infer`, and utility-type mechanics you reuse across typed APIs.',
-      },
-      {
-        id: 'dependency-arrays',
-        label: 'Dependency Arrays',
-        mentalModelHook:
-          'A dependency array is a declaration of what values your effect reads from a render.',
-        fundamentalsSlug: 'dependency-arrays',
-        fundamentalsBlurb:
-          'Why exhaustive-deps exists, what causes loops, and how closure semantics drive the correct dependency list.',
+          'Lifecycle timing, interval drift, AbortController for fetch cancellation, and how StrictMode surfaces missing cleanup.',
       },
     ],
   },
@@ -60,52 +33,61 @@ export const JOURNEY: Phase[] = [
     label: 'Studied',
     emoji: '📚',
     goal:
-      'Handle the type transforms and hook patterns that look fine at first but break under real product pressure.',
+      'Handle the patterns that distinguish senior engineers. Every section here introduces something that looks fine on first pass and breaks under a real constraint.',
     sections: [
       {
-        id: 'mapped-types',
-        label: 'Mapped Types',
+        id: 'component-composition',
+        label: 'Component Composition',
         mentalModelHook:
-          'Mapped types transform an existing object shape property by property while preserving the structural relationship.',
-        fundamentalsSlug: 'mapped-types',
+          'A compound component separates state ownership from visual structure — the parent holds the state, the children decide how to display it.',
+        fundamentalsSlug: 'component-composition',
         fundamentalsBlurb:
-          'Key remapping, modifiers, and the difference between preserving shape and rebuilding it.',
+          'Compound components, portal-based rendering, lifting state up, and recursive component trees.',
       },
       {
-        id: 'ref-vs-state',
-        label: 'Ref vs State',
+        id: 'data-fetching',
+        label: 'Data Fetching & Async State + Conditional Types',
         mentalModelHook:
-          'State is for values React should render; refs are for mutable values React should remember without re-rendering.',
-        fundamentalsSlug: 'ref-vs-state',
+          'Async state has four phases — and `infer` is the mechanism that extracts the resolved type from a promise so the hook can stay generic without losing the data shape.',
+        fundamentalsSlug: 'data-fetching',
         fundamentalsBlurb:
-          'The rendering boundary between refs and state, and how to choose the right storage model.',
+          'Race condition cancellation, `Awaited<T>` and conditional types for typed async state, and when to extract a data-fetching hook.',
       },
       {
-        id: 'template-literal-types',
-        label: 'Template Literal Types',
+        id: 'collection-hooks',
+        label: 'Collection & State Shape Hooks + Generics',
         mentalModelHook:
-          'Template literal types let you compute valid string shapes instead of hoping string conventions stay consistent.',
-        fundamentalsSlug: 'template-literal-types',
+          'Writing `useMap<K, V>` is where generic constraints stop being abstract — the shape of the collection forces you to constrain `K` and design the return type around `V`.',
+        fundamentalsSlug: 'collection-hooks',
         fundamentalsBlurb:
-          'Type-safe event names, route shapes, and string composition at the type level.',
+          'Arrays, maps, and sets as state — immutable update patterns, stable references, and generic hook signatures with meaningful constraints.',
       },
       {
-        id: 'custom-hook-composition',
-        label: 'Custom Hook Composition',
+        id: 'dom-event-hooks',
+        label: 'DOM, Events & Browser API Hooks + Template Literal Types',
         mentalModelHook:
-          'A good custom hook hides orchestration while keeping state ownership and effect boundaries obvious.',
-        fundamentalsSlug: 'custom-hook-composition',
+          'DOM event names are template literal types in disguise — typing `useEventListener` so the handler narrows by event name is the concept made immediately concrete.',
+        fundamentalsSlug: 'dom-event-hooks',
         fundamentalsBlurb:
-          'How to compose hooks without leaking stale closures, dependency churn, or unclear responsibilities.',
+          'useRef for DOM nodes, event listener lifecycle, SSR guards, and template literal types for typed event names and handler signatures.',
       },
       {
-        id: 'branded-types',
-        label: 'Branded Types',
+        id: 'timing-hooks',
+        label: 'Timing & Scheduling Hooks',
         mentalModelHook:
-          'A branded type adds proof of meaning to a value that would otherwise be structurally identical.',
-        fundamentalsSlug: 'branded-types',
+          'Debounce delays until quiet; throttle limits the rate — they solve different problems and are never interchangeable.',
+        fundamentalsSlug: 'timing-hooks',
         fundamentalsBlurb:
-          'Nominal signals on top of structural typing so IDs, tokens, and validated values stay distinct.',
+          'The stale closure inside setInterval, useRef as the stable callback escape hatch, and countdown state without drift.',
+      },
+      {
+        id: 'rich-interactive-ui',
+        label: 'Rich Interactive UI',
+        mentalModelHook:
+          'Multi-concern UI separates navigation state, loading state, and animation state as independent dimensions that layer, not merge.',
+        fundamentalsSlug: 'rich-interactive-ui',
+        fundamentalsBlurb:
+          'Image loading lifecycle, transition state layered on selection state, and input control as a dirty/touched state machine.',
       },
     ],
   },
@@ -114,61 +96,52 @@ export const JOURNEY: Phase[] = [
     label: 'Advanced',
     emoji: '🎯',
     goal:
-      'Reason about rendering control, type variance, and performance-sensitive React patterns at interview depth.',
+      'Accessibility, complex state, and performance — the patterns that separate senior from staff-level in code reviews and design discussions.',
     sections: [
       {
-        id: 'usereducer-patterns',
-        label: 'useReducer Patterns',
+        id: 'accessibility',
+        label: 'Accessibility & Keyboard Interaction',
         mentalModelHook:
-          'A reducer centralizes state transitions so complex UI logic becomes a sequence of explicit events.',
-        fundamentalsSlug: 'usereducer-patterns',
+          'ARIA roles describe what something is; keyboard handlers describe how to use it — both are required for a component to be accessible.',
+        fundamentalsSlug: 'accessibility',
         fundamentalsBlurb:
-          'Action design, state transitions, and when reducers beat scattered state setters.',
+          'ARIA roles and properties, focus trap mechanics, keyboard navigation per the ARIA spec, and the difference between screen reader correctness and keyboard operability.',
       },
       {
-        id: 'variance',
-        label: 'Variance',
+        id: 'complex-state-reducers',
+        label: 'Complex State & Reducers',
         mentalModelHook:
-          'Variance decides when one generic type can safely stand in for another without breaking reads or writes.',
-        fundamentalsSlug: 'variance',
+          'A reducer makes state transitions explicit and impossible states unrepresentable — the shape of valid actions is as important as the shape of state.',
+        fundamentalsSlug: 'complex-state-reducers',
         fundamentalsBlurb:
-          'Covariance, contravariance, and the function-parameter rules behind surprising assignment errors.',
+          'Finite state modeling, discriminated union actions, undo/redo as past/present/future, and when useReducer wins over scattered useState calls.',
       },
       {
-        id: 'context-performance',
-        label: 'Context Performance',
+        id: 'performance-optimization',
+        label: 'Performance & Render Optimization',
         mentalModelHook:
-          'Context is a broadcast channel: every subscribed consumer hears every change unless you shape the updates carefully.',
-        fundamentalsSlug: 'context-performance',
+          'Memoization only helps when the input is stable — an unstable input makes it a tax, not a savings.',
+        fundamentalsSlug: 'performance-optimization',
         fundamentalsBlurb:
-          'Splitting providers, stabilizing values, and avoiding fan-out re-renders.',
+          'Why most re-renders are free, the prerequisite of stable references for useMemo and useCallback, and minimal DOM footprint patterns.',
       },
       {
-        id: 'concurrent-mode',
-        label: 'Concurrent Mode',
+        id: 'advanced-hook-patterns',
+        label: 'Advanced Hook Patterns',
         mentalModelHook:
-          'Concurrent rendering lets React prepare work opportunistically, so render logic must stay pure and interruption-safe.',
-        fundamentalsSlug: 'concurrent-mode',
+          'The most complex hooks are small state machines — naming the valid states and their transitions is the design work; the code follows.',
+        fundamentalsSlug: 'advanced-hook-patterns',
         fundamentalsBlurb:
-          'Transitions, interruptible rendering, and the guarantees React still does and does not make.',
+          'Mediated state, the dirty/touched state machine in useInputControl, and when useSyncExternalStore replaces useState.',
       },
-    ],
-  },
-  {
-    number: 4,
-    label: 'Data Problems',
-    emoji: '🗂️',
-    goal:
-      'Develop a repeatable approach for data parsing problems: index your source, walk the target, accumulate the answer.',
-    sections: [
       {
-        id: 'data-parsing',
-        label: 'Data Parsing & Cross-Reference',
+        id: 'full-feature-applications',
+        label: 'Full-Feature Applications',
         mentalModelHook:
-          'Data problems become tractable the moment you separate indexing the source from iterating the target.',
-        fundamentalsSlug: 'data-parsing',
+          'A full-feature component is a system design problem: what state is shared, what is local, and what triggers re-renders across the tree.',
+        fundamentalsSlug: 'full-feature-applications',
         fundamentalsBlurb:
-          'A progressive framework for solving dataset problems — from flat lookups through cross-reference aggregation to multi-pass pipelines.',
+          'Combining reducers, async, accessibility, and performance — and deciding which problems belong in local state vs a reducer vs an external store.',
       },
     ],
   },

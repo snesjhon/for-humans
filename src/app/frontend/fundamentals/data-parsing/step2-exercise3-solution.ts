@@ -1,8 +1,8 @@
 export {};
-// Customs Checkpoint — Level 2: Cross-Reference
-// Posts carry tag IDs, but the tag labels live in a separate roster.
-// Only active posts are processed. For each active post, the officer
-// checks which tags it references and marks those labels as cleared.
+// CI Requirements Gate, Level 2: Cross-Reference
+// Posts carry tag IDs, but the tag labels live in a separate catalog.
+// Only active posts are evaluated. For each active post, the runner
+// checks which tags it references and collects the unique labels.
 
 interface Post {
   id: string;
@@ -33,8 +33,16 @@ function activeTagLabels(posts: Post[], tags: Tag[]): string[] {
   return Array.from(seen);
 }
 
-/*
-Sample data:
+// ---Tests
+function assert(condition: boolean, message: string): void {
+  if (!condition) throw new Error(`FAIL: ${message}`);
+  console.log(`PASS: ${message}`);
+}
+
+function containsAll(result: string[], expected: string[]): boolean {
+  const set = new Set(result);
+  return expected.every((v) => set.has(v));
+}
 
 const tags: Tag[] = [
   { id: 't1', label: 'TypeScript' },
@@ -45,13 +53,12 @@ const tags: Tag[] = [
 
 const posts: Post[] = [
   { id: 'post1', tagIds: ['t1', 't2'], active: true },
-  { id: 'post2', tagIds: ['t3'],       active: false }, // inactive, skip
+  { id: 'post2', tagIds: ['t3'],       active: false }, // inactive, excluded
   { id: 'post3', tagIds: ['t2', 't4'], active: true },
 ];
 
-Expected (order does not matter): ['TypeScript', 'React', 'Performance']
-  t1 -> TypeScript (post1, active)
-  t2 -> React      (post1 and post3, both active)
-  t3 -> CSS        (post2 only, inactive — excluded)
-  t4 -> Performance (post3, active)
-*/
+const result = activeTagLabels(posts, tags);
+assert(result.length === 3, 'returns 3 unique labels');
+assert(containsAll(result, ['TypeScript', 'React', 'Performance']), 'TypeScript, React, Performance are all present');
+assert(!result.includes('CSS'), 'CSS is excluded (only on inactive post)');
+// ---End Tests

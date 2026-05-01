@@ -4,8 +4,7 @@
 import { renderHook, act } from '@testing-library/react';
 import { useState } from 'react';
 
-// Backpack goal: each new rider is appended onto the live roster when the
-// packed instruction arrives.
+// Goal: each new name is appended onto the live roster when the packed instruction arrives.
 function useQueuedRoster() {
   const [names, setNames] = useState<string[]>([]);
 
@@ -17,6 +16,7 @@ function useQueuedRoster() {
   return { names, queueTwoNames };
 }
 
+// ---Tests
 test('queued appends preserve both names in order', () => {
   jest.useFakeTimers();
 
@@ -29,3 +29,4 @@ test('queued appends preserve both names in order', () => {
 
   expect(result.current.names).toEqual(['Ada', 'Grace']);
 });
+// ---End Tests

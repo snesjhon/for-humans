@@ -4,8 +4,7 @@
 import { renderHook, act } from '@testing-library/react';
 import { useEffect, useRef } from 'react';
 
-// Backpack goal: the polling loop stays on one route, while the wall
-// clipboards keep the latest query and fetcher ready for each tick.
+// Goal: the polling loop stays stable, while refs keep the latest query and fetcher ready for each tick.
 function useStablePolling(
   query: string,
   fetcher: (query: string) => void,
@@ -27,6 +26,7 @@ function useStablePolling(
   }, [onStart]);
 }
 
+// ---Tests
 test('polling keeps one setup and reads the latest query', () => {
   jest.useFakeTimers();
   const fetcher = jest.fn();
@@ -46,3 +46,4 @@ test('polling keeps one setup and reads the latest query', () => {
   expect(onStart).toHaveBeenCalledTimes(1);
   expect(fetcher).toHaveBeenCalledWith('react');
 });
+// ---End Tests

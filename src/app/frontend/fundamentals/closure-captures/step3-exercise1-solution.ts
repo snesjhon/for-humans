@@ -4,8 +4,7 @@
 import { renderHook, act } from '@testing-library/react';
 import { useEffect, useRef } from 'react';
 
-// Backpack goal: the interval keeps one route, while the wall clipboard always
-// points at the latest callback note.
+// Goal: the interval stays stable while a ref always points at the latest callback.
 function useStableInterval(
   onTick: () => void,
   delay: number,
@@ -21,6 +20,7 @@ function useStableInterval(
   }, [delay, onStart]);
 }
 
+// ---Tests
 test('stable interval starts once and calls the latest callback', () => {
   jest.useFakeTimers();
   const starts = jest.fn();
@@ -42,3 +42,4 @@ test('stable interval starts once and calls the latest callback', () => {
   expect(oldTick).not.toHaveBeenCalled();
   expect(newTick).toHaveBeenCalledTimes(1);
 });
+// ---End Tests

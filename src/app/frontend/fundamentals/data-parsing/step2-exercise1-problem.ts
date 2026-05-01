@@ -1,8 +1,8 @@
 export {};
-// Customs Checkpoint — Level 2: Cross-Reference
-// Two manifests arrive at the checkpoint: an order list and a product catalog.
-// The officer indexes the product catalog once, then walks the order list,
-// looking up each product in O(1) to compute revenue.
+// CI Requirements Gate, Level 2: Cross-Reference
+// Two manifests arrive at the runner: an order list and a product catalog.
+// Index the product catalog once, then walk the order list,
+// resolving each product in O(1) to compute revenue.
 
 interface Order {
   id: string;
@@ -24,13 +24,17 @@ function computeRevenue(orders: Order[], products: Product[]): Map<string, numbe
   throw new Error('not implemented');
 }
 
-/*
-Sample data:
+// ---Tests
+function assert(condition: boolean, message: string): void {
+  if (!condition) throw new Error(`FAIL: ${message}`);
+  console.log(`PASS: ${message}`);
+}
 
 const orders: Order[] = [
   { id: 'o1', productId: 'p1', quantity: 2 },
   { id: 'o2', productId: 'p2', quantity: 1 },
   { id: 'o3', productId: 'p1', quantity: 3 },
+  { id: 'o4', productId: 'p99', quantity: 5 }, // unknown product, skipped
 ];
 
 const products: Product[] = [
@@ -38,7 +42,9 @@ const products: Product[] = [
   { id: 'p2', name: 'Gadget', price: 25 },
 ];
 
-Expected: Map { 'Widget' => 50, 'Gadget' => 25 }
-  Widget: (2 + 3) * 10 = 50
-  Gadget: 1 * 25 = 25
-*/
+const result = computeRevenue(orders, products);
+assert(result.get('Widget') === 50, 'Widget revenue is 50 (2+3 * 10)');
+assert(result.get('Gadget') === 25, 'Gadget revenue is 25 (1 * 25)');
+assert(result.size === 2, 'Map has 2 products');
+assert(result.get('p99') === undefined, 'unknown product does not appear in result');
+// ---End Tests

@@ -4,8 +4,7 @@
 import { renderHook, act } from '@testing-library/react';
 import { useEffect } from 'react';
 
-// Backpack goal: pack a fresh label whenever the listener's read value
-// changes.
+// Goal: pack a fresh label whenever the listener's read value changes.
 function useTaggedKeyLogger(label: string, log: (entry: string) => void) {
   useEffect(() => {
     function handleKeydown(event: KeyboardEvent) {
@@ -17,6 +16,7 @@ function useTaggedKeyLogger(label: string, log: (entry: string) => void) {
   }, [label, log]);
 }
 
+// ---Tests
 test('listener uses the latest label after rerender', () => {
   const log = jest.fn();
 
@@ -35,3 +35,4 @@ test('listener uses the latest label after rerender', () => {
 
   expect(log).toHaveBeenCalledWith('live:k');
 });
+// ---End Tests

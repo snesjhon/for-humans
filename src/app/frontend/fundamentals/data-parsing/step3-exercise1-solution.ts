@@ -1,9 +1,9 @@
 export {};
-// Customs Checkpoint — Level 3: Filter + Aggregate
-// The framework is the official clearance manifest: only declared requirement IDs matter.
-// Each control is a passenger carrying a stack of compliance claims.
-// Before tallying cost, the officer checks whether the passenger's claims
-// intersect with the framework manifest. No intersection — no tally.
+// CI Requirements Gate, Level 3: Filter + Aggregate
+// The framework defines the required checks: only those IDs matter.
+// Each control is a job claiming to satisfy some requirements.
+// Before tallying cost, the runner checks whether the job's claims
+// intersect with the requirements index. No intersection, no tally.
 
 interface Requirement {
   id: string;
@@ -30,7 +30,7 @@ function assessComplianceCost(
   framework: Framework,
   implementedControls: Control[],
 ): ComplianceResult {
-  // Step 1: build the manifest — Set of framework requirement IDs
+  // Step 1: build the manifest, a Set of framework requirement IDs
   const frameworkReqIds = new Set(framework.requirements.map((r) => r.id));
 
   let totalCost = 0;
@@ -39,7 +39,7 @@ function assessComplianceCost(
   // Step 2 + 3: walk controls, filter by intersection, then accumulate
   for (const control of implementedControls) {
     const relevantReqs = control.requirements.filter((reqId) => frameworkReqIds.has(reqId));
-    if (relevantReqs.length === 0) continue; // not relevant — skip before accumulating
+    if (relevantReqs.length === 0) continue; // not relevant, skip before accumulating
 
     totalCost += control.cost;
     for (const reqId of relevantReqs) {
@@ -53,8 +53,11 @@ function assessComplianceCost(
   return { totalCost, coverage };
 }
 
-/*
-Sample data:
+// ---Tests
+function assert(condition: boolean, message: string): void {
+  if (!condition) throw new Error(`FAIL: ${message}`);
+  console.log(`PASS: ${message}`);
+}
 
 const framework: Framework = {
   name: 'Payment Card Industry Data Security Standard',
@@ -66,17 +69,13 @@ const framework: Framework = {
   ],
 };
 
-const myImplementedControls: Control[] = [
+const implementedControls: Control[] = [
   { id: 'control-1', cost: 2, requirements: ['pci-1'] },
-  { id: 'control-2', cost: 3, requirements: ['nist-1'] }, // irrelevant — not a PCI requirement
+  { id: 'control-2', cost: 3, requirements: ['nist-1'] }, // irrelevant, not a PCI requirement
   { id: 'control-3', cost: 1, requirements: ['pci-2', 'pci-3'] },
 ];
 
-Expected: { totalCost: 3, coverage: 75 }
-  control-1: relevant (pci-1 is in framework), cost 2, covers pci-1
-  control-2: irrelevant (nist-1 not in framework), skipped
-  control-3: relevant (pci-2 and pci-3 are in framework), cost 1, covers pci-2 + pci-3
-  totalCost = 2 + 1 = 3
-  coveredReqs = { pci-1, pci-2, pci-3 } = 3 of 4 framework reqs
-  coverage = (3 / 4) * 100 = 75
-*/
+const result = assessComplianceCost(framework, implementedControls);
+assert(result.totalCost === 3, 'totalCost is 3 (control-1 cost 2 + control-3 cost 1)');
+assert(result.coverage === 75, 'coverage is 75% (3 of 4 requirements covered)');
+// ---End Tests

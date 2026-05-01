@@ -4,8 +4,7 @@
 import { renderHook, act } from '@testing-library/react';
 import { useEffect } from 'react';
 
-// Backpack goal: keep one polling route open, but let each poll read the
-// freshest query note.
+// Goal: keep one polling interval running, but let each tick read the latest query and fetcher.
 function useStablePolling(
   query: string,
   fetcher: (query: string) => void,
@@ -18,6 +17,7 @@ function useStablePolling(
   }, [onStart, fetcher]);
 }
 
+// ---Tests
 test('polling keeps one setup and reads the latest query', () => {
   jest.useFakeTimers();
   const fetcher = jest.fn();
@@ -37,3 +37,4 @@ test('polling keeps one setup and reads the latest query', () => {
   expect(onStart).toHaveBeenCalledTimes(1);
   expect(fetcher).toHaveBeenCalledWith('react');
 });
+// ---End Tests

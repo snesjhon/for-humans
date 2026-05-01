@@ -4,8 +4,7 @@
 import { renderHook, act } from '@testing-library/react';
 import { useEffect } from 'react';
 
-// Backpack goal: keep one escape listener attached, but let it call the
-// freshest handler note.
+// Goal: keep one escape listener attached, but let it always call the latest handler.
 function useEscapeKey(handler: () => void) {
   useEffect(() => {
     function onKeydown(event: KeyboardEvent) {
@@ -19,6 +18,7 @@ function useEscapeKey(handler: () => void) {
   }, []);
 }
 
+// ---Tests
 test('escape listener keeps one subscription and calls the latest handler', () => {
   const addSpy = jest.spyOn(document, 'addEventListener');
   const removeSpy = jest.spyOn(document, 'removeEventListener');
@@ -54,3 +54,4 @@ test('escape listener keeps one subscription and calls the latest handler', () =
   addSpy.mockRestore();
   removeSpy.mockRestore();
 });
+// ---End Tests

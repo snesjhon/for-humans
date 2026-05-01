@@ -9,8 +9,7 @@ type Profile = {
   city: string;
 };
 
-// Backpack goal: let each delayed patch merge into the live profile card that
-// React hands back at commit time.
+// Goal: let each delayed patch merge into the live profile object that React hands back at commit time.
 function useQueuedProfile() {
   const [profile, setProfile] = useState<Profile>({ name: '', city: '' });
 
@@ -28,6 +27,7 @@ function useQueuedProfile() {
   return { profile, queuePrefill };
 }
 
+// ---Tests
 test('queued profile patches preserve both fields', () => {
   jest.useFakeTimers();
 
@@ -40,3 +40,4 @@ test('queued profile patches preserve both fields', () => {
 
   expect(result.current.profile).toEqual({ name: 'Ada', city: 'Paris' });
 });
+// ---End Tests

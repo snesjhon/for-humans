@@ -1,9 +1,9 @@
 export {};
-// Customs Checkpoint — Level 3: Filter + Aggregate
-// Required checks form the official clearance manifest.
-// Each feature flag is a passenger that claims to satisfy some checks.
-// Before adding a flag's weight to the tally, the officer confirms that
-// at least one of its check claims actually appears on the manifest.
+// CI Requirements Gate, Level 3: Filter + Aggregate
+// Required checks form the requirements manifest.
+// Each feature flag is a job that claims to satisfy some checks.
+// Before adding a flag's weight to the tally, the runner confirms that
+// at least one of its check claims appears on the requirements index.
 
 interface RequiredCheck {
   id: string;
@@ -25,7 +25,7 @@ function scoreFlagCompleteness(
   featureFlags: FeatureFlag[],
   requiredChecks: RequiredCheck[],
 ): FlagResult {
-  // Step 1: build the manifest — Set of required check IDs
+  // Step 1: build the manifest, a Set of required check IDs
   const requiredCheckIds = new Set(requiredChecks.map((c) => c.id));
 
   let totalWeight = 0;
@@ -34,7 +34,7 @@ function scoreFlagCompleteness(
   // Step 2 + 3: walk flags, filter by intersection, then accumulate
   for (const flag of featureFlags) {
     const relevantChecks = flag.checks.filter((checkId) => requiredCheckIds.has(checkId));
-    if (relevantChecks.length === 0) continue; // not relevant — skip before accumulating
+    if (relevantChecks.length === 0) continue; // not relevant, skip before accumulating
 
     totalWeight += flag.weight;
     for (const checkId of relevantChecks) {
@@ -48,8 +48,11 @@ function scoreFlagCompleteness(
   return { totalWeight, completeness };
 }
 
-/*
-Sample data:
+// ---Tests
+function assert(condition: boolean, message: string): void {
+  if (!condition) throw new Error(`FAIL: ${message}`);
+  console.log(`PASS: ${message}`);
+}
 
 const requiredChecks: RequiredCheck[] = [
   { id: 'chk-1', description: 'Dark mode toggle is persisted across sessions' },
@@ -60,15 +63,11 @@ const requiredChecks: RequiredCheck[] = [
 
 const featureFlags: FeatureFlag[] = [
   { id: 'flag-a', weight: 5, checks: ['chk-1', 'chk-2'] },
-  { id: 'flag-b', weight: 3, checks: ['exp-1'] },          // irrelevant — no required check
+  { id: 'flag-b', weight: 3, checks: ['exp-1'] },          // irrelevant, not a required check
   { id: 'flag-c', weight: 2, checks: ['chk-3', 'chk-4'] },
 ];
 
-Expected: { totalWeight: 7, completeness: 100 }
-  flag-a: relevant (chk-1, chk-2 are required), weight 5, covers chk-1 + chk-2
-  flag-b: irrelevant (exp-1 not in required checks), skipped
-  flag-c: relevant (chk-3, chk-4 are required), weight 2, covers chk-3 + chk-4
-  totalWeight = 5 + 2 = 7
-  coveredChecks = { chk-1, chk-2, chk-3, chk-4 } = 4 of 4
-  completeness = (4 / 4) * 100 = 100
-*/
+const result = scoreFlagCompleteness(featureFlags, requiredChecks);
+assert(result.totalWeight === 7, 'totalWeight is 7 (flag-a 5 + flag-c 2)');
+assert(result.completeness === 100, 'completeness is 100% (all 4 checks covered)');
+// ---End Tests

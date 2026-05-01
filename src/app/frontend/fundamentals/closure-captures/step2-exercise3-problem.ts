@@ -4,8 +4,7 @@
 import { renderHook, act } from '@testing-library/react';
 import { useEffect } from 'react';
 
-// Backpack goal: only the latest search note should survive the debounce
-// window.
+// Goal: only the latest search term should survive the debounce window.
 function useDebouncedCommit(term: string, onCommit: (term: string) => void) {
   useEffect(() => {
     const id = setTimeout(() => onCommit(term), 300);
@@ -13,6 +12,7 @@ function useDebouncedCommit(term: string, onCommit: (term: string) => void) {
   }, []);
 }
 
+// ---Tests
 test('debounce commits only the latest term', () => {
   jest.useFakeTimers();
   const onCommit = jest.fn();
@@ -31,3 +31,4 @@ test('debounce commits only the latest term', () => {
   expect(onCommit).toHaveBeenCalledTimes(1);
   expect(onCommit).toHaveBeenCalledWith('react');
 });
+// ---End Tests

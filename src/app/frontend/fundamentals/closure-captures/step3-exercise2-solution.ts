@@ -4,8 +4,7 @@
 import { renderHook, act } from '@testing-library/react';
 import { useEffect, useRef } from 'react';
 
-// Backpack goal: the listener stays mounted once, and the wall clipboard keeps
-// the freshest escape handler.
+// Goal: the listener stays mounted once, and a ref keeps the latest escape handler ready.
 function useEscapeKey(handler: () => void) {
   const latestHandler = useRef(handler);
   latestHandler.current = handler;
@@ -22,6 +21,7 @@ function useEscapeKey(handler: () => void) {
   }, []);
 }
 
+// ---Tests
 test('escape listener keeps one subscription and calls the latest handler', () => {
   const addSpy = jest.spyOn(document, 'addEventListener');
   const removeSpy = jest.spyOn(document, 'removeEventListener');
@@ -57,3 +57,4 @@ test('escape listener keeps one subscription and calls the latest handler', () =
   addSpy.mockRestore();
   removeSpy.mockRestore();
 });
+// ---End Tests

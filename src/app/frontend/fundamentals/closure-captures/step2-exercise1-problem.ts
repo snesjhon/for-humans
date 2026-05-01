@@ -4,8 +4,7 @@
 import { renderHook, act } from '@testing-library/react';
 import { useEffect } from 'react';
 
-// Backpack goal: the listener should unpack the latest label, not the label
-// from the first trip.
+// Goal: the listener should read the latest label, not the one captured at mount.
 function useTaggedKeyLogger(label: string, log: (entry: string) => void) {
   useEffect(() => {
     function handleKeydown(event: KeyboardEvent) {
@@ -17,6 +16,7 @@ function useTaggedKeyLogger(label: string, log: (entry: string) => void) {
   }, []);
 }
 
+// ---Tests
 test('listener uses the latest label after rerender', () => {
   const log = jest.fn();
 
@@ -35,3 +35,4 @@ test('listener uses the latest label after rerender', () => {
 
   expect(log).toHaveBeenCalledWith('live:k');
 });
+// ---End Tests

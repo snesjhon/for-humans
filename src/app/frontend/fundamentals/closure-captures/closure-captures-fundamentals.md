@@ -322,131 +322,22 @@ This level composes everything from the earlier ones. You still use functional u
 
 #### **Exercise 1**
 
-Why: an interval should keep one subscription, but still call the latest callback after rerender. What: build a stable interval hook that starts once and reads the latest callback. How: mirror the callback into a ref and let the interval read from that live clipboard.
+The hook intentionally leaves `onTick` out of its dependency array so the interval does not restart on every rerender. That looks reasonable — restarting a timer on every render is exactly the churn Level 2 taught you to avoid. But leaving `onTick` out means the interval seals the very first callback in its backpack at mount and never opens a newer one, even after a rerender hands the hook a different function. The instinct from Level 2 is to add `onTick` to the dependency list, but `onTick` is a new function reference every render, so including it would cancel and restart the interval on every tick of the parent component. Before touching the code, ask yourself: if `onTick` cannot live in the dependency array without causing restarts, and cannot stay out of it without going stale, where else could the interval reach to find the latest version on each tick?
 
 :::stackblitz{file="step3-exercise1-problem.ts" step=3 total=3 solution="step3-exercise1-solution.ts"}
 
 #### **Exercise 2**
 
-Why: a document escape handler should not re-register on every render just to stay fresh. What: keep one listener attached while always invoking the latest handler prop. How: update a ref each render and have the listener call through that ref.
+It looks safe to capture the `handler` prop directly inside a keydown listener, but that listener never sees a newer handler after the first render. Adding `handler` to the dependency array would solve the stale read, but it would also re-register the listener on every rerender, which is exactly the churn this level is trying to avoid. You are given a hook where the listener calls whichever handler was current at mount. Fix it so the listener stays attached once while always invoking the latest handler. Ask yourself: which part should remain stable, and which part should stay live?
 
 :::stackblitz{file="step3-exercise2-problem.ts" step=3 total=3 solution="step3-exercise2-solution.ts"}
 
 #### **Exercise 3**
 
-Why: polling code often needs stable setup plus fresh query and fetcher inputs. What: keep one polling interval alive while each tick uses the latest query. How: bridge both the query and the fetcher through refs so the long-lived timer never speaks from an old note.
+Polling looks like a Level 2 problem at first: just add `query` and `fetcher` to the dependency array. But `fetcher` is usually a new function reference every render, so including it restarts the interval constantly, and adding only `query` still leaves the fetcher reading from an old backpack. You are given a hook where the polling interval either reads a stale query or restarts on every rerender depending on which dependencies you add. Fix it so one interval stays mounted for the component's lifetime while each tick reads the latest query and fetcher. Ask yourself: how many values need to be bridged through refs, and does `onStart` belong in that group?
 
 :::stackblitz{file="step3-exercise3-problem.ts" step=3 total=3 solution="step3-exercise3-solution.ts"}
 
 > **Mental anchor**: "Keep the backpack stable only when the callback can read from a live clipboard."
 
-## Key Patterns
 
-### Pattern: Functional updater handoff
-
-**When to use:** use it when delayed work only needs to describe a state transition like increment, append, merge, or toggle.
-
-**What it costs:** the callback must be written as a transition rule instead of reading the value directly, which can feel less obvious at first.
-
-**What it prevents:** lost increments, overwritten array appends, and object merges that silently drop sibling updates.
-
-**How to think about it:** the callback is not carrying a state value anymore, it is carrying an instruction for React to apply against the live state when the work lands.
-
-**Complexity:** low conceptual cost, low rerender cost, and usually the smallest fix available.
-
-### Pattern: Ref bridge for long-lived callbacks
-
-**When to use:** use it when the subscription should stay attached, but the callback must read the latest prop, state, or handler.
-
-**What it costs:** you introduce imperative indirection, which means the freshest value is no longer visible from the callback body alone.
-
-**What it prevents:** stale intervals, stale DOM listeners, and expensive resubscribe loops that come from recreating the whole setup every render.
-
-**How to think about it:** the callback keeps one backpack, but the note it reads lives on a wall clipboard that every render updates.
-
-**Complexity:** medium conceptual cost, low subscription churn, and higher debugging cost if you start using refs where state should be rendered.
-
----
-
-## Decision Framework
-
-```mermaid
-flowchart LR
-  A[Render creates callback] --> B[Callback carries sealed backpack]
-  B --> C{What happens later?}
-  C -->|Write only| D[Use functional updater]
-  C -->|Read latest value| E{Should setup restart?}
-  E -->|Yes| F[Recreate callback with dependencies]
-  E -->|No| G[Bridge latest value through ref]
-```
-
-| Situation | Best tool | Why it fits | Main cost |
-|---|---|---|---|
-| Delayed increment, append, merge, toggle | Functional updater | React supplies fresh state when applying the update | Slightly less direct syntax |
-| Listener or timeout that should follow changing inputs | Recreate with dependencies | New render gets a fresh backpack | Setup and cleanup churn |
-| Interval or subscription that should stay mounted | Ref bridge | Stable setup with fresh reads | More imperative mental overhead |
-
-```mermaid
-flowchart TD
-  A[Delayed callback bug] --> B{Does the callback only describe a state update?}
-  B -->|Yes| C[Use a functional updater]
-  B -->|No| D{Should the subscription restart when inputs change?}
-  D -->|Yes| E[Put those inputs in the effect dependencies]
-  D -->|No| F[Mirror the latest values into refs]
-  F --> G{Does the UI need to render from that value?}
-  G -->|Yes| H[Keep state as the source of truth, use the ref only as a bridge]
-  G -->|No| I[Use the ref as imperative storage]
-```
-
-| Recognition signal | Likely problem | First fix to try |
-|---|---|---|
-| Two queued updates collapse into one | Stale write from packed state | Functional updater |
-| Listener logs an old prop after rerender | Old backpack still attached | Recreate effect with dependencies |
-| Interval must stay mounted but needs fresh inputs | Stable setup, stale reads | Ref bridge |
-| Cleanup cancels the wrong request or timer | Effect is tied to the wrong render inputs | Recheck dependency ownership |
-
-### When NOT to use
-
-Do not reach for refs just because dependency arrays are inconvenient. If the setup should naturally follow a changing value, repack the callback and let the effect restart. Do not store render-visible data in refs to dodge rerenders, because that only hides the state from React instead of fixing the closure problem. Do not blame every rerender bug on stale closures either, because some issues are plain ownership mistakes, effect misuse, or duplicated state.
-
-## Common Gotchas & Edge Cases
-
-**Gotcha 1: Event handlers are fresh, nested async work is not**
-
-A click handler created during the current render usually sees current values, so it can feel safe. The trap appears when that handler schedules later work, like a timeout or promise callback, and that nested callback runs with the older packed notes.  
-Why it is tempting: the bug starts inside a handler that already looked fresh.  
-Fix: inspect the innermost delayed callback, not just the outer event handler.
-
-**Gotcha 2: Dependency arrays describe closure ownership, not preference**
-
-An effect with `[]` does not mean "run once and stay smart forever." It means "keep the very first backpack forever." That is exactly why stale listeners and intervals happen.  
-Why it is tempting: empty dependency arrays look like a cheap optimization.  
-Fix: include every value the delayed callback reads, unless you deliberately bridge that value through a ref.
-
-**Gotcha 3: Refs solve freshness, but they do not trigger rendering**
-
-A ref can keep the latest value available to long-lived callbacks, but changing a ref does not re-render the UI. If the screen should update, state still owns the rendered value.  
-Why it is tempting: a ref appears to "fix" stale data without any rerenders.  
-Fix: use refs only as a bridge for imperative readers, not as a hidden replacement for state.
-
-**Gotcha 4: Cleanup also captures a backpack**
-
-The cleanup function returned from an effect belongs to the same render as the setup. If that setup used the wrong dependencies, the cleanup can unsubscribe the wrong resource or leave the right one behind.  
-Why it is tempting: cleanup feels like a global teardown step instead of render-scoped work.  
-Fix: reason about setup and cleanup as one pair tied to one render.
-
-**Edge cases to always check**
-
-- Rapid rerenders before a timeout fires
-- Two delayed updates that both target the same state cell
-- Subscriptions that are expensive to restart
-- Effects that both read current values and schedule cleanup
-- External callbacks that outlive the component's most recent render
-
-**Debugging tips**
-
-- Add logs that print when the callback was created and when it finally runs
-- Ask whether the callback is reading a value or only describing an update
-- Temporarily replace direct state writes with functional updaters to isolate stale write bugs
-- Count how often a listener or interval is attached to spot accidental resubscription churn
-- Introduce a ref mirror only after proving the setup should remain stable

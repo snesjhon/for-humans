@@ -4,8 +4,7 @@
 import { renderHook, act } from '@testing-library/react';
 import { useEffect } from 'react';
 
-// Backpack goal: the heartbeat should speak with the latest status card, not
-// the one packed on mount.
+// Goal: the heartbeat should announce the latest status, not the one captured at mount.
 function useHeartbeat(status: string, onTick: (status: string) => void) {
   useEffect(() => {
     const id = setInterval(() => onTick(status), 1000);
@@ -13,6 +12,7 @@ function useHeartbeat(status: string, onTick: (status: string) => void) {
   }, []);
 }
 
+// ---Tests
 test('interval announces the latest status after rerender', () => {
   jest.useFakeTimers();
   const onTick = jest.fn();
@@ -30,3 +30,4 @@ test('interval announces the latest status after rerender', () => {
 
   expect(onTick).toHaveBeenCalledWith('live');
 });
+// ---End Tests
