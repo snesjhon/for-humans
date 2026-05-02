@@ -38,7 +38,13 @@ export const JOURNEY: Phase[] = [
         fundamentalsSlug: 'effects-timers-cleanup',
         fundamentalsBlurb:
           'Lifecycle timing, interval drift, AbortController for fetch cancellation, and how StrictMode surfaces missing cleanup.',
-        practice: [],
+        practice: [
+          {
+            id: '026',
+            slug: '026-promise-vs-timeout',
+            label: 'Promise vs setTimeout',
+          },
+        ],
         advanced: [],
       },
     ],

@@ -50,6 +50,15 @@ const FRONTEND_PROBLEM_METADATA: Record<
     kind: 'react',
     difficulty: 'medium',
   },
+  '026': {
+    title: 'Promise vs setTimeout',
+    prompt:
+      'Predict the execution order when promises and setTimeout appear together, then implement a correctly awaitable delay. The core question is which queue each callback lands in.',
+    sectionId: 'effects-timers-cleanup',
+    tier: 'practice',
+    kind: 'typescript',
+    difficulty: 'medium',
+  },
 };
 
 let _problems: FrontendProblem[] | null = null;

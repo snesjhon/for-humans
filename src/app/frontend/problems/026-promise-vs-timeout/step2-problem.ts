@@ -1,0 +1,45 @@
+// Goal: resolve with the user object after the data is ready, not null
+export function fetchUser(id: number): Promise<{ id: number; name: string } | null> {
+  return new Promise((resolve) => {
+    let user: { id: number; name: string } | null = null;
+    setTimeout(() => {
+      user = { id, name: `User ${id}` };
+    }, 50);
+    resolve(user);
+  });
+}
+
+// ---Tests
+test('resolves with the user object, not null', async () => {
+  jest.useFakeTimers();
+
+  const promise = fetchUser(1);
+  jest.runAllTimers();
+  const result = await promise;
+
+  expect(result).not.toBeNull();
+  expect(result).toEqual({ id: 1, name: 'User 1' });
+  jest.useRealTimers();
+});
+
+test('does not resolve before the timer fires', async () => {
+  jest.useFakeTimers();
+  let resolved = false;
+
+  fetchUser(1).then(() => {
+    resolved = true;
+  });
+
+  await Promise.resolve();
+  await Promise.resolve();
+
+  expect(resolved).toBe(false);
+
+  jest.runAllTimers();
+  await Promise.resolve();
+  await Promise.resolve();
+
+  expect(resolved).toBe(true);
+  jest.useRealTimers();
+});
+// ---End Tests
