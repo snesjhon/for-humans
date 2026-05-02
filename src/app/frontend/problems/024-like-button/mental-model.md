@@ -1,32 +1,32 @@
 ## Overview
 
-This problem looks like a styling exercise, but the real lesson is state modeling. A Like button changes its appearance when the user hovers it and when the user toggles it on or off, yet those visual changes do not all belong in state. If you store the display pieces themselves, like label text, icon variant, or tone, they can drift apart and create impossible snapshots such as a filled heart that still says "Like".
+At first glance, this looks like a small UI styling problem. The button changes when you hover it, and it changes when you click it, so it is tempting to store every visible piece directly: the label, the icon, and the tone. That approach feels straightforward at first, but it makes the button harder to reason about because several pieces of state now have to stay synchronized.
 
-The goal is to separate what the button actually knows from what the button merely shows. We will build that in two stages: first the persistent liked choice, then the temporary hover preview layered on top of it.
+The better starting question is: what does the button actually know, and what is it only showing? Work through the problem in two passes. First, model the persistent liked choice. Then layer on the temporary hover preview without letting it overwrite the liked state.
 
 ## Core Concept and Mental Model
 
 ### The Control Panel
 
-Think of the button like a small control panel with two switches hidden behind the surface.
+Use a simple picture in your head: the button is a tiny control panel with two switches behind the surface.
 
 - `liked` is the locked switch that records the user's choice
 - `hovered` is the momentary switch that flips only while the pointer is over the button
 
-Everything else is just the panel surface reacting to those switches. The label, icon, `aria-pressed`, and tone are indicator lights. They should not each get their own memory. They should simply reflect the current switch positions.
+Everything else is just the panel reacting to those switches. The label, icon, `aria-pressed`, and tone are like indicator lights on the surface. They do not need their own memory if they can be read from the switch positions.
 
-Once you think of the button this way, the rule becomes clear: store the switches, derive the lights.
+If that picture feels clear, the implementation rule gets clearer too: store the switches, derive the lights.
 
 ### What the button actually knows
 
-The button only has two real facts:
+Before writing code, list the real facts the button can hold onto:
 
 - whether the user has liked it
 - whether the pointer is currently hovering it
 
-Those facts can change independently. A user can like the button without hovering it. A user can hover the button without liking it. A user can hover a button that was already liked earlier. Because those dimensions vary separately, they deserve separate state.
+These facts change independently. A user can like the button without hovering it. A user can hover it without liking it. A user can also hover a button that was already liked earlier. That is a good sign that these are separate dimensions, so they should stay separate in state.
 
-Everything visible comes from combining those facts into a render snapshot:
+Then ask which visible pieces can be computed from those facts during render:
 
 - `label`: `'Liked'` or `'Like'`
 - `icon`: `'heart-filled'` or `'heart-outline'`
@@ -35,7 +35,7 @@ Everything visible comes from combining those facts into a render snapshot:
 
 ### Why copied display state breaks
 
-The broken version usually stores the indicators themselves:
+If you are not sure whether you are storing too much, look at a version like this:
 
 ```ts
 const [liked, setLiked] = useState(false);
@@ -44,21 +44,21 @@ const [icon, setIcon] = useState<'outline' | 'filled'>('outline');
 const [tone, setTone] = useState<'neutral' | 'preview' | 'active'>('neutral');
 ```
 
-That looks explicit, but it is really the same snapshot copied across several boxes. Now every interaction has to update all of them in perfect sync. One click has to change `liked`, `label`, and `icon` together. One pointer leave has to remove hover styling without erasing the already-liked state. Missing one write creates a contradiction because the indicators are no longer being driven from the same facts.
+This looks explicit, but it is really one snapshot copied into several boxes. Now every interaction has to keep all of them aligned. A click has to update `liked`, `label`, and `icon` together. Pointer leave has to remove the hover preview without accidentally erasing the already-liked state. If one write is forgotten, the UI can contradict itself because the visual pieces are no longer being driven from the same facts.
 
 ### Two dimensions, one snapshot
 
-The hardest part of this button is that hover and liked are different kinds of truth. `liked` is persistent. `hovered` is temporary. If you collapse them into one stored display field, one dimension starts overwriting the other.
+The key tension in this problem is that hover and liked are different kinds of truth. `liked` is persistent. `hovered` is temporary. If both of them get flattened into one stored display field, one dimension starts overwriting the other.
 
-That is why `pointerLeave()` is such a useful test. If leaving the button resets everything back to neutral, your state shape forgot that the user had already liked it. A correct model removes only the hover fact, then recomputes the visual snapshot from the remaining facts.
+Use `pointerLeave()` as a test case. Imagine the user already clicked the button, then hovered it, then moved away. What should disappear, and what should remain? Only the hover preview should go away. The liked choice should still be there. If leaving the button resets everything to neutral, the state shape is not separating temporary and persistent facts cleanly enough.
 
 ## How I Think Through This
 
-I start by asking what the user interaction changed in the domain, not on the screen. A click changes one durable fact: whether the button is liked. Hover changes one temporary fact: whether the pointer is currently over the button. If I find myself storing the label, icon, or tone directly, I know I am storing paint instead of truth.
+When working through this kind of UI, start with the domain change, not the visual change. A click changes one durable fact: whether the button is liked. Hover changes one temporary fact: whether the pointer is currently over the button. If you catch yourself storing the label, icon, or tone directly, pause and ask whether you are storing paint instead of truth.
 
-From there I test the two dimensions separately. First, does toggling `liked` automatically update every persistent visual? If not, the facts and the indicators are living in different places. Second, does hover preview the button without overwriting the liked choice? If pointer leave wipes out the active state, I know the model collapsed temporary and persistent state into one field.
+From there, test each dimension on its own. First, if `liked` changes, do all of the persistent visuals follow from that automatically? If not, the facts and the indicators are living in different places. Second, can hover preview the button without overwriting the liked choice? If pointer leave wipes out the active state, the model is probably collapsing temporary and persistent behavior into one field.
 
-The final implementation should feel uneventful. Toggle one fact. Flip one temporary fact on enter and leave. Derive the whole appearance from the current snapshot. When the state model is right, the rendering logic becomes simple because there is no synchronization work left to do.
+The target feeling is that the implementation becomes boring. Toggle one fact. Flip one temporary fact on enter and leave. Derive the whole appearance from the current snapshot. If the state model is right, the render logic usually gets simpler because there is less synchronization work to do.
 
 ---
 
@@ -66,9 +66,9 @@ The final implementation should feel uneventful. Toggle one fact. Flip one tempo
 
 ### Step 1: Keep one source of truth for the liked snapshot
 
-The first repair is to stop storing the persistent visuals directly. A click does not create four new truths. It changes one fact: whether the button is liked. Once that fact is stable, the label, icon, and pressed state become straightforward render outputs instead of extra bookkeeping.
+Start by asking what a click actually changes. It does not create a new label, a new icon, and a new pressed state as separate truths. It changes one durable fact: whether the button is liked. Once you store only that fact, the rest of the persistent UI can be read from it at render time.
 
-This step removes the most obvious drift bug. The button can no longer end up with `liked === true` while still showing the unliked label, because the label is computed from the same snapshot. The implementation gets smaller at the same time, which is usually a good signal that the state shape improved.
+One useful check here is to imagine the button right after a click. If `liked` is `true`, what should the label say? What icon should it show? If those answers come from separate state variables, they can drift apart. If they come from `liked`, they stay in sync automatically. That is the direction this step should push you toward.
 
 :::stackblitz{file="step1-problem.ts" step=1 total=2 solution="step1-solution.ts"}
 
@@ -80,9 +80,9 @@ This step removes the most obvious drift bug. The button can no longer end up wi
 
 ### Step 2: Separate persistent choice from temporary hover preview
 
-Hover introduces a second dimension, but it should not replace the first one. The button still needs to remember whether the user liked it after the pointer leaves. That means `hovered` belongs in state as its own temporary fact, while the tone belongs in the derived paint layer.
+Now add hover, but treat it as a different kind of fact. `liked` is the user's choice, so it should survive after the pointer leaves. `hovered` is only a temporary preview, so it should turn on during pointer enter and turn off during pointer leave. That means these two facts need to sit alongside each other, not compete for the same slot.
 
-This step removes the impossible transition where `pointerLeave()` wipes out the active style of an already liked button. Instead of mutating a stored tone directly, we compute tone from the pair `{ liked, hovered }`. That preserves both the long-lived choice and the short-lived preview in one coherent snapshot.
+The easiest way to reason about this step is to test one concrete sequence: click the button so it becomes liked, move the pointer over it, then move the pointer away. After pointer leave, the hover preview should disappear, but the liked state should still be there. If leaving the button resets everything to neutral, the model is mixing up a temporary fact with a durable one. A cleaner approach is to store `liked` and `hovered`, then derive `tone` from the pair `{ liked, hovered }`.
 
 :::stackblitz{file="step2-problem.ts" step=2 total=2 solution="step2-solution.ts"}
 
@@ -94,6 +94,6 @@ This step removes the impossible transition where `pointerLeave()` wipes out the
 
 ### Final Solution
 
-The final hook stores only the facts that can actually change over time and derives the full appearance from the current snapshot. That guarantees the label, icon, pressed state, and tone can never disagree with each other.
+When you compare your finished version to the broken one, the main thing to check is not whether it is shorter. Check whether every visible output is now coming from the current facts instead of being stored separately. If `liked` and `hovered` are the only changing truths, then the label, icon, pressed state, and tone should all fall out of that snapshot naturally.
 
 :::stackblitz{file="solution.ts" step=2 total=2 solution="solution.ts"}

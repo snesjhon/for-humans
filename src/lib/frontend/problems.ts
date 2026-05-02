@@ -41,6 +41,15 @@ const FRONTEND_PROBLEM_METADATA: Record<
     kind: 'react',
     difficulty: 'medium',
   },
+  '025': {
+    title: 'Star Rating',
+    prompt:
+      'Build a star rating component that shows a row of star icons for users to select the number of filled stars corresponding to the rating. Focus on how hover preview and selected state interact.',
+    sectionId: 'state-driven-ui',
+    tier: 'practice',
+    kind: 'react',
+    difficulty: 'medium',
+  },
 };
 
 let _problems: FrontendProblem[] | null = null;

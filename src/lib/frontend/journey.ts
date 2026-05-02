@@ -22,6 +22,11 @@ export const JOURNEY: Phase[] = [
             slug: '024-like-button',
             label: 'Like Button',
           },
+          {
+            id: '025',
+            slug: '025-star-rating',
+            label: 'Star Rating',
+          },
         ],
         advanced: [],
       },

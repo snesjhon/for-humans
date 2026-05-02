@@ -46,7 +46,7 @@ function getStepNumbers(problemSlug: string) {
 
   return fs
     .readdirSync(problemDir)
-    .filter((file) => /^step\d+-problem\.ts$/.test(file))
+    .filter((file) => /^step\d+-problem\.tsx?$/.test(file))
     .map((file) => parseInt(file.match(/^step(\d+)/)?.[1] ?? '0', 10))
     .filter((step) => step > 0)
     .sort((left, right) => left - right);

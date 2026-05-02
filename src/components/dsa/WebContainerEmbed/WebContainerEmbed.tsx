@@ -128,6 +128,10 @@ function buildCodeSyncKey(base: DsaCodeBase, slug: string, file: string) {
 }
 
 function normalizeExercisePromptFile(file: string): string {
+  if (file.endsWith('-solution.tsx')) {
+    return file.replace(/-solution\.tsx$/, '-problem.tsx');
+  }
+
   return file.replace(/-solution\.ts$/, '-problem.ts');
 }
 

@@ -23,7 +23,7 @@ const MULTI_FENCE =
   /^:::stackblitz\{step=(\d+) total=(\d+) exercises="([^"]+)" solutions="([^"]+)"\}$/gm;
 
 function isSafeTsFilename(file: string) {
-  return file.endsWith('.ts') && !file.includes('/') && !file.includes('..');
+  return /\.tsx?$/.test(file) && !file.includes('/') && !file.includes('..');
 }
 
 function extractStackBlitzEmbeds(content: string): FrontendStackBlitzEmbed[] {
