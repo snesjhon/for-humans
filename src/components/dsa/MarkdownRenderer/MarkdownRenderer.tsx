@@ -1,7 +1,8 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import BaseMarkdownRenderer, {
+import ExerciseMarkdownRenderer from '@/components/exercises/MarkdownRenderer/MarkdownRenderer';
+import {
   type BaseSegment,
 } from '@/components/ui/MarkdownRenderer/MarkdownRenderer';
 import type { TraceStep } from '../ArrayTrace/ArrayTrace';
@@ -20,17 +21,6 @@ import type { BinaryTreeTraceStep } from '../BinaryTreeTrace/BinaryTreeTrace';
 import type { ParserTraceStep } from '../ParserTrace/ParserTrace';
 import type { GraphTraceStep } from '../GraphTrace/GraphTrace';
 
-const WebContainerEmbed = dynamic(
-  () => import('../WebContainerEmbed/WebContainerEmbed'),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="rounded-lg border border-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)] p-4 text-sm text-[var(--ms-text-faint)]">
-        Loading editor...
-      </div>
-    ),
-  },
-);
 const ArrayTrace = dynamic(() => import('../ArrayTrace/ArrayTrace'));
 const TwoPointerTrace = dynamic(() => import('../TwoPointerTrace/TwoPointerTrace'));
 const PrefixSuffixTrace = dynamic(
@@ -111,21 +101,6 @@ type TraceGraphSegment = BaseSegment & {
   type: 'trace-graph';
   steps: GraphTraceStep[];
 };
-type StackBlitzSegment = BaseSegment & {
-  type: 'stackblitz';
-  file: string;
-  step: number;
-  total: number;
-  solution: string;
-};
-type StackBlitzMultiSegment = BaseSegment & {
-  type: 'stackblitz-multi';
-  step: number;
-  total: number;
-  exercises: string[];
-  solutions: string[];
-};
-
 function splitTrace(segments: BaseSegment[]): BaseSegment[] {
   const result: BaseSegment[] = [];
   const configs: Array<{
@@ -244,82 +219,6 @@ function splitTrace(segments: BaseSegment[]): BaseSegment[] {
   );
 }
 
-function splitStackBlitz(segments: BaseSegment[]): BaseSegment[] {
-  const result: BaseSegment[] = [];
-  const singleFence =
-    /^:::stackblitz\{file="([^"]+)" step=(\d+) total=(\d+) solution="([^"]+)"\}$/gm;
-  const multiFence =
-    /^:::stackblitz\{step=(\d+) total=(\d+) exercises="([^"]+)" solutions="([^"]+)"\}$/gm;
-
-  for (const seg of segments) {
-    if (seg.type !== 'markdown') {
-      result.push(seg);
-      continue;
-    }
-
-    // Build a combined list of all matches (single + multi) sorted by position
-    type RawMatch = { index: number; length: number; seg: BaseSegment };
-    const matches: RawMatch[] = [];
-    const text = 'text' in seg && typeof seg.text === 'string' ? seg.text : '';
-
-    singleFence.lastIndex = 0;
-    let m: RegExpExecArray | null;
-    while ((m = singleFence.exec(text)) !== null) {
-      matches.push({
-        index: m.index,
-        length: m[0].length,
-        seg: {
-          type: 'stackblitz',
-          file: m[1],
-          step: parseInt(m[2], 10),
-          total: parseInt(m[3], 10),
-          solution: m[4],
-        },
-      });
-    }
-
-    multiFence.lastIndex = 0;
-    while ((m = multiFence.exec(text)) !== null) {
-      matches.push({
-        index: m.index,
-        length: m[0].length,
-        seg: {
-          type: 'stackblitz-multi',
-          step: parseInt(m[1], 10),
-          total: parseInt(m[2], 10),
-          exercises: m[3].split(','),
-          solutions: m[4].split(','),
-        },
-      });
-    }
-
-    matches.sort((a, b) => a.index - b.index);
-
-    let cursor = 0;
-    for (const hit of matches) {
-      if (hit.index > cursor) {
-        const textBefore = text.slice(cursor, hit.index);
-        result.push({ type: 'markdown', text: textBefore });
-      }
-      result.push(hit.seg);
-      cursor = hit.index + hit.length;
-    }
-    if (cursor < text.length) {
-      result.push({ type: 'markdown', text: text.slice(cursor) });
-    }
-  }
-
-  return result.filter((s) => {
-    if (s.type === 'stackblitz' || s.type === 'stackblitz-multi') return true;
-    return (
-      s.type !== 'markdown' ||
-      !('text' in s) ||
-      typeof s.text !== 'string' ||
-      s.text.trim().length > 0
-    );
-  });
-}
-
 export default function MarkdownRenderer({
   content,
   className,
@@ -330,10 +229,15 @@ export default function MarkdownRenderer({
   exercisePromptsByFile,
 }: MarkdownRendererProps) {
   return (
-    <BaseMarkdownRenderer
+    <ExerciseMarkdownRenderer
       content={content}
       className={className}
-      extraPreprocessors={[splitTrace, splitStackBlitz]}
+      extraPreprocessors={[splitTrace]}
+      fundamentalsSlug={fundamentalsSlug}
+      problemSlug={problemSlug}
+      problemId={problemId}
+      codeFiles={codeFiles}
+      exercisePromptsByFile={exercisePromptsByFile}
       renderExtraSegment={(seg, i) => {
         if (seg.type === 'trace')
           return <ArrayTrace key={i} steps={(seg as TraceSegment).steps} />;
@@ -386,58 +290,6 @@ export default function MarkdownRenderer({
           );
         if (seg.type === 'trace-graph')
           return <GraphTrace key={i} steps={(seg as TraceGraphSegment).steps} />;
-        if (seg.type === 'stackblitz') {
-          const s = seg as StackBlitzSegment;
-          const slug = problemSlug ?? fundamentalsSlug;
-          if (!slug) return null;
-          const isSolutionOnly = s.file === s.solution;
-          return (
-            <WebContainerEmbed
-              key={i}
-              tabs={
-                isSolutionOnly
-                  ? [{ label: 'Solution', file: s.solution }]
-                  : [
-                      { label: `Step ${s.step}`, file: s.file },
-                      { label: 'Solution', file: s.solution },
-                    ]
-              }
-              step={s.step}
-              total={s.total}
-              contentSlug={slug}
-              progressStepId={
-                !isSolutionOnly && problemId
-                  ? `dsa-${problemId}-step-${s.step}`
-                  : undefined
-              }
-              base={fundamentalsSlug ? 'fundamentals' : undefined}
-              initialFiles={codeFiles}
-              exercisePromptsByFile={exercisePromptsByFile}
-            />
-          );
-        }
-        if (seg.type === 'stackblitz-multi') {
-          const s = seg as StackBlitzMultiSegment;
-          const slug = problemSlug ?? fundamentalsSlug;
-          if (!slug) return null;
-          const tabs = s.exercises.flatMap((ex, idx) => [
-            { label: `Exercise ${idx + 1}`, file: ex },
-            { label: `Solution ${idx + 1}`, file: s.solutions[idx] ?? ex },
-          ]);
-          return (
-            <WebContainerEmbed
-              key={i}
-              tabs={tabs}
-              step={s.step}
-              total={s.total}
-              contentSlug={slug}
-              progressStepId={problemId ? `dsa-${problemId}-step-${s.step}` : undefined}
-              base={fundamentalsSlug ? 'fundamentals' : undefined}
-              initialFiles={codeFiles}
-              exercisePromptsByFile={exercisePromptsByFile}
-            />
-          );
-        }
         return null;
       }}
     />

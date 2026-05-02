@@ -11,7 +11,9 @@ function readParams(request: NextRequest): {
   const file = request.nextUrl.searchParams.get('file')
   const base = (request.nextUrl.searchParams.get('base') ?? 'problems') as DsaCodeBase
 
-  if (!slug || !file || !file.endsWith('.ts') || file.includes('/') || file.includes('..')) {
+  const isSupportedCodeFile = file && /\.tsx?$/.test(file)
+
+  if (!slug || !isSupportedCodeFile || file.includes('/') || file.includes('..')) {
     return null
   }
 

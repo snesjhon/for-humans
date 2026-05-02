@@ -774,7 +774,7 @@ export default function WebContainerEmbed({
   }, [code]);
 
   function shouldRunWithJest(file: string, content: string) {
-    if (!file.endsWith('.ts')) return false;
+    if (!/\.tsx?$/.test(file)) return false;
 
     return (
       content.includes('@testing-library/react') ||
