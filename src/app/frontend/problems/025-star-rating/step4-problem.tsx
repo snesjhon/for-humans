@@ -13,29 +13,14 @@ function buildStarValues(maxStars: number): number[] {
   return Array.from({ length: maxStars }, (_, index) => index + 1);
 }
 
-// Goal: when the pointer leaves without a new click, restore the previously selected filled state, and keep each StarRating instance independent when multiple widgets render on the same page.
+// Goal: finish the preview lifecycle by handling pointer leave so the temporary hover layer disappears, then verify that each StarRating instance keeps this state model local.
 export function StarRating({
   maxStars,
   initialFilledStars,
 }: StarRatingProps) {
   const [selectedRating, setSelectedRating] = useState(initialFilledStars);
   const [hoveredRating, setHoveredRating] = useState<number | null>(null);
-  const [displayRating, setDisplayRating] = useState(initialFilledStars);
-
-  function handleClick(ratingValue: number) {
-    setSelectedRating(ratingValue);
-    setDisplayRating(ratingValue);
-  }
-
-  function handleMouseEnter(ratingValue: number) {
-    setHoveredRating(ratingValue);
-    setDisplayRating(ratingValue);
-  }
-
-  function handleMouseLeave() {
-    setHoveredRating(null);
-    setDisplayRating(0);
-  }
+  const displayRating = hoveredRating ?? selectedRating;
 
   return (
     <div role="group">
@@ -46,9 +31,8 @@ export function StarRating({
           <button
             key={ratingValue}
             type="button"
-            onClick={() => handleClick(ratingValue)}
-            onMouseEnter={() => handleMouseEnter(ratingValue)}
-            onMouseLeave={handleMouseLeave}
+            onClick={() => setSelectedRating(ratingValue)}
+            onMouseEnter={() => setHoveredRating(ratingValue)}
           >
             {isFilled ? 'filled' : 'empty'}
           </button>

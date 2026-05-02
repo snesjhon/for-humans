@@ -2,7 +2,6 @@
  * @jest-environment jsdom
  */
 import { fireEvent, render, screen } from '@testing-library/react';
-import { useState } from 'react';
 
 export type StarRatingProps = {
   maxStars: number;
@@ -13,24 +12,18 @@ function buildStarValues(maxStars: number): number[] {
   return Array.from({ length: maxStars }, (_, index) => index + 1);
 }
 
-// Goal: when a star is clicked, update one selected rating value and re-render the row so that star and every star to its left show as filled.
+// Goal: introduce one piece of state for the user's committed rating, then use that single value to drive which stars render as filled after a click.
 export function StarRating({
   maxStars,
   initialFilledStars,
 }: StarRatingProps) {
-  const [selectedRating, setSelectedRating] = useState(initialFilledStars);
-
   return (
     <div>
       {buildStarValues(maxStars).map((ratingValue) => {
-        const isFilled = ratingValue <= selectedRating;
+        const isFilled = ratingValue <= initialFilledStars;
 
         return (
-          <button
-            key={ratingValue}
-            type="button"
-            onClick={() => setSelectedRating((current) => current)}
-          >
+          <button key={ratingValue} type="button">
             {isFilled ? 'filled' : 'empty'}
           </button>
         );

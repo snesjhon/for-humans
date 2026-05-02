@@ -124,45 +124,45 @@ This step should feel like building the shell of the widget. Render one button p
 
 ### Step 2: Add click selection without storing the whole row
 
-Now bring in the first real interaction. A click on star `3` means the selected rating becomes `3`, and every star up to that position should render as filled. The key idea is that you still do not need per-star memory. One selected number should drive the whole row.
+Now the exercise should force the real state question into the open: when the user clicks a star, what fact actually changed? The answer is not "some stars became filled." The answer is "the selected rating changed." This step is where the mental model stops being a static render problem and becomes a state-driven UI problem.
 
-One useful test here is to click a higher star and then a lower one. If the lower selection still leaves extra stars filled, the row is being stored separately instead of being derived from the current selected rating. This is where the state-driven part of the UI should start to feel concrete.
+One useful test here is to click a higher star and then a lower one. If the lower selection still leaves extra stars filled, that usually means you are still thinking in terms of repainting the row instead of updating one source of truth and letting render derive the result. The point of this step is to train that distinction.
 
 :::stackblitz{file="step2-problem.tsx" step=2 total=4 solution="step2-solution.tsx"}
 
 **Hints**
 
-- A click commits one rating value, not a whole array of star states.
-- Filling the row should come from the current selected rating during render.
-- Clicking a lower star after a higher one should naturally unfill the extra stars.
+- Ask yourself what should persist after the click: a collection of filled stars, or one selected value.
+- The next state you add should represent the user's committed choice, not the painted row.
+- If your render logic reads from that one value, clicking a lower star after a higher one should naturally unfill the extra stars.
 
 ### Step 3: Add hover preview and let it take priority over the saved rating
 
-Now add hover, but keep it separate from the saved selection. When the pointer enters a star, the component should preview that rating. When the pointer leaves, it should remove only the preview. The selected rating still belongs to the widget underneath.
+This step introduces the subtle part of the prompt: the widget now has two different truths that matter at different times. One truth is durable, the user's selected rating. The other is temporary, the rating the pointer is currently previewing. If those two ideas collapse into one variable mentally, the component becomes hard to reason about.
 
-Walk through one sequence while you code: start with rating `4`, hover `2`, then leave. During hover, only two stars should appear filled. After leaving, the row should return to four filled stars. If the row resets to zero or stays stuck on the preview, the temporary hover state is being treated like the durable selection.
+Walk through one sequence while you code: start with rating `4`, hover `2`, then leave. During hover, only two stars should appear filled. That should push you to ask a design question before you code: do I need another piece of state, or am I overwriting the meaning of the one I already have? The point of the step is to recognize that preview belongs in its own lane.
 
 :::stackblitz{file="step3-problem.tsx" step=3 total=4 solution="step3-solution.tsx"}
 
 **Hints**
 
-- Hover is temporary state, not the saved rating.
-- Use the hovered value when it exists, otherwise use the selected value.
-- Different `StarRating` instances should still behave independently after hover is added.
+- Hover should feel like a temporary override, not a replacement for the user's saved choice.
+- Think about what event starts the preview and what fact that event should update.
+- Once you have both a saved value and a preview value, render can decide which one should win at that moment.
 
 ### Step 4: Restore the saved rating on leave and confirm the component is reusable
 
-The last requirement is about behavior after the preview ends. If the cursor leaves the widget and the user has not clicked a new rating, the stars should return to the saved selection from before hover. This is the check that proves hover is only a preview layer, not the real source of truth.
+The last requirement is the proof that your state model is actually clean. When hover ends, the widget should not have to reconstruct the selected state by repainting stars manually. It should simply stop previewing and reveal the saved rating that was already there underneath. If that feels awkward to express, it usually means the preview state and the committed state are still too entangled.
 
-This is also a good moment to prove the widget is actually reusable. Render two `StarRating` instances with different props and make sure they do not interfere with each other. If one instance updates the other, some state has escaped the component boundary.
+This is also the moment to confirm the component is truly reusable. Render two `StarRating` instances with different props and make sure they do not interfere with each other. That check reinforces the broader mental model: each widget instance should own its own selection and its own preview lifecycle.
 
 :::stackblitz{file="step4-problem.tsx" step=4 total=4 solution="step4-solution.tsx"}
 
 **Hints**
 
-- Pointer leave should clear only the hover preview, not the saved rating.
-- Reusability here means each instance owns its own local state.
-- The filled and empty SVGs are rendering details, the main logic still comes from the active rating cutoff.
+- Ask what should happen when the preview ends if no new click was committed.
+- The event that ends hover should remove only the temporary layer, not rewrite the saved choice.
+- Reusability here means each widget instance keeps this whole state model local to itself.
 
 ### Final Solution
 

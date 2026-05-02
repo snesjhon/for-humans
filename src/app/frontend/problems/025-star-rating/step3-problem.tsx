@@ -13,27 +13,23 @@ function buildStarValues(maxStars: number): number[] {
   return Array.from({ length: maxStars }, (_, index) => index + 1);
 }
 
-// Goal: add hover preview so the hovered star and everything to its left render as filled, and make that preview temporarily override the saved selection while the pointer is over the widget.
+// Goal: add a separate hover-preview lane, wire the pointer events that control it, and let render choose the preview value over the saved rating only while the pointer is active.
 export function StarRating({
   maxStars,
   initialFilledStars,
 }: StarRatingProps) {
   const [selectedRating, setSelectedRating] = useState(initialFilledStars);
-  const [hoveredRating, setHoveredRating] = useState<number | null>(null);
-  const displayRating = selectedRating;
 
   return (
     <div>
       {buildStarValues(maxStars).map((ratingValue) => {
-        const isFilled = ratingValue <= displayRating;
+        const isFilled = ratingValue <= selectedRating;
 
         return (
           <button
             key={ratingValue}
             type="button"
             onClick={() => setSelectedRating(ratingValue)}
-            onMouseEnter={() => setHoveredRating(ratingValue)}
-            onMouseLeave={() => setHoveredRating(null)}
           >
             {isFilled ? 'filled' : 'empty'}
           </button>
