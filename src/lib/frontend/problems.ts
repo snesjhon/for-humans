@@ -59,6 +59,33 @@ const FRONTEND_PROBLEM_METADATA: Record<
     kind: 'typescript',
     difficulty: 'medium',
   },
+  '027': {
+    title: 'Promise Adoption Traps',
+    prompt:
+      'Wrap callback work in a promise, return nested promise branches correctly, and retry without breaking the chain. The core question is what the outer promise is actually waiting for.',
+    sectionId: 'data-fetching',
+    tier: 'practice',
+    kind: 'typescript',
+    difficulty: 'medium',
+  },
+  '028': {
+    title: 'Traffic Light',
+    prompt:
+      'Build a traffic light where green, yellow, and red switch after fixed delays and loop forever. The core question is how the timer lifecycle stays tied to the component, especially when it unmounts mid-cycle.',
+    sectionId: 'effects-timers-cleanup',
+    tier: 'practice',
+    kind: 'react',
+    difficulty: 'medium',
+  },
+  '029': {
+    title: 'Modal Dialog',
+    prompt:
+      'Build a reusable modal dialog component that can be opened and closed. The core question is how a portal lets a component stay in the React tree while its DOM output escapes to document.body.',
+    sectionId: 'component-composition',
+    tier: 'practice',
+    kind: 'react',
+    difficulty: 'medium',
+  },
 };
 
 let _problems: FrontendProblem[] | null = null;

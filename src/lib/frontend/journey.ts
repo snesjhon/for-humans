@@ -44,6 +44,11 @@ export const JOURNEY: Phase[] = [
             slug: '026-promise-vs-timeout',
             label: 'Promise vs setTimeout',
           },
+          {
+            id: '028',
+            slug: '028-traffic-light',
+            label: 'Traffic Light',
+          },
         ],
         advanced: [],
       },
@@ -64,7 +69,13 @@ export const JOURNEY: Phase[] = [
         fundamentalsSlug: 'component-composition',
         fundamentalsBlurb:
           'Compound components, portal-based rendering, lifting state up, and recursive component trees.',
-        practice: [],
+        practice: [
+          {
+            id: '029',
+            slug: '029-modal-dialog',
+            label: 'Modal Dialog',
+          },
+        ],
         advanced: [],
       },
       {
@@ -75,7 +86,13 @@ export const JOURNEY: Phase[] = [
         fundamentalsSlug: 'data-fetching',
         fundamentalsBlurb:
           'Race condition cancellation, `Awaited<T>` and conditional types for typed async state, and when to extract a data-fetching hook.',
-        practice: [],
+        practice: [
+          {
+            id: '027',
+            slug: '027-promise-adoption-traps',
+            label: 'Promise Adoption Traps',
+          },
+        ],
         advanced: [],
       },
       {

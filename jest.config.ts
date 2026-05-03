@@ -5,5 +5,8 @@ const config: Config = {
   testEnvironment: 'node',
   moduleNameMapper: { '^@/(.*)$': '<rootDir>/src/$1' },
   testMatch: ['**/__tests__/**/*.test.ts'],
+  transform: {
+    '^.+\\.tsx?$': ['ts-jest', { tsconfig: { jsx: 'react-jsx' } }],
+  },
 }
 export default config
