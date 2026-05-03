@@ -1,19 +1,48 @@
 ## Overview
 
-Data fetching sits at the intersection of two distinct problems. The TypeScript problem: how does a generic `useFetch<F>` know the data type it returns without hardcoding it? The React problem: how does a component handle a request that may never return, may return stale, and may error? Neither is hard once you have the right model, but most implementations get one of them wrong. This guide builds both from scratch. Level 1 teaches the conditional type machinery — specifically `Awaited<ReturnType<F>>` and the `infer` keyword that makes it work. Level 2 models async state as a four-phase discriminated union that eliminates impossible state combinations and enables exhaustive type narrowing. Level 3 combines them into a typed, cancellable hook where TypeScript infers the data shape from the fetcher's own return type without any manual annotation.
+Data fetching sits at the intersection of two distinct problems.
+
+**The TypeScript problem:** how does a generic `useFetch<F>` know the data type it returns without hardcoding it?
+
+**The React problem:** how does a component handle a request that may never return, may return stale, and may error?
+
+Neither is hard once you have the right model, but most implementations get one of them wrong. This guide builds both from scratch.
+
+**Level 1** teaches the conditional type machinery, specifically `Awaited<ReturnType<F>>` and the `infer` keyword that makes it work.
+
+**Level 2** models async state as a four-phase discriminated union that eliminates impossible state combinations and enables exhaustive type narrowing.
+
+**Level 3** combines them into a typed, cancellable hook where TypeScript infers the data shape from the fetcher's own return type without any manual annotation.
 
 ## Core Concept & Mental Model
 
+The TypeScript problem from the Overview asks how `useFetch<F>` knows what type it returns. That question comes down to one mechanism: how TypeScript unwraps a `Promise<T>` to get `T`. That unwrapping is what `Awaited<ReturnType<F>>` does, and understanding it is the prerequisite for everything else in this guide. The async state machine in Level 2 and the generic hook in Level 3 both depend on knowing what `T` actually is after the Promise resolves.
+
 ### The Middleware Unwrap Model
 
-HTTP response middleware strips its envelope on each layer. The TLS layer unwraps the encrypted payload. The HTTP framing layer unwraps the body. The JSON parser unwraps the string into an object. The handler at the end works with the final unwrapped value, not the layered packet that arrived.
+HTTP middleware strips one envelope at a time: TLS unwraps the encrypted payload, HTTP framing unwraps the body, JSON parsing unwraps the string. The handler at the end receives the final value, not the layered packet that arrived.
 
-TypeScript's `Awaited<T>` works by the same mechanism. Given `Awaited<Promise<Promise<string>>>`, TypeScript checks whether `Promise<Promise<string>>` extends `Promise<infer U>`. It does — so `U` resolves to `Promise<string>`. But `Promise<string>` is also a `Promise<infer U>`, so the process repeats. When it reaches `string` — which does not extend `Promise<infer U>` — it stops and returns `string`. The type system strips Promise layers exactly the way middleware strips HTTP envelopes.
+`Awaited<T>` uses the same loop. At each step it asks one question: does `T` wrap a `Promise`? If yes, capture what's inside and repeat. If no, return `T` unchanged.
 
-The JavaScript runtime does the same thing. `await Promise.resolve(Promise.resolve('hello'))` gives you `'hello'`, not `Promise<'hello'>`, because the engine awaits each layer. TypeScript models that behavior exactly, which is why `Awaited<Promise<Promise<string>>>` resolves to `string` and not `Promise<string>`.
+```ts
+// Awaited<Promise<Promise<string>>> — evaluated step by step:
+//
+// Step 1: does Promise<Promise<string>> wrap a Promise? Yes — inner type: Promise<string>
+//         recurse with Awaited<Promise<string>>
+//
+// Step 2: does Promise<string> wrap a Promise? Yes — inner type: string
+//         recurse with Awaited<string>
+//
+// Step 3: does string wrap a Promise? No — return string
+//
+// Result: string
+type A = Awaited<Promise<Promise<string>>>; // string
+```
+
+The JavaScript runtime does the same thing: `await Promise.resolve(Promise.resolve('hello'))` gives `'hello'` because the engine awaits each layer. `Awaited<T>` models that runtime behavior exactly at the type level.
 
 - **middleware stack** = `Promise<Promise<string>>` — the nested type to unwrap
-- **each unwrap step** = one conditional type evaluation that strips one layer
+- **each unwrap step** = one conditional type check that strips one layer
 - **the inferred U** = the inner type captured at each step
 - **the final value** = what remains when no more Promise layers exist
 
