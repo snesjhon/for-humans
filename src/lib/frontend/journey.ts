@@ -49,6 +49,11 @@ export const JOURNEY: Phase[] = [
             slug: '028-traffic-light',
             label: 'Traffic Light',
           },
+          {
+            id: '030',
+            slug: '030-window-dimensions',
+            label: 'Window Dimensions',
+          },
         ],
         advanced: [],
       },

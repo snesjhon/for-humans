@@ -86,6 +86,15 @@ const FRONTEND_PROBLEM_METADATA: Record<
     kind: 'react',
     difficulty: 'medium',
   },
+  '030': {
+    title: 'Window Dimensions',
+    prompt:
+      'Write a custom hook that returns the current window width, height, and orientation. The orientation is "landscape" when width exceeds height and "portrait" otherwise. The hook must stay current as the window is resized.',
+    sectionId: 'effects-timers-cleanup',
+    tier: 'practice',
+    kind: 'react',
+    difficulty: 'easy',
+  },
 };
 
 let _problems: FrontendProblem[] | null = null;
