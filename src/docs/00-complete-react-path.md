@@ -4,7 +4,7 @@ Complete React Interview Path
 
 ## Philosophy
 
-This path is for senior engineers who use React daily but want to defend every decision under interview pressure. TypeScript is not treated as a separate track — six of the thirteen steps pair a TypeScript concept directly with the React problem it solves. The TS concept is introduced at the moment the React code makes it feel necessary, not as an abstract prerequisite.
+This path is for senior engineers who use React daily but want to defend every decision under interview pressure. TypeScript is not treated as a separate track — six of the fourteen steps pair a TypeScript concept directly with the React problem it solves. The TS concept is introduced at the moment the React code makes it feel necessary, not as an abstract prerequisite.
 
 All React questions are Medium or Hard, sourced from the [Great Frontend React Interview Playbook](https://www.greatfrontend.com/questions/react-interview-questions). They are grouped by concept, not difficulty.
 
@@ -14,15 +14,33 @@ All React questions are Medium or Hard, sourced from the [Great Frontend React I
 - **Practice** — Questions that apply the concept directly. Do these before moving on.
 - **Revisit** — Return after 1–2 more steps. These expose edges you won't see the first time.
 
----
-
 ## 🌱 Phase 1: Novice
 
-**Goal**: Confirm that the mental models senior engineers think they have are actually solid. State-as-snapshot, effect cleanup, and the closure trap are the root cause of the majority of Phase 2 and 3 bugs.
+**Goal**: Confirm that the mental models senior engineers think they have are actually solid. Runtime reference rules, state-as-snapshot, effect cleanup, and the closure trap are the root cause of the majority of Phase 2 and 3 bugs.
 
 ---
 
-### Step 1: State-Driven UI
+### Step 1: JavaScript Runtime Refresh & Drill Set
+
+**What You Learn**:
+
+- The runtime rules React quietly depends on: value vs reference, shallow copy, missing vs falsy, mutation vs non-mutation, and microtask vs macrotask ordering
+- Why interview bugs often start before React even enters the picture
+- How to predict the behavior of copying, defaulting, coercion, and scheduling without running the code
+- Which JavaScript rules must be fresh before state shape, async state, and hook design become easy to defend
+
+**Practice** _(do these now)_:
+
+- [ ] **JavaScript Runtime Refresh for React Interviews** — A short senior-targeted refresher on the six runtime rules that matter most in frontend interviews: value vs reference, assignment vs shallow copy, missing vs falsy, equality vs coercion, mutation vs non-mutation, and microtasks vs macrotasks.
+- [ ] **Object Identity and Copying** _(Medium)_ — Predict the difference between `obj2 = obj` and `obj2 = { ...obj }`, then trace what happens when top-level fields vs nested fields are changed. Include array spread, shared nested references, and why `const` does not protect object properties from mutation.
+- [ ] **Defaults, Coercion, and Truthiness** _(Medium)_ — Work through `||` vs `??`, the actual falsy values, truthy empty containers, `==` vs `===`, `NaN`, and the rule that destructuring or parameter defaults only apply to `undefined`.
+- [ ] **Scheduling and Async Traps** _(Medium)_ — Predict log order across promises and `setTimeout`, explain why `async` functions can still resolve too early, fix missing `return` in promise chains, and trace loop-closure bugs caused by `var`.
+
+**Why First**: A lot of React interview mistakes are actually JavaScript runtime mistakes with JSX wrapped around them. Refresh the underlying rules first, then the React-specific steps become much easier to reason about precisely.
+
+---
+
+### Step 2: State-Driven UI
 
 **What You Learn**:
 
@@ -37,15 +55,15 @@ All React questions are Medium or Hard, sourced from the [Great Frontend React I
 - [ ] **Star Rating** _(Medium)_ — Build a star rating component that shows a row of star icons for users to select the number of filled stars corresponding to the rating. Hover and selected state that interact.
 - [ ] **Todo List** _(Medium)_ — Build a Todo list that lets users add new tasks and delete existing tasks. Key assignment and immutable list updates.
 
-**Revisit** _(return to after Step 2)_:
+**Revisit** _(return to after Step 3)_:
 
 - [ ] **Stopwatch** _(Medium)_ — Build a stopwatch widget that can measure how much time has passed. The timer version of the snapshot problem — state doesn't subscribe to time, you have to.
 
-**Why First**: The snapshot model is the lens everything else is read through. If state feels like a live variable, effects and closures will never make sense.
+**Why Now**: The snapshot model is the lens everything else is read through. If state feels like a live variable, effects and closures will never make sense.
 
 ---
 
-### Step 2: Effects, Timers & Cleanup
+### Step 3: Effects, Timers & Cleanup
 
 **What You Learn**:
 
@@ -69,6 +87,7 @@ All React questions are Medium or Hard, sourced from the [Great Frontend React I
 **You should now be able to**:
 
 - Explain the snapshot model and reproduce a stale state bug on demand
+- Explain the core JavaScript runtime rules that sit underneath React state and async behavior
 - Write effects with correct cleanup for timers and fetch cancellation
 - Identify when StrictMode is surfacing a real bug vs being annoying
 
@@ -80,7 +99,7 @@ All React questions are Medium or Hard, sourced from the [Great Frontend React I
 
 ---
 
-### Step 3: Component Composition
+### Step 4: Component Composition
 
 **What You Learn**:
 
@@ -94,13 +113,13 @@ All React questions are Medium or Hard, sourced from the [Great Frontend React I
 - [ ] **Tabs** _(Medium)_ — Build a tabs component that displays a list of tab elements and one associated panel of content at a time. The compound component pattern at its clearest.
 - [ ] **Modal Dialog** _(Medium)_ — Build a reusable modal dialog component that can be opened and closed. Composition that escapes the DOM tree via a portal.
 
-**Revisit** _(return to after Step 7)_:
+**Revisit** _(return to after Step 8)_:
 
 - [ ] **File Explorer** _(Medium)_ — Build a file explorer component to navigate files and directories in a tree-like hierarchical viewer. A component that renders a tree by rendering itself.
 
 ---
 
-### Step 4: Data Fetching & Async State + Conditional Types _(TypeScript)_
+### Step 5: Data Fetching & Async State + Conditional Types _(TypeScript)_
 
 **TypeScript — Conditional Types & `infer`**:
 
@@ -130,14 +149,14 @@ _React:_
 - [ ] **Job Board** _(Medium)_ — Build a job board that displays the latest job postings from Hacker News. Loading and error states, re-fetch on page change.
 - [ ] **Data Table** _(Medium)_ — Build a users data table with pagination features. Where does the page state live?
 
-**Revisit** _(return to after Step 8)_:
+**Revisit** _(return to after Step 9)_:
 
 - [ ] **Data Table II** _(Medium)_ — Build a users data table with sorting features. How does sort state interact with page state?
 - [ ] Write `IsUnion<T>` that returns `true` for union types — where does naive `T extends T` break?
 
 ---
 
-### Step 5: Collection & State Shape Hooks + Generics _(TypeScript)_
+### Step 6: Collection & State Shape Hooks + Generics _(TypeScript)_
 
 **TypeScript — Generics in Depth**:
 
@@ -169,14 +188,14 @@ _React:_
 - [ ] **useObject** _(Medium)_ — Implement a hook that manages an object value. The `setState` spread pattern and its limits.
 - [ ] **useStep** _(Medium)_ — Implement a hook that manages a step counter for a multi-step process. A state invariant enforced by the hook, not the caller.
 
-**Revisit** _(return to after Step 10)_:
+**Revisit** _(return to after Step 11)_:
 
 - [ ] **Transfer List** _(Medium)_ — Build a component that allows transferring items between two lists. The state shape is the entire problem.
 - [ ] Write a generic `useLocalStorage<T>(key: string, initial: T)` signature — why does `T` need a constraint for serialization?
 
 ---
 
-### Step 6: DOM, Events & Browser API Hooks + Template Literal Types _(TypeScript)_
+### Step 7: DOM, Events & Browser API Hooks + Template Literal Types _(TypeScript)_
 
 **TypeScript — Template Literal Types**:
 
@@ -209,14 +228,14 @@ _React:_
 - [ ] **useMediaQuery** _(Medium)_ — Implement a hook that subscribes and responds to media query changes (e.g. screen size, resolution, orientation, etc.). Subscribing to a browser API without polling.
 - [ ] **useBreakpoint** _(Medium)_ — Implement a hook that returns the current breakpoint name based on the current window width. Composition on top of `useWindowSize`.
 
-**Revisit** _(return to after Step 10)_:
+**Revisit** _(return to after Step 11)_:
 
 - [ ] **useKeyPress** _(Medium)_ — Implement a hook that subscribes to keyboard events. Modifier key combinations and cleanup.
 - [ ] **useIdle** _(Medium)_ — Implement a hook that detects user inactivity. Multiple event sources resetting a single timer.
 
 ---
 
-### Step 7: Timing & Scheduling Hooks
+### Step 8: Timing & Scheduling Hooks
 
 **What You Learn**:
 
@@ -235,7 +254,7 @@ _React:_
 
 ---
 
-### Step 8: Rich Interactive UI
+### Step 9: Rich Interactive UI
 
 **What You Learn**:
 
@@ -250,7 +269,7 @@ _React:_
 - [ ] **Image Carousel II** _(Medium)_ — Build an image carousel that smoothly transitions between images. Animation state layered on top of the base.
 - [ ] **useInputControl** _(Medium)_ — Implement a hook that manages a controlled input value and tracks its dirty & touched state. The core of any form library.
 
-**Revisit** _(return to after Step 11)_:
+**Revisit** _(return to after Step 12)_:
 
 - [ ] **Undoable Counter** _(Medium)_ — Build a counter with a history of the values and ability to undo/redo actions. The `useReducer` pattern starts to feel necessary here.
 
@@ -275,7 +294,7 @@ _React:_
 
 ---
 
-### Step 9: Accessibility & Keyboard Interaction + Branded Types _(TypeScript)_
+### Step 10: Accessibility & Keyboard Interaction + Branded Types _(TypeScript)_
 
 **TypeScript — Branded & Opaque Types**:
 
@@ -309,11 +328,11 @@ _React:_
 - [ ] **Accordion III** _(Medium)_ — Build a fully accessible accordion component that has keyboard support according to ARIA specifications. Arrow key navigation between headers per the spec.
 - [ ] **Modal Dialog IV** _(Hard)_ — Build a fully-accessible modal dialog component that supports all required keyboard interactions. Focus trap: Tab and Shift+Tab cycle within the dialog only.
 
-**Why Now**: Accessibility is increasingly a pass/fail signal in senior interviews. The component composition model from Step 3 has to be solid first — ARIA roles map directly onto the compound component structure.
+**Why Now**: Accessibility is increasingly a pass/fail signal in senior interviews. The component composition model from Step 4 has to be solid first — ARIA roles map directly onto the compound component structure.
 
 ---
 
-### Step 10: Complex State & Reducers + Mapped Types _(TypeScript)_
+### Step 11: Complex State & Reducers + Mapped Types _(TypeScript)_
 
 **TypeScript — Mapped Types & Modifiers**:
 
@@ -353,7 +372,7 @@ _React:_
 
 ---
 
-### Step 11: Performance & Render Optimization
+### Step 12: Performance & Render Optimization
 
 **What You Learn**:
 
@@ -370,11 +389,11 @@ _React:_
 
 **Revisit** _(return to during final review)_:
 
-- [ ] Revisit **Data Table** from Step 4 — where would re-renders hurt in a 10k-row dataset? What is the minimal fix?
+- [ ] Revisit **Data Table** from Step 5 — where would re-renders hurt in a 10k-row dataset? What is the minimal fix?
 
 ---
 
-### Step 12: Advanced Hook Patterns + Variance _(TypeScript)_
+### Step 13: Advanced Hook Patterns + Variance _(TypeScript)_
 
 **TypeScript — Variance & Function Types**:
 
@@ -406,7 +425,7 @@ _React:_
 
 ---
 
-### Step 13: Full-Feature Applications
+### Step 14: Full-Feature Applications
 
 **What You Learn**:
 

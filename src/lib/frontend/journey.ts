@@ -6,8 +6,25 @@ export const JOURNEY: Phase[] = [
     label: 'Novice',
     emoji: '🌱',
     goal:
-      'Confirm that the mental models senior engineers think they have are actually solid. State-as-snapshot, effect cleanup, and the closure trap are the root cause of the majority of Phase 2 and 3 bugs.',
+      'Confirm that the mental models senior engineers think they have are actually solid. Runtime reference rules, state-as-snapshot, and effect cleanup are the foundation for everything that follows.',
     sections: [
+      {
+        id: 'javascript-runtime-refresh',
+        label: 'JavaScript Runtime Refresh',
+        mentalModelHook:
+          'Most React bugs start one layer lower than React itself: shared references, accidental coercion, silent mutation, and queue ordering mistakes.',
+        fundamentalsSlug: 'javascript-runtime-refresh',
+        fundamentalsBlurb:
+          'A senior-targeted refresher on value vs reference, shallow copy limits, missing vs falsy, coercion, mutating array methods, and promise vs timer ordering.',
+        practice: [
+          {
+            id: '032',
+            slug: '032-object-spread-and-falsy-traps',
+            label: 'Object Spread and Falsy Traps',
+          },
+        ],
+        advanced: [],
+      },
       {
         id: 'state-driven-ui',
         label: 'State-Driven UI',

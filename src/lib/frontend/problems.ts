@@ -104,6 +104,15 @@ const FRONTEND_PROBLEM_METADATA: Record<
     kind: 'react',
     difficulty: 'medium',
   },
+  '032': {
+    title: 'Object Spread and Falsy Traps',
+    prompt:
+      'Predict what spread copies, plain assignment shares, and fallback operators replace, then implement fixes that avoid nested mutation leaks and accidental defaulting.',
+    sectionId: 'collection-hooks',
+    tier: 'practice',
+    kind: 'typescript',
+    difficulty: 'medium',
+  },
 };
 
 let _problems: FrontendProblem[] | null = null;
