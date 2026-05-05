@@ -29,6 +29,7 @@ export default function FundamentalsPage({ params }: Props) {
   const guide = getFundamentalsGuide(params.slug);
   if (!guide) notFound();
 
+
   const context = getSectionForFundamentals(params.slug);
   const section = context?.section;
   const phase = context?.phase;
