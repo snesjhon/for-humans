@@ -1,26 +1,22 @@
-// Goal: Apply the reader + writer with your own keep condition.
+// Goal: Build a running-maximum array using a single pass.
 //
-// The belt carries a mix of odd and even numbers. Your writer has a new rule:
-// only write even numbers. Odd numbers roll off the belt without being placed.
-// Return the count of even items written.
-//
-// The reader still reads every slot — the only thing that changed is which
-// items qualify as keepers.
+// Return a new array of the same length where each element at index i
+// equals the maximum value seen in nums[0] through nums[i].
 //
 // Example:
-//   compactEvens([1, 2, 3, 4, 5, 6]) → 3   (belt becomes [2, 4, 6, ...])
-//   compactEvens([1, 3, 5])           → 0   (nothing to write)
-function compactEvens(nums: number[]): number {
+//   runningMax([3, 1, 4, 1, 5, 9, 2]) -> [3, 3, 4, 4, 5, 9, 9]
+//   runningMax([5, 4, 3, 2, 1])       -> [5, 5, 5, 5, 5]
+function runningMax(nums: number[]): number[] {
   throw new Error('not implemented');
 }
 
 // ---Tests
-test('mixed',        () => compactEvens([1, 2, 3, 4, 5, 6]), 3);
-test('no evens',     () => compactEvens([1, 3, 5]),           0);
-test('all evens',    () => compactEvens([2, 4, 6]),           3);
-test('empty',        () => compactEvens([]),                  0);
-test('single even',  () => compactEvens([2]),                 1);
-test('single odd',   () => compactEvens([1]),                 0);
+test('tracks maximum through rises and falls', () => runningMax([3, 1, 4, 1, 5, 9, 2]), [3, 3, 4, 4, 5, 9, 9]);
+test('all elements descending', () => runningMax([5, 4, 3, 2, 1]), [5, 5, 5, 5, 5]);
+test('all elements ascending', () => runningMax([1, 2, 3, 4, 5]), [1, 2, 3, 4, 5]);
+test('single element', () => runningMax([42]), [42]);
+test('empty array', () => runningMax([]), []);
+test('handles negative values', () => runningMax([-5, -3, -8, -1]), [-5, -3, -3, -1]);
 // ---End Tests
 
 // ---Helpers
@@ -33,9 +29,12 @@ function test(desc: string, fn: () => unknown, expected: unknown): void {
       console.log(`  expected: ${JSON.stringify(expected)}`);
       console.log(`  received: ${JSON.stringify(actual)}`);
     }
-  } catch (e) {
-    if (e instanceof Error && e.message === 'not implemented') {
+  } catch (error) {
+    if (error instanceof Error && error.message === 'not implemented') {
       console.log(`TODO  ${desc}`);
-    } else { throw e; }
+    } else {
+      throw error;
+    }
   }
 }
+// ---End Helpers

@@ -1,33 +1,42 @@
-function buildPrefixSums(nums: number[]): number[] {
-  const prefix = new Array(nums.length).fill(0);
-  for (let i = 1; i < nums.length; i++) {
-    prefix[i] = prefix[i - 1] + nums[i - 1];
+// Goal: Check if a string is a palindrome using converging two pointers.
+//
+// Return true if the string reads the same forwards and backwards.
+// Consider only alphanumeric characters and ignore case.
+//
+// Example:
+//   isPalindrome("racecar")                    -> true
+//   isPalindrome("A man a plan a canal Panama") -> true
+//   isPalindrome("hello")                       -> false
+function isPalindrome(s: string): boolean {
+  const clean = s.toLowerCase().replace(/[^a-z0-9]/g, '');
+  let left = 0;
+  let right = clean.length - 1;
+  while (left < right) {
+    if (clean[left] !== clean[right]) return false;
+    left++;
+    right--;
   }
-  return prefix;
+  return true;
 }
 
 // ---Tests
-test('basic',      () => buildPrefixSums([1, 2, 3, 4]), [0, 1, 3, 6]);
-test('all same',   () => buildPrefixSums([3, 3, 3]),    [0, 3, 6]);
-test('single',     () => buildPrefixSums([5]),           [0]);
-test('empty',      () => buildPrefixSums([]),            []);
-test('negatives',  () => buildPrefixSums([-1, -2, 3]),   [0, -1, -3]);
-test('zeros',      () => buildPrefixSums([0, 0, 0]),     [0, 0, 0]);
+test('simple palindrome', () => isPalindrome('racecar'), true);
+test('classic phrase ignoring spaces and case', () => isPalindrome('A man a plan a canal Panama'), true);
+test('non-palindrome', () => isPalindrome('hello'), false);
+test('empty string is a palindrome', () => isPalindrome(''), true);
+test('single character', () => isPalindrome('a'), true);
+test('two matching characters', () => isPalindrome('aa'), true);
+test('two non-matching characters', () => isPalindrome('ab'), false);
 // ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
-  try {
-    const actual = fn();
-    const pass = JSON.stringify(actual) === JSON.stringify(expected);
-    console.log(`${pass ? 'PASS' : 'FAIL'} ${desc}`);
-    if (!pass) {
-      console.log(`  expected: ${JSON.stringify(expected)}`);
-      console.log(`  received: ${JSON.stringify(actual)}`);
-    }
-  } catch (e) {
-    if (e instanceof Error && e.message === 'not implemented') {
-      console.log(`TODO  ${desc}`);
-    } else { throw e; }
+  const actual = fn();
+  const pass = JSON.stringify(actual) === JSON.stringify(expected);
+  console.log(`${pass ? 'PASS' : 'FAIL'} ${desc}`);
+  if (!pass) {
+    console.log(`  expected: ${JSON.stringify(expected)}`);
+    console.log(`  received: ${JSON.stringify(actual)}`);
   }
 }
+// ---End Helpers

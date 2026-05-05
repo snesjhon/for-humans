@@ -1,36 +1,38 @@
-function removeElement(nums: number[], val: number): number {
-  let writer = 0;
-  for (let reader = 0; reader < nums.length; reader++) {
-    if (nums[reader] !== val) {
-      nums[writer] = nums[reader];
-      writer++;
-    }
+// Goal: Build a prefix sum array using a single pass.
+//
+// Return a new array of the same length where each element at index i
+// equals the sum of nums[0] through nums[i].
+//
+// Example:
+//   prefixSums([3, 1, 4, 1, 5]) -> [3, 4, 8, 9, 14]
+//   prefixSums([1, 2, 3])       -> [1, 3, 6]
+function prefixSums(nums: number[]): number[] {
+  const result: number[] = [];
+  let running = 0;
+  for (let i = 0; i < nums.length; i++) {
+    running += nums[i];
+    result.push(running);
   }
-  return writer;
+  return result;
 }
 
 // ---Tests
-test('remove middle values',   () => removeElement([3,2,2,3], 3),         2);
-test('remove scattered',       () => removeElement([0,1,2,2,3,0,4,2], 2), 5);
-test('remove none',            () => removeElement([1,2,3], 9),            3);
-test('remove all',             () => removeElement([1,1,1], 1),             0);
-test('empty array',            () => removeElement([], 5),                  0);
-test('single match',           () => removeElement([4], 4),                 0);
+test('builds prefix sums for a general array', () => prefixSums([3, 1, 4, 1, 5]), [3, 4, 8, 9, 14]);
+test('handles a simple ascending sequence', () => prefixSums([1, 2, 3]), [1, 3, 6]);
+test('handles a single element', () => prefixSums([7]), [7]);
+test('handles an empty array', () => prefixSums([]), []);
+test('handles negative numbers', () => prefixSums([-1, 2, -3, 4]), [-1, 1, -2, 2]);
+test('handles all zeros', () => prefixSums([0, 0, 0]), [0, 0, 0]);
 // ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
-  try {
-    const actual = fn();
-    const pass = JSON.stringify(actual) === JSON.stringify(expected);
-    console.log(`${pass ? 'PASS' : 'FAIL'} ${desc}`);
-    if (!pass) {
-      console.log(`  expected: ${JSON.stringify(expected)}`);
-      console.log(`  received: ${JSON.stringify(actual)}`);
-    }
-  } catch (e) {
-    if (e instanceof Error && e.message === 'not implemented') {
-      console.log(`TODO  ${desc}`);
-    } else { throw e; }
+  const actual = fn();
+  const pass = JSON.stringify(actual) === JSON.stringify(expected);
+  console.log(`${pass ? 'PASS' : 'FAIL'} ${desc}`);
+  if (!pass) {
+    console.log(`  expected: ${JSON.stringify(expected)}`);
+    console.log(`  received: ${JSON.stringify(actual)}`);
   }
 }
+// ---End Helpers

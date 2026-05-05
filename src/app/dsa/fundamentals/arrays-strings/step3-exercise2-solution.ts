@@ -1,33 +1,40 @@
-function rangeSum(nums: number[], left: number, right: number): number {
-  const prefix = new Array(nums.length + 1).fill(0);
-  for (let i = 0; i < nums.length; i++) {
-    prefix[i + 1] = prefix[i] + nums[i];
+// Goal: Find two numbers in a sorted array that sum to a target using two pointers.
+//
+// Return the 1-based indices [left+1, right+1] of the two numbers.
+// You may not use the same element twice.
+// Exactly one solution is guaranteed.
+//
+// Example:
+//   twoSumSorted([2, 7, 11, 15], 9) -> [1, 2]
+//   twoSumSorted([2, 3, 4], 6)      -> [1, 3]
+function twoSumSorted(numbers: number[], target: number): [number, number] {
+  let left = 0;
+  let right = numbers.length - 1;
+  while (left < right) {
+    const sum = numbers[left] + numbers[right];
+    if (sum === target) return [left + 1, right + 1];
+    if (sum < target) left++;
+    else right--;
   }
-  return prefix[right + 1] - prefix[left];
+  throw new Error('no solution');
 }
 
 // ---Tests
-test('full range',      () => rangeSum([1, 2, 3, 4], 0, 3), 10);
-test('partial range',   () => rangeSum([1, 2, 3, 4], 1, 3),  9);
-test('single element',  () => rangeSum([1, 2, 3, 4], 2, 2),  3);
-test('first element',   () => rangeSum([1, 2, 3, 4], 0, 0),  1);
-test('with negatives',  () => rangeSum([-1, 2, -3, 4], 1, 3), 3);
-test('single-elem arr', () => rangeSum([7], 0, 0),            7);
+test('finds pair at the ends', () => twoSumSorted([2, 7, 11, 15], 9), [1, 2]);
+test('finds pair spanning the array', () => twoSumSorted([2, 3, 4], 6), [1, 3]);
+test('finds pair near the end', () => twoSumSorted([1, 2, 3, 4, 5], 9), [4, 5]);
+test('handles two-element array', () => twoSumSorted([1, 3], 4), [1, 2]);
+test('works with negative numbers', () => twoSumSorted([-4, -1, 0, 3, 5], -1), [1, 4]);
 // ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
-  try {
-    const actual = fn();
-    const pass = JSON.stringify(actual) === JSON.stringify(expected);
-    console.log(`${pass ? 'PASS' : 'FAIL'} ${desc}`);
-    if (!pass) {
-      console.log(`  expected: ${JSON.stringify(expected)}`);
-      console.log(`  received: ${JSON.stringify(actual)}`);
-    }
-  } catch (e) {
-    if (e instanceof Error && e.message === 'not implemented') {
-      console.log(`TODO  ${desc}`);
-    } else { throw e; }
+  const actual = fn();
+  const pass = JSON.stringify(actual) === JSON.stringify(expected);
+  console.log(`${pass ? 'PASS' : 'FAIL'} ${desc}`);
+  if (!pass) {
+    console.log(`  expected: ${JSON.stringify(expected)}`);
+    console.log(`  received: ${JSON.stringify(actual)}`);
   }
 }
+// ---End Helpers

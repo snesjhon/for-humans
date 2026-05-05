@@ -1,361 +1,619 @@
-## 1. Overview
+## Overview
 
-Arrays and strings are the bedrock of every coding interview. Nearly every problem — even trees, graphs, and dynamic programming — eventually reduces to operating on a sequence of values by index.
+Arrays and strings are the bedrock of nearly every algorithm problem. An array gives you indexed access to elements in O(1); a string is just an array of characters with a few extra constraints. Nearly everything you do with them comes down to one question: which index or indices should I be looking at right now, and what information have I accumulated so far?
 
-What makes array problems deceptively hard is that the most obvious approach (nested loops, building a new array) is rarely what's expected. The goal is almost always to do it _in-place_ in a single pass with O(1) extra space.
+This guide builds that index intuition in three stages. **Single-Pass Traversal** uses one read cursor to accumulate information about the whole sequence in one walk. **The Write Cursor** adds a second pointer that rewrites the array in-place, so filtering and compressing work without extra allocation. **Converging Two Pointers** places one pointer at each end and walks them toward each other, collapsing what would be a nested O(n²) search into a single O(n) pass.
 
-This guide covers the three index-based tools that unlock all of that: **the write cursor**, **two converging pointers**, and **prefix/suffix passes**. By the end, you'll recognize which tool a problem is asking for before you write a single line of code.
+## Core Concept & Mental Model
 
-## 2. Core Concept & Mental Model
+### The Corridor of Lockers
 
-### The Assembly Line Analogy
+Picture a corridor with lockers numbered 0 through n-1. Each locker holds one value. You can open any locker by its number in constant time, but you never have more than a few keys in your hand at once.
 
-Picture a factory assembly line. A **conveyor belt** carries items from left to right — that's your array. There are two key roles:
+- **index**: the locker number; the single most important thing you control in any array problem
+- **read cursor**: a key you carry forward through the corridor, opening lockers one by one
+- **write cursor**: a second key you carry separately; you only advance it when you deposit a qualified item
+- **prefix state**: a notebook you carry; updated at every locker, it tells you what you have seen from the start up to the current position
+- **left pointer / right pointer**: two keys, one starting at each end of the corridor, moving toward each other
 
-- A **reader** (read pointer) moves steadily from left to right, inspecting every item without exception.
-- A **writer** (write cursor) sits near the front and only advances when it places a valid item.
+The corridor image maps directly onto cost. Reading any locker is O(1). Walking the corridor once from left to right, or from both ends toward the middle, is O(n). Building a separate corridor of the same length costs O(n) space; working in-place with only a few extra keys costs O(1) space.
 
-When you need to compact or filter, the reader looks at everything, but the writer only places keepers. The gap between them represents eliminated slots.
+### Three Mechanisms
 
-For problems that check symmetry or search a sorted sequence, you deploy **two inspectors**: one starts at the left end, one at the right, and they walk toward each other. Each step eliminates a position from further consideration — which is what makes this O(n) instead of O(n²).
+These three mechanisms are the complete toolkit for arrays and strings. Every technique in this guide is one of them or a combination.
 
-For problems where each position needs context from both sides — "what's the product of everything _except_ this element?" — you send a **left messenger** walking forward collecting prefix information, then a **right messenger** walking backward collecting suffix information. Each position gets its answer from what both messengers gathered on their respective sides.
+#### The Read Cursor
 
-### Understanding the Analogy
+The simplest use of index control is a single cursor walking left to right. At each position you read the value, apply a condition or arithmetic, and carry a result forward. The result might be a count, a running sum, a maximum seen so far, or a set of elements encountered. The cursor itself never writes; its job is to observe.
 
-#### The Setup
+```mermaid
+graph TD
+    Start["i = 0"] --> Read["read arr[i]"]
+    Read --> Condition{"qualifies?"}
+    Condition -- yes --> Accumulate["update result"]
+    Condition -- no --> Skip["skip"]
+    Accumulate --> Next["i++"]
+    Skip --> Next
+    Next --> Done{"i >= n?"}
+    Done -- no --> Read
+    Done -- yes --> Return["return result"]
+```
 
-The conveyor belt stretches from index 0 to index n-1. Each slot holds one item — a number or a character. You cannot add more slots or create a second belt (no extra space). Your only tools are: where you're reading from, where you're writing to, and what you've accumulated so far.
+The prefix sum is the clearest example of a carried result. After visiting index `i`, you know the sum of every element from `0` to `i`. That prefix value unlocks range queries and product-except-self in a second pass.
 
-#### The Three Roles on the Line
+#### The Write Cursor
 
-The **reader and writer** (write cursor) work as a pair on the same belt moving forward. The reader looks at every item. The writer only places keepers. The gap between them grows as more items are eliminated — that gap is the "graveyard" of discarded slots, which you can safely overwrite.
+Filtering or compressing an array in-place requires two indices moving at different speeds. The **read** cursor advances every step. The **write** cursor advances only when the current item earns its place in the output. Items behind the write cursor are the kept ones. Items between write and read are gaps waiting to be overwritten.
 
-The **two converging inspectors** start at opposite ends and walk toward each other. They exploit the structure of the belt — sorted order, or the symmetry property of palindromes — to eliminate one slot per step. No item they've already judged needs to be revisited.
+```mermaid
+graph TD
+    Start["read = 0, write = 0"] --> ReadItem["read arr[read]"]
+    ReadItem --> Keep{"keep this item?"}
+    Keep -- yes --> Write["arr[write] = arr[read], write++"]
+    Keep -- no --> Discard["skip"]
+    Write --> Advance["read++"]
+    Discard --> Advance
+    Advance --> Done{"read >= n?"}
+    Done -- no --> ReadItem
+    Done -- yes --> Return["return write (new length)"]
+```
 
-The **two messengers** make separate trips. The first walks left-to-right, recording what it accumulates before each slot. The second walks right-to-left, recording what it accumulates after each slot. Each slot collects both messengers' notes and combines them — this is how you answer "what about everything _except_ me?" without rescanning.
+Three classic problems use exactly this shape: remove a target value, deduplicate a sorted array, and move zeros to the end. In all three the answer is whatever the write cursor landed on when the read cursor finished.
 
-#### Why These Approaches
+#### The Converging Two Pointers
 
-All three exploit the fact that arrays are indexed. You never need to look at an element twice if you move your pointers correctly. The write cursor's output is always a _prefix_ of the input — which means it fits in-place. Converging pointers eliminate half the problem each time they both move. Two-pass prefix/suffix flips an O(n²) inside-out look into two forward scans.
+Two pointers work when the sequence is sorted or symmetric and the answer involves a pair. Place `left` at index 0 and `right` at index n-1. At each step, compare what both pointers see and move the one that the comparison tells you to move. The two pointers close the gap and meet somewhere in the middle, guaranteeing O(n) regardless of the pair they are looking for.
 
-#### A Simple Example
+```mermaid
+graph TD
+    Start["left = 0, right = n-1"] --> Compare["compare arr[left] and arr[right]"]
+    Compare --> Move{"which pointer moves?"}
+    Move -- "sum too small" --> IncLeft["left++"]
+    Move -- "sum too large" --> DecRight["right--"]
+    Move -- "found" --> Answer["record and stop"]
+    IncLeft --> Done{"left >= right?"}
+    DecRight --> Done
+    Done -- no --> Compare
+    Done -- yes --> Return["return result"]
+```
 
-The line is `[3, 2, 2, 1, 2, 4]` and you want to remove all `2`s. The reader walks forward. Each time it finds a non-2, the writer places it and advances one slot. When the reader reaches the end, the writer has only advanced three times — slots 0, 1, 2 now hold `[3, 1, 4]`. The rest of the belt doesn't matter.
-
-Now you understand the tools. Let's build them step by step.
-
-## 3. Building Blocks — Progressive Learning
-
-### Level 1: The Write Cursor
-
-**Why this level matters**
-
-The most common array constraint is "do it in-place with O(1) extra space." That means you cannot build a new filtered array — you must rewrite the original. The write cursor is the pattern that makes this possible. Without it, you instinctively reach for a second array or a nested loop. With it, nearly any filter-and-compact problem becomes a single forward pass.
-
-**How to think about it**
-
-You maintain two positions in the same array: `reader` (scanning every element) and `writer` (tracking where the next valid element should land). The reader always advances. The writer only advances when it places something.
-
-Think of `writer` as pointing to the next blank slot in your output. When the reader finds a keeper, it writes it into slot `writer` and bumps `writer` forward by one. Non-keepers are skipped — the reader moves on but the writer stays put, ready to overwrite that slot the next time a keeper arrives.
-
-When the reader finishes, the first `writer` positions of the array hold exactly the valid elements. Everything after index `writer` is irrelevant — the problem only cares about the first `writer` positions.
-
-**Walking through it**
-
-Remove all `2`s from `[3, 2, 2, 1, 2, 4]`. Expected: first 3 elements are `[3, 1, 4]`, return length `3`.
-
-:::trace
-[
-{"array":[3,2,2,1,2,4],"reader":0,"writer":0,"action":null,"label":"Start — reader and writer both at index 0, ready to begin."},
-{"array":[3,2,2,1,2,4],"reader":1,"writer":1,"action":"keep","label":"nums[0]=3 is a keeper → written to writer=0, writer advances to 1."},
-{"array":[3,2,2,1,2,4],"reader":2,"writer":1,"action":"skip","label":"nums[1]=2 matches val — skipped, reader advances, writer stays at 1."},
-{"array":[3,2,2,1,2,4],"reader":3,"writer":1,"action":"skip","label":"nums[2]=2 matches val — skipped, reader advances, writer stays at 1."},
-{"array":[3,1,2,1,2,4],"reader":4,"writer":2,"action":"keep","label":"nums[3]=1 is a keeper → written to writer=1, writer advances to 2."},
-{"array":[3,1,2,1,2,4],"reader":5,"writer":2,"action":"skip","label":"nums[4]=2 matches val — skipped, reader advances, writer stays at 2."},
-{"array":[3,1,4,1,2,4],"reader":6,"writer":3,"action":"keep","label":"nums[5]=4 is a keeper → written to writer=2, writer advances to 3."},
-{"array":[3,1,4,1,2,4],"reader":6,"writer":3,"action":"done","label":"Done — return writer=3. First 3 elements [3, 1, 4] are the result ✓"}
-]
-:::
-
-**The one thing to get right**
-
-`writer` is simultaneously "the index to write to" and "the count of valid elements placed so far." If you increment `writer` before writing, you skip slot 0 and your count is off by one. If you write without incrementing, you overwrite the same slot forever. Always: write first, then increment.
-
-:::stackblitz{step=1 total=3 exercises="step1-exercise1-problem.ts,step1-exercise2-problem.ts,step1-exercise3-problem.ts" solutions="step1-exercise1-solution.ts,step1-exercise2-solution.ts,step1-exercise3-solution.ts"}
-
-> **Mental anchor**: The write cursor says "I only advance when I place something real." The read pointer says "I look at everything." The gap between them is the graveyard.
-
-**→ Bridge to Level 2**
-
-The write cursor moves in one direction with one active pointer. But many problems need to reason about both ends of the array simultaneously — that's when two converging pointers replace the single read pointer.
-
----
-
-### Level 2: Two Converging Pointers
-
-**Why this level matters**
-
-Problems involving symmetry ("is this a palindrome?") or a sorted structure ("find two numbers that sum to target") appear impossible to solve in less than O(n²) until you notice that starting from both ends and moving inward eliminates one element per step. That insight drops the work to O(n) — without any extra memory.
-
-**How to think about it**
-
-Place `L` at index 0 and `R` at index `n-1`. At each step, look at the pair `(arr[L], arr[R])`. Based on what you find, advance one (or both) pointers inward. The critical question is: which pointer moves, and when?
-
-- For a **palindrome check**: if `s[L] !== s[R]` you already know it's not a palindrome and can stop. If they match, both pointers move inward. Either way, you make progress.
-- For a **sorted two-sum**: if the sum of the pair is too small, moving `L` right increases the sum (because the array is sorted and larger values are to the right). If the sum is too large, move `R` left. If it matches, you're done.
-
-Each move **eliminates an entire position** from consideration. After at most `n` total moves, the two pointers meet — the loop ends.
-
-**Walking through it**
-
-Check if `"racecar"` is a palindrome.
-
-:::trace-lr
-[
-{"chars":["r","a","c","e","c","a","r"],"L":0,"R":6,"action":null,"label":"Start — L at index 0, R at index 6, ready to compare the outer pair."},
-{"chars":["r","a","c","e","c","a","r"],"L":1,"R":5,"action":"match","label":"s[0]='r' === s[6]='r' — match, both pointers move inward."},
-{"chars":["r","a","c","e","c","a","r"],"L":2,"R":4,"action":"match","label":"s[1]='a' === s[5]='a' — match, both pointers move inward."},
-{"chars":["r","a","c","e","c","a","r"],"L":3,"R":3,"action":"match","label":"s[2]='c' === s[4]='c' — match, both pointers move inward."},
-{"chars":["r","a","c","e","c","a","r"],"L":3,"R":3,"action":"done","label":"L >= R — loop ends. Every pair matched. Palindrome ✓"}
-]
-:::
-
-Check if `"hello"` is a palindrome.
-
-:::trace-lr
-[
-{"chars":["h","e","l","l","o"],"L":0,"R":4,"action":null,"label":"Start — L at index 0, R at index 4, ready to compare the outer pair."},
-{"chars":["h","e","l","l","o"],"L":0,"R":4,"action":"mismatch","label":"s[0]='h' !== s[4]='o' — mismatch detected, return false immediately. Not a palindrome ✗"}
-]
-:::
-
-**The one thing to get right**
-
-The loop condition is `L < R`, not `L <= R`. When `L === R`, you are looking at the middle character of an odd-length string. It always matches itself — there is nothing to check. Checking it with `L <= R` is harmless but if your logic tries to advance past a single-character middle it can skip elements.
-
-:::stackblitz{step=2 total=3 exercises="step2-exercise1-problem.ts,step2-exercise2-problem.ts,step2-exercise3-problem.ts" solutions="step2-exercise1-solution.ts,step2-exercise2-solution.ts,step2-exercise3-solution.ts"}
-
-> **Mental anchor**: Two pointers converge by eliminating one position per step. They always meet in O(n) — no matter how the array is structured.
-
-**→ Bridge to Level 3**
-
-Both the write cursor and two pointers work with information available _at the current position_. But some problems need context about everything to the left and everything to the right of each position simultaneously — and that context can't be gathered in a single pass. Prefix and suffix passes solve this.
-
----
-
-### Level 3: Prefix & Suffix Passes
-
-**Why this level matters**
-
-Some problems ask: "at each position, combine everything before it with everything after it." The naive solution is O(n²) — scan left and right for each element. Prefix and suffix passes reduce this to O(n): compute the left side in one forward pass, the right side in one backward pass. Each position gets its answer by combining the two.
-
-**How to think about it**
-
-Send two messengers across the array:
-
-1. **Left messenger** walks left-to-right. Before reaching position `i`, it has accumulated information from all elements to the left. It records that information and moves on.
-2. **Right messenger** walks right-to-left. Before reaching position `i`, it has accumulated information from all elements to the right. It multiplies that in.
-
-Each position ends up with the combined result from both messengers — without ever re-scanning.
-
-The canonical example is "product of array except self." You can't divide the total product by `nums[i]` because it might be zero. Instead:
-
-- Forward pass: `result[i]` = product of all elements _before_ position `i`. Start with `prefix = 1`.
-- Backward pass: multiply `result[i]` by the product of all elements _after_ position `i`. Maintain a running `suffix` variable as you scan right-to-left.
-
-No extra array needed — the output array accumulates both passes in-place.
-
-**Walking through it**
-
-`nums = [1, 2, 3, 4]`. Expected output: `[24, 12, 8, 6]`.
-
-:::trace-ps
-[
-{"nums":[1,2,3,4],"result":[1,1,1,1],"currentI":-1,"pass":"forward","accumulator":1,"accName":"prefix","label":"Forward pass begins — result initialized to all 1s, prefix=1."},
-{"nums":[1,2,3,4],"result":[1,1,1,1],"currentI":0,"pass":"forward","accumulator":1,"accName":"prefix","label":"i=0: result[0]=prefix=1, then prefix becomes 1×1=1."},
-{"nums":[1,2,3,4],"result":[1,1,1,1],"currentI":1,"pass":"forward","accumulator":2,"accName":"prefix","label":"i=1: result[1]=prefix=1, then prefix becomes 1×2=2."},
-{"nums":[1,2,3,4],"result":[1,1,2,1],"currentI":2,"pass":"forward","accumulator":6,"accName":"prefix","label":"i=2: result[2]=prefix=2, then prefix becomes 2×3=6."},
-{"nums":[1,2,3,4],"result":[1,1,2,6],"currentI":3,"pass":"forward","accumulator":24,"accName":"prefix","label":"i=3: result[3]=prefix=6, then prefix becomes 6×4=24. Forward pass complete."},
-{"nums":[1,2,3,4],"result":[1,1,2,6],"currentI":-1,"pass":"backward","accumulator":1,"accName":"suffix","label":"Backward pass begins — suffix=1, scanning right-to-left."},
-{"nums":[1,2,3,4],"result":[1,1,2,6],"currentI":3,"pass":"backward","accumulator":4,"accName":"suffix","label":"i=3: result[3]×=suffix=1 → 6×1=6, suffix becomes 1×4=4."},
-{"nums":[1,2,3,4],"result":[1,1,8,6],"currentI":2,"pass":"backward","accumulator":12,"accName":"suffix","label":"i=2: result[2]×=suffix=4 → 2×4=8, suffix becomes 4×3=12."},
-{"nums":[1,2,3,4],"result":[1,12,8,6],"currentI":1,"pass":"backward","accumulator":24,"accName":"suffix","label":"i=1: result[1]×=suffix=12 → 1×12=12, suffix becomes 12×2=24."},
-{"nums":[1,2,3,4],"result":[24,12,8,6],"currentI":0,"pass":"backward","accumulator":24,"accName":"suffix","label":"i=0: result[0]×=suffix=24 → 1×24=24. Backward pass complete."},
-{"nums":[1,2,3,4],"result":[24,12,8,6],"currentI":-1,"pass":"done","accumulator":0,"accName":"","label":"Done — result = [24, 12, 8, 6] ✓"}
-]
-:::
-
-**The one thing to get right**
-
-`prefix` at position `i` covers elements _strictly before_ `i`, not including `i` itself. So `prefix` starts at `1` (the multiplicative identity), and you update it _after_ recording `result[i]`. Getting this order reversed includes `nums[i]` in its own product — corrupting every answer.
-
-:::stackblitz{step=3 total=3 exercises="step3-exercise1-problem.ts,step3-exercise2-problem.ts,step3-exercise3-problem.ts" solutions="step3-exercise1-solution.ts,step3-exercise2-solution.ts,step3-exercise3-solution.ts"}
-
-> **Mental anchor**: Prefix tells each position what came before. Suffix tells it what comes after. Together they answer in two O(n) passes what a nested loop would answer in O(n²).
-
----
+The same shape that checks palindromes also finds two-sum pairs in sorted arrays. In the palindrome case the comparison is equality and both pointers always advance after a check. In the sorted-pair case the comparison is arithmetic and only one pointer advances at a time.
 
 ### How I Think Through This
 
-The first question I ask when I see an array or string problem is: _am I being asked to modify the array in-place, or am I computing something about it?_ That one question usually tells me which of the three tools to reach for.
+Before touching code, I ask: **how many cursors do I need, and what does each one carry?**
 
-#### Write Cursor
+**When the problem asks to measure, count, or aggregate**: one read cursor walking left to right, carrying a running result. If the question references "everything before position i" or "everything after position i," a prefix or suffix pass is the tool.
 
-When the problem says "in-place" or "O(1) extra space" and asks me to remove or filter elements, I know I need the write cursor. I place `writer = 0` at the front, then let `reader` scan every element. Every time `reader` finds a keeper, I write it to `nums[writer]` and bump `writer` forward. Non-keepers — I just move `reader` on and leave `writer` where it is.
+**When the problem asks to modify the array in-place without extra space**: two cursors on the same array. Read advances unconditionally. Write advances only when the current item belongs in the output.
 
-The thing I have to remind myself: write _first_, then increment. If I do `writer++; nums[writer] = nums[reader]` I skip slot 0 and the count is wrong. The other thing I keep in mind is that `writer` serves double duty — it's both where I write next _and_ the count of valid elements placed so far. When the loop ends, I return `writer`, not `writer - 1`.
+**When the input is sorted or the problem is symmetric, and a pair is involved**: two pointers from opposite ends. Move the pointer that the current comparison tells you to move.
 
-#### Two Converging Pointers
+**Scenario 1: Prefix accumulation**
 
-When the array is sorted, or the problem involves symmetry (palindrome, reverse, two-sum on a sorted array), I reach for two pointers starting at opposite ends: `L = 0`, `R = n - 1`.
+**Input:** `nums = [3, 1, 4, 1, 5]`
 
-At each step I ask: what does comparing `arr[L]` and `arr[R]` tell me, and which pointer should move? For a palindrome check, a mismatch means I'm done — I return false immediately. A match means both move inward. For a sorted two-sum, if the pair sums too low I move `L` right (larger values are to the right), if it sums too high I move `R` left. Either way, each step eliminates one position from further consideration, so the whole thing runs in O(n).
-
-The loop condition I always use is `L < R`, not `L <= R`. When `L === R` I'm sitting on the middle character of an odd-length string — it trivially matches itself and there's nothing to check.
-
-#### Prefix & Suffix Passes
-
-When each position needs to combine information from everything to its left _and_ everything to its right, I know a single pass won't cut it. The signal phrase I look for is "except self" or "without using division."
-
-I run two passes over the output array. Forward pass: I track a running `prefix` (starts at `1`) and before I touch position `i`, I write `result[i] = prefix`, then update `prefix *= nums[i]`. After the forward pass, `result[i]` holds the product of everything strictly to `i`'s left.
-
-Backward pass: I track a running `suffix` (starts at `1`) and walk right-to-left. At each position I multiply `result[i] *= suffix`, then update `suffix *= nums[i]`. Now `result[i]` holds the product of everything to the left _and_ everything to the right — without ever including `nums[i]` itself.
-
-The order-of-operations matters: I always read `result[i]` (or set it) before updating the running variable, because the running variable represents what's accumulated _before_ the current position, not including it.
-
-## 4. Key Patterns
-
-### Pattern: In-Place Compaction with Write Cursor
-
-**When to use**: the problem says "in-place," "O(1) extra space," "remove elements," or "compress array." You're asked to modify the array and return the new length (not a new array).
-
-**How to think about it**: the output is a _prefix_ of the input array. You're deciding which elements belong in that prefix. The write cursor marks the boundary between "placed" and "not yet placed."
-
-**Code**
-
-```typescript
-function removeDuplicates(nums: number[]): number {
-  let writer = 1;
-  for (let reader = 1; reader < nums.length; reader++) {
-    if (nums[reader] !== nums[reader - 1]) {
-      nums[writer] = nums[reader];
-      writer++;
-    }
+:::trace-graph
+[
+  {
+    "nodes": [
+      {"id": "0", "label": "3", "x": 10, "y": 50, "tone": "current"},
+      {"id": "1", "label": "1", "x": 28, "y": 50, "tone": "default"},
+      {"id": "2", "label": "4", "x": 46, "y": 50, "tone": "default"},
+      {"id": "3", "label": "1", "x": 64, "y": 50, "tone": "default"},
+      {"id": "4", "label": "5", "x": 82, "y": 50, "tone": "default"}
+    ],
+    "edges": [],
+    "facts": [
+      {"name": "i", "value": 0, "tone": "orange"},
+      {"name": "prefix[i]", "value": 3, "tone": "blue"}
+    ],
+    "action": "visit",
+    "label": "The read cursor enters position 0. The prefix sum equals the element itself."
+  },
+  {
+    "nodes": [
+      {"id": "0", "label": "3", "x": 10, "y": 50, "tone": "visited"},
+      {"id": "1", "label": "1", "x": 28, "y": 50, "tone": "current"},
+      {"id": "2", "label": "4", "x": 46, "y": 50, "tone": "default"},
+      {"id": "3", "label": "1", "x": 64, "y": 50, "tone": "default"},
+      {"id": "4", "label": "5", "x": 82, "y": 50, "tone": "default"}
+    ],
+    "edges": [],
+    "facts": [
+      {"name": "i", "value": 1, "tone": "orange"},
+      {"name": "prefix[i]", "value": 4, "tone": "blue"}
+    ],
+    "action": "expand",
+    "label": "Each position adds its element to the previous prefix value. The notebook carries the total forward."
+  },
+  {
+    "nodes": [
+      {"id": "0", "label": "3", "x": 10, "y": 50, "tone": "done"},
+      {"id": "1", "label": "1", "x": 28, "y": 50, "tone": "done"},
+      {"id": "2", "label": "4", "x": 46, "y": 50, "tone": "done"},
+      {"id": "3", "label": "1", "x": 64, "y": 50, "tone": "done"},
+      {"id": "4", "label": "5", "x": 82, "y": 50, "tone": "done"}
+    ],
+    "edges": [],
+    "facts": [
+      {"name": "i", "value": 4, "tone": "orange"},
+      {"name": "prefix", "value": "[3,4,8,9,14]", "tone": "blue"}
+    ],
+    "action": "done",
+    "label": "One pass fills the entire prefix array. Any range sum [i..j] is now prefix[j] - prefix[i-1]."
   }
-  return nums.length === 0 ? 0 : writer;
-}
-```
+]
+:::
 
-**Complexity**: Time O(n), Space O(1)
+**Scenario 2: Write cursor filtering**
+
+**Input:** `arr = [1, 0, 2, 0, 3]`, remove zeros in-place
+
+:::trace-graph
+[
+  {
+    "nodes": [
+      {"id": "0", "label": "1", "x": 10, "y": 50, "tone": "current"},
+      {"id": "1", "label": "0", "x": 28, "y": 50, "tone": "default"},
+      {"id": "2", "label": "2", "x": 46, "y": 50, "tone": "default"},
+      {"id": "3", "label": "0", "x": 64, "y": 50, "tone": "default"},
+      {"id": "4", "label": "3", "x": 82, "y": 50, "tone": "default"}
+    ],
+    "edges": [],
+    "facts": [
+      {"name": "read", "value": 0, "tone": "orange"},
+      {"name": "write", "value": 0, "tone": "green"},
+      {"name": "arr[write]", "value": 1, "tone": "blue"}
+    ],
+    "action": "visit",
+    "label": "Read and write start together. The value qualifies, so write also advances."
+  },
+  {
+    "nodes": [
+      {"id": "0", "label": "1", "x": 10, "y": 50, "tone": "visited"},
+      {"id": "1", "label": "0", "x": 28, "y": 50, "tone": "blocked"},
+      {"id": "2", "label": "2", "x": 46, "y": 50, "tone": "current"},
+      {"id": "3", "label": "0", "x": 64, "y": 50, "tone": "default"},
+      {"id": "4", "label": "3", "x": 82, "y": 50, "tone": "default"}
+    ],
+    "edges": [],
+    "facts": [
+      {"name": "read", "value": 2, "tone": "orange"},
+      {"name": "write", "value": 1, "tone": "green"},
+      {"name": "gap", "value": "read-write=1", "tone": "purple"}
+    ],
+    "action": "expand",
+    "label": "Position 1 was zero so write stayed. A gap opens between the two cursors."
+  },
+  {
+    "nodes": [
+      {"id": "0", "label": "1", "x": 10, "y": 50, "tone": "done"},
+      {"id": "1", "label": "2", "x": 28, "y": 50, "tone": "done"},
+      {"id": "2", "label": "3", "x": 46, "y": 50, "tone": "done"},
+      {"id": "3", "label": "0", "x": 64, "y": 50, "tone": "muted"},
+      {"id": "4", "label": "0", "x": 82, "y": 50, "tone": "muted"}
+    ],
+    "edges": [],
+    "facts": [
+      {"name": "read", "value": 5, "tone": "orange"},
+      {"name": "write", "value": 3, "tone": "green"},
+      {"name": "new length", "value": 3, "tone": "blue"}
+    ],
+    "action": "done",
+    "label": "When read finishes, write marks the boundary. The live portion is arr[0..write-1]."
+  }
+]
+:::
+
+**Scenario 3: Converging two pointers**
+
+**Input:** `s = "racecar"`, check palindrome
+
+:::trace-graph
+[
+  {
+    "nodes": [
+      {"id": "0", "label": "'r'", "x": 10, "y": 50, "tone": "current", "badge": "L"},
+      {"id": "1", "label": "'a'", "x": 24, "y": 50, "tone": "default"},
+      {"id": "2", "label": "'c'", "x": 38, "y": 50, "tone": "default"},
+      {"id": "3", "label": "'e'", "x": 52, "y": 50, "tone": "default"},
+      {"id": "4", "label": "'c'", "x": 66, "y": 50, "tone": "default"},
+      {"id": "5", "label": "'a'", "x": 80, "y": 50, "tone": "default"},
+      {"id": "6", "label": "'r'", "x": 94, "y": 50, "tone": "current", "badge": "R"}
+    ],
+    "edges": [
+      {"from": "0", "to": "6", "tone": "active"}
+    ],
+    "facts": [
+      {"name": "left", "value": 0, "tone": "orange"},
+      {"name": "right", "value": 6, "tone": "green"},
+      {"name": "match", "value": "r == r", "tone": "blue"}
+    ],
+    "action": "visit",
+    "label": "Both pointers check their characters. A match means both can safely move inward."
+  },
+  {
+    "nodes": [
+      {"id": "0", "label": "'r'", "x": 10, "y": 50, "tone": "visited"},
+      {"id": "1", "label": "'a'", "x": 24, "y": 50, "tone": "current", "badge": "L"},
+      {"id": "2", "label": "'c'", "x": 38, "y": 50, "tone": "default"},
+      {"id": "3", "label": "'e'", "x": 52, "y": 50, "tone": "default"},
+      {"id": "4", "label": "'c'", "x": 66, "y": 50, "tone": "default"},
+      {"id": "5", "label": "'a'", "x": 80, "y": 50, "tone": "current", "badge": "R"},
+      {"id": "6", "label": "'r'", "x": 94, "y": 50, "tone": "visited"}
+    ],
+    "edges": [
+      {"from": "1", "to": "5", "tone": "active"}
+    ],
+    "facts": [
+      {"name": "left", "value": 1, "tone": "orange"},
+      {"name": "right", "value": 5, "tone": "green"},
+      {"name": "match", "value": "a == a", "tone": "blue"}
+    ],
+    "action": "expand",
+    "label": "Each matched pair shrinks the unchecked window. The pointers close toward the center."
+  },
+  {
+    "nodes": [
+      {"id": "0", "label": "'r'", "x": 10, "y": 50, "tone": "done"},
+      {"id": "1", "label": "'a'", "x": 24, "y": 50, "tone": "done"},
+      {"id": "2", "label": "'c'", "x": 38, "y": 50, "tone": "done"},
+      {"id": "3", "label": "'e'", "x": 52, "y": 50, "tone": "done"},
+      {"id": "4", "label": "'c'", "x": 66, "y": 50, "tone": "done"},
+      {"id": "5", "label": "'a'", "x": 80, "y": 50, "tone": "done"},
+      {"id": "6", "label": "'r'", "x": 94, "y": 50, "tone": "done"}
+    ],
+    "edges": [],
+    "facts": [
+      {"name": "left", "value": 3, "tone": "orange"},
+      {"name": "right", "value": 3, "tone": "green"},
+      {"name": "result", "value": "palindrome", "tone": "blue"}
+    ],
+    "action": "done",
+    "label": "When the pointers meet (or cross for even-length strings), every pair has been checked."
+  }
+]
+:::
 
 ---
 
-### Pattern: Prefix Sum for Range Queries
+## Building Blocks: Progressive Learning
 
-**When to use**: the problem involves summing or querying subarrays repeatedly, or asks for counts/sums over ranges. The key signal is "sum of elements between index i and j."
+### Level 1: Single-Pass Traversal
 
-**How to think about it**: compute `prefix[i]` = sum of `nums[0..i-1]` once up front. Then any range sum `[L, R]` = `prefix[R+1] - prefix[L]` in O(1). The upfront O(n) cost pays off when you have many queries.
+A single-pass traversal problem asks you to walk an array or string once and produce a result from what you observe. The brute-force temptation is to re-scan from the start whenever you need information about a different position. That turns a linear problem into a quadratic one.
 
-**Code**
+The exploitable property is that a running result carried forward eliminates re-scanning. Whether you are counting matching elements, building a prefix sum, or tracking the maximum seen so far, the pattern is the same: enter each position once, update the carried state, move on.
 
-```typescript
-function buildPrefix(nums: number[]): number[] {
-  const prefix = new Array(nums.length + 1).fill(0);
-  for (let i = 0; i < nums.length; i++) {
-    prefix[i + 1] = prefix[i] + nums[i];
+Mechanically: initialize the result before the loop, update it inside the loop at each index, return it after the loop ends. The only decision is what the carried state looks like.
+
+`s = "hello world"`, count vowels
+
+:::trace-graph
+[
+  {
+    "nodes": [
+      {"id": "0", "label": "'h'", "x": 8, "y": 50, "tone": "blocked"},
+      {"id": "1", "label": "'e'", "x": 22, "y": 50, "tone": "current"},
+      {"id": "2", "label": "'l'", "x": 36, "y": 50, "tone": "default"},
+      {"id": "3", "label": "'l'", "x": 50, "y": 50, "tone": "default"},
+      {"id": "4", "label": "'o'", "x": 64, "y": 50, "tone": "frontier"},
+      {"id": "5", "label": "' '", "x": 78, "y": 50, "tone": "default"},
+      {"id": "6", "label": "'w'", "x": 92, "y": 50, "tone": "default"}
+    ],
+    "edges": [],
+    "facts": [
+      {"name": "i", "value": 1, "tone": "orange"},
+      {"name": "count", "value": 1, "tone": "blue"}
+    ],
+    "action": "visit",
+    "label": "'h' failed the vowel check. 'e' passes — count increments immediately."
+  },
+  {
+    "nodes": [
+      {"id": "0", "label": "'h'", "x": 8, "y": 50, "tone": "blocked"},
+      {"id": "1", "label": "'e'", "x": 22, "y": 50, "tone": "visited"},
+      {"id": "2", "label": "'l'", "x": 36, "y": 50, "tone": "blocked"},
+      {"id": "3", "label": "'l'", "x": 50, "y": 50, "tone": "blocked"},
+      {"id": "4", "label": "'o'", "x": 64, "y": 50, "tone": "current"},
+      {"id": "5", "label": "' '", "x": 78, "y": 50, "tone": "default"},
+      {"id": "6", "label": "'w'", "x": 92, "y": 50, "tone": "default"}
+    ],
+    "edges": [],
+    "facts": [
+      {"name": "i", "value": 4, "tone": "orange"},
+      {"name": "count", "value": 2, "tone": "blue"}
+    ],
+    "action": "expand",
+    "label": "The cursor skips non-vowels without resetting. Count grows only on qualifying elements."
+  },
+  {
+    "nodes": [
+      {"id": "0", "label": "'h'", "x": 8, "y": 50, "tone": "done"},
+      {"id": "1", "label": "'e'", "x": 22, "y": 50, "tone": "done"},
+      {"id": "2", "label": "'l'", "x": 36, "y": 50, "tone": "done"},
+      {"id": "3", "label": "'l'", "x": 50, "y": 50, "tone": "done"},
+      {"id": "4", "label": "'o'", "x": 64, "y": 50, "tone": "done"},
+      {"id": "5", "label": "' '", "x": 78, "y": 50, "tone": "done"},
+      {"id": "6", "label": "'w'", "x": 92, "y": 50, "tone": "done"}
+    ],
+    "edges": [],
+    "facts": [
+      {"name": "i", "value": 7, "tone": "orange"},
+      {"name": "count", "value": 3, "tone": "blue"}
+    ],
+    "action": "done",
+    "label": "One pass, one count variable. The result is ready as soon as the cursor finishes."
   }
-  return prefix;
-}
+]
+:::
 
-function rangeSum(prefix: number[], L: number, R: number): number {
-  return prefix[R + 1] - prefix[L];
-}
-```
+#### **Exercise 1**
 
-**Complexity**: Build O(n), Query O(1), Space O(n)
+Vowel counting is the simplest read-cursor exercise. You're given a string. Return the count of vowel characters (a, e, i, o, u, case-insensitive) using a single pass with one accumulator variable.
 
-## 5. Decision Framework
+:::stackblitz{step=1 total=3 exercises="step1-exercise1-problem.ts" solutions="step1-exercise1-solution.ts"}
 
-### Concept Map
+#### **Exercise 2**
+
+A prefix sum carries a running total forward so any range query can be answered later in O(1). You're given an array of integers. Return a new array of the same length where each position holds the sum of all elements from index 0 through that position.
+
+:::stackblitz{step=1 total=3 exercises="step1-exercise2-problem.ts" solutions="step1-exercise2-solution.ts"}
+
+#### **Exercise 3**
+
+Tracking the running maximum is useful when the answer depends on what came before each element, not what the element is in isolation. You're given an array of integers. Return a new array where each position holds the maximum value seen from index 0 through that position.
+
+:::stackblitz{step=1 total=3 exercises="step1-exercise3-problem.ts" solutions="step1-exercise3-solution.ts"}
+
+> **Mental anchor**: Enter each position once, update the carried state, move on. One pass is almost always enough.
+
+**→ Bridge to Level 2**: Level 1 reads without writing. When the problem asks you to compress or filter the array itself without allocating a second one, a second cursor is needed. That is the write cursor.
+
+### Level 2: Write-Cursor Compression
+
+Level 1 gave you one cursor that only reads. Now the problem changes: you need to shrink or rearrange the array in-place, using no extra allocation beyond a few variables. The brute-force mistake is to shift elements one slot at a time every time you remove something. On an array with n removals, that is O(n²) shifts.
+
+The exploitable property is that a second cursor moving at a different speed handles all the repositioning in a single pass. The **read** cursor visits every element. The **write** cursor sits at the next open slot. When the read cursor finds a keeper, it copies to the write slot and advances write. When read finds a discard, it skips past without moving write. At the end, the array's live portion runs from index 0 to write-1.
+
+Mechanically: initialize both cursors to 0, walk read to the end, conditionally advance write. No shifting, no second array. The total work is exactly one read per element.
+
+`arr = [3, 0, 1, 0, 4, 0, 2]`, remove zeros
+
+:::trace-graph
+[
+  {
+    "nodes": [
+      {"id": "0", "label": "3", "x": 10, "y": 50, "tone": "current"},
+      {"id": "1", "label": "0", "x": 26, "y": 50, "tone": "frontier"},
+      {"id": "2", "label": "1", "x": 42, "y": 50, "tone": "default"},
+      {"id": "3", "label": "0", "x": 58, "y": 50, "tone": "default"},
+      {"id": "4", "label": "4", "x": 74, "y": 50, "tone": "default"},
+      {"id": "5", "label": "0", "x": 90, "y": 50, "tone": "default"},
+      {"id": "6", "label": "2", "x": 106, "y": 50, "tone": "default"}
+    ],
+    "edges": [],
+    "facts": [
+      {"name": "read", "value": 0, "tone": "orange"},
+      {"name": "write", "value": 0, "tone": "green"}
+    ],
+    "action": "visit",
+    "label": "Both cursors start at 0. The value 3 qualifies, so arr[write]=arr[read] and write advances."
+  },
+  {
+    "nodes": [
+      {"id": "0", "label": "3", "x": 10, "y": 50, "tone": "visited"},
+      {"id": "1", "label": "0", "x": 26, "y": 50, "tone": "blocked"},
+      {"id": "2", "label": "1", "x": 42, "y": 50, "tone": "current"},
+      {"id": "3", "label": "0", "x": 58, "y": 50, "tone": "default"},
+      {"id": "4", "label": "4", "x": 74, "y": 50, "tone": "default"},
+      {"id": "5", "label": "0", "x": 90, "y": 50, "tone": "default"},
+      {"id": "6", "label": "2", "x": 106, "y": 50, "tone": "default"}
+    ],
+    "edges": [],
+    "facts": [
+      {"name": "read", "value": 2, "tone": "orange"},
+      {"name": "write", "value": 1, "tone": "green"},
+      {"name": "gap", "value": 1, "tone": "purple"}
+    ],
+    "action": "expand",
+    "label": "The zero at position 1 was skipped. Write did not move. The gap between cursors is 1."
+  },
+  {
+    "nodes": [
+      {"id": "0", "label": "3", "x": 10, "y": 50, "tone": "done"},
+      {"id": "1", "label": "1", "x": 26, "y": 50, "tone": "done"},
+      {"id": "2", "label": "4", "x": 42, "y": 50, "tone": "done"},
+      {"id": "3", "label": "2", "x": 58, "y": 50, "tone": "done"},
+      {"id": "4", "label": "4", "x": 74, "y": 50, "tone": "muted"},
+      {"id": "5", "label": "0", "x": 90, "y": 50, "tone": "muted"},
+      {"id": "6", "label": "2", "x": 106, "y": 50, "tone": "muted"}
+    ],
+    "edges": [],
+    "facts": [
+      {"name": "read", "value": 7, "tone": "orange"},
+      {"name": "write", "value": 4, "tone": "green"},
+      {"name": "new length", "value": 4, "tone": "blue"}
+    ],
+    "action": "done",
+    "label": "Read finished. The first four positions are the kept values. Write is the new length."
+  }
+]
+:::
+
+#### **Exercise 1**
+
+Removing a target value in-place is the write-cursor pattern at its simplest. You're given an array and a target value. Modify the array in-place so all non-target values are packed at the front, and return the count of kept elements.
+
+:::stackblitz{step=2 total=3 exercises="step2-exercise1-problem.ts" solutions="step2-exercise1-solution.ts"}
+
+#### **Exercise 2**
+
+Deduplicating a sorted array adds one comparison to the write condition. You're given a sorted array. Remove duplicate values in-place so each value appears at most once, and return the count of unique values. The input being sorted means duplicates are always adjacent.
+
+:::stackblitz{step=2 total=3 exercises="step2-exercise2-problem.ts" solutions="step2-exercise2-solution.ts"}
+
+#### **Exercise 3**
+
+Moving zeros to the end while preserving the relative order of non-zero elements is a variant where the discard condition is `=== 0`. You're given an array of integers. Move all zeros to the end in-place, keeping the relative order of the non-zero values unchanged.
+
+:::stackblitz{step=2 total=3 exercises="step2-exercise3-problem.ts" solutions="step2-exercise3-solution.ts"}
+
+> **Mental anchor**: Read sees everything. Write stamps only what earns a place. The gap between them is the junk you are compressing away.
+
+**→ Bridge to Level 3**: Level 2 moves both cursors in the same direction at different speeds. Two-pointer problems move the cursors in opposite directions, toward each other, to answer questions about pairs without a nested loop.
+
+### Level 3: Converging Two Pointers
+
+Level 2 gave you two cursors moving left-to-right at different speeds. Now the problem changes shape: you need to answer questions about pairs of elements, and the input is sorted or symmetric. The brute-force is nested loops at O(n²). The exploitable property is that if you know the relative order of values, you can eliminate entire ranges in one step.
+
+Place `left` at 0 and `right` at n-1. Compare what each points to. If that comparison tells you the left value is too small, increment left to get a bigger value. If the right value is too large, decrement right to get a smaller value. Each step eliminates at least one position from consideration, so the pointers cross in at most n steps total.
+
+Mechanically: the loop condition is `left < right`. The exit inside the loop is a match or a target condition. The advance rule is the arithmetic condition: pick the pointer whose direction moves the comparison closer to the target.
+
+`nums = [1, 3, 5, 7, 9]`, find pair summing to 10
+
+:::trace-graph
+[
+  {
+    "nodes": [
+      {"id": "0", "label": "1", "x": 10, "y": 50, "tone": "current", "badge": "L"},
+      {"id": "1", "label": "3", "x": 28, "y": 50, "tone": "default"},
+      {"id": "2", "label": "5", "x": 46, "y": 50, "tone": "default"},
+      {"id": "3", "label": "7", "x": 64, "y": 50, "tone": "default"},
+      {"id": "4", "label": "9", "x": 82, "y": 50, "tone": "current", "badge": "R"}
+    ],
+    "edges": [
+      {"from": "0", "to": "4", "tone": "active"}
+    ],
+    "facts": [
+      {"name": "left", "value": 0, "tone": "orange"},
+      {"name": "right", "value": 4, "tone": "green"},
+      {"name": "sum", "value": "1+9=10", "tone": "blue"}
+    ],
+    "action": "visit",
+    "label": "First comparison: sum is 10, the target. Answer found immediately."
+  },
+  {
+    "nodes": [
+      {"id": "0", "label": "1", "x": 10, "y": 50, "tone": "current", "badge": "L"},
+      {"id": "1", "label": "3", "x": 28, "y": 50, "tone": "default"},
+      {"id": "2", "label": "5", "x": 46, "y": 50, "tone": "default"},
+      {"id": "3", "label": "7", "x": 64, "y": 50, "tone": "current", "badge": "R"},
+      {"id": "4", "label": "9", "x": 82, "y": 50, "tone": "visited"}
+    ],
+    "edges": [
+      {"from": "0", "to": "3", "tone": "active"}
+    ],
+    "facts": [
+      {"name": "left", "value": 0, "tone": "orange"},
+      {"name": "right", "value": 3, "tone": "green"},
+      {"name": "sum", "value": "1+7=8", "tone": "blue"}
+    ],
+    "action": "expand",
+    "label": "If sum < target, left must grow. Incrementing left moves the sum upward without re-scanning."
+  },
+  {
+    "nodes": [
+      {"id": "0", "label": "1", "x": 10, "y": 50, "tone": "visited"},
+      {"id": "1", "label": "3", "x": 28, "y": 50, "tone": "current", "badge": "L"},
+      {"id": "2", "label": "5", "x": 46, "y": 50, "tone": "default"},
+      {"id": "3", "label": "7", "x": 64, "y": 50, "tone": "current", "badge": "R"},
+      {"id": "4", "label": "9", "x": 82, "y": 50, "tone": "visited"}
+    ],
+    "edges": [
+      {"from": "1", "to": "3", "tone": "active"}
+    ],
+    "facts": [
+      {"name": "left", "value": 1, "tone": "orange"},
+      {"name": "right", "value": 3, "tone": "green"},
+      {"name": "sum", "value": "3+7=10", "tone": "blue"}
+    ],
+    "action": "done",
+    "label": "Left advanced once. The new pair hits the target. Every other pair was eliminated without checking."
+  }
+]
+:::
+
+#### **Exercise 1**
+
+Checking a palindrome is the simplest converging-pointer problem. You're given a string. Return `true` if it reads the same forwards and backwards, using two pointers that start at opposite ends and move inward until they meet.
+
+:::stackblitz{step=3 total=3 exercises="step3-exercise1-problem.ts" solutions="step3-exercise1-solution.ts"}
+
+#### **Exercise 2**
+
+Two-sum in a sorted array is the canonical converging-pointer problem. You're given a sorted array of integers and a target. Return the 1-based indices of the two numbers that sum to the target, advancing left when the sum is too small and right when the sum is too large.
+
+:::stackblitz{step=3 total=3 exercises="step3-exercise2-problem.ts" solutions="step3-exercise2-solution.ts"}
+
+#### **Exercise 3**
+
+Merging two sorted arrays from the right uses a three-pointer approach where two read pointers start at the end of each input and one write pointer starts at the end of the destination. You're given `nums1` with extra space at the end, `m` valid elements, `nums2`, and `n` elements. Merge them in-place, sorted, without extra allocation.
+
+:::stackblitz{step=3 total=3 exercises="step3-exercise3-problem.ts" solutions="step3-exercise3-solution.ts"}
+
+> **Mental anchor**: The pointers only move inward. Each step eliminates at least one position. They cross in O(n).
+
+## Key Patterns
+
+### Pattern: Single-Pass Accumulation
+
+**When to use**: the input is a linear sequence, the question asks for a count, sum, maximum, or any aggregate, and the answer at each position depends only on what came before it.
+
+**How to think about it**: decide what state to carry forward. Initialize it before the loop. Update it at each index. Return it after the last index. The output might be a single number (count, total) or an array built in the same pass (prefix sums, running max).
 
 ```mermaid
 graph TD
-    AS[Arrays and Strings] --> IP[In-Place Manipulation]
-    AS --> Idx[Index Navigation]
-    AS --> Str[Strings as Char Arrays]
-    IP --> WC[Write Cursor]
-    IP --> TP[Two Converging Pointers]
-    IP --> PS[Prefix and Suffix Passes]
-    WC --> WC1[Read pointer sees everything]
-    WC --> WC2[Write cursor advances on keepers only]
-    TP --> TP1[L starts at 0, R starts at end]
-    TP --> TP2[One pointer moves per step — O of n total]
-    PS --> PS1[Forward pass collects left context]
-    PS --> PS2[Backward pass collects right context]
-    Str --> S1[Indexed char sequence]
-    Str --> S2[Two pointers check symmetry]
+    Init["initialize carried state"] --> Loop["enter each index once"]
+    Loop --> Update{"update state from arr[i]"}
+    Update --> Next["i++"]
+    Next --> Done{"i >= n?"}
+    Done -- no --> Loop
+    Done -- yes --> Return["return result"]
 ```
 
-### Key Operations
+**Complexity**: Time O(n), Space O(1) for scalar results or O(n) for output arrays.
 
-| Operation                | Time | Space      | Notes                                    |
-| ------------------------ | ---- | ---------- | ---------------------------------------- |
-| Access by index          | O(1) | —          | The core advantage of arrays             |
-| Write cursor compact     | O(n) | O(1)       | One read pass, one write head            |
-| Two-pointer scan         | O(n) | O(1)       | Each pointer moves at most n steps total |
-| Build prefix array       | O(n) | O(n)       | Separate array stores cumulative values  |
-| Prefix + suffix in-place | O(n) | O(1) extra | Two passes, reuse output array           |
+### Pattern: Write-Cursor Compression
 
-### When to use which
+**When to use**: the problem asks to remove, filter, deduplicate, or rearrange a sequence in-place with no extra array, returning the new effective length.
+
+**How to think about it**: keep and discard are two different cursor speeds. Read always advances. Write only advances when a keeper is found and copied to `arr[write]`. The qualify condition is the only thing that changes between problems.
 
 ```mermaid
 graph TD
-    Q[Array or String problem] --> Q1{Filter or compact in-place?}
-    Q1 -->|Yes| WC[Write Cursor]
-    Q1 -->|No| Q2{Sorted array or check symmetry?}
-    Q2 -->|Yes| TP[Two Converging Pointers]
-    Q2 -->|No| Q3{Each position needs both-sides context?}
-    Q3 -->|Yes| PS[Prefix and Suffix Passes]
-    Q3 -->|No| Q4{Range sum or running total queries?}
-    Q4 -->|Yes| PR[Prefix Sum Array]
-    Q4 -->|No| NA[Consider Sliding Window or Hash Map]
+    Init["read = 0, write = 0"] --> ReadEl["read arr[read]"]
+    ReadEl --> Keep{"keep condition?"}
+    Keep -- yes --> Copy["arr[write] = arr[read], write++"]
+    Keep -- no --> Discard["skip"]
+    Copy --> Advance["read++"]
+    Discard --> Advance
+    Advance --> Done{"read >= n?"}
+    Done -- no --> ReadEl
+    Done -- yes --> Return["return write"]
 ```
 
-**Recognition signals**
+**Complexity**: Time O(n), Space O(1).
 
-| Problem keywords                                            | Technique               |
-| ----------------------------------------------------------- | ----------------------- |
-| "in-place", "O(1) space", "remove/filter elements"          | Write cursor            |
-| "palindrome", "two sum in sorted array", "reverse"          | Two converging pointers |
-| "product/sum except self", "context from both sides"        | Prefix + suffix passes  |
-| "subarray sum", "range query", "count subarrays with sum k" | Prefix sum + hash map   |
+### Pattern: Converging Two Pointers
 
-**When NOT to use two pointers from both ends**: when the array is unsorted and you need to find a pair sum. Two pointers only work because a sorted array guarantees that moving `L` right increases the sum and moving `R` left decreases it. Without that guarantee, use a hash set instead.
+**When to use**: the input is sorted or symmetric, the problem involves a pair of elements, and you want to eliminate the nested loop.
 
-## 6. Common Gotchas & Edge Cases
+**How to think about it**: the advance rule comes from the comparison. In a sorted-pair problem, if the sum is too small, left needs a bigger value, so increment left. If the sum is too large, right needs a smaller value, so decrement right. In a symmetry problem like a palindrome, both pointers advance together on a match, and a mismatch is an immediate false.
 
-**"I'll write first, then increment `writer`" — except you incremented first.**
-It's easy to write `writer++; nums[writer] = nums[reader]` instead of `nums[writer] = nums[reader]; writer++`. The first version skips slot 0 and produces an off-by-one count. Always write to `writer` _before_ advancing it.
+```mermaid
+graph TD
+    Init["left = 0, right = n-1"] --> Compare["compare arr[left] and arr[right]"]
+    Compare --> Result{"comparison result"}
+    Result -- "need bigger on left" --> IncLeft["left++"]
+    Result -- "need smaller on right" --> DecRight["right--"]
+    Result -- "answer condition met" --> Found["return true or record pair"]
+    IncLeft --> Check{"left >= right?"}
+    DecRight --> Check
+    Check -- no --> Compare
+    Check -- yes --> Return["return false or no pair"]
+```
 
-**Loop condition `L <= R` for two pointers.**
-When `L === R`, you're examining the middle of an odd-length array. The element always matches itself. If your logic is `if s[L] !== s[R] return false`, this is harmless. But if you decrement `R` and increment `L` past each other, you'll miss or double-count. Use `L < R` and stop cleanly.
-
-**Prefix[i] includes `nums[i]` — off by one.**
-If `prefix[i]` = sum of `nums[0..i]` (including `i`), then `prefix[R] - prefix[L]` gives the sum of `nums[L+1..R]`, not `nums[L..R]`. The standard convention is `prefix[i]` = sum of `nums[0..i-1]` so that `prefix[R+1] - prefix[L]` = sum of `nums[L..R]`. Decide your convention up front and be consistent.
-
-**Forgetting to handle the empty array.**
-`removeDuplicates([])` — if `w` starts at 1 and the array is empty, you return 1 instead of 0. Always check edge cases: empty input, single element, all duplicates, all different.
-
-**Modifying the array while reading it with a separate index.**
-In the write cursor pattern this is intentional — but if `w === r` you're overwriting the element you just read. This is fine because `nums[w] = nums[r]` when `w === r` is a no-op (you're writing the value to itself).
-
-**Edge cases to always check**:
-
-- Empty array `[]`
-- Single-element array `[1]`
-- All elements identical `[2, 2, 2, 2]`
-- Already sorted / already valid
-- Negative numbers in prefix sums (the pattern still works — don't assume positive)
-
-**Debugging tips**: print `(reader, writer, nums.slice(0, writer))` at each iteration of a write cursor. For two pointers, print `(L, R, s[L], s[R])`. For prefix passes, print the `result` array after the forward pass and again after the backward pass.
+**Complexity**: Time O(n), Space O(1).

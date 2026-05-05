@@ -1,23 +1,24 @@
-// Goal: Practice the forward pass — the left messenger collects context.
+// Goal: Check if a string is a palindrome using converging two pointers.
 //
-// The left messenger walks left-to-right. Before reaching each slot i,
-// it records what it has accumulated so far (the sum of everything to its left).
-// prefix[i] = sum of nums[0..i-1]. prefix[0] is always 0 (nothing to the left).
+// Return true if the string reads the same forwards and backwards.
+// Consider only alphanumeric characters and ignore case.
 //
 // Example:
-//   buildPrefixSums([1, 2, 3, 4]) → [0, 1, 3, 6]
-//   buildPrefixSums([3, 3, 3])    → [0, 3, 6]
-function buildPrefixSums(nums: number[]): number[] {
+//   isPalindrome("racecar")                    -> true
+//   isPalindrome("A man a plan a canal Panama") -> true
+//   isPalindrome("hello")                       -> false
+function isPalindrome(s: string): boolean {
   throw new Error('not implemented');
 }
 
 // ---Tests
-test('basic',      () => buildPrefixSums([1, 2, 3, 4]), [0, 1, 3, 6]);
-test('all same',   () => buildPrefixSums([3, 3, 3]),    [0, 3, 6]);
-test('single',     () => buildPrefixSums([5]),           [0]);
-test('empty',      () => buildPrefixSums([]),            []);
-test('negatives',  () => buildPrefixSums([-1, -2, 3]),   [0, -1, -3]);
-test('zeros',      () => buildPrefixSums([0, 0, 0]),     [0, 0, 0]);
+test('simple palindrome', () => isPalindrome('racecar'), true);
+test('classic phrase ignoring spaces and case', () => isPalindrome('A man a plan a canal Panama'), true);
+test('non-palindrome', () => isPalindrome('hello'), false);
+test('empty string is a palindrome', () => isPalindrome(''), true);
+test('single character', () => isPalindrome('a'), true);
+test('two matching characters', () => isPalindrome('aa'), true);
+test('two non-matching characters', () => isPalindrome('ab'), false);
 // ---End Tests
 
 // ---Helpers
@@ -30,9 +31,12 @@ function test(desc: string, fn: () => unknown, expected: unknown): void {
       console.log(`  expected: ${JSON.stringify(expected)}`);
       console.log(`  received: ${JSON.stringify(actual)}`);
     }
-  } catch (e) {
-    if (e instanceof Error && e.message === 'not implemented') {
+  } catch (error) {
+    if (error instanceof Error && error.message === 'not implemented') {
       console.log(`TODO  ${desc}`);
-    } else { throw e; }
+    } else {
+      throw error;
+    }
   }
 }
+// ---End Helpers

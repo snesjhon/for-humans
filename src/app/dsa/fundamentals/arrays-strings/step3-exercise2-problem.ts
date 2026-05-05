@@ -1,25 +1,22 @@
-// Goal: Use the left messenger's notes to answer range questions in O(1).
+// Goal: Find two numbers in a sorted array that sum to a target using two pointers.
 //
-// The left messenger already recorded prefix[i] = sum of everything before i.
-// A range sum [left, right] = prefix[right+1] − prefix[left].
-// Build the prefix array first, then compute each answer in one subtraction.
-//
-// Return the sum of nums[left..right] (inclusive, 0-based).
+// Return the 1-based indices [left+1, right+1] of the two numbers.
+// You may not use the same element twice.
+// Exactly one solution is guaranteed.
 //
 // Example:
-//   rangeSum([1, 2, 3, 4], 1, 3) → 9   (2 + 3 + 4)
-//   rangeSum([1, 2, 3, 4], 0, 0) → 1   (just nums[0])
-function rangeSum(nums: number[], left: number, right: number): number {
+//   twoSumSorted([2, 7, 11, 15], 9) -> [1, 2]
+//   twoSumSorted([2, 3, 4], 6)      -> [1, 3]
+function twoSumSorted(numbers: number[], target: number): [number, number] {
   throw new Error('not implemented');
 }
 
 // ---Tests
-test('full range',      () => rangeSum([1, 2, 3, 4], 0, 3), 10);
-test('partial range',   () => rangeSum([1, 2, 3, 4], 1, 3),  9);
-test('single element',  () => rangeSum([1, 2, 3, 4], 2, 2),  3);
-test('first element',   () => rangeSum([1, 2, 3, 4], 0, 0),  1);
-test('with negatives',  () => rangeSum([-1, 2, -3, 4], 1, 3), 3);
-test('single-elem arr', () => rangeSum([7], 0, 0),            7);
+test('finds pair at the ends', () => twoSumSorted([2, 7, 11, 15], 9), [1, 2]);
+test('finds pair spanning the array', () => twoSumSorted([2, 3, 4], 6), [1, 3]);
+test('finds pair near the end', () => twoSumSorted([1, 2, 3, 4, 5], 9), [4, 5]);
+test('handles two-element array', () => twoSumSorted([1, 3], 4), [1, 2]);
+test('works with negative numbers', () => twoSumSorted([-4, -1, 0, 3, 5], -1), [1, 4]);
 // ---End Tests
 
 // ---Helpers
@@ -32,9 +29,12 @@ function test(desc: string, fn: () => unknown, expected: unknown): void {
       console.log(`  expected: ${JSON.stringify(expected)}`);
       console.log(`  received: ${JSON.stringify(actual)}`);
     }
-  } catch (e) {
-    if (e instanceof Error && e.message === 'not implemented') {
+  } catch (error) {
+    if (error instanceof Error && error.message === 'not implemented') {
       console.log(`TODO  ${desc}`);
-    } else { throw e; }
+    } else {
+      throw error;
+    }
   }
 }
+// ---End Helpers

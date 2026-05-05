@@ -1,27 +1,46 @@
-// Goal: Use the two inspectors' sum to decide which one moves inward.
+// Goal: Move all zeros to the end of the array in-place, preserving
+// the relative order of non-zero elements.
 //
-// The sorted belt lets the inspectors reason about direction:
-//   - Sum too small → left inspector steps right (larger values are ahead)
-//   - Sum too large → right inspector steps left (smaller values are behind)
-//   - Sum matches   → report the inspectors' positions
-//
-// Return 1-based indices of the two numbers that add up to target.
-// Exactly one solution is guaranteed. Do not use a hash map.
+// Modify nums in-place. Return nothing.
 //
 // Example:
-//   twoSumSorted([2, 7, 11, 15], 9) → [1, 2]
-//   twoSumSorted([2, 3, 4], 6)      → [1, 3]
-//   twoSumSorted([-1, 0], -1)       → [1, 2]
-function twoSumSorted(nums: number[], target: number): [number, number] {
+//   moveZeros([0, 1, 0, 3, 12]) -> nums becomes [1, 3, 12, 0, 0]
+//   moveZeros([0, 0, 1])        -> nums becomes [1, 0, 0]
+function moveZeros(nums: number[]): void {
   throw new Error('not implemented');
 }
 
 // ---Tests
-test('basic',          () => twoSumSorted([2, 7, 11, 15], 9),  [1, 2]);
-test('middle pair',    () => twoSumSorted([2, 3, 4], 6),        [1, 3]);
-test('negatives',      () => twoSumSorted([-1, 0], -1),         [1, 2]);
-test('last two',       () => twoSumSorted([1, 2, 3, 4], 7),     [3, 4]);
-test('first and last', () => twoSumSorted([1, 5, 6, 10], 11),   [1, 4]);
+test('moves zeros to the end', () => {
+  const nums = [0, 1, 0, 3, 12];
+  moveZeros(nums);
+  return nums;
+}, [1, 3, 12, 0, 0]);
+test('handles leading zeros', () => {
+  const nums = [0, 0, 1];
+  moveZeros(nums);
+  return nums;
+}, [1, 0, 0]);
+test('no zeros to move', () => {
+  const nums = [1, 2, 3];
+  moveZeros(nums);
+  return nums;
+}, [1, 2, 3]);
+test('all zeros', () => {
+  const nums = [0, 0, 0];
+  moveZeros(nums);
+  return nums;
+}, [0, 0, 0]);
+test('single zero', () => {
+  const nums = [0];
+  moveZeros(nums);
+  return nums;
+}, [0]);
+test('empty array', () => {
+  const nums: number[] = [];
+  moveZeros(nums);
+  return nums;
+}, []);
 // ---End Tests
 
 // ---Helpers
@@ -34,9 +53,12 @@ function test(desc: string, fn: () => unknown, expected: unknown): void {
       console.log(`  expected: ${JSON.stringify(expected)}`);
       console.log(`  received: ${JSON.stringify(actual)}`);
     }
-  } catch (e) {
-    if (e instanceof Error && e.message === 'not implemented') {
+  } catch (error) {
+    if (error instanceof Error && error.message === 'not implemented') {
       console.log(`TODO  ${desc}`);
-    } else { throw e; }
+    } else {
+      throw error;
+    }
   }
 }
+// ---End Helpers

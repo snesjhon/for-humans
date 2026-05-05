@@ -141,7 +141,13 @@ export const JOURNEY: Phase[] = [
         fundamentalsSlug: 'rich-interactive-ui',
         fundamentalsBlurb:
           'Image loading lifecycle, transition state layered on selection state, and input control as a dirty/touched state machine.',
-        practice: [],
+        practice: [
+          {
+            id: '031',
+            slug: '031-carousel-navigation',
+            label: 'Carousel Navigation',
+          },
+        ],
         advanced: [],
       },
     ],

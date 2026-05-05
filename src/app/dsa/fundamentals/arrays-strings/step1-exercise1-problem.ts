@@ -1,27 +1,22 @@
-// Goal: Practice the most direct form of the reader + writer.
+// Goal: Count the vowels in a string using a single pass.
 //
-// The conveyor belt carries integers — some positive, some zero, some negative.
-// Keep only the positive values (> 0) at the front, in their original order.
-// Everything else is discarded off the belt.
-// Return the count of items written.
-//
-// The reader reads every slot without skipping.
-// The writer only advances when the reader finds a positive value.
+// Return the number of vowel characters (a, e, i, o, u, case-insensitive)
+// in the string.
 //
 // Example:
-//   keepPositives([-1, 3, 0, 2, -4, 5]) → 3   (belt becomes [3, 2, 5, ...])
-//   keepPositives([0, -1, -2])           → 0   (nothing to write)
-function keepPositives(nums: number[]): number {
+//   countVowels("hello") -> 2
+//   countVowels("rhythm") -> 0
+function countVowels(s: string): number {
   throw new Error('not implemented');
 }
 
 // ---Tests
-test('mixed signs',     () => keepPositives([-1, 3, 0, 2, -4, 5]),  3);
-test('none positive',   () => keepPositives([0, -1, -2]),            0);
-test('all positive',    () => keepPositives([1, 2, 3]),              3);
-test('empty belt',      () => keepPositives([]),                     0);
-test('single positive', () => keepPositives([4]),                    1);
-test('single zero',     () => keepPositives([0]),                    0);
+test('counts vowels in a simple word', () => countVowels('hello'), 2);
+test('counts zero vowels when none present', () => countVowels('rhythm'), 0);
+test('counts all characters when all are vowels', () => countVowels('aeiou'), 5);
+test('is case-insensitive', () => countVowels('AEIOU'), 5);
+test('handles empty string', () => countVowels(''), 0);
+test('handles mixed case and spaces', () => countVowels('Hello World'), 3);
 // ---End Tests
 
 // ---Helpers
@@ -34,9 +29,12 @@ function test(desc: string, fn: () => unknown, expected: unknown): void {
       console.log(`  expected: ${JSON.stringify(expected)}`);
       console.log(`  received: ${JSON.stringify(actual)}`);
     }
-  } catch (e) {
-    if (e instanceof Error && e.message === 'not implemented') {
+  } catch (error) {
+    if (error instanceof Error && error.message === 'not implemented') {
       console.log(`TODO  ${desc}`);
-    } else { throw e; }
+    } else {
+      throw error;
+    }
   }
 }
+// ---End Helpers

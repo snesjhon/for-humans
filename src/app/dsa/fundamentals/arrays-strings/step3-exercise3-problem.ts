@@ -1,26 +1,42 @@
-// Goal: Send both messengers and combine their notes at each slot.
+// Goal: Merge two sorted arrays in-place from the right using three pointers.
 //
-// The left messenger records the product of everything to the LEFT of each slot.
-// The right messenger records the product of everything to the RIGHT.
-// Each slot's answer = left messenger's note × right messenger's note.
-// You may not use division.
-//
-// Return an array where output[i] is the product of every element except nums[i].
+// nums1 has m valid elements followed by n zeros as extra space.
+// nums2 has n elements.
+// Merge nums2 into nums1 in sorted non-descending order, in-place.
 //
 // Example:
-//   productExceptSelf([1, 2, 3, 4]) → [24, 12, 8, 6]
-//   productExceptSelf([2, 3])       → [3, 2]
-function productExceptSelf(nums: number[]): number[] {
+//   merge([1, 2, 3, 0, 0, 0], 3, [2, 5, 6], 3) -> nums1 becomes [1, 2, 2, 3, 5, 6]
+//   merge([1], 1, [], 0)                         -> nums1 stays [1]
+function merge(nums1: number[], m: number, nums2: number[], n: number): void {
   throw new Error('not implemented');
 }
 
 // ---Tests
-test('basic four',    () => productExceptSelf([1, 2, 3, 4]),    [24, 12, 8, 6]);
-test('two elements',  () => productExceptSelf([2, 3]),           [3, 2]);
-test('with zero',     () => productExceptSelf([1, 0, 3, 4]),    [0, 12, 0, 0]);
-test('two zeros',     () => productExceptSelf([0, 0]),           [0, 0]);
-test('with negative', () => productExceptSelf([-1, 2, -3, 4]), [-24, 12, -8, 6]);
-test('all ones',      () => productExceptSelf([1, 1, 1]),        [1, 1, 1]);
+test('merges two equal-length arrays', () => {
+  const nums1 = [1, 2, 3, 0, 0, 0];
+  merge(nums1, 3, [2, 5, 6], 3);
+  return nums1;
+}, [1, 2, 2, 3, 5, 6]);
+test('nums2 all smaller than nums1', () => {
+  const nums1 = [4, 5, 6, 0, 0, 0];
+  merge(nums1, 3, [1, 2, 3], 3);
+  return nums1;
+}, [1, 2, 3, 4, 5, 6]);
+test('nums2 all larger than nums1', () => {
+  const nums1 = [1, 2, 3, 0, 0, 0];
+  merge(nums1, 3, [4, 5, 6], 3);
+  return nums1;
+}, [1, 2, 3, 4, 5, 6]);
+test('nums1 has no valid elements', () => {
+  const nums1 = [0, 0, 0];
+  merge(nums1, 0, [1, 2, 3], 3);
+  return nums1;
+}, [1, 2, 3]);
+test('nums2 is empty', () => {
+  const nums1 = [1];
+  merge(nums1, 1, [], 0);
+  return nums1;
+}, [1]);
 // ---End Tests
 
 // ---Helpers
@@ -33,9 +49,12 @@ function test(desc: string, fn: () => unknown, expected: unknown): void {
       console.log(`  expected: ${JSON.stringify(expected)}`);
       console.log(`  received: ${JSON.stringify(actual)}`);
     }
-  } catch (e) {
-    if (e instanceof Error && e.message === 'not implemented') {
+  } catch (error) {
+    if (error instanceof Error && error.message === 'not implemented') {
       console.log(`TODO  ${desc}`);
-    } else { throw e; }
+    } else {
+      throw error;
+    }
   }
 }
+// ---End Helpers

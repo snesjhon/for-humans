@@ -95,6 +95,15 @@ const FRONTEND_PROBLEM_METADATA: Record<
     kind: 'react',
     difficulty: 'easy',
   },
+  '031': {
+    title: 'Carousel Navigation',
+    prompt:
+      'Build a horizontal carousel that shows five of ten covers at a time, with left and right navigation arrows. The core question is whether the arrow visibility flags should be stored in state or derived from the current scroll position.',
+    sectionId: 'rich-interactive-ui',
+    tier: 'practice',
+    kind: 'react',
+    difficulty: 'medium',
+  },
 };
 
 let _problems: FrontendProblem[] | null = null;

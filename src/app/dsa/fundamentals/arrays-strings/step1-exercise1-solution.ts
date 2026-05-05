@@ -1,41 +1,37 @@
-// Goal: Practice the most direct form of the reader + writer.
+// Goal: Count the vowels in a string using a single pass.
 //
-// The reader reads every slot. The writer only advances when
-// the reader finds a positive value — it writes the keeper into slot writer,
-// then bumps writer forward by one. Everything else is skipped off the belt.
-function keepPositives(nums: number[]): number {
-  let writer = 0;
-  for (let reader = 0; reader < nums.length; reader++) {
-    if (nums[reader] > 0) {
-      nums[writer] = nums[reader];
-      writer++;
-    }
+// Return the number of vowel characters (a, e, i, o, u, case-insensitive)
+// in the string.
+//
+// Example:
+//   countVowels("hello") -> 2
+//   countVowels("rhythm") -> 0
+function countVowels(s: string): number {
+  const vowels = new Set(['a', 'e', 'i', 'o', 'u']);
+  let count = 0;
+  for (let i = 0; i < s.length; i++) {
+    if (vowels.has(s[i].toLowerCase())) count++;
   }
-  return writer;
+  return count;
 }
 
 // ---Tests
-test('mixed signs',     () => keepPositives([-1, 3, 0, 2, -4, 5]),  3);
-test('none positive',   () => keepPositives([0, -1, -2]),            0);
-test('all positive',    () => keepPositives([1, 2, 3]),              3);
-test('empty belt',      () => keepPositives([]),                     0);
-test('single positive', () => keepPositives([4]),                    1);
-test('single zero',     () => keepPositives([0]),                    0);
+test('counts vowels in a simple word', () => countVowels('hello'), 2);
+test('counts zero vowels when none present', () => countVowels('rhythm'), 0);
+test('counts all characters when all are vowels', () => countVowels('aeiou'), 5);
+test('is case-insensitive', () => countVowels('AEIOU'), 5);
+test('handles empty string', () => countVowels(''), 0);
+test('handles mixed case and spaces', () => countVowels('Hello World'), 3);
 // ---End Tests
 
 // ---Helpers
 function test(desc: string, fn: () => unknown, expected: unknown): void {
-  try {
-    const actual = fn();
-    const pass = JSON.stringify(actual) === JSON.stringify(expected);
-    console.log(`${pass ? 'PASS' : 'FAIL'} ${desc}`);
-    if (!pass) {
-      console.log(`  expected: ${JSON.stringify(expected)}`);
-      console.log(`  received: ${JSON.stringify(actual)}`);
-    }
-  } catch (e) {
-    if (e instanceof Error && e.message === 'not implemented') {
-      console.log(`TODO  ${desc}`);
-    } else { throw e; }
+  const actual = fn();
+  const pass = JSON.stringify(actual) === JSON.stringify(expected);
+  console.log(`${pass ? 'PASS' : 'FAIL'} ${desc}`);
+  if (!pass) {
+    console.log(`  expected: ${JSON.stringify(expected)}`);
+    console.log(`  received: ${JSON.stringify(actual)}`);
   }
 }
+// ---End Helpers
