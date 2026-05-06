@@ -6,7 +6,8 @@ import {
   getItemForScenario,
 } from '@/lib/interview-prep/scenarios';
 import { extractHeadings } from '@/lib/frontend/headings';
-import MarkdownRenderer from '@/components/ui/MarkdownRenderer/MarkdownRenderer';
+import MarkdownRenderer from '@/components/fullstack/MarkdownRenderer/MarkdownRenderer';
+import CheckWork from '@/components/interview-prep/CheckWork/CheckWork';
 import TableOfContents from '@/components/ui/TableOfContents/TableOfContents';
 import { PageHero } from '@/components/ui/PageHero/PageHero';
 import { TDPageLayout } from '@/components/ui/TDPageLayout/TDPageLayout';
@@ -27,7 +28,11 @@ export default function InterviewPrepScenarioPage({ params }: Props) {
   if (!scenario) notFound();
 
   const item = getItemForScenario(params.slug);
-  const headings = extractHeadings(scenario.content);
+  const strippedBrief = scenario.brief.replace(/^#[^#].*\n+/, '').trimStart();
+  const strippedWalkthrough = scenario.walkthrough
+    ? scenario.walkthrough.replace(/^#[^#].*\n+/, '').trimStart()
+    : null;
+  const headings = extractHeadings(strippedWalkthrough ?? strippedBrief);
   const loginHref = `/login?next=${encodeURIComponent(`/interview-prep/scenarios/${params.slug}`)}`;
 
   return (
@@ -68,7 +73,12 @@ export default function InterviewPrepScenarioPage({ params }: Props) {
             </div>
           </PageHero>
         }
-        aside={<TableOfContents headings={headings} title="Contents" />}
+        aside={
+          <>
+            <TableOfContents headings={headings} title="Contents" />
+            <CheckWork slug={params.slug} />
+          </>
+        }
       >
         <section className="space-y-8 py-2">
           {item?.fundamentalsSlug && (
@@ -87,7 +97,26 @@ export default function InterviewPrepScenarioPage({ params }: Props) {
             </div>
           )}
 
-          <MarkdownRenderer content={scenario.content} />
+          <div className="rounded-xl border border-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)] p-6">
+            <p className="mb-4 font-[ui-monospace,monospace] text-xs font-semibold uppercase tracking-[0.08em] text-[var(--ms-text-faint)]">
+              Your task
+            </p>
+            <MarkdownRenderer
+              content={strippedBrief}
+              prompts={scenario.promptContent ?? ''}
+              phase={1}
+              storageKeyPrefix={`chat:${params.slug}`}
+            />
+          </div>
+
+          {strippedWalkthrough && (
+            <MarkdownRenderer
+              content={strippedWalkthrough}
+              prompts={scenario.promptContent ?? ''}
+              phase={1}
+              storageKeyPrefix={`chat:${params.slug}`}
+            />
+          )}
 
           <div className="flex items-center justify-between border-t border-t-[var(--ms-surface)] pt-8">
             <Link

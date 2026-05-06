@@ -13,7 +13,8 @@ const SCENARIOS_DIR = path.join(
 
 export interface ScenarioContent {
   slug: string;
-  content: string;
+  brief: string;
+  walkthrough: string | null;
   promptContent: string | null;
 }
 
@@ -27,13 +28,12 @@ export function getScenarioContent(slug: string): ScenarioContent | null {
 
   if (!hasBrief && !hasWalkthrough) return null;
 
-  const parts: string[] = [];
-  if (hasBrief) parts.push(fs.readFileSync(briefPath, 'utf-8'));
-  if (hasWalkthrough) parts.push(fs.readFileSync(walkthroughPath, 'utf-8'));
-
   return {
     slug,
-    content: parts.join('\n\n---\n\n'),
+    brief: hasBrief ? fs.readFileSync(briefPath, 'utf-8') : '',
+    walkthrough: hasWalkthrough
+      ? fs.readFileSync(walkthroughPath, 'utf-8')
+      : null,
     promptContent: fs.existsSync(promptPath)
       ? fs.readFileSync(promptPath, 'utf-8')
       : null,
