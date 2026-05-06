@@ -84,16 +84,23 @@ const FRONTEND_PHASES: JourneyPanelPhase[] = FRONTEND_JOURNEY.map((phase) => ({
     id: section.id,
     label: section.label,
     fundamentalsSlugs: [section.fundamentalsSlug],
-    items: section.practice.map((problem) => ({
-      key: problem.id,
-      label: problem.label,
-      prefix: problem.id,
+    items: (section.scenarios ?? []).map((scenario) => ({
+      key: scenario.slug,
+      label: scenario.label,
     })),
-    revisitItems: section.advanced.map((problem) => ({
-      key: problem.id,
-      label: problem.label,
-      prefix: problem.id,
-    })),
+    revisitItems: [
+      ...section.practice.map((problem) => ({
+        key: problem.id,
+        label: problem.label,
+        prefix: problem.id,
+      })),
+      ...section.advanced.map((problem) => ({
+        key: problem.id,
+        label: problem.label,
+        prefix: problem.id,
+      })),
+    ],
+    revisitLabel: 'Problems',
   })),
 }));
 
@@ -189,6 +196,7 @@ function frontendActiveSection(path: string): string | null {
 interface SiteNavProps {
   availableDsaProblemIds: string[];
   availableFrontendProblemIds: string[];
+  availableFrontendScenarioSlugs: string[];
   availableDsaFundamentalsSlugs: string[];
   availableFrontendFundamentalsSlugs: string[];
   availableSystemDesignScenarioSlugs: string[];
@@ -202,6 +210,7 @@ interface SiteNavProps {
 export function SiteNav({
   availableDsaProblemIds: availableDsaProblemIdsArr,
   availableFrontendProblemIds: availableFrontendProblemIdsArr,
+  availableFrontendScenarioSlugs: availableFrontendScenarioSlugsArr,
   availableDsaFundamentalsSlugs: availableDsaFundamentalsArr,
   availableFrontendFundamentalsSlugs: availableFrontendFundamentalsArr,
   availableSystemDesignScenarioSlugs: availableSystemDesignScenarioSlugsArr,
@@ -213,7 +222,11 @@ export function SiteNav({
   onToggleCollapsed,
 }: SiteNavProps) {
   const availableDsaProblemIds = new Set(availableDsaProblemIdsArr);
-  const availableFrontendProblemIds = new Set(availableFrontendProblemIdsArr);
+  const availableFrontendScenarioSlugs = new Set(availableFrontendScenarioSlugsArr);
+  const availableFrontendItemKeys = new Set([
+    ...availableFrontendScenarioSlugsArr,
+    ...availableFrontendProblemIdsArr,
+  ]);
   const availableDsaFundamentals = new Set(availableDsaFundamentalsArr);
   const availableFrontendFundamentals = new Set(
     availableFrontendFundamentalsArr,
@@ -335,7 +348,7 @@ export function SiteNav({
                     ? pathname.match(/^\/system-design\/scenarios\/([^/]+)/)?.[1] ??
                       null
                     : isFrontendPage
-                      ? pathname.match(/^\/frontend\/problems\/([^/]+)/)?.[1] ??
+                      ? pathname.match(/^\/frontend\/scenarios\/([^/]+)/)?.[1] ??
                         null
                     : pathname.match(/^\/dsa\/problems\/([^/]+)/)?.[1] ?? null
                 }
@@ -364,7 +377,7 @@ export function SiteNav({
                   isSystemDesignPage
                     ? availableSystemDesignScenarios
                     : isFrontendPage
-                      ? availableFrontendProblemIds
+                      ? availableFrontendItemKeys
                     : availableDsaProblemIds
                 }
                 availableFundamentalsSlugs={
@@ -388,7 +401,9 @@ export function SiteNav({
                   isSystemDesignPage
                     ? `/system-design/scenarios/${key}`
                     : isFrontendPage
-                      ? `/frontend/problems/${key}`
+                      ? availableFrontendScenarioSlugs.has(key)
+                        ? `/frontend/scenarios/${key}`
+                        : `/frontend/problems/${key}`
                     : `/dsa/problems/${key}`
                 }
                 getFundamentalsHref={(slug) =>

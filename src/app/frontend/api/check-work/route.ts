@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import fs from 'fs';
 import path from 'path';
-import { parseFilesFromPrompt, readChessAppFiles } from '@/lib/fullstack/checkWork';
+import { parseFilesFromPrompt, readProjectFiles } from '@/lib/frontend/checkWork';
 
 const SCENARIOS_DIR = path.join(
   process.cwd(),
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
 
   const promptContent = fs.readFileSync(promptPath, 'utf-8');
   const filesToCheck = parseFilesFromPrompt(promptContent);
-  const fileContents = readChessAppFiles(projectPath, filesToCheck);
+  const fileContents = readProjectFiles(projectPath, filesToCheck);
 
   const filesBlock = Object.entries(fileContents)
     .map(([rel, content]) => `### ${rel}\n\`\`\`\n${content}\n\`\`\``)
@@ -61,5 +61,5 @@ export async function POST(req: NextRequest) {
     result = { covered: [], missed: [], followUp: raw };
   }
 
-  return NextResponse.json(result);
+  return NextResponse.json({ ...result, promptContent });
 }

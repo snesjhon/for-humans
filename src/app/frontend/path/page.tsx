@@ -166,32 +166,39 @@ export default async function PathPage() {
                       </div>
 
                       <div className="pt-1">
-                        <p className="mb-2 font-mono text-[0.6rem] font-bold uppercase tracking-[0.09em] text-[var(--ms-text-faint)]">
-                          Focus
-                        </p>
-                        <p className="m-0 max-w-[460px] text-[0.9375rem] leading-[1.75] text-[var(--ms-text-subtle)]">
-                          {section.fundamentalsBlurb}
-                        </p>
-
-                        <div className="mt-5">
-                          {hasGuide ? (
-                            <Link
-                              href={`/frontend/fundamentals/${section.fundamentalsSlug}`}
-                              className="text-sm text-[var(--ms-blue)] no-underline transition-opacity hover:opacity-80"
-                            >
-                              Open fundamentals →
-                            </Link>
-                          ) : (
-                            <p className="m-0 font-display text-sm italic text-[var(--ms-text-faint)]">
-                              Guide coming soon.
+                        {section.scenarios && section.scenarios.length > 0 && (
+                          <div>
+                            <p className="mb-2 font-mono text-[0.6rem] font-bold uppercase tracking-[0.09em] text-[var(--ms-text-faint)]">
+                              Build
                             </p>
-                          )}
-                        </div>
+                            <div className="space-y-3">
+                              {section.scenarios.map((scenario) => (
+                                <div key={scenario.slug}>
+                                  <p className="mb-1 m-0 max-w-[460px] text-[0.875rem] leading-[1.75] text-[var(--ms-text-subtle)]">
+                                    {scenario.blurb}
+                                  </p>
+                                  {availableScenarioSlugs.has(scenario.slug) ? (
+                                    <Link
+                                      href={`/frontend/scenarios/${scenario.slug}`}
+                                      className="text-sm text-[var(--ms-blue)] no-underline transition-opacity hover:opacity-80"
+                                    >
+                                      {scenario.label} →
+                                    </Link>
+                                  ) : (
+                                    <p className="m-0 font-display text-sm italic text-[var(--ms-text-faint)]">
+                                      Scenario coming soon.
+                                    </p>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
 
                         {section.practice.length > 0 && (
-                          <div className="mt-5">
+                          <div className={section.scenarios && section.scenarios.length > 0 ? 'mt-5' : ''}>
                             <p className="mb-2 font-mono text-[0.6rem] font-bold uppercase tracking-[0.09em] text-[var(--ms-text-faint)]">
-                              Practice
+                              Problems
                             </p>
                             <div className="space-y-2">
                               {section.practice.map((problem) => (
@@ -221,35 +228,6 @@ export default async function PathPage() {
                                 >
                                   {problem.id}. {problem.label} →
                                 </Link>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-
-                        {section.scenarios && section.scenarios.length > 0 && (
-                          <div className="mt-5">
-                            <p className="mb-2 font-mono text-[0.6rem] font-bold uppercase tracking-[0.09em] text-[var(--ms-text-faint)]">
-                              Build
-                            </p>
-                            <div className="space-y-3">
-                              {section.scenarios.map((scenario) => (
-                                <div key={scenario.slug}>
-                                  <p className="mb-1 m-0 max-w-[460px] text-[0.875rem] leading-[1.75] text-[var(--ms-text-subtle)]">
-                                    {scenario.blurb}
-                                  </p>
-                                  {availableScenarioSlugs.has(scenario.slug) ? (
-                                    <Link
-                                      href={`/frontend/scenarios/${scenario.slug}`}
-                                      className="text-sm text-[var(--ms-blue)] no-underline transition-opacity hover:opacity-80"
-                                    >
-                                      {scenario.label} →
-                                    </Link>
-                                  ) : (
-                                    <p className="m-0 font-display text-sm italic text-[var(--ms-text-faint)]">
-                                      Scenario coming soon.
-                                    </p>
-                                  )}
-                                </div>
                               ))}
                             </div>
                           </div>

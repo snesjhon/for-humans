@@ -63,6 +63,7 @@ export interface JourneyPanelSection {
   concepts?: JourneyPanelConcept[];
   items: JourneyPanelItem[];
   revisitItems?: JourneyPanelItem[];
+  revisitLabel?: string;
   revisitFromLabel?: string;
   revisitPrerequisiteLabel?: string;
 }
@@ -577,7 +578,7 @@ export function JourneyPanel({
                           }`}
                         />
                         <span className="text-xs font-normal text-[var(--ms-text-muted)]">
-                          Advanced
+                          {section.revisitLabel ?? 'Advanced'}
                         </span>
                       </button>
                       {!collapsedRevisits.has(section.id) &&

@@ -12,9 +12,11 @@ export default function FrontendSettingsPage() {
   const [pathInput, setPathInput] = useState('');
   const [pathSaved, setPathSaved] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [origin, setOrigin] = useState('');
 
   useEffect(() => {
     setStoredPath(getProjectPath());
+    setOrigin(window.location.origin);
   }, []);
 
   function handleSavePath() {
@@ -32,7 +34,7 @@ export default function FrontendSettingsPage() {
     setTimeout(() => setCopied(false), 2000);
   }
 
-  const scaffoldCmd = `curl -fsSL ${typeof window !== 'undefined' ? window.location.origin : ''}/scaffolds/plant-floor-monitor.sh | bash`;
+  const scaffoldCmd = `curl -fsSL ${origin}/scaffolds/plant-floor-monitor.sh | bash`;
 
   return (
     <main className="mx-auto mt-[80px] max-w-[600px] space-y-[3rem] px-6">

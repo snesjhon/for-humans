@@ -9,7 +9,7 @@ if [ -e "$DIR" ]; then
 fi
 
 echo "Creating Plant Floor Monitor scaffold in ./$DIR"
-mkdir -p "$DIR"/{src/{types,mocks,components,hooks}}
+mkdir -p "$DIR"/src/{types,mocks,components,hooks}
 
 # ── package.json ─────────────────────────────────────────────────────────────
 cat > "$DIR/package.json" << 'EOF'
