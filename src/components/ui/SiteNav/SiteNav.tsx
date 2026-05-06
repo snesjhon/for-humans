@@ -64,6 +64,9 @@ const FRONTEND_SCENARIO_TO_SECTION: Record<string, string> = {};
 for (const phase of FRONTEND_JOURNEY) {
   for (const section of phase.sections) {
     FRONTEND_FUNDAMENTALS_TO_SECTION[section.fundamentalsSlug] = section.id;
+    for (const f of section.additionalFundamentals ?? []) {
+      FRONTEND_FUNDAMENTALS_TO_SECTION[f.slug] = section.id;
+    }
     for (const scenario of section.scenarios ?? []) {
       FRONTEND_SCENARIO_TO_SECTION[scenario.slug] = section.id;
     }
@@ -83,7 +86,17 @@ const FRONTEND_PHASES: JourneyPanelPhase[] = FRONTEND_JOURNEY.map((phase) => ({
   sections: phase.sections.map((section) => ({
     id: section.id,
     label: section.label,
-    fundamentalsSlugs: [section.fundamentalsSlug],
+    fundamentalsSlugs: [
+      section.fundamentalsSlug,
+      ...(section.additionalFundamentals?.map((f) => f.slug) ?? []),
+    ],
+    fundamentalsLabels: [
+      'Fundamentals',
+      ...(section.additionalFundamentals?.map((f) => {
+        const slug = f.slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+        return slug;
+      }) ?? []),
+    ],
     items: (section.scenarios ?? []).map((scenario) => ({
       key: scenario.slug,
       label: scenario.label,

@@ -16,6 +16,7 @@ export interface FrontendJourneySection {
   mentalModelHook: string;
   fundamentalsSlug: string;
   fundamentalsBlurb: string;
+  additionalFundamentals?: { slug: string; blurb: string }[];
   practice: FrontendJourneyProblem[];
   advanced: FrontendJourneyProblem[];
   scenarios?: ScenarioRef[];

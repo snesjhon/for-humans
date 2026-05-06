@@ -9,13 +9,20 @@ export const JOURNEY: Phase[] = [
       'Confirm that the mental models senior engineers think they have are actually solid. Runtime reference rules, state-as-snapshot, and effect cleanup are the foundation for everything that follows.',
     sections: [
       {
-        id: 'javascript-runtime-refresh',
-        label: 'JavaScript Runtime Refresh',
+        id: 'javascript-refresh',
+        label: 'JavaScript Refresh',
         mentalModelHook:
           'Most React bugs start one layer lower than React itself: shared references, accidental coercion, silent mutation, and queue ordering mistakes.',
-        fundamentalsSlug: 'javascript-runtime-refresh',
+        fundamentalsSlug: 'javascript-refresh',
         fundamentalsBlurb:
           'A senior-targeted refresher on value vs reference, shallow copy limits, missing vs falsy, coercion, mutating array methods, and promise vs timer ordering.',
+        additionalFundamentals: [
+          {
+            slug: 'data-parsing',
+            blurb:
+              'Flat lookup, cross-reference, and filter-then-aggregate — the three data transformation patterns that appear in every frontend codebase.',
+          },
+        ],
         practice: [
           {
             id: '032',
@@ -350,7 +357,9 @@ export function getSectionByFundamentalsSlug(
 ): FrontendJourneySection | undefined {
   for (const phase of JOURNEY) {
     const section = phase.sections.find(
-      (entry) => entry.fundamentalsSlug === slug,
+      (entry) =>
+        entry.fundamentalsSlug === slug ||
+        entry.additionalFundamentals?.some((f) => f.slug === slug),
     );
     if (section) return section;
   }

@@ -85,6 +85,8 @@ export function getSectionForFundamentals(
   for (const phase of JOURNEY) {
     for (const section of phase.sections) {
       if (section.fundamentalsSlug === slug) return { phase, section };
+      if (section.additionalFundamentals?.some((f) => f.slug === slug))
+        return { phase, section };
     }
   }
 

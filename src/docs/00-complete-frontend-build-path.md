@@ -24,7 +24,7 @@ Every step (except Step 0) follows the same three-phase sequence:
 
 **3. Reinforce** — Isolated problems in a completely unrelated context. Each problem is self-contained with its own steps and exercises. The Like Button is not a device dashboard — it just forces the same mental model from a different angle. These exist because one application of a concept is not enough to own it under pressure.
 
-**The exception**: JavaScript Runtime Refresh (Step 0) has no Build step. It confirms the foundational runtime knowledge before the project starts. Learn and Reinforce only.
+**The exception**: JavaScript Refresh (Step 0) has no Build step. It confirms the foundational runtime and data-handling knowledge before the project starts. Learn and Reinforce only.
 
 ---
 
@@ -53,7 +53,7 @@ Data Fetching has two Build steps (2 and 3). `FrontendJourneySection` supports `
 
 ---
 
-## Step 0: JavaScript Runtime Refresh
+## Step 0: JavaScript Refresh
 
 _No Build step. Learn and Reinforce only._
 
@@ -61,8 +61,13 @@ _No Build step. Learn and Reinforce only._
 
 Fundamentals:
 
-- Name: JavaScript Runtime Refresh
+- Name: JavaScript Refresh
+- Slug: `javascript-refresh`
 - Description: The six runtime rules React quietly depends on — value vs reference, assignment vs shallow copy, missing vs falsy, equality vs coercion, mutation vs non-mutation, microtasks vs macrotasks. Exercises make each rule a prediction problem: given this code, what happens and why.
+
+- Name: Data Parsing
+- Slug: `data-parsing`
+- Description: Flat lookup, cross-reference, and filter-then-aggregate — the three data transformation patterns that appear in every frontend codebase. Indexing one dataset before iterating the other is the core move that separates O(n²) from O(n).
 
 **Reinforce**
 

@@ -120,6 +120,9 @@ export default async function PathPage() {
                   const hasGuide = availableFundamentalsSlugs.has(
                     section.fundamentalsSlug,
                   );
+                  const additionalGuides = (section.additionalFundamentals ?? []).filter(
+                    (f) => availableFundamentalsSlugs.has(f.slug),
+                  );
 
                   return (
                     <div
@@ -144,6 +147,17 @@ export default async function PathPage() {
                             stepNum={stepLabel}
                           />
                         )}
+                        {additionalGuides.map((f) => (
+                          <div key={f.slug} className="mt-4">
+                            <StepGuideCard
+                              href={`/frontend/fundamentals/${f.slug}`}
+                              label={f.slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
+                              hook={f.blurb}
+                              stepNum={stepLabel}
+                              color={color}
+                            />
+                          </div>
+                        ))}
 
                         <SectionProgress
                           sectionItemId={`fe-section-${section.id}`}
