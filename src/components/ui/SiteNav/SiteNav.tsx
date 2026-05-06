@@ -60,9 +60,13 @@ const DSA_PHASES: JourneyPanelPhase[] = DSA_JOURNEY.map((phase) => ({
 
 const FRONTEND_FUNDAMENTALS_TO_SECTION: Record<string, string> = {};
 const FRONTEND_PROBLEM_TO_SECTION: Record<string, string> = {};
+const FRONTEND_SCENARIO_TO_SECTION: Record<string, string> = {};
 for (const phase of FRONTEND_JOURNEY) {
   for (const section of phase.sections) {
     FRONTEND_FUNDAMENTALS_TO_SECTION[section.fundamentalsSlug] = section.id;
+    for (const scenario of section.scenarios ?? []) {
+      FRONTEND_SCENARIO_TO_SECTION[scenario.slug] = section.id;
+    }
     for (const problem of section.practice) {
       FRONTEND_PROBLEM_TO_SECTION[problem.id] = section.id;
     }
@@ -175,6 +179,8 @@ function frontendActiveSection(path: string): string | null {
   if (fund) return FRONTEND_FUNDAMENTALS_TO_SECTION[fund] ?? null;
   const problem = path.match(/^\/frontend\/problems\/([^/]+)/)?.[1];
   if (problem) return FRONTEND_PROBLEM_TO_SECTION[problem] ?? null;
+  const scenario = path.match(/^\/frontend\/scenarios\/([^/]+)/)?.[1];
+  if (scenario) return FRONTEND_SCENARIO_TO_SECTION[scenario] ?? null;
   return null;
 }
 

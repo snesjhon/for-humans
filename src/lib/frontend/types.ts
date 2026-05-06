@@ -4,6 +4,12 @@ export interface FrontendJourneyProblem {
   label: string;
 }
 
+export interface ScenarioRef {
+  slug: string;
+  label: string;
+  blurb: string;
+}
+
 export interface FrontendJourneySection {
   id: string;
   label: string;
@@ -12,6 +18,7 @@ export interface FrontendJourneySection {
   fundamentalsBlurb: string;
   practice: FrontendJourneyProblem[];
   advanced: FrontendJourneyProblem[];
+  scenarios?: ScenarioRef[];
 }
 
 export interface Phase {

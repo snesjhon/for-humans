@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { JOURNEY } from '@/lib/frontend/journey';
 import { getAllFundamentalsSlugs } from '@/lib/frontend/fundamentals';
+import { getAllScenarioSlugs } from '@/lib/frontend/scenarios';
 import { createClient } from '@/lib/supabase/server';
 import type { FrontendJourneySection, Phase } from '@/lib/frontend/types';
 import {
@@ -56,6 +57,7 @@ function buildPhaseGroups(): PhaseGroup[] {
 
 export default async function PathPage() {
   const availableFundamentalsSlugs = new Set(getAllFundamentalsSlugs());
+  const availableScenarioSlugs = new Set(getAllScenarioSlugs());
   const totalSections = JOURNEY.reduce(
     (count, phase) => count + phase.sections.length,
     0,
@@ -219,6 +221,35 @@ export default async function PathPage() {
                                 >
                                   {problem.id}. {problem.label} →
                                 </Link>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {section.scenarios && section.scenarios.length > 0 && (
+                          <div className="mt-5">
+                            <p className="mb-2 font-mono text-[0.6rem] font-bold uppercase tracking-[0.09em] text-[var(--ms-text-faint)]">
+                              Build
+                            </p>
+                            <div className="space-y-3">
+                              {section.scenarios.map((scenario) => (
+                                <div key={scenario.slug}>
+                                  <p className="mb-1 m-0 max-w-[460px] text-[0.875rem] leading-[1.75] text-[var(--ms-text-subtle)]">
+                                    {scenario.blurb}
+                                  </p>
+                                  {availableScenarioSlugs.has(scenario.slug) ? (
+                                    <Link
+                                      href={`/frontend/scenarios/${scenario.slug}`}
+                                      className="text-sm text-[var(--ms-blue)] no-underline transition-opacity hover:opacity-80"
+                                    >
+                                      {scenario.label} →
+                                    </Link>
+                                  ) : (
+                                    <p className="m-0 font-display text-sm italic text-[var(--ms-text-faint)]">
+                                      Scenario coming soon.
+                                    </p>
+                                  )}
+                                </div>
                               ))}
                             </div>
                           </div>

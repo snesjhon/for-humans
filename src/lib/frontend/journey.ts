@@ -46,6 +46,14 @@ export const JOURNEY: Phase[] = [
           },
         ],
         advanced: [],
+        scenarios: [
+          {
+            slug: 'app-shell',
+            label: 'Build the App Shell',
+            blurb:
+              'Scaffold the top-level layout — header, sidebar placeholder, and main content area — driven by a single piece of selected-device state.',
+          },
+        ],
       },
       {
         id: 'effects-timers-cleanup',
@@ -73,6 +81,14 @@ export const JOURNEY: Phase[] = [
           },
         ],
         advanced: [],
+        scenarios: [
+          {
+            slug: 'async-state-in-react',
+            label: 'Async State in React',
+            blurb:
+              'Wire the fetch layer into a custom hook that tracks loading, error, and data state and cancels in-flight requests on unmount.',
+          },
+        ],
       },
     ],
   },
@@ -99,6 +115,14 @@ export const JOURNEY: Phase[] = [
           },
         ],
         advanced: [],
+        scenarios: [
+          {
+            slug: 'rendering-the-data',
+            label: 'Render the Data',
+            blurb:
+              'Build DeviceCard and DeviceList components that display device status from the hook, including a status badge with CSS custom properties.',
+          },
+        ],
       },
       {
         id: 'data-fetching',
@@ -116,6 +140,20 @@ export const JOURNEY: Phase[] = [
           },
         ],
         advanced: [],
+        scenarios: [
+          {
+            slug: 'modeling-the-api-contract',
+            label: 'Model the API Contract',
+            blurb:
+              'Define TypeScript types for the device, tag, and alarm responses returned by the Plant Floor Monitor mock REST API.',
+          },
+          {
+            slug: 'writing-the-fetch-layer',
+            label: 'Write the Fetch Layer',
+            blurb:
+              'Implement typed fetch functions that read from the static JSON mocks and expose the data to the rest of the application.',
+          },
+        ],
       },
       {
         id: 'collection-hooks',
@@ -127,6 +165,14 @@ export const JOURNEY: Phase[] = [
           'Arrays, maps, and sets as state — immutable update patterns, stable references, and generic hook signatures with meaningful constraints.',
         practice: [],
         advanced: [],
+        scenarios: [
+          {
+            slug: 'interactivity',
+            label: 'Add Interactivity',
+            blurb:
+              'Add a filter bar and selection model so users can narrow the device list by status and click a card to see its tag details in a side panel.',
+          },
+        ],
       },
       {
         id: 'dom-event-hooks',
@@ -138,6 +184,14 @@ export const JOURNEY: Phase[] = [
           'useRef for DOM nodes, event listener lifecycle, SSR guards, and template literal types for typed event names and handler signatures.',
         practice: [],
         advanced: [],
+        scenarios: [
+          {
+            slug: 'click-outside-filter',
+            label: 'Click-Outside Filter Panel',
+            blurb:
+              'Extract the filter controls into a dropdown panel that closes when the user clicks outside it, using a DOM event listener with proper cleanup.',
+          },
+        ],
       },
       {
         id: 'timing-hooks',
@@ -149,6 +203,14 @@ export const JOURNEY: Phase[] = [
           'The stale closure inside setInterval, useRef as the stable callback escape hatch, and countdown state without drift.',
         practice: [],
         advanced: [],
+        scenarios: [
+          {
+            slug: 'debounced-search',
+            label: 'Debounced Search',
+            blurb:
+              'Add a search input that debounces keystrokes so the device list filters only after the user pauses typing.',
+          },
+        ],
       },
       {
         id: 'rich-interactive-ui',
@@ -166,6 +228,14 @@ export const JOURNEY: Phase[] = [
           },
         ],
         advanced: [],
+        scenarios: [
+          {
+            slug: 'css-layout',
+            label: 'CSS Layout',
+            blurb:
+              'Replace the flex placeholder layout with a CSS Grid dashboard: fixed sidebar, fluid main area, and a responsive device card grid using auto-fill and minmax.',
+          },
+        ],
       },
     ],
   },
@@ -186,6 +256,14 @@ export const JOURNEY: Phase[] = [
           'ARIA roles and properties, focus trap mechanics, keyboard navigation per the ARIA spec, and the difference between screen reader correctness and keyboard operability.',
         practice: [],
         advanced: [],
+        scenarios: [
+          {
+            slug: 'accessibility',
+            label: 'Accessibility Pass',
+            blurb:
+              'Audit the dashboard for keyboard operability and screen reader correctness: focus trap for the filter panel, ARIA roles for the status badge, and focus-visible styles.',
+          },
+        ],
       },
       {
         id: 'complex-state-reducers',
@@ -197,6 +275,14 @@ export const JOURNEY: Phase[] = [
           'Finite state modeling, discriminated union actions, undo/redo as past/present/future, and when useReducer wins over scattered useState calls.',
         practice: [],
         advanced: [],
+        scenarios: [
+          {
+            slug: 'reducer-for-app-state',
+            label: 'Reducer for App State',
+            blurb:
+              'Replace the scattered useState calls in useDevices with a single useReducer that makes every state transition explicit and impossible states unrepresentable.',
+          },
+        ],
       },
       {
         id: 'performance-optimization',
@@ -208,6 +294,14 @@ export const JOURNEY: Phase[] = [
           'Why most re-renders are free, the prerequisite of stable references for useMemo and useCallback, and minimal DOM footprint patterns.',
         practice: [],
         advanced: [],
+        scenarios: [
+          {
+            slug: 'memoizing-the-filter',
+            label: 'Memoize the Filter',
+            blurb:
+              'Profile the filter computation and stabilize references so useMemo and useCallback only run when inputs actually change.',
+          },
+        ],
       },
       {
         id: 'advanced-hook-patterns',
@@ -219,6 +313,14 @@ export const JOURNEY: Phase[] = [
           'Mediated state, the dirty/touched state machine in useInputControl, and when useSyncExternalStore replaces useState.',
         practice: [],
         advanced: [],
+        scenarios: [
+          {
+            slug: 'extracting-the-hook',
+            label: 'Extract the Hook',
+            blurb:
+              'Pull the device data, filter logic, and selection state out of App into a single useDevices hook that owns all the moving parts.',
+          },
+        ],
       },
       {
         id: 'full-feature-applications',
@@ -230,6 +332,14 @@ export const JOURNEY: Phase[] = [
           'Combining reducers, async, accessibility, and performance — and deciding which problems belong in local state vs a reducer vs an external store.',
         practice: [],
         advanced: [],
+        scenarios: [
+          {
+            slug: 'polish-and-walkthrough',
+            label: 'Polish and Walkthrough',
+            blurb:
+              'Final polish pass: consistent spacing, loading skeletons, and a complete walkthrough of the finished Plant Floor Monitor as a senior engineer would present it.',
+          },
+        ],
       },
     ],
   },

@@ -102,6 +102,29 @@ export default function FundamentalsPage({ params }: Props) {
         aside={<TableOfContents headings={headings} title="Contents" />}
       >
         <section className="space-y-8 py-2">
+          {section?.scenarios && section.scenarios.length > 0 && (
+            <div className="rounded-xl border border-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)] p-5">
+              <p className="mb-2 text-sm text-[var(--ms-text-muted)]">
+                <span className="font-semibold text-[var(--ms-text-body)]">
+                  {section.scenarios.length === 1
+                    ? 'Associated scenario:'
+                    : 'Associated scenarios:'}
+                </span>
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {section.scenarios.map((scenario) => (
+                  <Link
+                    key={scenario.slug}
+                    href={`/frontend/scenarios/${scenario.slug}`}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--ms-blue)] bg-[var(--ms-blue-surface)] px-3 py-1.5 text-xs font-medium text-[var(--ms-blue)] no-underline transition-opacity hover:opacity-80"
+                  >
+                    {scenario.label} →
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="rounded-xl border border-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)] p-5">
             <p className="mb-1 text-sm text-[var(--ms-text-muted)]">
               <span className="font-semibold text-[var(--ms-text-body)]">
