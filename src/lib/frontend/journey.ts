@@ -49,9 +49,9 @@ export const JOURNEY: Phase[] = [
         scenarios: [
           {
             slug: 'app-shell',
-            label: 'Build the App Shell',
+            label: 'App Shell',
             blurb:
-              'Scaffold the top-level layout — header, sidebar placeholder, and main content area — driven by a single piece of selected-device state.',
+              'Build the first real `App.tsx` and `App.css` around an explicit loading, error, and data screen-state model with hardcoded mock devices.',
           },
         ],
       },
