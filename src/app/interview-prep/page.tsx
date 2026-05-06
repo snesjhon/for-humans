@@ -1,14 +1,14 @@
 import Link from 'next/link';
 import { JOURNEY } from '@/lib/interview-prep/journey';
-import { getPublishedLessonSlugs } from '@/lib/interview-prep/lessons';
+import { getAllFundamentalsSlugs } from '@/lib/interview-prep/fundamentals';
 
 export default function InterviewPrepHomePage() {
   const totalPhases = JOURNEY.length;
-  const totalLessons = JOURNEY.reduce(
-    (count, phase) => count + phase.lessons.length,
+  const totalTopics = JOURNEY.reduce(
+    (count, phase) => count + phase.items.length,
     0,
   );
-  const publishedLessons = getPublishedLessonSlugs().length;
+  const publishedFundamentals = getAllFundamentalsSlugs().length;
 
   return (
     <>
@@ -32,9 +32,9 @@ export default function InterviewPrepHomePage() {
               starts at the API contract and ends at the interview walkthrough.
             </p>
             <p className="m-0 text-base leading-[1.75] text-[var(--ms-text-subtle)]">
-              Each lesson adds one concrete layer of the app so the learner
-              practices typing, fetch design, state modeling, rendering, layout,
-              and refactoring in sequence.
+              Each topic pairs a fundamentals guide with a scenario. Read the
+              guide to install the mental model, then prove it holds under
+              the scenario.
             </p>
           </div>
 
@@ -42,8 +42,8 @@ export default function InterviewPrepHomePage() {
             <div className="flex gap-10">
               {[
                 { value: String(totalPhases), label: 'project phase' },
-                { value: String(totalLessons), label: 'lessons wired' },
-                { value: String(publishedLessons), label: 'lessons published' },
+                { value: String(totalTopics), label: 'topics' },
+                { value: String(publishedFundamentals), label: 'guides published' },
               ].map(({ value, label }) => (
                 <div key={label} className="flex items-baseline gap-[6px]">
                   <span className="font-display text-[3.25rem] font-normal italic leading-none tracking-[-0.04em] text-[var(--ms-blue)]">

@@ -1,10 +1,13 @@
-export interface InterviewPrepLesson {
+export interface InterviewPrepItem {
   id: string;
-  slug: string;
   label: string;
   mentalModelHook: string;
-  blurb: string;
-  conceptFocus: string[];
+  fundamentalsSlug?: string;
+  fundamentalsLabel?: string;
+  fundamentalsBlurb?: string;
+  scenarioSlug?: string;
+  scenarioLabel?: string;
+  scenarioBlurb?: string;
 }
 
 export interface Phase {
@@ -12,5 +15,5 @@ export interface Phase {
   label: string;
   emoji: string;
   goal: string;
-  lessons: InterviewPrepLesson[];
+  items: InterviewPrepItem[];
 }
