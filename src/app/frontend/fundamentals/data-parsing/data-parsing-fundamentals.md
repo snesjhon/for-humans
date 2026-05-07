@@ -54,6 +54,18 @@ The indexing line lives before the loop. The walk and accumulation live inside i
 
 When index, walk, and accumulate collapse into one loop, there is no clear place to add a filter, no clean way to change what you are accumulating, and no obvious boundary for debugging. Keeping them separate gives each step one job. Adding a relevance filter before the accumulation becomes a single guard clause in the walk. Changing the accumulation target is isolated to one block. The evaluator only has to make one decision per item.
 
+### The Three Problem Families
+
+Every data parsing problem returns one of three shapes. Reading the return type before anything else tells you which family you are in before you inspect a single input field.
+
+**Grouping or aggregation by key.** The return type is a `Map<K, V>` or equivalent keyed object. Every input record contributes to exactly one bucket. You are counting, summing, or picking the best value per key. Nothing filters records out entirely. Return shape: `Map<string, number>`, `Map<string, Product>`.
+
+**Transform or enrich per record.** The return type is an array with one entry per walked record. Each output object comes from one input record joined with data from another source. You are reshaping or enriching, not summing. Return shape: `EnrichedLogEntry[]`, `PostWithTagNames[]`.
+
+**Filter and summarize.** The return type is a small fixed object whose fields are all scalars. Many input records collapse into a handful of final numbers. A relevance check runs first, and only records that pass it contribute to the accumulators. Return shape: `{ totalCost: number, coverage: number }`.
+
+These families are independent of technique complexity. A grouping problem that needs data from a second dataset is still a grouping problem. It just requires a cross-reference join before it can accumulate. Reading the return type tells you what you are building. The three levels in this guide show you how to build each one.
+
 ---
 
 ## Reading the Problem
@@ -110,15 +122,15 @@ const automations = [
 
 Before looking at the inputs, read what the function is supposed to return. Here it returns a single object with `totalCost` and `coverage`.
 
-That tells you immediately what this problem is not, because the return shape is too small for several other problem families.
+That return shape rules out two of the three families.
 
-If this were a grouping problem, the return type would preserve some key space in the output, usually as a `Map` or object keyed by ID, category, or name. You would expect something like `Map<string, number>` or `Record<string, Automation[]>`. But this function returns one final object, not one bucket per key.
+A grouping problem returns a keyed structure with one entry per group. You would expect `Map<string, number>` or `Record<string, Automation[]>`. This function returns one final object, not one bucket per key.
 
-If this were a "return one record per match" problem, the output would usually be an array of result objects. You would expect each matching input record to produce its own output entry. But there is no output array here, so the loop is not building a list of per-record answers.
+A transform problem returns an array with one entry per walked record. You would expect each automation to produce its own output object. This function has no output array.
 
-Instead, both return fields are summaries across the whole dataset. `totalCost` collapses many relevant automations into one number. `coverage` collapses many matched capability IDs into one percentage. That is why the problem reads like filter + aggregate, not group + store or transform + emit.
+Instead, both fields are scalars that collapse many records into single values. `totalCost` sums the cost of relevant automations. `coverage` measures the fraction of required IDs that were touched. That is the filter-and-summarize shape.
 
-That distinction is what tells you the loop will have accumulation state, not pushes into an output array. You will need a running number and a `Set` of covered IDs.
+Recognizing the family tells you the loop structure before you write a line: you need accumulation state, not pushes into an output array. You will need a running number and a `Set` of covered IDs.
 
 ### Step 2: Find the Lookup Field
 
@@ -155,16 +167,14 @@ flowchart LR
 
 Three questions to confirm the direction:
 
-1. **What provides the relevance rule?** The launch plan. An automation qualifies only if its `capabilityIds` list overlaps with the required Set.
-2. **What records get evaluated one by one?** Automations. Each gets one pass through the evaluator.
-3. **What does the evaluator ask per record?** Does this automation's `capabilityIds` list intersect with the required Set?
+1. **What defines whether a record is relevant?** The launch plan's capability list. An automation counts only if at least one of its `capabilityIds` appears in that list. That makes the launch plan the filter source.
+2. **Which dataset gets evaluated one record at a time?** Automations. `totalCost` grows once per relevant automation and coverage grows by the capability IDs each automation contributes. Both are per-automation actions.
+3. **What question does the loop body ask for each automation?** Does its `capabilityIds` list contain any ID from the launch plan's capability list?
 
-```
-launchPlan.capabilities  →  build Set of required IDs  →  O(1) membership lookups
-automations              →  for…of loop                →  one decision per automation
-```
+- **`launchPlan.capabilities`**: indexed into a Set before the loop starts, so any capability ID can be checked in O(1) during the walk.
+- **`automations`**: walked with a `for...of`, where each automation receives exactly one cost decision and marks for any capability IDs it covers.
 
-Walking capabilities first would mean charging the same automation's cost multiple times — one automation can cover several capabilities. Walking automations keeps each record's action to one cost addition and any number of coverage marks.
+Walking capabilities first would mean iterating each required capability and asking which automations cover it. An automation that covers two required capabilities would have its cost added once per match, producing a wrong total.
 
 ### Step 4: Enumerate What Can Happen at Each Step
 

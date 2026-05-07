@@ -34,6 +34,11 @@ export const JOURNEY: Phase[] = [
             slug: '033-scheduling-and-async-traps',
             label: 'Scheduling and Async Traps',
           },
+          {
+            id: '050',
+            slug: '050-content-coverage-score',
+            label: 'Content Coverage Score',
+          },
         ],
         explorations: [],
       },

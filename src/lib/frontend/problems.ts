@@ -266,6 +266,15 @@ const FRONTEND_PROBLEM_METADATA: Record<
     kind: 'react',
     difficulty: 'hard',
   },
+  '050': {
+    title: 'Content Coverage Score',
+    prompt:
+      'Given a publication plan and a list of content packages, return the total production cost of packages that cover at least one required category, and the percentage of required categories covered. The core question is how to separate the relevance check from the accumulation and why coverage needs a Set instead of a counter.',
+    sectionId: 'javascript-refresh',
+    tier: 'practice',
+    kind: 'typescript',
+    difficulty: 'medium',
+  },
 };
 
 let _problems: FrontendProblem[] | null = null;
