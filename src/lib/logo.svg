@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 140" width="600" height="140">
+  <style>
+    .logo { fill: #1e66f5; }
+    @media (prefers-color-scheme: dark) {
+      .logo { fill: #8caaee; }
+    }
+  </style>
+  <text
+    font-family="'Courier New', Courier, monospace"
+    font-size="13"
+    class="logo"
+    xml:space="preserve"
+  >
+    <tspan x="20" y="36">████████╗██╗  ██╗██╗███╗   ██╗██╗  ██╗██████╗ ███████╗███████╗██████╗ </tspan>
+    <tspan x="20" dy="18">╚══██╔══╝██║  ██║██║████╗  ██║██║ ██╔╝██╔══██╗██╔════╝██╔════╝██╔══██╗</tspan>
+    <tspan x="20" dy="18">   ██║   ███████║██║██╔██╗ ██║█████╔╝ ██║  ██║█████╗  █████╗  ██████╔╝</tspan>
+    <tspan x="20" dy="18">   ██║   ██╔══██║██║██║╚██╗██║██╔═██╗ ██║  ██║██╔══╝  ██╔══╝  ██╔═══╝ </tspan>
+    <tspan x="20" dy="18">   ██║   ██║  ██║██║██║ ╚████║██║  ██╗██████╔╝███████╗███████╗██║     </tspan>
+    <tspan x="20" dy="18">   ╚═╝   ╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚═════╝ ╚══════╝╚══════╝╚═╝     </tspan>
+  </text>
+</svg>

@@ -1,67 +1,31 @@
-# thinkdeep
+<p align="center"><img src="./src/lib/logo.svg" alt="thinkdeep" width="600"/></p>
 
-A web platform for learning Data Structures & Algorithms through mental models and pattern recognition.
+A study platform built around one idea: the mental model comes first, the code second.
 
----
-
-## What is thinkdeep?
-
-thinkdeep is an interactive study platform that teaches you to *see patterns*, not memorize solutions.
-
-The core belief: most DSA content teaches you to produce code, not to think. Explanations are written for people who already understand the concept. thinkdeep inverts that — the mental model comes first, the code second.
+Most DSA and frontend content teaches you to produce correct output. thinkdeep teaches you to _recognize the pattern_ — so that when you see a new problem, you already know which tool to reach for.
 
 ---
 
-## How the platform is laid out
+## How learning works here
 
-Learning is organized into **Topics** — each one a focused area of DSA (Arrays & Strings, Hash Maps, Binary Trees, Graphs, etc.). Topics follow a deliberate two-phase progression from Novice to Studied.
+Every topic follows the same progression:
 
-### Topics → Fundamentals
+**Fundamentals** — before a single problem is touched, you read a deep-dive guide built around analogy and intuition. Not "here's the algorithm." More like "here's why this structure exists and what problem it was invented to solve."
 
-Each topic starts with a **fundamentals guide**: a deep-dive into the concept before any problem is touched. These guides build intuition — diagrams, analogies, and worked examples that explain *why* the data structure or algorithm works the way it does.
+**Problems** — a curated first pass of problems that build the core pattern. Each one has a mental model hook, a reference implementation, and an embedded code environment so you can run and modify the solution without leaving the page.
 
-### Topics → Problems
-
-Every topic contains a curated set of problems, inspired by the Neetcode 150. Each problem has:
-
-- A **mental model** — a human-readable analogy that makes the pattern stick ("think of it like X")
-- A **code snippet** — a clean reference implementation
-- An **embedded code environment** — run and modify the solution in-browser without leaving the page
-
-Problems are split into two passes:
-- **First Pass** — build the foundation, understand the pattern
-- **Come Back & Reinforce** — deepen mastery once the concept is internalized
+**Reinforcement** — a second set of problems for after the concept has started to solidify. These surface the pattern's variations and edge cases, and deepen what the first pass started.
 
 ---
 
-## The learning journey
+## The tracks
 
-Two phases, defined in `lib/journey.ts`:
-
-**Phase 1 — Novice** 🌱 *(3–5 weeks)*
-1. Arrays & Strings
-2. Hash Maps
-3. Two Pointers
-4. Sliding Window
-5. Linked Lists
-6. Recursion & Backtracking
-7. Binary Search
-
-**Phase 2 — Studied** 📚
-8. Binary Trees
-9. Binary Search Trees
-10. Graphs Fundamentals
-11. Graph Traversal — DFS
-12. Backtracking Deep Dive
-13. Monotonic Stack & Greedy
+thinkdeep covers Data Structures & Algorithms, Frontend Engineering, Frontend Interview Prep, and System Design — all following the same fundamentals-first structure.
 
 ---
 
-## Running locally
+## The core belief
 
-```bash
-npm install
-npm run dev
-```
+Most study content is written for people who already understand the concept. Explanations that lead with code don't build intuition — they give you something to copy.
 
-Open [http://localhost:3000](http://localhost:3000).
+thinkdeep inverts that. The goal isn't to produce correct output on a practice problem. It's to recognize the pattern well enough that a novel problem feels familiar.
