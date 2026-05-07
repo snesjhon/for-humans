@@ -1,56 +1,35 @@
 export {};
-// Goal: implement asyncReducer<T> — the state machine that transitions AsyncState<T>
-// based on dispatched actions.
-//
-// Each action maps to exactly one new state:
-//   'fetch'   → { status: 'loading' }               (regardless of current state)
-//   'resolve' → { status: 'success', data: T }       (action carries data: T)
-//   'reject'  → { status: 'error', error: Error }    (action carries error: Error)
-//   'reset'   → { status: 'idle' }
 
-type AsyncState<T> =
-  | { status: 'idle' }
-  | { status: 'loading' }
-  | { status: 'success'; data: T }
-  | { status: 'error'; error: Error };
+// Sealed Envelope, Level 2: type the success branch from the loader
+// Goal: make data match whatever the loader resolves to.
 
-type AsyncAction<T> =
-  | { type: 'fetch' }
-  | { type: 'resolve'; data: T }
-  | { type: 'reject'; error: Error }
-  | { type: 'reset' };
-
-// TODO: implement the reducer — switch on action.type and return the new state
-function asyncReducer<T>(state: AsyncState<T>, action: AsyncAction<T>): AsyncState<T> {
-  throw new Error('not implemented');
+interface Device {
+  id: string;
+  name: string;
 }
 
-// ---Tests
-test('fetch transitions to loading from any state', () => {
-  const idle: AsyncState<string> = { status: 'idle' };
-  expect(asyncReducer(idle, { type: 'fetch' })).toEqual({ status: 'loading' });
+interface UserProfile {
+  id: string;
+  email: string;
+}
 
-  const success: AsyncState<string> = { status: 'success', data: 'old' };
-  expect(asyncReducer(success, { type: 'fetch' })).toEqual({ status: 'loading' });
-});
+async function fetchDevices(): Promise<Device[]> {
+  return [{ id: 'd-1', name: 'Mixer' }];
+}
 
-test('resolve transitions to success with data', () => {
-  const loading: AsyncState<string> = { status: 'loading' };
-  expect(asyncReducer(loading, { type: 'resolve', data: 'hello' })).toEqual({
-    status: 'success',
-    data: 'hello',
-  });
-});
+async function fetchProfile(): Promise<UserProfile> {
+  return { id: 'u-1', email: 'operator@example.com' };
+}
 
-test('reject transitions to error with the error object', () => {
-  const loading: AsyncState<string> = { status: 'loading' };
-  const err = new Error('not found');
-  const next = asyncReducer(loading, { type: 'reject', error: err });
-  expect(next).toEqual({ status: 'error', error: err });
-});
+type LoaderData<TLoader extends (...args: never[]) => Promise<unknown>> =
+  Awaited<ReturnType<TLoader>>;
 
-test('reset transitions to idle from any state', () => {
-  const error: AsyncState<string> = { status: 'error', error: new Error() };
-  expect(asyncReducer(error, { type: 'reset' })).toEqual({ status: 'idle' });
-});
-// ---End Tests
+// TODO: Build a success object whose data property matches LoaderData<TLoader>.
+type AsyncSuccess<TLoader extends (...args: never[]) => Promise<unknown>> = never;
+
+type DevicesSuccess = AsyncSuccess<typeof fetchDevices>;
+type ProfileSuccess = AsyncSuccess<typeof fetchProfile>;
+
+// Hover the aliases while solving:
+// - DevicesSuccess should become { status: 'success'; data: Device[] }
+// - ProfileSuccess should become { status: 'success'; data: UserProfile }

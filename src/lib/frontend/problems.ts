@@ -99,7 +99,7 @@ const FRONTEND_PROBLEM_METADATA: Record<
     title: 'Carousel Navigation',
     prompt:
       'Build a horizontal carousel that shows five of ten covers at a time, with left and right navigation arrows. The core question is whether the arrow visibility flags should be stored in state or derived from the current scroll position.',
-    sectionId: 'rich-interactive-ui',
+    sectionId: 'component-composition',
     tier: 'practice',
     kind: 'react',
     difficulty: 'medium',
@@ -108,10 +108,163 @@ const FRONTEND_PROBLEM_METADATA: Record<
     title: 'Object Spread and Falsy Traps',
     prompt:
       'Predict what spread copies, plain assignment shares, and fallback operators replace, then implement fixes that avoid nested mutation leaks and accidental defaulting.',
-    sectionId: 'collection-hooks',
+    sectionId: 'javascript-refresh',
     tier: 'practice',
     kind: 'typescript',
     difficulty: 'medium',
+  },
+  '033': {
+    title: 'Scheduling and Async Traps',
+    prompt:
+      'Predict log order across promises and setTimeout, fix a missing return in a promise chain, and trace a loop-closure bug caused by var. The core question is which queue each callback lands in.',
+    sectionId: 'javascript-refresh',
+    tier: 'practice',
+    kind: 'typescript',
+    difficulty: 'medium',
+  },
+  '034': {
+    title: 'useQuery',
+    prompt:
+      'Implement a hook that manages any promise resolution, typed with a discriminated union over the four async states. Race condition handling and AbortController cleanup required.',
+    sectionId: 'data-fetching',
+    tier: 'practice',
+    kind: 'react',
+    difficulty: 'hard',
+  },
+  '035': {
+    title: 'Image Carousel',
+    prompt:
+      'Build an image carousel with navigation and smooth transitions. The core question is how animation state layers on top of navigation state without coupling them.',
+    sectionId: 'rich-interactive-ui',
+    tier: 'practice',
+    kind: 'react',
+    difficulty: 'medium',
+  },
+  '036': {
+    title: 'useArray',
+    prompt:
+      'Implement a hook that manages an array with push, remove, and clear operations. The core question is how to guarantee immutable updates so React always sees a new reference.',
+    sectionId: 'collection-hooks',
+    tier: 'practice',
+    kind: 'react',
+    difficulty: 'easy',
+  },
+  '037': {
+    title: 'useMap',
+    prompt:
+      'Implement a hook that manages a JavaScript Map with typed key-value semantics. The core question is how to constrain K and design the return type around V without losing type inference.',
+    sectionId: 'collection-hooks',
+    tier: 'practice',
+    kind: 'react',
+    difficulty: 'medium',
+  },
+  '038': {
+    title: 'useDebounce',
+    prompt:
+      'Implement a hook that debounces any value with a configurable delay. The core question is what cleanup must cancel when the value changes mid-debounce.',
+    sectionId: 'timing-hooks',
+    tier: 'practice',
+    kind: 'react',
+    difficulty: 'medium',
+  },
+  '039': {
+    title: 'useCountdown',
+    prompt:
+      'Implement a countdown hook with start, pause, and reset. The core question is how to manage tick state without drift and stop the interval when the count reaches zero.',
+    sectionId: 'timing-hooks',
+    tier: 'practice',
+    kind: 'react',
+    difficulty: 'medium',
+  },
+  '040': {
+    title: 'useEventListener',
+    prompt:
+      'Implement a hook that subscribes to any browser event with automatically narrowed handler types. The core question is how template literal types tie the event name string to the correct handler signature.',
+    sectionId: 'dom-event-hooks',
+    tier: 'practice',
+    kind: 'react',
+    difficulty: 'medium',
+  },
+  '041': {
+    title: 'useHover',
+    prompt:
+      'Implement a hook that tracks whether an element is hovered using two event listeners and one ref. The core question is the minimum state needed to represent a two-event interaction.',
+    sectionId: 'dom-event-hooks',
+    tier: 'practice',
+    kind: 'react',
+    difficulty: 'easy',
+  },
+  '042': {
+    title: 'useMediatedState',
+    prompt:
+      'Implement a hook similar to useState that applies a mediation function before storing the value. The core question is how the mediation function intercepts every update without breaking the useState contract.',
+    sectionId: 'advanced-hook-patterns',
+    tier: 'practice',
+    kind: 'react',
+    difficulty: 'medium',
+  },
+  '043': {
+    title: 'useIdle',
+    prompt:
+      'Implement a hook that detects user inactivity after a configurable timeout. The core question is how multiple event sources all reset the same countdown without leaking listeners.',
+    sectionId: 'advanced-hook-patterns',
+    tier: 'practice',
+    kind: 'react',
+    difficulty: 'hard',
+  },
+  '044': {
+    title: 'Undoable Counter',
+    prompt:
+      'Build a counter with full undo/redo support using a reducer. The core question is how past/present/future as explicit state fields make time-travel a pure state transition.',
+    sectionId: 'complex-state-reducers',
+    tier: 'practice',
+    kind: 'react',
+    difficulty: 'medium',
+  },
+  '045': {
+    title: 'Tic-Tac-Toe',
+    prompt:
+      'Build a two-player tic-tac-toe game using a reducer. The core question is how the action union prevents impossible transitions like moving on an occupied square or playing after the game ends.',
+    sectionId: 'complex-state-reducers',
+    tier: 'practice',
+    kind: 'react',
+    difficulty: 'hard',
+  },
+  '046': {
+    title: 'Selectable Cells',
+    prompt:
+      'Build a grid where users can drag to select multiple cells. The core question is how to keep pointer-event handlers from triggering unnecessary re-renders on every cell during a drag.',
+    sectionId: 'performance-optimization',
+    tier: 'practice',
+    kind: 'react',
+    difficulty: 'hard',
+  },
+  '047': {
+    title: 'Modal Dialog II & III',
+    prompt:
+      'Add correct ARIA roles and full keyboard support to a modal dialog: role="dialog", aria-modal, aria-labelledby, focus trap on Tab and Shift+Tab, and Escape to close. Screen reader correctness first, keyboard operability second.',
+    sectionId: 'accessibility',
+    tier: 'practice',
+    kind: 'react',
+    difficulty: 'hard',
+  },
+  '048': {
+    title: 'Users Database',
+    prompt:
+      'Build a UI to filter, sort, create, update, and delete users. The core question is how optimistic updates keep state consistent when an async mutation can fail after the UI has already changed.',
+    sectionId: 'full-feature-applications',
+    tier: 'practice',
+    kind: 'react',
+    difficulty: 'hard',
+  },
+  '049': {
+    title: 'Wordle',
+    prompt:
+      'Build Wordle: six guesses, per-position letter state, keyboard input, and win condition. The core question is how to model the board as a reducer where every guess transition is explicit and impossible states are unrepresentable.',
+    sectionId: 'full-feature-applications',
+    tier: 'practice',
+    kind: 'react',
+    difficulty: 'hard',
   },
 };
 

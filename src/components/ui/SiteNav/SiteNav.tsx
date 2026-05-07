@@ -73,7 +73,7 @@ for (const phase of FRONTEND_JOURNEY) {
     for (const problem of section.practice) {
       FRONTEND_PROBLEM_TO_SECTION[problem.id] = section.id;
     }
-    for (const problem of section.advanced) {
+    for (const problem of section.explorations) {
       FRONTEND_PROBLEM_TO_SECTION[problem.id] = section.id;
     }
   }
@@ -107,7 +107,7 @@ const FRONTEND_PHASES: JourneyPanelPhase[] = FRONTEND_JOURNEY.map((phase) => ({
         label: problem.label,
         prefix: problem.id,
       })),
-      ...section.advanced.map((problem) => ({
+      ...section.explorations.map((problem) => ({
         key: problem.id,
         label: problem.label,
         prefix: problem.id,

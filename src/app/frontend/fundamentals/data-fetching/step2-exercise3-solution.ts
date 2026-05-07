@@ -1,70 +1,50 @@
-/**
- * @jest-environment jsdom
- */
-import { renderHook, act } from '@testing-library/react';
-import { useReducer, useEffect } from 'react';
+export {};
 
-type AsyncState<T> =
-  | { status: 'idle' }
-  | { status: 'loading' }
-  | { status: 'success'; data: T }
-  | { status: 'error'; error: Error };
+// Sealed Envelope, Level 2: generic outside, specific inside
+// Goal: return a success object whose data type matches the loader.
 
-type AsyncAction<T> =
-  | { type: 'fetch' }
-  | { type: 'resolve'; data: T }
-  | { type: 'reject'; error: Error };
-
-function asyncReducer<T>(_state: AsyncState<T>, action: AsyncAction<T>): AsyncState<T> {
-  switch (action.type) {
-    case 'fetch':   return { status: 'loading' };
-    case 'resolve': return { status: 'success', data: action.data };
-    case 'reject':  return { status: 'error', error: action.error };
-  }
+interface Device {
+  id: string;
+  name: string;
 }
 
-function useAsyncState<T>(fetcher: () => Promise<T>): AsyncState<T> {
-  const [state, dispatch] = useReducer(asyncReducer<T>, { status: 'idle' });
-
-  useEffect(() => {
-    dispatch({ type: 'fetch' });
-    fetcher()
-      .then(data => dispatch({ type: 'resolve', data }))
-      .catch((err: Error) => dispatch({ type: 'reject', error: err }));
-  }, []);
-
-  return state;
+interface UserProfile {
+  id: string;
+  email: string;
 }
 
-// ---Tests
-test('starts in idle state', () => {
-  const fetcher = jest.fn().mockResolvedValue('hello');
-  const { result } = renderHook(() => useAsyncState(fetcher));
-  expect(['idle', 'loading']).toContain(result.current.status);
-});
+async function fetchDevices(): Promise<Device[]> {
+  return [{ id: 'd-1', name: 'Mixer' }];
+}
 
-test('transitions through loading to success', async () => {
-  const fetcher = jest.fn().mockResolvedValue('hello');
-  const { result } = renderHook(() => useAsyncState(fetcher));
+async function fetchProfile(): Promise<UserProfile> {
+  return { id: 'u-1', email: 'operator@example.com' };
+}
 
-  await act(async () => {});
+type LoaderData<TLoader extends (...args: never[]) => Promise<unknown>> =
+  Awaited<ReturnType<TLoader>>;
 
-  expect(result.current.status).toBe('success');
-  if (result.current.status === 'success') {
-    expect(result.current.data).toBe('hello');
-  }
-});
+function buildSuccess<TLoader extends (...args: never[]) => Promise<unknown>>(
+  _loader: TLoader,
+  data: LoaderData<TLoader>,
+) {
+  return { status: 'success' as const, data };
+}
 
-test('transitions to error when fetcher throws', async () => {
-  const err = new Error('fetch failed');
-  const fetcher = jest.fn().mockRejectedValue(err);
-  const { result } = renderHook(() => useAsyncState(fetcher));
+const deviceState = buildSuccess(fetchDevices, [{ id: 'd-1', name: 'Mixer' }]);
+const profileState = buildSuccess(fetchProfile, { id: 'u-1', email: 'operator@example.com' });
 
-  await act(async () => {});
+type Equal<A, B> =
+  (<T>() => T extends A ? 1 : 2) extends
+  (<T>() => T extends B ? 1 : 2)
+    ? true
+    : false;
 
-  expect(result.current.status).toBe('error');
-  if (result.current.status === 'error') {
-    expect(result.current.error).toBe(err);
-  }
-});
-// ---End Tests
+type Expect<T extends true> = T;
+
+type DeviceStateCheck = Expect<
+  Equal<typeof deviceState, { status: 'success'; data: Device[] }>
+>;
+type ProfileStateCheck = Expect<
+  Equal<typeof profileState, { status: 'success'; data: UserProfile }>
+>;

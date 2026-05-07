@@ -6,7 +6,7 @@ export const JOURNEY: Phase[] = [
     label: 'Novice',
     emoji: '🌱',
     goal:
-      'Confirm that the mental models senior engineers think they have are actually solid. Runtime reference rules, state-as-snapshot, and effect cleanup are the foundation for everything that follows.',
+      'From JS fundamentals and snapshot state through typed async patterns and effect cleanup to component boundaries — the foundation every React decision builds on.',
     sections: [
       {
         id: 'javascript-refresh',
@@ -29,8 +29,13 @@ export const JOURNEY: Phase[] = [
             slug: '032-object-spread-and-falsy-traps',
             label: 'Object Spread and Falsy Traps',
           },
+          {
+            id: '033',
+            slug: '033-scheduling-and-async-traps',
+            label: 'Scheduling and Async Traps',
+          },
         ],
-        advanced: [],
+        explorations: [],
       },
       {
         id: 'state-driven-ui',
@@ -52,82 +57,13 @@ export const JOURNEY: Phase[] = [
             label: 'Star Rating',
           },
         ],
-        advanced: [],
+        explorations: [],
         scenarios: [
           {
             slug: 'app-shell',
             label: 'App Shell',
             blurb:
               'Build the first real `App.tsx` and `App.css` around an explicit loading, error, and data screen-state model with hardcoded mock devices.',
-          },
-        ],
-      },
-      {
-        id: 'effects-timers-cleanup',
-        label: 'Effects, Timers & Cleanup',
-        mentalModelHook:
-          'An effect is a synchronization step with a setup and a required cleanup — the pair is the contract, not just the setup.',
-        fundamentalsSlug: 'effects-timers-cleanup',
-        fundamentalsBlurb:
-          'Lifecycle timing, interval drift, AbortController for fetch cancellation, and how StrictMode surfaces missing cleanup.',
-        practice: [
-          {
-            id: '026',
-            slug: '026-promise-vs-timeout',
-            label: 'Promise vs setTimeout',
-          },
-          {
-            id: '028',
-            slug: '028-traffic-light',
-            label: 'Traffic Light',
-          },
-          {
-            id: '030',
-            slug: '030-window-dimensions',
-            label: 'Window Dimensions',
-          },
-        ],
-        advanced: [],
-        scenarios: [
-          {
-            slug: 'async-state-in-react',
-            label: 'Async State in React',
-            blurb:
-              'Wire the fetch layer into a custom hook that tracks loading, error, and data state and cancels in-flight requests on unmount.',
-          },
-        ],
-      },
-    ],
-  },
-  {
-    number: 2,
-    label: 'Studied',
-    emoji: '📚',
-    goal:
-      'Handle the patterns that distinguish senior engineers. Every section here introduces something that looks fine on first pass and breaks under a real constraint.',
-    sections: [
-      {
-        id: 'component-composition',
-        label: 'Component Composition',
-        mentalModelHook:
-          'A compound component separates state ownership from visual structure — the parent holds the state, the children decide how to display it.',
-        fundamentalsSlug: 'component-composition',
-        fundamentalsBlurb:
-          'Compound components, portal-based rendering, lifting state up, and recursive component trees.',
-        practice: [
-          {
-            id: '029',
-            slug: '029-modal-dialog',
-            label: 'Modal Dialog',
-          },
-        ],
-        advanced: [],
-        scenarios: [
-          {
-            slug: 'rendering-the-data',
-            label: 'Render the Data',
-            blurb:
-              'Build DeviceCard and DeviceList components that display device status from the hook, including a status badge with CSS custom properties.',
           },
         ],
       },
@@ -145,8 +81,13 @@ export const JOURNEY: Phase[] = [
             slug: '027-promise-adoption-traps',
             label: 'Promise Adoption Traps',
           },
+          {
+            id: '034',
+            slug: '034-use-query',
+            label: 'useQuery',
+          },
         ],
-        advanced: [],
+        explorations: [],
         scenarios: [
           {
             slug: 'modeling-the-api-contract',
@@ -163,6 +104,106 @@ export const JOURNEY: Phase[] = [
         ],
       },
       {
+        id: 'effects-timers-cleanup',
+        label: 'Effects, Timers & Cleanup',
+        mentalModelHook:
+          'An effect is a synchronization step with a setup and a required cleanup — the pair is the contract, not just the setup.',
+        fundamentalsSlug: 'effects-timers-cleanup',
+        fundamentalsBlurb:
+          'Lifecycle timing, interval drift, AbortController for fetch cancellation, and how StrictMode surfaces missing cleanup.',
+        practice: [
+          {
+            id: '028',
+            slug: '028-traffic-light',
+            label: 'Traffic Light',
+          },
+          {
+            id: '026',
+            slug: '026-promise-vs-timeout',
+            label: 'Promise vs setTimeout',
+          },
+        ],
+        explorations: [
+          {
+            id: '030',
+            slug: '030-window-dimensions',
+            label: 'Window Dimensions',
+          },
+        ],
+        scenarios: [
+          {
+            slug: 'async-state-in-react',
+            label: 'Async State in React',
+            blurb:
+              'Wire the fetch layer into a custom hook that tracks loading, error, and data state and cancels in-flight requests on unmount.',
+          },
+        ],
+      },
+      {
+        id: 'component-composition',
+        label: 'Component Composition',
+        mentalModelHook:
+          'A compound component separates state ownership from visual structure — the parent holds the state, the children decide how to display it.',
+        fundamentalsSlug: 'component-composition',
+        fundamentalsBlurb:
+          'Compound components, portal-based rendering, lifting state up, and recursive component trees.',
+        practice: [
+          {
+            id: '029',
+            slug: '029-modal-dialog',
+            label: 'Modal Dialog',
+          },
+          {
+            id: '031',
+            slug: '031-carousel-navigation',
+            label: 'Carousel Navigation',
+          },
+        ],
+        explorations: [],
+        scenarios: [
+          {
+            slug: 'rendering-the-data',
+            label: 'Render the Data',
+            blurb:
+              'Build DeviceCard and DeviceList components that display device status from the hook, including a status badge with CSS custom properties.',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    number: 2,
+    label: 'Studied',
+    emoji: '📚',
+    goal:
+      'Rich UI, collection state, timing, DOM events, and advanced hook architecture — the patterns that distinguish senior work in code review.',
+    sections: [
+      {
+        id: 'rich-interactive-ui',
+        label: 'Rich Interactive UI + CSS Layout',
+        mentalModelHook:
+          'Multi-concern UI separates navigation state, loading state, and animation state as independent dimensions that layer, not merge.',
+        fundamentalsSlug: 'rich-interactive-ui',
+        fundamentalsBlurb:
+          'Multi-concern state modeling, CSS Grid and Flexbox for dashboard layout, the auto-fill + minmax pattern, and CSS custom properties for closed-set values.',
+        practice: [
+          {
+            id: '035',
+            slug: '035-image-carousel',
+            label: 'Image Carousel',
+          },
+        ],
+        explorations: [],
+        scenarios: [
+          {
+            slug: 'css-layout',
+            label: 'CSS Layout',
+            blurb:
+              'Replace the flex placeholder layout with a CSS Grid dashboard: fixed sidebar, fluid main area, and a responsive device card grid using auto-fill and minmax.',
+          },
+        ],
+      },
+      {
         id: 'collection-hooks',
         label: 'Collection & State Shape Hooks + Generics',
         mentalModelHook:
@@ -170,33 +211,25 @@ export const JOURNEY: Phase[] = [
         fundamentalsSlug: 'collection-hooks',
         fundamentalsBlurb:
           'Arrays, maps, and sets as state — immutable update patterns, stable references, and generic hook signatures with meaningful constraints.',
-        practice: [],
-        advanced: [],
+        practice: [
+          {
+            id: '036',
+            slug: '036-use-array',
+            label: 'useArray',
+          },
+          {
+            id: '037',
+            slug: '037-use-map',
+            label: 'useMap',
+          },
+        ],
+        explorations: [],
         scenarios: [
           {
             slug: 'interactivity',
             label: 'Add Interactivity',
             blurb:
               'Add a filter bar and selection model so users can narrow the device list by status and click a card to see its tag details in a side panel.',
-          },
-        ],
-      },
-      {
-        id: 'dom-event-hooks',
-        label: 'DOM, Events & Browser API Hooks + Template Literal Types',
-        mentalModelHook:
-          'DOM event names are template literal types in disguise — typing `useEventListener` so the handler narrows by event name is the concept made immediately concrete.',
-        fundamentalsSlug: 'dom-event-hooks',
-        fundamentalsBlurb:
-          'useRef for DOM nodes, event listener lifecycle, SSR guards, and template literal types for typed event names and handler signatures.',
-        practice: [],
-        advanced: [],
-        scenarios: [
-          {
-            slug: 'click-outside-filter',
-            label: 'Click-Outside Filter Panel',
-            blurb:
-              'Extract the filter controls into a dropdown panel that closes when the user clicks outside it, using a DOM event listener with proper cleanup.',
           },
         ],
       },
@@ -208,8 +241,19 @@ export const JOURNEY: Phase[] = [
         fundamentalsSlug: 'timing-hooks',
         fundamentalsBlurb:
           'The stale closure inside setInterval, useRef as the stable callback escape hatch, and countdown state without drift.',
-        practice: [],
-        advanced: [],
+        practice: [
+          {
+            id: '038',
+            slug: '038-use-debounce',
+            label: 'useDebounce',
+          },
+          {
+            id: '039',
+            slug: '039-use-countdown',
+            label: 'useCountdown',
+          },
+        ],
+        explorations: [],
         scenarios: [
           {
             slug: 'debounced-search',
@@ -220,27 +264,62 @@ export const JOURNEY: Phase[] = [
         ],
       },
       {
-        id: 'rich-interactive-ui',
-        label: 'Rich Interactive UI',
+        id: 'dom-event-hooks',
+        label: 'DOM, Events & Browser API Hooks + Template Literal Types',
         mentalModelHook:
-          'Multi-concern UI separates navigation state, loading state, and animation state as independent dimensions that layer, not merge.',
-        fundamentalsSlug: 'rich-interactive-ui',
+          'DOM event names are template literal types in disguise — typing `useEventListener` so the handler narrows by event name is the concept made immediately concrete.',
+        fundamentalsSlug: 'dom-event-hooks',
         fundamentalsBlurb:
-          'Image loading lifecycle, transition state layered on selection state, and input control as a dirty/touched state machine.',
+          'useRef for DOM nodes, event listener lifecycle, SSR guards, and template literal types for typed event names and handler signatures.',
         practice: [
           {
-            id: '031',
-            slug: '031-carousel-navigation',
-            label: 'Carousel Navigation',
+            id: '040',
+            slug: '040-use-event-listener',
+            label: 'useEventListener',
+          },
+          {
+            id: '041',
+            slug: '041-use-hover',
+            label: 'useHover',
           },
         ],
-        advanced: [],
+        explorations: [],
         scenarios: [
           {
-            slug: 'css-layout',
-            label: 'CSS Layout',
+            slug: 'click-outside-filter',
+            label: 'Click-Outside Filter Panel',
             blurb:
-              'Replace the flex placeholder layout with a CSS Grid dashboard: fixed sidebar, fluid main area, and a responsive device card grid using auto-fill and minmax.',
+              'Extract the filter controls into a dropdown panel that closes when the user clicks outside it, using a DOM event listener with proper cleanup.',
+          },
+        ],
+      },
+      {
+        id: 'advanced-hook-patterns',
+        label: 'Advanced Hook Patterns + Variance',
+        mentalModelHook:
+          'The most complex hooks are small state machines — naming the valid states and their transitions is the design work; the code follows.',
+        fundamentalsSlug: 'advanced-hook-patterns',
+        fundamentalsBlurb:
+          'Mediated state, useSyncExternalStore as the alternative to useState for external subscriptions, and how variance makes method shorthand signatures unsound.',
+        practice: [
+          {
+            id: '042',
+            slug: '042-use-mediated-state',
+            label: 'useMediatedState',
+          },
+          {
+            id: '043',
+            slug: '043-use-idle',
+            label: 'useIdle',
+          },
+        ],
+        explorations: [],
+        scenarios: [
+          {
+            slug: 'extracting-the-hook',
+            label: 'Extract the Hook',
+            blurb:
+              'Pull the device data, filter logic, and selection state out of App into a single useDevices hook that owns all the moving parts.',
           },
         ],
       },
@@ -251,37 +330,29 @@ export const JOURNEY: Phase[] = [
     label: 'Advanced',
     emoji: '🎯',
     goal:
-      'Accessibility, complex state, and performance — the patterns that separate senior from staff-level in code reviews and design discussions.',
+      'Complex state machines, performance tradeoffs, accessibility requirements, and full-feature system design — the senior-to-staff gap in practice.',
     sections: [
       {
-        id: 'accessibility',
-        label: 'Accessibility & Keyboard Interaction',
-        mentalModelHook:
-          'ARIA roles describe what something is; keyboard handlers describe how to use it — both are required for a component to be accessible.',
-        fundamentalsSlug: 'accessibility',
-        fundamentalsBlurb:
-          'ARIA roles and properties, focus trap mechanics, keyboard navigation per the ARIA spec, and the difference between screen reader correctness and keyboard operability.',
-        practice: [],
-        advanced: [],
-        scenarios: [
-          {
-            slug: 'accessibility',
-            label: 'Accessibility Pass',
-            blurb:
-              'Audit the dashboard for keyboard operability and screen reader correctness: focus trap for the filter panel, ARIA roles for the status badge, and focus-visible styles.',
-          },
-        ],
-      },
-      {
         id: 'complex-state-reducers',
-        label: 'Complex State & Reducers',
+        label: 'Complex State & Reducers + Mapped Types',
         mentalModelHook:
           'A reducer makes state transitions explicit and impossible states unrepresentable — the shape of valid actions is as important as the shape of state.',
         fundamentalsSlug: 'complex-state-reducers',
         fundamentalsBlurb:
-          'Finite state modeling, discriminated union actions, undo/redo as past/present/future, and when useReducer wins over scattered useState calls.',
-        practice: [],
-        advanced: [],
+          'Finite state modeling, discriminated union actions, undo/redo as past/present/future, and mapped types for deriving variant shapes from a single source of truth.',
+        practice: [
+          {
+            id: '044',
+            slug: '044-undoable-counter',
+            label: 'Undoable Counter',
+          },
+          {
+            id: '045',
+            slug: '045-tic-tac-toe',
+            label: 'Tic-Tac-Toe',
+          },
+        ],
+        explorations: [],
         scenarios: [
           {
             slug: 'reducer-for-app-state',
@@ -298,9 +369,15 @@ export const JOURNEY: Phase[] = [
           'Memoization only helps when the input is stable — an unstable input makes it a tax, not a savings.',
         fundamentalsSlug: 'performance-optimization',
         fundamentalsBlurb:
-          'Why most re-renders are free, the prerequisite of stable references for useMemo and useCallback, and minimal DOM footprint patterns.',
-        practice: [],
-        advanced: [],
+          'Why most re-renders are free, the prerequisite of stable references for useMemo and useCallback, and measuring before optimizing.',
+        practice: [
+          {
+            id: '046',
+            slug: '046-selectable-cells',
+            label: 'Selectable Cells',
+          },
+        ],
+        explorations: [],
         scenarios: [
           {
             slug: 'memoizing-the-filter',
@@ -311,21 +388,27 @@ export const JOURNEY: Phase[] = [
         ],
       },
       {
-        id: 'advanced-hook-patterns',
-        label: 'Advanced Hook Patterns',
+        id: 'accessibility',
+        label: 'Accessibility & Keyboard Interaction + Branded Types',
         mentalModelHook:
-          'The most complex hooks are small state machines — naming the valid states and their transitions is the design work; the code follows.',
-        fundamentalsSlug: 'advanced-hook-patterns',
+          'ARIA roles describe what something is; keyboard handlers describe how to use it — both are required for a component to be accessible.',
+        fundamentalsSlug: 'accessibility',
         fundamentalsBlurb:
-          'Mediated state, the dirty/touched state machine in useInputControl, and when useSyncExternalStore replaces useState.',
-        practice: [],
-        advanced: [],
+          'ARIA roles and properties, focus trap mechanics, keyboard navigation per the ARIA spec, branded types for preventing accidental ARIA ID substitution.',
+        practice: [
+          {
+            id: '047',
+            slug: '047-modal-dialog-ii-iii',
+            label: 'Modal Dialog II & III',
+          },
+        ],
+        explorations: [],
         scenarios: [
           {
-            slug: 'extracting-the-hook',
-            label: 'Extract the Hook',
+            slug: 'accessibility',
+            label: 'Accessibility Pass',
             blurb:
-              'Pull the device data, filter logic, and selection state out of App into a single useDevices hook that owns all the moving parts.',
+              'Audit the dashboard for keyboard operability and screen reader correctness: focus trap for the filter panel, ARIA roles for the status badge, and focus-visible styles.',
           },
         ],
       },
@@ -337,8 +420,19 @@ export const JOURNEY: Phase[] = [
         fundamentalsSlug: 'full-feature-applications',
         fundamentalsBlurb:
           'Combining reducers, async, accessibility, and performance — and deciding which problems belong in local state vs a reducer vs an external store.',
-        practice: [],
-        advanced: [],
+        practice: [
+          {
+            id: '048',
+            slug: '048-users-database',
+            label: 'Users Database',
+          },
+          {
+            id: '049',
+            slug: '049-wordle',
+            label: 'Wordle',
+          },
+        ],
+        explorations: [],
         scenarios: [
           {
             slug: 'polish-and-walkthrough',

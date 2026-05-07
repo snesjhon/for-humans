@@ -1,42 +1,33 @@
 export {};
-// Goal: implement extractIfSuccess<S> using the AsyncData<S> type provided.
-// AsyncData<S> uses `infer` to capture the data field type only when S has status 'success'.
-// The runtime guard checks status and the presence of 'data' to match what the type describes.
 
-type AsyncData<S> = S extends { status: 'success'; data: infer T } ? T : never;
+// Sealed Envelope, Level 1: extract data from an async loader
+// Goal: combine ReturnType with your promise-unwrapping helper.
 
-function extractIfSuccess<S extends { status: string }>(state: S): AsyncData<S> | null {
-  if (state.status === 'success' && 'data' in state) {
-    return (state as { status: 'success'; data: AsyncData<S> }).data;
-  }
-  return null;
+interface Alarm {
+  id: string;
+  severity: 'info' | 'warning' | 'critical';
 }
 
-// ---Tests
-test('returns data from success state', () => {
-  const success = { status: 'success' as const, data: 'Alice' };
-  const result = extractIfSuccess(success);
-  expect(result).toBe('Alice');
-});
+async function fetchAlarms(): Promise<Alarm[]> {
+  return [
+    { id: 'a-1', severity: 'warning' },
+    { id: 'a-2', severity: 'critical' },
+  ];
+}
 
-test('returns null from idle state', () => {
-  const idle = { status: 'idle' as const };
-  expect(extractIfSuccess(idle)).toBeNull();
-});
+type DeepAwaited<T> = T extends Promise<infer Value> ? DeepAwaited<Value> : T;
 
-test('returns null from loading state', () => {
-  const loading = { status: 'loading' as const };
-  expect(extractIfSuccess(loading)).toBeNull();
-});
+type LoaderResult<TLoader extends (...args: never[]) => Promise<unknown>> =
+  DeepAwaited<ReturnType<TLoader>>;
 
-test('returns null from error state', () => {
-  const error = { status: 'error' as const, error: new Error('oops') };
-  expect(extractIfSuccess(error)).toBeNull();
-});
+type AlarmPayload = LoaderResult<typeof fetchAlarms>;
 
-test('works with object data', () => {
-  const success = { status: 'success' as const, data: { id: 1, name: 'Bob' } };
-  const result = extractIfSuccess(success);
-  expect(result).toEqual({ id: 1, name: 'Bob' });
-});
-// ---End Tests
+type Equal<A, B> =
+  (<T>() => T extends A ? 1 : 2) extends
+  (<T>() => T extends B ? 1 : 2)
+    ? true
+    : false;
+
+type Expect<T extends true> = T;
+
+type AlarmPayloadCheck = Expect<Equal<AlarmPayload, Alarm[]>>;

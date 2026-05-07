@@ -1,45 +1,41 @@
 export {};
-// Goal: define AsyncState<T> as a four-variant discriminated union,
-// then implement describeState<T> that handles each variant exhaustively.
 
-type AsyncState<T> =
-  | { status: 'idle' }
-  | { status: 'loading' }
-  | { status: 'success'; data: T }
-  | { status: 'error'; error: Error };
+// Sealed Envelope, Level 2: inherit the payload type from the loader
+// Goal: derive the resolved data type from any async loader function.
 
-function describeState<T>(state: AsyncState<T>): string {
-  switch (state.status) {
-    case 'idle':    return 'idle';
-    case 'loading': return 'loading';
-    case 'success': return `success: ${state.data}`;
-    case 'error':   return `error: ${state.error.message}`;
-    default:        return assertNever(state);
-  }
+interface Device {
+  id: string;
+  name: string;
 }
 
-function assertNever(value: never): never {
-  throw new Error(`Unhandled case: ${JSON.stringify(value)}`);
+interface Alarm {
+  id: string;
+  severity: 'info' | 'warning' | 'critical';
 }
 
-// ---Tests
-test('describes idle state', () => {
-  const state: AsyncState<string> = { status: 'idle' };
-  expect(describeState(state)).toBe('idle');
-});
+async function fetchDevices(): Promise<Device[]> {
+  return [{ id: 'd-1', name: 'Mixer' }];
+}
 
-test('describes loading state', () => {
-  const state: AsyncState<string> = { status: 'loading' };
-  expect(describeState(state)).toBe('loading');
-});
+async function fetchAlarmCount(): Promise<number> {
+  return 3;
+}
 
-test('describes success state with data', () => {
-  const state: AsyncState<string> = { status: 'success', data: 'Alice' };
-  expect(describeState(state)).toBe('success: Alice');
-});
+type DeepAwaited<T> = T extends Promise<infer Value> ? DeepAwaited<Value> : T;
 
-test('describes error state with message', () => {
-  const state: AsyncState<string> = { status: 'error', error: new Error('not found') };
-  expect(describeState(state)).toBe('error: not found');
-});
-// ---End Tests
+type LoaderData<TLoader extends (...args: never[]) => Promise<unknown>> =
+  DeepAwaited<ReturnType<TLoader>>;
+
+type DevicesData = LoaderData<typeof fetchDevices>;
+type AlarmCountData = LoaderData<typeof fetchAlarmCount>;
+
+type Equal<A, B> =
+  (<T>() => T extends A ? 1 : 2) extends
+  (<T>() => T extends B ? 1 : 2)
+    ? true
+    : false;
+
+type Expect<T extends true> = T;
+
+type DevicesCheck = Expect<Equal<DevicesData, Device[]>>;
+type AlarmCountCheck = Expect<Equal<AlarmCountData, number>>;

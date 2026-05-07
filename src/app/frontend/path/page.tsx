@@ -163,13 +163,13 @@ export default async function PathPage() {
                           sectionItemId={`fe-section-${section.id}`}
                           problemItemIds={[
                             ...section.practice.map((problem) => `fe-problem-${problem.id}`),
-                            ...section.advanced.map((problem) => `fe-problem-${problem.id}`),
+                            ...section.explorations.map((problem) => `fe-problem-${problem.id}`),
                           ]}
                           initialCompletedProblemIds={[
                             ...section.practice
                               .map((problem) => `fe-problem-${problem.id}`)
                               .filter((itemId) => completedProblems.has(itemId)),
-                            ...section.advanced
+                            ...section.explorations
                               .map((problem) => `fe-problem-${problem.id}`)
                               .filter((itemId) => completedProblems.has(itemId)),
                           ]}
@@ -228,13 +228,13 @@ export default async function PathPage() {
                           </div>
                         )}
 
-                        {section.advanced.length > 0 && (
+                        {section.explorations.length > 0 && (
                           <div className="mt-5">
                             <p className="mb-2 font-mono text-[0.6rem] font-bold uppercase tracking-[0.09em] text-[var(--ms-text-faint)]">
-                              Advanced
+                              Other Explorations
                             </p>
                             <div className="space-y-2">
-                              {section.advanced.map((problem) => (
+                              {section.explorations.map((problem) => (
                                 <Link
                                   key={problem.id}
                                   href={`/frontend/problems/${problem.id}`}

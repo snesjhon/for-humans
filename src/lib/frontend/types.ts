@@ -18,7 +18,7 @@ export interface FrontendJourneySection {
   fundamentalsBlurb: string;
   additionalFundamentals?: { slug: string; blurb: string }[];
   practice: FrontendJourneyProblem[];
-  advanced: FrontendJourneyProblem[];
+  explorations: FrontendJourneyProblem[];
   scenarios?: ScenarioRef[];
 }
 

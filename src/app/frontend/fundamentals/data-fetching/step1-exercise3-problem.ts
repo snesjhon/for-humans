@@ -1,41 +1,26 @@
 export {};
-// Goal: implement extractIfSuccess<S> using the AsyncData<S> type provided.
-// AsyncData<S> uses `infer` to extract the data field only when S is a success state.
-// Your job: write the runtime guard that matches what the type describes.
 
-type AsyncData<S> = S extends { status: 'success'; data: infer T } ? T : never;
+// Sealed Envelope, Level 1: extract data from an async loader
+// Goal: combine ReturnType with your promise-unwrapping helper.
 
-// TODO: implement extractIfSuccess so it returns state.data when status is 'success',
-// and null for all other states. The return type AsyncData<S> | null is already correct.
-function extractIfSuccess<S extends { status: string }>(state: S): AsyncData<S> | null {
-  throw new Error('not implemented');
+interface Alarm {
+  id: string;
+  severity: 'info' | 'warning' | 'critical';
 }
 
-// ---Tests
-test('returns data from success state', () => {
-  const success = { status: 'success' as const, data: 'Alice' };
-  const result = extractIfSuccess(success);
-  expect(result).toBe('Alice');
-});
+async function fetchAlarms(): Promise<Alarm[]> {
+  return [
+    { id: 'a-1', severity: 'warning' },
+    { id: 'a-2', severity: 'critical' },
+  ];
+}
 
-test('returns null from idle state', () => {
-  const idle = { status: 'idle' as const };
-  expect(extractIfSuccess(idle)).toBeNull();
-});
+type DeepAwaited<T> = T extends Promise<infer Value> ? DeepAwaited<Value> : T;
 
-test('returns null from loading state', () => {
-  const loading = { status: 'loading' as const };
-  expect(extractIfSuccess(loading)).toBeNull();
-});
+// TODO: Read the return type of TLoader, then unwrap the promise(s) around it.
+type LoaderResult<TLoader extends (...args: never[]) => Promise<unknown>> = unknown;
 
-test('returns null from error state', () => {
-  const error = { status: 'error' as const, error: new Error('oops') };
-  expect(extractIfSuccess(error)).toBeNull();
-});
+type AlarmPayload = LoaderResult<typeof fetchAlarms>;
 
-test('works with object data', () => {
-  const success = { status: 'success' as const, data: { id: 1, name: 'Bob' } };
-  const result = extractIfSuccess(success);
-  expect(result).toEqual({ id: 1, name: 'Bob' });
-});
-// ---End Tests
+// Hover AlarmPayload while solving:
+// - AlarmPayload should become Alarm[]

@@ -1,95 +1,46 @@
-/**
- * @jest-environment jsdom
- */
-import { renderHook, act } from '@testing-library/react';
-import { useReducer, useEffect, useState } from 'react';
+export {};
 
-type AsyncState<T> =
+// Sealed Envelope, Level 3: transform data without losing the phase model
+// Goal: only map the success payload. Pass idle/loading/error through unchanged.
+
+type AsyncState<TData> =
   | { status: 'idle' }
   | { status: 'loading' }
-  | { status: 'success'; data: T }
-  | { status: 'error'; error: Error };
+  | { status: 'success'; data: TData }
+  | { status: 'error'; error: string };
 
-type AsyncAction<T> =
-  | { type: 'fetch' }
-  | { type: 'resolve'; data: T }
-  | { type: 'reject'; error: Error };
-
-function asyncReducer<T>(_state: AsyncState<T>, action: AsyncAction<T>): AsyncState<T> {
-  switch (action.type) {
-    case 'fetch':   return { status: 'loading' };
-    case 'resolve': return { status: 'success', data: action.data };
-    case 'reject':  return { status: 'error', error: action.error };
+function mapAsyncData<TData, TResult>(
+  state: AsyncState<TData>,
+  map: (value: TData) => TResult,
+): AsyncState<TResult> {
+  switch (state.status) {
+    case 'idle':
+      return state;
+    case 'loading':
+      return state;
+    case 'error':
+      return state;
+    case 'success':
+      return { status: 'success', data: map(state.data) };
   }
 }
 
-function usePaginatedFetch<T>(fetcher: (page: number, signal: AbortSignal) => Promise<T>): {
-  state: AsyncState<T>;
-  page: number;
-  setPage: (page: number) => void;
-} {
-  const [page, setPage] = useState(1);
-  const [state, dispatch] = useReducer(asyncReducer<T>, { status: 'idle' });
+function assert(condition: boolean, message: string): void {
+  if (!condition) {
+    throw new Error(`FAIL: ${message}`);
+  }
 
-  useEffect(() => {
-    const controller = new AbortController();
-    dispatch({ type: 'fetch' });
-
-    fetcher(page, controller.signal)
-      .then(data => dispatch({ type: 'resolve', data }))
-      .catch((err: Error) => {
-        if (err.name !== 'AbortError') {
-          dispatch({ type: 'reject', error: err });
-        }
-      });
-
-    return () => controller.abort();
-  }, [fetcher, page]);
-
-  return { state, page, setPage };
+  console.log(`PASS: ${message}`);
 }
 
-// ---Tests
-test('starts at page 1 in loading state', async () => {
-  const fetcher = jest.fn((_page: number, _signal: AbortSignal) => Promise.resolve('result'));
-  const { result } = renderHook(() => usePaginatedFetch(fetcher));
+const idle = mapAsyncData({ status: 'idle' }, (value: number[]) => value.length);
+assert(idle.status === 'idle', 'idle passes through unchanged');
 
-  await act(async () => {});
+const loading = mapAsyncData({ status: 'loading' }, (value: number[]) => value.length);
+assert(loading.status === 'loading', 'loading passes through unchanged');
 
-  expect(result.current.page).toBe(1);
-  expect(result.current.state.status).toBe('success');
-  expect(fetcher).toHaveBeenCalledWith(1, expect.any(AbortSignal));
-});
+const error = mapAsyncData({ status: 'error', error: 'Timed out' }, (value: number[]) => value.length);
+assert(error.status === 'error' && error.error === 'Timed out', 'error passes through unchanged');
 
-test('re-fetches with new page when setPage is called', async () => {
-  const fetcher = jest.fn((page: number, _signal: AbortSignal) =>
-    Promise.resolve(`page-${page}`)
-  );
-  const { result } = renderHook(() => usePaginatedFetch(fetcher));
-
-  await act(async () => {});
-  expect(result.current.state.status).toBe('success');
-
-  act(() => { result.current.setPage(2); });
-  expect(result.current.state.status).toBe('loading');
-
-  await act(async () => {});
-  expect(result.current.page).toBe(2);
-  expect(result.current.state.status).toBe('success');
-  if (result.current.state.status === 'success') {
-    expect(result.current.state.data).toBe('page-2');
-  }
-});
-
-test('fetcher is called with the correct page number', async () => {
-  const fetcher = jest.fn((_page: number, _signal: AbortSignal) => Promise.resolve('ok'));
-  const { result } = renderHook(() => usePaginatedFetch(fetcher));
-
-  await act(async () => {});
-
-  act(() => { result.current.setPage(3); });
-  await act(async () => {});
-
-  expect(fetcher).toHaveBeenCalledWith(3, expect.any(AbortSignal));
-});
-// ---End Tests
+const success = mapAsyncData({ status: 'success', data: [10, 20, 30] }, (value) => value.length);
+assert(success.status === 'success' && success.data === 3, 'success transforms the payload');
