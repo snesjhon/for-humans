@@ -39,7 +39,6 @@ export const config = {
     '/auth/callback',
     '/api/:path*',
     '/settings',
-    '/fullstack/settings',
     '/system-design/settings',
   ],
 }

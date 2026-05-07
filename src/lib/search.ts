@@ -76,7 +76,7 @@ export function getSearchEntries(): SearchEntry[] {
     '/',
     'thinkdeep',
     'Home',
-    'Structured learning across DSA, system design, and fullstack engineering.',
+    'Structured learning across DSA, system design, and frontend engineering.',
     ['home', 'landing', 'thinkdeep'],
   );
   pushUniqueEntry(

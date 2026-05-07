@@ -58,23 +58,17 @@ export function LayoutShell({
   const [scrolled, setScrolled] = useState(false);
   const isFullwidth = FULLWIDTH_ROUTES.has(pathname);
   const isHome = pathname === '/';
-  const isFullstackPage = pathname.startsWith('/fullstack');
   const topLevelNavLinks = [
     { href: '/dsa', label: 'DSA', active: pathname.startsWith('/dsa') },
-    {
-      href: '/frontend',
-      label: 'Frontend',
-      active: pathname.startsWith('/frontend'),
-    },
     {
       href: '/system-design',
       label: 'System Design',
       active: pathname.startsWith('/system-design'),
     },
     {
-      href: '/fullstack',
-      label: 'Fullstack',
-      active: pathname.startsWith('/fullstack'),
+      href: '/frontend',
+      label: 'Frontend',
+      active: pathname.startsWith('/frontend'),
     },
   ];
 
@@ -166,7 +160,7 @@ export function LayoutShell({
         >
           {children}
         </main>
-        {!isFullstackPage && <GlobalSearch entries={searchEntries} />}
+        <GlobalSearch entries={searchEntries} />
       </>
     );
   }
@@ -202,7 +196,7 @@ export function LayoutShell({
       >
         {children}
       </main>
-      {!isFullstackPage && <GlobalSearch entries={searchEntries} />}
+      <GlobalSearch entries={searchEntries} />
     </div>
   );
 }

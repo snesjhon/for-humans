@@ -43,7 +43,7 @@ const caveat = Caveat({
 export const metadata: Metadata = {
   title: 'thinkdeep',
   description:
-    'A structured learning platform for DSA, system design, and fullstack development.',
+    'A structured learning platform for DSA, system design, and frontend engineering.',
 };
 
 export default async function RootLayout({
