@@ -112,6 +112,30 @@ That sequencing matters. It makes the branch contract visible at the top of the 
 
 This scenario includes CSS because the first real app shell should not look accidental. But the right move here is restraint. Do not jump to the full dashboard grid from a later lesson. Use a bounded shell, a clear header, and a readable stack of device rows or cards so the reviewer can see structure without you solving future layout work.
 
+Before writing any CSS, wire the class names into the ready branch so you know exactly what you are targeting:
+
+```tsx
+return (
+  <main className="app-shell">
+    <div className="app-shell__inner">
+      <h1>Plant Floor Monitor</h1>
+      <ul className="device-list">
+        {screen.devices.map((device) => (
+          <li key={device.id} className="device-card">
+            <strong>{device.name}</strong>
+            <span>{device.area}</span>
+            <span className={`status status--${device.status}`}>{device.status}</span>
+            <span>{device.lastUpdated}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </main>
+);
+```
+
+With the markup in place, each CSS rule has a concrete home. Add all of the following to `src/App.css`, not `src/index.css`. The brief and the evaluator both target `App.css` specifically because these rules belong to the app shell component, not to global document resets.
+
 One strong first-pass pattern is a centered container that scales without breakpoints:
 
 ```css
@@ -133,12 +157,15 @@ One strong first-pass pattern is a centered container that scales without breakp
 
 `width: min(100%, 72rem)` is the useful idea here. It gives the page a readable maximum width without committing to the responsive grid system that `css-layout` will own later. That is a senior-engineer decision: solve the problem in front of you, and leave future problems unsolved on purpose.
 
-For the device list itself, keep the styling honest and inspectable. A simple stack of cards with a status pill is enough:
+For the device list itself, keep the styling honest and inspectable. A simple stack of cards is enough:
 
 ```css
 .device-list {
   display: grid;
   gap: 1rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .device-card {
