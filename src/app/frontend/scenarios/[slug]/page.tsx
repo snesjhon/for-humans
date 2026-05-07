@@ -7,7 +7,7 @@ import {
   getScenarioRef,
 } from '@/lib/frontend/scenarios';
 import { extractHeadings } from '@/lib/frontend/headings';
-import MarkdownRenderer from '@/components/fullstack/MarkdownRenderer/MarkdownRenderer';
+import MarkdownRenderer from '@/components/frontend/MarkdownRenderer/MarkdownRenderer';
 import CheckWork from '@/components/frontend/CheckWork/CheckWork';
 import TableOfContents from '@/components/ui/TableOfContents/TableOfContents';
 import { PageHero } from '@/components/ui/PageHero/PageHero';

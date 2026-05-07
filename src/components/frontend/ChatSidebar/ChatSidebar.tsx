@@ -7,7 +7,7 @@ import ReactMarkdown from 'react-markdown'
 import { CircleCheck } from 'lucide-react'
 import { getApiKey } from '@/lib/claudeApiKey'
 import Anthropic from '@anthropic-ai/sdk'
-import { stripWrapToken } from '@/lib/fullstack/chat'
+import { stripWrapToken } from '@/lib/frontend/chat'
 import dynamic from 'next/dynamic'
 import '@excalidraw/excalidraw/index.css'
 
