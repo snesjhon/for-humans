@@ -234,7 +234,7 @@ export const JOURNEY: Phase[] = [
             slug: 'interactivity',
             label: 'Add Interactivity',
             blurb:
-              'Add a filter bar and selection model so users can narrow the device list by status and click a card to see its tag details in a side panel.',
+              'Build a horizontally scrollable featured-device rail that shows five fixed-width cards at a time and derives previous and next button visibility from the DOM scroll position.',
           },
         ],
       },
