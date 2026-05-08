@@ -128,25 +128,27 @@ function buildCodeSyncKey(base: DsaCodeBase, slug: string, file: string) {
 }
 
 function normalizeExercisePromptFile(file: string): string {
+  if (file.endsWith('-solution.html')) {
+    return file.replace(/-solution\.html$/, '-problem.html');
+  }
   if (file.endsWith('-solution.tsx')) {
     return file.replace(/-solution\.tsx$/, '-problem.tsx');
   }
-
   return file.replace(/-solution\.ts$/, '-problem.ts');
 }
 
 function extractExerciseGoal(content: string | undefined): string | undefined {
-  const match = content?.match(/^\/\/ Goal:\s*(.+)$/m);
+  const match = content?.match(/^(?:\/\/|<!--) Goal:\s*(.+?)(?:\s*-->)?$/m);
   return match?.[1]?.trim();
 }
 
 function formatExerciseLabel(file: string, fallback: string): string {
-  const standardMatch = file.match(/^step(\d+)-exercise(\d+)-problem\.ts$/);
+  const standardMatch = file.match(/^step(\d+)-exercise(\d+)-problem\.(tsx?|html)$/);
   if (standardMatch) {
     return `Step ${standardMatch[1]} Exercise ${standardMatch[2]}`;
   }
 
-  const genericMatch = file.match(/exercise(\d+)-problem\.ts$/);
+  const genericMatch = file.match(/exercise(\d+)-problem\.(tsx?|html)$/);
   if (genericMatch) {
     return `Exercise ${genericMatch[1]}`;
   }
@@ -303,9 +305,13 @@ export default function WebContainerEmbed({
   );
   const [inlineHeight, setInlineHeight] = useState<number | null>(null);
 
+  const isHtmlModeRef = useRef(tabs.some((t) => t.file.endsWith('.html')));
+  const isHtmlMode = isHtmlModeRef.current;
+
   const processRef = useRef<any>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<HTMLDivElement>(null);
+  const previewRef = useRef<HTMLIFrameElement>(null);
   const viewRef = useRef<EditorView | null>(null);
   const codeRef = useRef('');
   const activeFileRef = useRef('');
@@ -313,6 +319,7 @@ export default function WebContainerEmbed({
   const baseContentRef = useRef<Record<string, string>>({});
   const syncedSnippetRef = useRef<Record<string, string>>({});
   const dirtyFilesRef = useRef<Record<string, boolean>>({});
+  const previewDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const currentRequestRef = useRef(0);
   const currentRunIdRef = useRef(0);
   const handleEditorEscapeRef = useRef<(() => void) | null>(null);
@@ -442,6 +449,12 @@ export default function WebContainerEmbed({
     return () => el.removeEventListener('keydown', handler, true);
   }, []);
 
+  // HTML preview — update iframe srcdoc imperatively to avoid remount
+  useEffect(() => {
+    if (!isHtmlMode || !previewRef.current) return;
+    previewRef.current.srcdoc = code;
+  }, [code, isHtmlMode]);
+
   // Load file content when tab/file changes — sets code as reset trigger
   useEffect(() => {
     const requestId = currentRequestRef.current + 1;
@@ -514,6 +527,7 @@ export default function WebContainerEmbed({
         { Transaction },
         { HighlightStyle, syntaxHighlighting, foldEffect },
         { javascript },
+        { html },
         { vim, Vim, getCM },
         { tags },
       ] = await Promise.all([
@@ -522,9 +536,12 @@ export default function WebContainerEmbed({
         import('@codemirror/state'),
         import('@codemirror/language'),
         import('@codemirror/lang-javascript'),
+        import('@codemirror/lang-html'),
         import('@replit/codemirror-vim'),
         import('@lezer/highlight'),
       ]);
+
+      const langExtension = isHtmlModeRef.current ? html() : javascript({ typescript: true });
 
       if (cancelled || !editorRef.current) return;
 
@@ -634,6 +651,14 @@ export default function WebContainerEmbed({
 
       const saveToStorage = EditorView.updateListener.of((update) => {
         if (update.docChanged && !isResettingRef.current) {
+          if (isHtmlModeRef.current && previewRef.current) {
+            const html = update.state.doc.toString();
+            if (previewDebounceRef.current) clearTimeout(previewDebounceRef.current);
+            previewDebounceRef.current = setTimeout(() => {
+              if (previewRef.current) previewRef.current.srcdoc = html;
+            }, 400);
+          }
+
           const file = activeFileRef.current;
           const baseContent = baseContentRef.current[file];
           if (!baseContent) return;
@@ -666,7 +691,7 @@ export default function WebContainerEmbed({
         extensions: [
           vim(),
           basicSetup,
-          javascript({ typescript: true }),
+          langExtension,
           theme,
           syntaxHighlighting(highlight),
           interceptKeys,
@@ -749,6 +774,10 @@ export default function WebContainerEmbed({
       if (runTimeoutRef.current) {
         clearTimeout(runTimeoutRef.current);
         runTimeoutRef.current = null;
+      }
+      if (previewDebounceRef.current) {
+        clearTimeout(previewDebounceRef.current);
+        previewDebounceRef.current = null;
       }
       if (processRef.current) {
         try {
@@ -955,7 +984,7 @@ export default function WebContainerEmbed({
             <div
               className={`flex min-h-0 flex-col ${
                 isExpanded
-                  ? 'min-w-0 basis-[70%] overflow-hidden border-r border-[var(--ms-surface)]'
+                  ? `min-w-0 overflow-hidden border-r border-[var(--ms-surface)] ${isHtmlMode ? 'basis-[55%]' : 'basis-[70%]'}`
                   : ''
               }`}
             >
@@ -1004,37 +1033,41 @@ export default function WebContainerEmbed({
                 }`}
               >
                 <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    className="px-2 py-1 text-xs align-center mb-0"
-                    onClick={runCode}
-                    disabled={
-                      status === 'booting' || status === 'running' || !hasCode
-                    }
-                  >
-                    {status === 'booting' ? (
-                      globalThis.__wcInstance ? (
-                        '⏳ Starting…'
+                  {isHtmlMode ? (
+                    <span className="text-xs text-[var(--ms-text-faint)]">Live preview</span>
+                  ) : (
+                    <button
+                      type="button"
+                      className="px-2 py-1 text-xs align-center mb-0"
+                      onClick={runCode}
+                      disabled={
+                        status === 'booting' || status === 'running' || !hasCode
+                      }
+                    >
+                      {status === 'booting' ? (
+                        globalThis.__wcInstance ? (
+                          '⏳ Starting…'
+                        ) : (
+                          '⏳ Installing…'
+                        )
+                      ) : status === 'running' ? (
+                        '⏳ Running…'
                       ) : (
-                        '⏳ Installing…'
-                      )
-                    ) : status === 'running' ? (
-                      '⏳ Running…'
-                    ) : (
-                      <>
-                        Run{' '}
-                        <kbd className="p-0 bg-transparent ml-1 text-xs">
-                          {typeof navigator !== 'undefined' &&
-                          /Mac|iPhone|iPod|iPad/.test(navigator.platform) ? (
-                            <Command className="h-2.5 w-2.5" />
-                          ) : (
-                            <span>Ctrl</span>
-                          )}
-                          <CornerDownLeft className="h-2.5 w-2.5" />
-                        </kbd>
-                      </>
-                    )}
-                  </button>
+                        <>
+                          Run{' '}
+                          <kbd className="p-0 bg-transparent ml-1 text-xs">
+                            {typeof navigator !== 'undefined' &&
+                            /Mac|iPhone|iPod|iPad/.test(navigator.platform) ? (
+                              <Command className="h-2.5 w-2.5" />
+                            ) : (
+                              <span>Ctrl</span>
+                            )}
+                            <CornerDownLeft className="h-2.5 w-2.5" />
+                          </kbd>
+                        </>
+                      )}
+                    </button>
+                  )}
                 </div>
                 <div className="ml-auto flex items-center gap-2">
                   {progressStepId ? (
@@ -1091,7 +1124,16 @@ export default function WebContainerEmbed({
                   </button>
                 </div>
               </div>
-              {output && (
+              {isHtmlMode ? (
+                <iframe
+                  ref={previewRef}
+                  sandbox="allow-scripts allow-same-origin"
+                  title="CSS preview"
+                  className={`w-full border-0 bg-white ${
+                    isExpanded ? 'flex-1' : 'h-[320px] border-t border-[var(--ms-surface)]'
+                  }`}
+                />
+              ) : output ? (
                 <pre
                   className={`m-0 whitespace-pre-wrap break-all bg-[var(--ms-bg-pane)] px-5 py-4 font-mono text-[0.8125rem] leading-[1.6] text-[var(--ms-text-muted)] ${
                     isExpanded
@@ -1105,7 +1147,7 @@ export default function WebContainerEmbed({
                 >
                   {output}
                 </pre>
-              )}
+              ) : null}
             </div>
           </div>
         </div>

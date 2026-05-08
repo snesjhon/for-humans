@@ -188,7 +188,7 @@ Now the capability is recognizing which layout question you are actually solving
 
 Choose the correct primitive for several UI relationships: the page shell, the device card grid, the card header row, and the filter toolbar. The important move is to name the axis problem before you name the CSS property.
 
-:::stackblitz{file="step2-exercise1-problem.ts" step=2 total=3 solution="step2-exercise1-solution.ts"}
+:::stackblitz{file="step2-exercise1-problem.html" step=2 total=3 solution="step2-exercise1-solution.html"}
 
 #### **Exercise 2**
 

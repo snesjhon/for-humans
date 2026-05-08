@@ -22,8 +22,8 @@ const SINGLE_FENCE =
 const MULTI_FENCE =
   /^:::stackblitz\{step=(\d+) total=(\d+) exercises="([^"]+)" solutions="([^"]+)"\}$/gm;
 
-function isSafeTsFilename(file: string) {
-  return /\.tsx?$/.test(file) && !file.includes('/') && !file.includes('..');
+function isSafeExerciseFilename(file: string) {
+  return /\.(tsx?|html)$/.test(file) && !file.includes('/') && !file.includes('..');
 }
 
 function extractStackBlitzEmbeds(content: string): FrontendStackBlitzEmbed[] {
@@ -56,15 +56,15 @@ function collectStackBlitzFiles(content: string): string[] {
 
   for (const embed of extractStackBlitzEmbeds(content)) {
     if (embed.type === 'single') {
-      if (isSafeTsFilename(embed.file)) files.add(embed.file);
-      if (isSafeTsFilename(embed.solution)) files.add(embed.solution);
+      if (isSafeExerciseFilename(embed.file)) files.add(embed.file);
+      if (isSafeExerciseFilename(embed.solution)) files.add(embed.solution);
       continue;
     }
 
     for (const file of [...embed.exercises, ...embed.solutions].map((value) =>
       value.trim(),
     )) {
-      if (isSafeTsFilename(file)) files.add(file);
+      if (isSafeExerciseFilename(file)) files.add(file);
     }
   }
 

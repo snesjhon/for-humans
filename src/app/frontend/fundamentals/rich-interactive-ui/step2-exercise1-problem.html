@@ -1,0 +1,193 @@
+<!-- Goal: Apply the correct layout primitive to each dashboard region. -->
+<!--
+  Wall Blueprint — Step 2 Exercise 1
+
+  The preview below should show a dashboard with three regions:
+    1. A fixed 18rem sidebar on the left, main content filling the rest
+    2. A device card whose header has the name on the left and badge on the right
+    3. A filter toolbar with buttons spaced along one row
+
+  Right now none of the layout rules are set — everything stacks in a single column.
+  Fill in the TODO blocks below. Each comment tells you which axis problem you're solving.
+
+  When you're done the preview should look like the target described above.
+  No media queries needed — just the right primitive for each job.
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        font-family: system-ui, sans-serif;
+        font-size: 14px;
+        background: #f8fafc;
+        color: #1e293b;
+        min-height: 100vh;
+      }
+
+      /* ─── TODO 1 ────────────────────────────────────────────────────────────
+         The app shell places two regions side by side: a fixed sidebar and a
+         fluid main area. That is a two-dimensional placement problem.
+         Primitive: grid
+         Hint: grid-template-columns: 18rem minmax(0, 1fr);
+      ──────────────────────────────────────────────────────────────────────── */
+      .app-shell {
+        min-height: 100vh;
+        /* display: ???; */
+        /* grid-template-columns: ???; */
+      }
+
+      .sidebar {
+        background: #1e293b;
+        color: #94a3b8;
+        padding: 1.5rem 1rem;
+      }
+
+      .sidebar-title {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #475569;
+        margin-bottom: 1rem;
+      }
+
+      .sidebar-link {
+        display: block;
+        padding: 0.5rem 0.75rem;
+        border-radius: 6px;
+        color: #94a3b8;
+        text-decoration: none;
+        margin-bottom: 2px;
+        font-size: 13px;
+      }
+
+      .sidebar-link.active {
+        background: #0f172a;
+        color: #e2e8f0;
+      }
+
+      .main {
+        padding: 2rem;
+      }
+
+      .main-heading {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 1.25rem;
+      }
+
+      /* ─── TODO 2 ────────────────────────────────────────────────────────────
+         The filter toolbar lines up buttons along one row.
+         That is a one-dimensional alignment problem.
+         Primitive: flex
+         Hint: gap: 0.5rem;
+      ──────────────────────────────────────────────────────────────────────── */
+      .filter-toolbar {
+        margin-bottom: 1.5rem;
+        /* display: ???; */
+        /* gap: ???; */
+      }
+
+      .filter-btn {
+        padding: 0.375rem 0.875rem;
+        border-radius: 6px;
+        border: 1px solid #e2e8f0;
+        background: white;
+        font-size: 13px;
+        cursor: pointer;
+        color: #475569;
+      }
+
+      .filter-btn.active {
+        background: #0f172a;
+        color: white;
+        border-color: #0f172a;
+      }
+
+      .device-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        max-width: 420px;
+        overflow: hidden;
+      }
+
+      /* ─── TODO 3 ────────────────────────────────────────────────────────────
+         The card header puts the device name on the left and the badge on the
+         right — one row, items pushed to opposite ends.
+         That is a one-dimensional alignment problem.
+         Primitive: flex
+         Hint: justify-content: space-between; align-items: center;
+      ──────────────────────────────────────────────────────────────────────── */
+      .device-card__header {
+        padding: 0.875rem 1rem;
+        border-bottom: 1px solid #f1f5f9;
+        /* display: ???; */
+        /* justify-content: ???; */
+        /* align-items: ???; */
+      }
+
+      .device-name {
+        font-weight: 600;
+        font-size: 14px;
+      }
+
+      .status-badge {
+        font-size: 11px;
+        font-weight: 600;
+        padding: 0.2rem 0.6rem;
+        border-radius: 999px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      .status-badge--online {
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      .device-card__body {
+        padding: 1rem;
+        font-size: 13px;
+        color: #64748b;
+        line-height: 1.6;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <p class="sidebar-title">Navigation</p>
+        <a class="sidebar-link active" href="#">Overview</a>
+        <a class="sidebar-link" href="#">Devices</a>
+        <a class="sidebar-link" href="#">Alerts</a>
+        <a class="sidebar-link" href="#">Settings</a>
+      </aside>
+
+      <main class="main">
+        <h1 class="main-heading">Device Overview</h1>
+
+        <div class="filter-toolbar">
+          <button class="filter-btn active">All</button>
+          <button class="filter-btn">Online</button>
+          <button class="filter-btn">Offline</button>
+          <button class="filter-btn">Alarm</button>
+        </div>
+
+        <div class="device-card">
+          <div class="device-card__header">
+            <span class="device-name">Device 42</span>
+            <span class="status-badge status-badge--online">online</span>
+          </div>
+          <div class="device-card__body">
+            Last seen 2 minutes ago · Firmware 3.1.4 · Zone B
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>
