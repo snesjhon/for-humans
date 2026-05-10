@@ -1,162 +1,135 @@
-<!-- Goal: Apply the correct layout primitive to each dashboard region. -->
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Shell</title>
     <style>
-      * { box-sizing: border-box; margin: 0; padding: 0; }
-
-      body {
-        font-family: system-ui, sans-serif;
-        font-size: 14px;
-        background: #f8fafc;
-        color: #1e293b;
-        min-height: 100vh;
+      * {
+        box-sizing: border-box;
       }
 
-      /* Grid: two-dimensional placement — sidebar and main side by side */
-      .app-shell {
+      body {
+        margin: 0;
+        font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+        background: #e7edf2;
+        color: #14202b;
+      }
+
+      .app {
         min-height: 100vh;
+        padding: 24px;
         display: grid;
-        grid-template-columns: 18rem minmax(0, 1fr);
+        grid-template-columns: 17rem minmax(0, 1fr);
+        gap: 24px;
+      }
+
+      .sidebar,
+      .panel {
+        border-radius: 20px;
+        background: #f8fbfd;
+        box-shadow: 0 18px 40px rgba(20, 32, 43, 0.08);
       }
 
       .sidebar {
-        background: #1e293b;
-        color: #94a3b8;
-        padding: 1.5rem 1rem;
+        padding: 24px 20px;
       }
 
-      .sidebar-title {
-        font-size: 11px;
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: #475569;
-        margin-bottom: 1rem;
+      .sidebar nav {
+        display: grid;
+        gap: 12px;
+        margin-top: 28px;
       }
 
-      .sidebar-link {
-        display: block;
-        padding: 0.5rem 0.75rem;
-        border-radius: 6px;
-        color: #94a3b8;
+      .sidebar a {
+        padding: 12px 14px;
+        border-radius: 12px;
+        background: #e7eff5;
+        color: inherit;
         text-decoration: none;
-        margin-bottom: 2px;
-        font-size: 13px;
       }
 
-      .sidebar-link.active {
-        background: #0f172a;
-        color: #e2e8f0;
-      }
-
-      .main {
-        padding: 2rem;
-      }
-
-      .main-heading {
-        font-size: 18px;
-        font-weight: 600;
-        margin-bottom: 1.25rem;
-      }
-
-      /* Flex: one-dimensional alignment — buttons in a row */
-      .filter-toolbar {
-        margin-bottom: 1.5rem;
-        display: flex;
-        gap: 0.5rem;
-      }
-
-      .filter-btn {
-        padding: 0.375rem 0.875rem;
-        border-radius: 6px;
-        border: 1px solid #e2e8f0;
-        background: white;
-        font-size: 13px;
-        cursor: pointer;
-        color: #475569;
-      }
-
-      .filter-btn.active {
-        background: #0f172a;
+      .sidebar a.active {
+        background: #14202b;
         color: white;
-        border-color: #0f172a;
       }
 
-      .device-card {
-        background: white;
-        border: 1px solid #e2e8f0;
-        border-radius: 10px;
-        max-width: 420px;
-        overflow: hidden;
+      .panel {
+        padding: 24px;
       }
 
-      /* Flex: one-dimensional alignment — name left, badge right */
-      .device-card__header {
-        padding: 0.875rem 1rem;
-        border-bottom: 1px solid #f1f5f9;
+      .topbar {
+        margin-bottom: 24px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #d6e0e7;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        gap: 24px;
       }
 
-      .device-name {
-        font-weight: 600;
-        font-size: 14px;
-      }
-
-      .status-badge {
-        font-size: 11px;
-        font-weight: 600;
-        padding: 0.2rem 0.6rem;
-        border-radius: 999px;
+      .eyebrow {
+        margin: 0 0 6px;
+        font-size: 12px;
+        letter-spacing: 0.14em;
         text-transform: uppercase;
-        letter-spacing: 0.04em;
+        color: #5d7284;
       }
 
-      .status-badge--online {
-        background: #dcfce7;
-        color: #166534;
+      h1 {
+        margin: 0;
+        font-size: 32px;
       }
 
-      .device-card__body {
-        padding: 1rem;
-        font-size: 13px;
-        color: #64748b;
-        line-height: 1.6;
+      .subcopy {
+        margin: 10px 0 0;
+        max-width: 44rem;
+        color: #536677;
+      }
+
+      button {
+        border: 0;
+        border-radius: 999px;
+        padding: 14px 18px;
+        background: #0f5d73;
+        color: white;
+        font-weight: 700;
+      }
+
+      .placeholder {
+        min-height: 320px;
+        border-radius: 16px;
+        border: 1px dashed #b3c2cd;
+        background:
+          linear-gradient(135deg, rgba(15, 93, 115, 0.12), rgba(15, 93, 115, 0)),
+          #edf4f8;
       }
     </style>
   </head>
   <body>
-    <div class="app-shell">
+    <div class="app">
       <aside class="sidebar">
-        <p class="sidebar-title">Navigation</p>
-        <a class="sidebar-link active" href="#">Overview</a>
-        <a class="sidebar-link" href="#">Devices</a>
-        <a class="sidebar-link" href="#">Alerts</a>
-        <a class="sidebar-link" href="#">Settings</a>
+        <strong>Plant Floor Monitor</strong>
+        <nav>
+          <a class="active" href="#">Overview</a>
+          <a href="#">Devices</a>
+          <a href="#">Alarms</a>
+        </nav>
       </aside>
 
-      <main class="main">
-        <h1 class="main-heading">Device Overview</h1>
-
-        <div class="filter-toolbar">
-          <button class="filter-btn active">All</button>
-          <button class="filter-btn">Online</button>
-          <button class="filter-btn">Offline</button>
-          <button class="filter-btn">Alarm</button>
-        </div>
-
-        <div class="device-card">
-          <div class="device-card__header">
-            <span class="device-name">Device 42</span>
-            <span class="status-badge status-badge--online">online</span>
+      <main class="panel">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Morning shift</p>
+            <h1>Device board</h1>
+            <p class="subcopy">
+              Operators need the shell to feel stable while details inside the board change.
+            </p>
           </div>
-          <div class="device-card__body">
-            Last seen 2 minutes ago · Firmware 3.1.4 · Zone B
-          </div>
-        </div>
+          <button type="button">Refresh snapshot</button>
+        </header>
+
+        <section class="placeholder"></section>
       </main>
     </div>
   </body>

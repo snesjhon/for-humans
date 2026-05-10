@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Auto Fill Grid</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 24px;
+        font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+        background: #ecf2f6;
+        color: #13212b;
+      }
+
+      /* ─── TODO 1 ────────────────────────────────────────────────────────────────
+         Create a card grid that auto-places as many readable columns as will fit.
+         Each card must keep a minimum width before wrapping.
+         Primitive: grid
+      ──────────────────────────────────────────────────────────────────────────── */
+
+      .device-grid {
+        margin: 0 auto;
+        max-width: 72rem;
+      }
+
+      .device {
+        padding: 18px;
+        border-radius: 18px;
+        background: white;
+        box-shadow: 0 16px 34px rgba(19, 33, 43, 0.08);
+      }
+
+      .device h2 {
+        margin: 0 0 10px;
+        font-size: 18px;
+      }
+
+      .device p {
+        margin: 0;
+        color: #5a6c7b;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="device-grid">
+      <article class="device"><h2>Device 01</h2><p>Main coolant loop</p></article>
+      <article class="device"><h2>Device 02</h2><p>South line vision sensor</p></article>
+      <article class="device"><h2>Device 03</h2><p>Hydraulic pressure array</p></article>
+      <article class="device"><h2>Device 04</h2><p>Packaging arm controller</p></article>
+      <article class="device"><h2>Device 05</h2><p>West gate temperature feed</p></article>
+    </section>
+  </body>
+</html>

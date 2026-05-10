@@ -1,296 +1,263 @@
 ## Overview
 
-Rich interactive UI breaks down when one state value tries to mean everything at once. A dashboard can be on the alerts tab, refreshing data in the background, and animating a details panel open at the same time. Layout breaks down for the same reason when one CSS primitive is asked to solve every placement problem. Grid should place the dashboard regions and responsive card tracks, while Flexbox should align content within one row or column.
+Rich interactive UI breaks down when one piece of state tries to do too much. A dashboard screen usually has at least three different concerns moving at once: which surface is selected, whether async data is loading or settled, and whether a visual transition is currently playing. This guide teaches the separation that keeps those concerns from leaking into each other, then connects that mental model to layout work where the same discipline applies: Grid owns two-dimensional placement, Flexbox owns one-dimensional alignment inside a region, and CSS custom properties own the closed set of visual tokens.
 
-**The state-modeling problem:** navigation state, loading state, and animation state are separate dimensions of the screen. They layer on top of each other instead of replacing one another.
+**The state-modeling problem:** one boolean or one overloaded string starts carrying navigation, loading, and animation at the same time, so one user event accidentally resets the wrong concern.
 
-**The layout problem:** Grid solves two-dimensional placement across the page, while Flexbox solves one-dimensional alignment inside a single region.
+**The layout problem:** a dashboard is both a page-level grid and a set of smaller alignment problems inside each panel. Using one primitive everywhere makes either the shell or the internals harder than they need to be.
 
-**Level 1** teaches how to model independent UI state lanes without collapsing them into one overloaded status.
+**Level 1** teaches independent state lanes for navigation, loading, and animation.
 
-**Level 2** teaches how to choose between Grid and Flexbox, and how `repeat(auto-fill, minmax(...))` behaves as the container grows.
+**Level 2** teaches where Grid stops and Flexbox starts in a dashboard layout.
 
-**Level 3** teaches how to close the system: responsive card-grid rules, the `auto-fill` versus `auto-fit` decision, and CSS custom properties for closed-set status colors.
+**Level 3** teaches the responsive card-grid patterns and token rules that make the UI adapt without rewriting the model.
 
 ## Core Concept & Mental Model
 
-The problems from the overview share one prerequisite: you need a model where the dashboard is a control-room wall with a fixed floor plan and several independent overlays.
+The problems from the overview share one root cause: you get into trouble when you force several independent dimensions through one control lane. A rich interface is easier to reason about when each concern gets its own track and the tracks only meet at render time.
 
-### The Control-Room Wall
+### The Stage Manager Board
 
-Imagine a plant-floor control room.
+Imagine a stage manager running a product demo from a control booth. The board has separate rows of switches.
 
-- **wall blueprint** = the page layout, where sidebar, header, details panel, and device grid live
-- **panel rails** = Flexbox alignment inside one region, like a card header row or toolbar
-- **operator focus** = navigation state, which view or item the operator is looking at
-- **refresh beacon** = loading state, whether data is idle, fetching for the first time, ready, or refreshing in place
-- **motion cue** = animation state, whether a panel is entering, settled, or leaving
-- **status lamps** = closed-set CSS custom properties, one token per allowed status value
+- **scene row** = navigation state, which panel or tab is currently active
+- **house lights row** = loading state, whether the content is pending, settled, or failed
+- **cue lights row** = animation state, whether a transition is idle, entering, or exiting
+- **stage plan** = CSS Grid, the two-dimensional placement of the whole dashboard
+- **inside each marked area** = Flexbox, the one-dimensional alignment within a card, header, or toolbar
+- **labeled color chips** = CSS custom properties, the fixed tokens for allowed statuses
 
-The important rule is that these overlays do not replace the wall blueprint and they do not replace each other. The operator can change focus while the refresh beacon stays on. A panel can animate out while the current tab stays the same. That is why stuffing all screen meaning into one string like `'loading-devices-panel-open'` creates brittle code. One field is pretending to describe several independent truths at once.
+The stage manager does not reuse the house-lights switch to remember which scene is active. They also do not redraw the floor plan every time one badge inside a panel needs spacing. Each control has a bounded job.
 
-### Why Independent Lanes Matter More Than One Giant Screen Status
+### State Dimensions Layer, They Do Not Merge
 
-Suppose a user clicks into a device details panel while the grid is already visible and the app starts a background refresh. The UI facts are:
-
-- navigation: device details for `device-42` are open
-- request state: data is refreshing, but existing cards remain visible
-- animation state: the panel is entering or already settled
-
-None of those facts cancels the others out. If you use one merged state, every new combination becomes a new invented status value:
+When a UI stores the active tab, the fetch phase, and the current animation cue in one field, every update has to preserve the meaning of the other two concerns manually. That is where impossible states and accidental resets appear.
 
 ```ts
-type BadStatus =
-  | 'grid-idle'
-  | 'grid-loading'
-  | 'grid-refreshing'
-  | 'details-loading'
-  | 'details-refreshing-entering'
-  | 'details-refreshing-settled';
+type ScreenState =
+  | 'overview'
+  | 'devices'
+  | 'loading'
+  | 'error'
+  | 'animating-in';
 ```
 
-That model explodes because it encodes combinations manually instead of letting combinations exist naturally.
+This looks compact, but it hides separate questions inside one answer:
 
-The cleaner shape is independent lanes:
+- which surface is active?
+- is the data ready yet?
+- is a transition currently running?
+
+Those questions can all be true at the same time. The devices tab can be active while data is loading and a fade-in is running. One union string cannot represent that combination without inventing more and more hybrid labels.
+
+The cleaner model is separate state lanes:
 
 ```ts
-type NavigationState =
-  | { view: 'overview' }
-  | { view: 'device'; deviceId: string };
-
-type RequestState =
-  | { status: 'idle' }
-  | { status: 'loading' }
-  | { status: 'ready' }
-  | { status: 'refreshing' };
-
-type AnimationState =
-  | { panel: 'hidden' }
-  | { panel: 'entering' }
-  | { panel: 'settled' }
-  | { panel: 'leaving' };
-
-type DashboardState = {
-  navigation: NavigationState;
-  request: RequestState;
-  animation: AnimationState;
-};
+type Panel = 'overview' | 'devices' | 'alerts';
+type LoadPhase = 'idle' | 'loading' | 'success' | 'error';
+type MotionPhase = 'idle' | 'entering' | 'exiting';
 ```
 
-Now each lane answers one question only. Combinations are just object values, not a naming exercise.
+Now each event updates only the lane it truly owns. A tab click changes `panel`. A refetch changes `loadPhase`. A fade sequence changes `motionPhase`. The UI composes those answers during render.
 
-### Why Grid And Flexbox Are Different Tools
+### Layout Uses The Same Separation Rule
 
-The same separation shows up in layout. A dashboard shell is two-dimensional: sidebar on the left, main content on the right, maybe a detail rail beside the grid. That is Grid's job because you are placing items across rows and columns at once.
+CSS layout has the same control-board shape.
 
-Inside a card header, the problem changes. You need a title on the left and a badge on the right, or a stack of buttons spaced horizontally. That is one-dimensional alignment. Flexbox is the simpler tool because the row or column is already decided.
+Grid decides where regions live across rows and columns. It answers page-plan questions:
+
+- where is the sidebar?
+- how wide is the main area?
+- how many card columns fit right now?
+
+Flexbox answers a different class of question inside one region:
+
+- how do the title and action button align in this header?
+- how do badge pills distribute on one row?
+- how do I push one control to the far edge?
+
+If you ask Flexbox to solve the entire dashboard shell, you end up manually approximating rows and columns. If you ask Grid to align the contents of every tiny card header, you overcomplicate a one-axis problem.
+
+### `minmax()` Plus Auto Placement Is The Responsive Move
+
+Card grids in dashboards usually want a rule that reads like this: "each card must stay readable, but if there is room for more cards on the row, place them automatically." That is what `repeat(auto-fill, minmax(...))` or `repeat(auto-fit, minmax(...))` does.
 
 ```css
-.app-shell {
+.device-grid {
   display: grid;
-  grid-template-columns: 18rem minmax(0, 1fr);
-}
-
-.device-card__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: 1rem;
 }
 ```
 
-Grid is the wall blueprint. Flexbox is the rail inside one panel.
+The `minmax(16rem, 1fr)` part sets the minimum readable width and allows growth beyond it. The auto-placement keyword decides what to do with extra tracks.
 
-### What `minmax()` And `auto-fill` Actually Mean
+- **`auto-fill`** keeps empty tracks in the grid, which is useful when you want the row structure to remain visible or reserved.
+- **`auto-fit`** collapses empty tracks, which lets the existing cards stretch wider.
 
-The responsive device grid needs one track rule that works from narrow viewports to large monitors. The usual shape is:
+The choice is not stylistic. It changes whether the layout preserves slots or redistributes space.
 
-```css
-grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
-```
+### Closed-Set Visual Meaning Belongs In Tokens
 
-Read it in the order the browser does:
-
-1. **`minmax(16rem, 1fr)`** says each track may never shrink below `16rem`, but once the minimum is satisfied it may grow and share leftover space.
-2. **`auto-fill`** says "create as many tracks as can fit, even if some end up empty."
-3. **`repeat(...)`** applies that track recipe across the whole grid.
-
-That gives you a card wall that keeps adding columns when the container earns them, without hard-coding breakpoints for 2, 3, or 4 columns.
-
-### When `auto-fill` And `auto-fit` Differ
-
-`auto-fill` and `auto-fit` look the same when every track has content. They diverge when the container can fit more tracks than you have cards.
-
-- **`auto-fill`** keeps the empty tracks. Existing cards do not stretch across that unused space.
-- **`auto-fit`** collapses the empty tracks, so the existing cards stretch wider.
-
-That means the choice is a product decision, not a syntax trick.
-
-- If you want the dashboard to preserve a stable card rhythm and leave open slots for future items, use `auto-fill`.
-- If you want a half-empty row to stretch and avoid visible gaps, use `auto-fit`.
-
-### Why Status Colors Want Closed-Set Custom Properties
-
-Device status is a closed vocabulary: `online`, `offline`, `alarm`, maybe `maintenance`. Closed sets want tokens, not ad hoc inline colors.
+Status colors are not free-form user input. They come from a closed set like `ok`, `warning`, `critical`, and `offline`. That means the CSS should expose named custom properties instead of repeating raw hex values across components.
 
 ```css
 :root {
-  --status-online-bg: #dcfce7;
-  --status-online-fg: #166534;
-  --status-offline-bg: #e5e7eb;
-  --status-offline-fg: #374151;
-  --status-alarm-bg: #fee2e2;
-  --status-alarm-fg: #991b1b;
-}
-
-.status-badge--alarm {
-  background: var(--status-alarm-bg);
-  color: var(--status-alarm-fg);
+  --status-ok: #0f766e;
+  --status-warning: #b45309;
+  --status-critical: #b91c1c;
+  --status-offline: #475569;
 }
 ```
 
-This keeps the mapping explicit, reusable, and limited to the supported statuses. When the value space is closed, the styling API should be closed too.
+Then each badge maps a known status to a known token. The layout and component code both stay stable even if the palette changes later.
+
+### The Three-Level Progression
+
+- **Level 1: Independent state lanes.** Model navigation, loading, and animation as separate dimensions so one event updates one concern.
+- **Level 2: Grid for the shell, Flexbox for the cell.** Build the dashboard frame and then solve local alignment inside each region with the simpler primitive.
+- **Level 3: Responsive tracks and closed-set tokens.** Choose between `auto-fill` and `auto-fit`, then express status colors through custom properties instead of scattered literals.
 
 ---
 
 ## Building Blocks: Progressive Learning
 
-### Level 1: Model The Screen As Independent Lanes
+### Level 1: Keep Layered UI Concerns Visible
 
-The first capability is resisting the urge to invent one giant dashboard status that mixes focus, fetch progress, and motion. A rich UI is not one timeline. It is several timelines that sometimes happen concurrently.
+The first level is about visible UI behavior, not abstract state contracts. A dashboard can keep the current panel on screen, show a background refresh indicator, and animate a details rail at the same time. These exercises use React components and DOM assertions so the learner proves the concept by preserving what the user can still see during each transition.
 
 #### **Exercise 1**
 
-Build the core state model for a dashboard that can show an overview or a device details panel while also tracking request progress and panel motion. The important move is to keep those concerns in separate lanes so combinations come from object composition rather than manually named mega-status values.
+Build a dashboard screen where refresh is a background concern instead of a replacement screen. When the learner opens the devices panel and starts a refresh, the devices panel should remain visible while the refresh indicator appears. The exercise is about making the rendered output prove that these concerns can coexist.
 
-:::stackblitz{file="step1-exercise1-problem.ts" step=1 total=3 solution="step1-exercise1-solution.ts"}
+:::stackblitz{file="step1-exercise1-problem.tsx" step=1 total=3 solution="step1-exercise1-solution.tsx"}
 
 #### **Exercise 2**
 
-Implement the transition that starts a background refresh. The current selection should remain selected, and the panel animation should keep its current phase. Only the request lane should change. This exercise is about proving that "refreshing" is not a whole-screen replacement state.
+Build a master-detail workspace where selection survives async activity. The learner should be able to select a device, trigger a refresh, and still see the selected device details while the workspace shows that new data is loading in the background.
 
-:::stackblitz{file="step1-exercise2-problem.ts" step=1 total=3 solution="step1-exercise2-solution.ts"}
+:::stackblitz{file="step1-exercise2-problem.tsx" step=1 total=3 solution="step1-exercise2-solution.tsx"}
 
 #### **Exercise 3**
 
-Implement the transition that opens a device details panel. The app may already be `ready` or `refreshing`, and that data state should survive the navigation change. The panel animation should begin entering, but the request lane should stay untouched.
+Build an animated details panel where motion and selection are different concerns. The learner should keep the selected device visible while the panel moves through entering, settled, and exiting phases. The point is to show that animation state describes how the panel is moving, not what content it represents.
 
-:::stackblitz{file="step1-exercise3-problem.ts" step=1 total=3 solution="step1-exercise3-solution.ts"}
+:::stackblitz{file="step1-exercise3-problem.tsx" step=1 total=3 solution="step1-exercise3-solution.tsx"}
 
-> **Mental anchor**: "Navigation, loading, and animation are overlays, not synonyms."
+> **Mental anchor**: "If the user should still see it during a transition, that concern should layer on top of the current UI instead of replacing it."
 
-**→ Bridge to Level 2**: Once the state lanes are separate, the next question is whether the layout uses the right primitive for each job. A clean state model still needs a layout model that distinguishes page placement from within-panel alignment.
+**→ Bridge to Level 2**: Once the state lanes are independent, the page still needs a physical layout model. The next question is not state shape, it is which CSS primitive owns which spatial job.
 
-### Level 2: Pick The Right Layout Primitive
+### Level 2: Grid Places Regions, Flex Aligns Contents
 
-Now the capability is recognizing which layout question you are actually solving. If you are placing dashboard regions across rows and columns, that is Grid. If you are distributing items along a single row or column, that is Flexbox.
+Now the problem moves from state shape to spatial structure. Dashboard UIs are almost never one-axis layouts from edge to edge. The shell has rows and columns, while the contents of each cell usually align on a single row or stack. This level teaches where that boundary lives.
 
 #### **Exercise 1**
 
-Choose the correct primitive for several UI relationships: the page shell, the device card grid, the card header row, and the filter toolbar. The important move is to name the axis problem before you name the CSS property.
+Build the dashboard shell with a fixed-width sidebar and a fluid main column. Then center the app title and action button along one row inside the top bar. The learner task is to use Grid for the page plan and Flexbox for the toolbar alignment without mixing those responsibilities.
 
 :::stackblitz{file="step2-exercise1-problem.html" step=2 total=3 solution="step2-exercise1-solution.html"}
 
 #### **Exercise 2**
 
-Predict how many card columns `repeat(auto-fill, minmax(16rem, 1fr))` can create for a given container width and gap. This exercise is about reading the layout rule as a track recipe instead of memorizing a magic incantation.
+Create a metrics strip where four cards flow into equal columns across the available width, while each card header aligns its label and status pill on one line. This is another shell-vs-cell exercise: the outer track system is two-dimensional placement, the inner header is one-dimensional alignment.
 
-:::stackblitz{file="step2-exercise2-problem.ts" step=2 total=3 solution="step2-exercise2-solution.ts"}
+:::stackblitz{file="step2-exercise2-problem.html" step=2 total=3 solution="step2-exercise2-solution.html"}
 
 #### **Exercise 3**
 
-Compare `auto-fill` and `auto-fit` when the container can hold more tracks than there are cards. The difference is not visible when every slot is occupied, so this exercise forces the half-empty-row case where the choice actually matters.
+Lay out a device card so the page uses Grid to place cards, but each individual card uses Flexbox to pin the footer controls to the bottom edge while keeping the text stack natural above it. The goal is to feel the handoff between the two primitives instead of trying to solve both layers with one.
 
-:::stackblitz{file="step2-exercise3-problem.ts" step=2 total=3 solution="step2-exercise3-solution.ts"}
+:::stackblitz{file="step2-exercise3-problem.html" step=2 total=3 solution="step2-exercise3-solution.html"}
 
-> **Mental anchor**: "Grid places regions. Flex aligns content inside a region."
+> **Mental anchor**: "Grid answers where regions live. Flex answers how items share one axis inside a region."
 
-**→ Bridge to Level 3**: Primitive choice explains the shape of the layout, but a real dashboard also needs stable responsive track rules and a styling system for closed vocabularies like status.
+**→ Bridge to Level 3**: Once the shell works, the real dashboard problem is adaptation. The layout has to add or collapse columns gracefully, and the visual language has to reuse named tokens instead of hard-coded color guesses.
 
-### Level 3: Encode The Responsive Rules Explicitly
+### Level 3: Responsive Tracks And Closed-Set Tokens
 
-The final capability is closing the loop between state and styling. The layout should declare its card-grid rule directly, and the styling system should map closed-set statuses to closed-set design tokens instead of ad hoc colors.
+The last level turns a working layout into a robust one. Responsive card grids should adapt without breakpoint soup, and status styles should be expressed as reusable tokens because the set of statuses is known ahead of time. This is where `minmax()`, `auto-fill` vs `auto-fit`, and custom properties become part of the architecture rather than decoration.
 
 #### **Exercise 1**
 
-Map each allowed device status to a CSS custom property token pair. The point is not to memorize variable syntax. The point is to treat closed-set UI values as closed-set design decisions.
+The device grid should create as many readable columns as will fit, but each card must never shrink below the minimum width. Write the responsive track rule with `minmax()` and `auto-fill` so new columns appear automatically as the viewport grows.
 
-:::stackblitz{file="step3-exercise1-problem.ts" step=3 total=3 solution="step3-exercise1-solution.ts"}
+:::stackblitz{file="step3-exercise1-problem.html" step=3 total=3 solution="step3-exercise1-solution.html"}
 
 #### **Exercise 2**
 
-Build the exact grid-template expression for a responsive card wall. The shell should keep a fixed sidebar and fluid main area, while the card list should use `repeat(auto-fill, minmax(...))`. This exercise makes you write the layout rule from the underlying intent.
+This board has only three cards on a wide row, and the design wants those cards to stretch instead of leaving phantom empty slots. Update the grid rule so the extra tracks collapse and the existing cards grow. The exercise is specifically about choosing `auto-fit` instead of `auto-fill` for that behavior.
 
-:::stackblitz{file="step3-exercise2-problem.ts" step=3 total=3 solution="step3-exercise2-solution.ts"}
+:::stackblitz{file="step3-exercise2-problem.html" step=3 total=3 solution="step3-exercise2-solution.html"}
 
 #### **Exercise 3**
 
-Describe which UI layers are visible for a combined dashboard state. A user may have a selected device, a background refresh, and an entering panel at the same time. This final exercise checks whether you can read the independent state lanes back into concrete UI surfaces.
+The badges currently repeat raw hex values inline for every status. Replace that with named custom properties for the closed-set statuses and map each badge to the right token. Keep the palette centralized so future color changes do not require hunting through selectors.
 
-:::stackblitz{file="step3-exercise3-problem.ts" step=3 total=3 solution="step3-exercise3-solution.ts"}
+:::stackblitz{file="step3-exercise3-problem.html" step=3 total=3 solution="step3-exercise3-solution.html"}
 
-> **Mental anchor**: "Closed vocabularies deserve closed tokens, and responsive grids deserve one explicit track recipe."
+> **Mental anchor**: "Responsive rules should express layout intent, and closed-set visual meaning should live in named tokens."
 
 ## Key Patterns
 
-### Separate State By Question, Not By Component File
+### Separate State By Meaning, Not By Screen
 
-Use separate state lanes when each field answers a different question about the UI.
+Model each concern according to what changes independently.
 
-- **When to use it:** current tab versus request progress versus panel motion
-- **What it prevents:** impossible mega-status values and brittle transition logic
+- **When to use it:** active panel plus loading plus motion, selected entity plus fetch phase, modal visibility plus form draft
+- **What it costs:** a few more fields and the need to name each lane clearly
+- **What it prevents:** one event clobbering unrelated UI truth
 
-### Use Grid For The Blueprint, Flexbox For The Rails
+### Choose The Layout Primitive By Axis Count
 
-Place dashboard regions with Grid, then align content inside each region with Flexbox.
+Pick Grid when the question is about rows and columns together. Pick Flexbox when the question is about distribution on one axis inside a bounded area.
 
-- **When to use it:** app shell, responsive card wall, detail rail, toolbar rows, badge rows
-- **What it prevents:** forcing Flexbox to fake columns or forcing Grid to solve simple one-axis alignment
+- **When to use Grid:** app shell, card boards, named regions, responsive track systems
+- **When to use Flexbox:** headers, button rows, badge clusters, footer controls
+- **What it prevents:** solving a two-dimensional problem with spacer hacks or solving a one-dimensional problem with unnecessary grid templates
 
-### Treat `minmax()` As A Contract
+### Use `minmax()` To Encode Readability Constraints
 
-Read `minmax(min, max)` as a promise about what may never shrink and what may expand.
+Write the minimum acceptable track width once, then let the browser distribute extra space.
 
-- **When to use it:** responsive cards, tiles, metric panels, gallery cells
-- **What it prevents:** hand-coded breakpoint churn for every column count
+- **When to use it:** card galleries, metrics boards, tile layouts, dashboard modules
+- **What it costs:** understanding how intrinsic minimums and free space interact
+- **What it prevents:** brittle media-query ladders for every intermediate viewport
 
-### Choose `auto-fill` Or `auto-fit` Based On Empty-Track Behavior
+### Put Closed-Set Values Behind Custom Properties
 
-These values are only meaningfully different when the grid has spare room.
+If a value comes from a known vocabulary, expose it as a token instead of duplicating literals.
 
-- **When to use `auto-fill`:** preserve stable slots and rhythm
-- **When to use `auto-fit`:** let under-filled rows stretch and absorb spare space
-
-### Encode Closed Sets With CSS Variables
-
-A small finite status vocabulary should map to named tokens, not raw colors scattered through selectors.
-
-- **When to use it:** status badges, severity chips, health indicators, theme roles
-- **What it prevents:** inconsistent color drift and unsupported value styling
+- **When to use it:** status colors, semantic spacing tiers, elevation shadows, shared radii
+- **What it costs:** one layer of indirection in the CSS
+- **What it prevents:** palette drift and repeated one-off overrides
 
 ---
 
 ## Decision Framework
 
-1. Are you describing one UI fact or several concurrent facts?
-   If several facts can be true at once, model them as separate lanes.
+1. Can the UI facts be true at the same time?
+   If yes, keep them in separate state lanes.
 
-2. Are you placing items across rows and columns or aligning items on one axis?
-   Use Grid for placement across the page, Flexbox for alignment inside a row or column.
+2. Does the layout question involve both rows and columns?
+   Use Grid for that outer structure.
 
-3. Does the card wall need a minimum readable width per card?
-   Use `minmax(minWidth, 1fr)` so the browser enforces the minimum before adding or stretching tracks.
+3. Is the problem only about aligning or spacing items along one row or one column inside a region?
+   Use Flexbox for that local alignment.
 
-4. What should happen when there is space for more tracks than there are items?
-   Use `auto-fill` to preserve empty slots, `auto-fit` to collapse them.
+4. Do you need cards to keep a minimum readable width while auto-wrapping?
+   Reach for `repeat(auto-fill, minmax(minWidth, 1fr))`.
 
-5. Is the visual value space finite and known ahead of time?
-   Use CSS custom properties and explicit status classes instead of ad hoc color choices.
+5. Do you want empty tracks to collapse so existing items stretch?
+   Prefer `auto-fit`.
+
+6. Is a color or spacing value drawn from a fixed vocabulary rather than arbitrary user input?
+   Define a custom property token and map the closed set to it.
 
 ## Common Gotchas & Edge Cases
 
-- `refreshing` is not the same as `loading`. A dashboard can keep stale-but-usable data on screen while a refresh happens in the background.
-- A selected device and an entering panel are different lanes. One names the focus target, the other names the motion phase of the UI around that target.
-- Grid and Flexbox are not rivals. A real dashboard usually uses both, just at different layers.
-- `minmax(16rem, 1fr)` does not mean every card is always `16rem` wide. It means `16rem` is the floor, then leftover space is shared.
-- `auto-fill` and `auto-fit` behave the same when every possible track has an item. Only test cases with spare room reveal the difference.
-- Inline status colors are tempting for the first badge and expensive by the fifth. Closed-set tokens pay off as soon as the same status appears in more than one place.
+- A loading spinner appearing on a panel does not mean the active panel changed. Do not encode those answers in one variable.
+- "Grid vs Flexbox" is not an either-or choice for the whole page. Most rich UIs use both at different layers.
+- `auto-fill` and `auto-fit` differ only when the row has room for extra tracks. That is exactly when the design choice matters.
+- `minmax(0, 1fr)` and `minmax(16rem, 1fr)` solve different problems. The first allows aggressive shrinking, the second protects readability.
+- Custom properties help when the domain vocabulary is closed. They do not automatically solve user-defined arbitrary values.

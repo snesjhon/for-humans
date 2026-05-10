@@ -54,7 +54,7 @@ export function getFundamentalsStepNumbers(slug: string): number[] {
 
   const files = fs.readdirSync(dir);
   const stepNums = files
-    .filter((file) => /^step\d+-exercise\d+-problem\.ts$/.test(file))
+    .filter((file) => /^step\d+-exercise\d+-problem\.(ts|tsx|html)$/.test(file))
     .map((file) => parseInt(file.match(/^step(\d+)/)?.[1] ?? '0', 10))
     .filter((num) => num > 0);
 

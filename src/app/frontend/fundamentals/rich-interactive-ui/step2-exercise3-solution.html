@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Device Card Stack</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 28px;
+        font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+        background: #eef4f7;
+        color: #13212b;
+      }
+
+      .board {
+        margin: 0 auto;
+        max-width: 60rem;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+      }
+
+      .card {
+        min-height: 280px;
+        padding: 20px;
+        border-radius: 20px;
+        background: white;
+        box-shadow: 0 18px 38px rgba(19, 33, 43, 0.08);
+        display: flex;
+        flex-direction: column;
+      }
+
+      .card h2,
+      .card p {
+        margin-top: 0;
+      }
+
+      .card p {
+        color: #576978;
+      }
+
+      .card .actions {
+        margin-top: auto;
+        padding-top: 16px;
+        border-top: 1px solid #d7e2e9;
+      }
+
+      .chip {
+        display: inline-block;
+        margin-right: 8px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: #e8f0f6;
+        color: #355063;
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="board">
+      <article class="card">
+        <div>
+          <h2>Conveyor 14</h2>
+          <p>Packet loss rose above the normal baseline during the last ten minutes.</p>
+          <span class="chip">warning</span>
+          <span class="chip">wireless</span>
+        </div>
+        <footer class="actions">
+          <strong>Open diagnostics</strong>
+        </footer>
+      </article>
+
+      <article class="card">
+        <div>
+          <h2>Extruder 3</h2>
+          <p>Temperature regulation is within expected bounds after the overnight restart.</p>
+          <span class="chip">stable</span>
+          <span class="chip">thermal</span>
+        </div>
+        <footer class="actions">
+          <strong>Open diagnostics</strong>
+        </footer>
+      </article>
+    </section>
+  </body>
+</html>

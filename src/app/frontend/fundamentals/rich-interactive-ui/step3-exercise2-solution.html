@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Auto Fit Grid</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 24px;
+        font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+        background: #f3f7fa;
+        color: #14202b;
+      }
+
+      .board {
+        margin: 0 auto;
+        max-width: 70rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+        gap: 18px;
+      }
+
+      .tile {
+        padding: 24px;
+        border-radius: 18px;
+        background: white;
+        box-shadow: 0 16px 34px rgba(20, 32, 43, 0.08);
+      }
+
+      .tile h2 {
+        margin: 0 0 10px;
+      }
+
+      .tile p {
+        margin: 0;
+        color: #566978;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="board">
+      <article class="tile">
+        <h2>Line A</h2>
+        <p>Three monitored devices are currently active on this line.</p>
+      </article>
+      <article class="tile">
+        <h2>Line B</h2>
+        <p>Maintenance review starts in forty minutes.</p>
+      </article>
+      <article class="tile">
+        <h2>Line C</h2>
+        <p>No active alarm acknowledgements are pending.</p>
+      </article>
+    </section>
+  </body>
+</html>

@@ -7,6 +7,7 @@ const config: Config = {
   testMatch: [
     '**/__tests__/**/*.test.ts',
     '**/step*.ts',
+    '**/step*.tsx',
   ],
   transform: {
     '^.+\\.tsx?$': ['ts-jest', { tsconfig: { jsx: 'react-jsx' } }],

@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Metrics Strip</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 28px;
+        font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+        background: #f1f5f8;
+        color: #14202b;
+      }
+
+      /* ─── TODO 1 ────────────────────────────────────────────────────────────────
+         Place the metric cards into equal columns with one shared gap.
+         Primitive: grid
+      ──────────────────────────────────────────────────────────────────────────── */
+
+      .metrics {
+        margin: 0 auto;
+        max-width: 72rem;
+      }
+
+      .metric {
+        padding: 20px;
+        border-radius: 18px;
+        background: white;
+        box-shadow: 0 18px 36px rgba(20, 32, 43, 0.08);
+      }
+
+      /* ─── TODO 2 ────────────────────────────────────────────────────────────────
+         Keep the metric title on the left and the status chip on the right in
+         one horizontal header row.
+         Primitive: flex
+      ──────────────────────────────────────────────────────────────────────────── */
+
+      .metric header {
+        margin-bottom: 20px;
+      }
+
+      .metric h2 {
+        margin: 0;
+        font-size: 16px;
+      }
+
+      .pill {
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: #e2f3ef;
+        color: #0f766e;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .value {
+        margin: 0;
+        font-size: 40px;
+        font-weight: 700;
+      }
+
+      .note {
+        margin: 10px 0 0;
+        color: #5c6f80;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="metrics">
+      <article class="metric">
+        <header>
+          <h2>Available devices</h2>
+          <span class="pill">Stable</span>
+        </header>
+        <p class="value">98%</p>
+        <p class="note">Uptime across the current production cluster.</p>
+      </article>
+
+      <article class="metric">
+        <header>
+          <h2>Alert latency</h2>
+          <span class="pill">Watching</span>
+        </header>
+        <p class="value">14s</p>
+        <p class="note">Median time from event capture to operator badge update.</p>
+      </article>
+
+      <article class="metric">
+        <header>
+          <h2>Backlog</h2>
+          <span class="pill">Stable</span>
+        </header>
+        <p class="value">7</p>
+        <p class="note">Acknowledgements waiting for human follow-up.</p>
+      </article>
+
+      <article class="metric">
+        <header>
+          <h2>Maintenance window</h2>
+          <span class="pill">Today</span>
+        </header>
+        <p class="value">16:30</p>
+        <p class="note">Planned restart for one staging sensor group.</p>
+      </article>
+    </section>
+  </body>
+</html>
