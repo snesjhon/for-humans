@@ -5,8 +5,6 @@ import { renderHook, act } from '@testing-library/react';
 import { useState } from 'react';
 
 // Goal: when the task list really changes, React should receive a brand-new array reference.
-// Hint: the bug is not in the test data, it is in which array instance gets returned from setTasks.
-// Append and remove should both work from the current state, but they should not mutate that current array in place.
 function useTaskList(initial: string[]) {
   const [tasks, setTasks] = useState(initial);
 

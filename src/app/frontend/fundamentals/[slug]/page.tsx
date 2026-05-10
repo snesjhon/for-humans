@@ -102,23 +102,23 @@ export default function FundamentalsPage({ params }: Props) {
         aside={<TableOfContents headings={headings} title="Contents" />}
       >
         <section className="space-y-8 py-2">
-          {section?.scenarios && section.scenarios.length > 0 && (
+          {section?.builds && section.builds.length > 0 && (
             <div className="rounded-xl border border-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)] p-5">
               <p className="mb-2 text-sm text-[var(--ms-text-muted)]">
                 <span className="font-semibold text-[var(--ms-text-body)]">
-                  {section.scenarios.length === 1
-                    ? 'Associated scenario:'
-                    : 'Associated scenarios:'}
+                  {section.builds.length === 1
+                    ? 'Associated build:'
+                    : 'Associated builds:'}
                 </span>
               </p>
               <div className="flex flex-wrap gap-2">
-                {section.scenarios.map((scenario) => (
+                {section.builds.map((building) => (
                   <Link
-                    key={scenario.slug}
-                    href={`/frontend/scenarios/${scenario.slug}`}
+                    key={building.slug}
+                    href={`/frontend/building/${building.slug}`}
                     className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--ms-blue)] bg-[var(--ms-blue-surface)] px-3 py-1.5 text-xs font-medium text-[var(--ms-blue)] no-underline transition-opacity hover:opacity-80"
                   >
-                    {scenario.label} →
+                    {building.label} →
                   </Link>
                 ))}
               </div>

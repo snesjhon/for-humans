@@ -5,7 +5,7 @@ import { getAllProblems } from '@/lib/dsa/content';
 import { getAllFundamentalsSlugs } from '@/lib/dsa/fundamentals';
 import { getAllFundamentalsSlugs as getAllFrontendFundamentalsSlugs } from '@/lib/frontend/fundamentals';
 import { getAllFrontendProblems } from '@/lib/frontend/problems';
-import { getAllScenarioSlugs as getAllFrontendScenarioSlugs } from '@/lib/frontend/scenarios';
+import { getAllBuildingSlugs } from '@/lib/frontend/building';
 import { getSearchEntries } from '@/lib/search';
 import { getSidebarStateInitScript } from '@/lib/sidebarState';
 import { getAllScenarioSlugsFromDisk } from '@/lib/system-design/content';
@@ -53,7 +53,7 @@ export default async function RootLayout({
 }) {
   const availableDsaProblemIds = getAllProblems().map((p) => p.id);
   const availableFrontendProblemIds = getAllFrontendProblems().map((p) => p.id);
-  const availableFrontendScenarioSlugs = getAllFrontendScenarioSlugs();
+  const availableFrontendBuildingSlugs = getAllBuildingSlugs();
   const availableDsaFundamentalsSlugs = getAllFundamentalsSlugs();
   const availableFrontendFundamentalsSlugs = getAllFrontendFundamentalsSlugs();
   const availableSystemDesignScenarioSlugs = getAllScenarioSlugsFromDisk();
@@ -77,7 +77,7 @@ export default async function RootLayout({
         <LayoutShell
           availableDsaProblemIds={availableDsaProblemIds}
           availableFrontendProblemIds={availableFrontendProblemIds}
-          availableFrontendScenarioSlugs={availableFrontendScenarioSlugs}
+          availableFrontendBuildingSlugs={availableFrontendBuildingSlugs}
           availableDsaFundamentalsSlugs={availableDsaFundamentalsSlugs}
           availableFrontendFundamentalsSlugs={availableFrontendFundamentalsSlugs}
           availableSystemDesignScenarioSlugs={availableSystemDesignScenarioSlugs}

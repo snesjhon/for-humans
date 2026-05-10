@@ -63,7 +63,7 @@ export const JOURNEY: Phase[] = [
           },
         ],
         explorations: [],
-        scenarios: [
+        builds: [
           {
             slug: 'app-shell',
             label: 'App Shell',
@@ -80,6 +80,13 @@ export const JOURNEY: Phase[] = [
         fundamentalsSlug: 'data-fetching',
         fundamentalsBlurb:
           'Race condition cancellation, `Awaited<T>` and conditional types for typed async state, and when to extract a data-fetching hook.',
+        additionalFundamentals: [
+          {
+            slug: 'api-layer-boundaries',
+            blurb:
+              'Why transport, query-state ownership, polling cadence, domain mapping, and presentation belong in different frontend layers.',
+          },
+        ],
         practice: [
           {
             id: '027',
@@ -93,7 +100,7 @@ export const JOURNEY: Phase[] = [
           },
         ],
         explorations: [],
-        scenarios: [
+        builds: [
           {
             slug: 'modeling-the-api-contract',
             label: 'Model the API Contract',
@@ -135,7 +142,7 @@ export const JOURNEY: Phase[] = [
             label: 'Window Dimensions',
           },
         ],
-        scenarios: [
+        builds: [
           {
             slug: 'async-state-in-react',
             label: 'Async State in React',
@@ -165,7 +172,7 @@ export const JOURNEY: Phase[] = [
           },
         ],
         explorations: [],
-        scenarios: [
+        builds: [
           {
             slug: 'rendering-the-data',
             label: 'Render the Data',
@@ -199,7 +206,7 @@ export const JOURNEY: Phase[] = [
           },
         ],
         explorations: [],
-        scenarios: [
+        builds: [
           {
             slug: 'css-layout',
             label: 'CSS Layout',
@@ -229,7 +236,7 @@ export const JOURNEY: Phase[] = [
           },
         ],
         explorations: [],
-        scenarios: [
+        builds: [
           {
             slug: 'interactivity',
             label: 'Add Interactivity',
@@ -259,7 +266,7 @@ export const JOURNEY: Phase[] = [
           },
         ],
         explorations: [],
-        scenarios: [
+        builds: [
           {
             slug: 'debounced-search',
             label: 'Debounced Search',
@@ -289,7 +296,7 @@ export const JOURNEY: Phase[] = [
           },
         ],
         explorations: [],
-        scenarios: [
+        builds: [
           {
             slug: 'click-outside-filter',
             label: 'Click-Outside Filter Panel',
@@ -319,7 +326,7 @@ export const JOURNEY: Phase[] = [
           },
         ],
         explorations: [],
-        scenarios: [
+        builds: [
           {
             slug: 'extracting-the-hook',
             label: 'Extract the Hook',
@@ -358,7 +365,7 @@ export const JOURNEY: Phase[] = [
           },
         ],
         explorations: [],
-        scenarios: [
+        builds: [
           {
             slug: 'reducer-for-app-state',
             label: 'Reducer for App State',
@@ -383,7 +390,7 @@ export const JOURNEY: Phase[] = [
           },
         ],
         explorations: [],
-        scenarios: [
+        builds: [
           {
             slug: 'memoizing-the-filter',
             label: 'Memoize the Filter',
@@ -408,7 +415,7 @@ export const JOURNEY: Phase[] = [
           },
         ],
         explorations: [],
-        scenarios: [
+        builds: [
           {
             slug: 'accessibility',
             label: 'Accessibility Pass',
@@ -438,7 +445,7 @@ export const JOURNEY: Phase[] = [
           },
         ],
         explorations: [],
-        scenarios: [
+        builds: [
           {
             slug: 'polish-and-walkthrough',
             label: 'Polish and Walkthrough',

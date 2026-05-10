@@ -8,8 +8,6 @@ interface DeviceCard {
 }
 
 // Goal: type pick so the keys argument can only name real properties from the object you pass in.
-// Hint: the return type should stay linked to those chosen keys, not fall back to a loose record.
-// This is the classic "one generic depends on another generic" case, so think about which type parameter needs a constraint.
 // TODO: type this helper so `keys` must be valid keys of `value`
 // and the return type becomes Pick<T, K>.
 function pick(value: object, keys: readonly string[]) {

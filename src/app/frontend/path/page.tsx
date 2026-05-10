@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { JOURNEY } from '@/lib/frontend/journey';
 import { getAllFundamentalsSlugs } from '@/lib/frontend/fundamentals';
-import { getAllScenarioSlugs } from '@/lib/frontend/scenarios';
+import { getAllBuildingSlugs } from '@/lib/frontend/building';
 import { createClient } from '@/lib/supabase/server';
 import type { FrontendJourneySection, Phase } from '@/lib/frontend/types';
 import {
@@ -57,7 +57,7 @@ function buildPhaseGroups(): PhaseGroup[] {
 
 export default async function PathPage() {
   const availableFundamentalsSlugs = new Set(getAllFundamentalsSlugs());
-  const availableScenarioSlugs = new Set(getAllScenarioSlugs());
+  const availableBuildingSlugs = new Set(getAllBuildingSlugs());
   const totalSections = JOURNEY.reduce(
     (count, phase) => count + phase.sections.length,
     0,
@@ -180,27 +180,27 @@ export default async function PathPage() {
                       </div>
 
                       <div className="pt-1">
-                        {section.scenarios && section.scenarios.length > 0 && (
+                        {section.builds && section.builds.length > 0 && (
                           <div>
                             <p className="mb-2 font-mono text-[0.6rem] font-bold uppercase tracking-[0.09em] text-[var(--ms-text-faint)]">
                               Build
                             </p>
                             <div className="space-y-3">
-                              {section.scenarios.map((scenario) => (
-                                <div key={scenario.slug}>
+                              {section.builds.map((building) => (
+                                <div key={building.slug}>
                                   <p className="mb-1 m-0 max-w-[460px] text-[0.875rem] leading-[1.75] text-[var(--ms-text-subtle)]">
-                                    {scenario.blurb}
+                                    {building.blurb}
                                   </p>
-                                  {availableScenarioSlugs.has(scenario.slug) ? (
+                                  {availableBuildingSlugs.has(building.slug) ? (
                                     <Link
-                                      href={`/frontend/scenarios/${scenario.slug}`}
+                                      href={`/frontend/building/${building.slug}`}
                                       className="text-sm text-[var(--ms-blue)] no-underline transition-opacity hover:opacity-80"
                                     >
-                                      {scenario.label} →
+                                      {building.label} →
                                     </Link>
                                   ) : (
                                     <p className="m-0 font-display text-sm italic text-[var(--ms-text-faint)]">
-                                      Scenario coming soon.
+                                      Build coming soon.
                                     </p>
                                   )}
                                 </div>
@@ -210,7 +210,7 @@ export default async function PathPage() {
                         )}
 
                         {section.practice.length > 0 && (
-                          <div className={section.scenarios && section.scenarios.length > 0 ? 'mt-5' : ''}>
+                          <div className={section.builds && section.builds.length > 0 ? 'mt-5' : ''}>
                             <p className="mb-2 font-mono text-[0.6rem] font-bold uppercase tracking-[0.09em] text-[var(--ms-text-faint)]">
                               Problems
                             </p>

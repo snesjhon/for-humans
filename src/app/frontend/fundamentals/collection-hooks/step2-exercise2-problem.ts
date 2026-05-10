@@ -5,8 +5,6 @@ import { renderHook, act } from '@testing-library/react';
 import { useEffect, useState } from 'react';
 
 // Goal: writing the same count again should keep the old Map reference so downstream React work does not rerun.
-// Hint: compare the current value for that tag with the requested next value before cloning.
-// A copied Map with identical entries is still a new reference, so no-op writes need an early return.
 function useTagCounts(initial: Array<[string, number]>) {
   const [counts, setCounts] = useState(() => new Map(initial));
   const [syncRuns, setSyncRuns] = useState(0);

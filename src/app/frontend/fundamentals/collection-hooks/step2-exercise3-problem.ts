@@ -5,8 +5,6 @@ import { renderHook, act } from '@testing-library/react';
 import { useEffect, useState } from 'react';
 
 // Goal: replacing selection with the same IDs should preserve the old array reference.
-// Hint: this hook already has a helper that can tell you whether two selections mean the same thing.
-// Use that check inside the state update so the effect only reruns when the selected IDs actually change.
 function sameIds(left: string[], right: string[]) {
   return left.length === right.length && left.every((id, index) => id === right[index]);
 }

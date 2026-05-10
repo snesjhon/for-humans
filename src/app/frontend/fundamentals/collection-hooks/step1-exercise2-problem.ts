@@ -5,8 +5,6 @@ import { renderHook, act } from '@testing-library/react';
 import { useState } from 'react';
 
 // Goal: toggling membership should publish a new Set when the contents change.
-// Hint: keep the add/delete logic, but make sure those mutations happen on a copied Set rather than the live state instance.
-// The test cares about both the final members and the fact that React saw a different reference.
 function usePinnedIds(initial: string[]) {
   const [pinned, setPinned] = useState(() => new Set(initial));
 

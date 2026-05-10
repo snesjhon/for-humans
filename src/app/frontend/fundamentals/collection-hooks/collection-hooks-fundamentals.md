@@ -150,17 +150,32 @@ The first capability is mechanical: if the logical contents changed, return a fr
 
 The hook appends and removes tasks by mutating the live array, then returns the same reference. Fix it so each real task-list change publishes a new array instance. The question is not which array method you prefer. The question is whether the method is acting on a fresh copy or on the current state page.
 
+**How to think about it:**
+1. Start by tracing the updater callback, not by rewriting the whole hook.
+2. Ask which array instance leaves `setTasks` today, then decide what should happen when the rows really change.
+3. Once that is clear, move the existing append and remove behavior onto a fresh array before you return it.
+
 :::stackblitz{file="step1-exercise1-problem.ts" step=1 total=3 solution="step1-exercise1-solution.ts"}
 
 #### **Exercise 2**
 
 The hook toggles pinned device IDs by mutating the existing `Set`. Fix it so membership changes happen on a copied set and the new set becomes the next state page. Watch both the membership result and the reference identity.
 
+**How to think about it:**
+1. Do not start with the `if` branches, they are already close to right.
+2. First decide which `Set` instance should receive `add` or `delete`.
+3. If those methods run on the live state object, the membership may look correct while React still sees the old reference.
+
 :::stackblitz{file="step1-exercise2-problem.ts" step=1 total=3 solution="step1-exercise2-solution.ts"}
 
 #### **Exercise 3**
 
 The inventory hook updates a `Map` in place. Fix it so increments and removals copy the map first, then publish the updated copy. The mental move is the same as arrays and sets even though the method names differ.
+
+**How to think about it:**
+1. Trace the container before you trace the math.
+2. The stock arithmetic is fine, the important question is whether `set` and `delete` are acting on the current state `Map` or on a copied `Map`.
+3. Once you move the existing logic onto a fresh container, the fix should fall out naturally.
 
 :::stackblitz{file="step1-exercise3-problem.ts" step=1 total=3 solution="step1-exercise3-solution.ts"}
 
@@ -178,17 +193,32 @@ This level teaches a second discipline: detect no-op updates and keep the previo
 
 This hook keeps a task list in state and synchronizes whenever the task array reference changes. Fix `renameTask` so it publishes a new array only when a label really changes. If the task is missing or the label is already correct, the hook should hand back the same array reference and the sync effect should stay quiet. This is the simplest React version of "new rows" versus "same rows on a cloned page."
 
+**How to think about it:**
+1. Before you build a replacement array, ask whether this rename would change anything at all.
+2. There are two no-op cases to catch early: no matching task, or a matching task whose label already equals `nextLabel`.
+3. Only after ruling those out should you allocate a new array.
+
 :::stackblitz{file="step2-exercise1-problem.ts" step=2 total=3 solution="step2-exercise1-solution.ts"}
 
 #### **Exercise 2**
 
 This hook stores alarm-tag counts in a `Map` and records how many times a downstream sync runs. Fix `upsertTagCount` so true no-ops keep the old map reference while real changes still publish a copy. The point is not only to keep the `Map` correct, but to stop React from broadcasting a fake change.
 
+**How to think about it:**
+1. The key move is to reverse the current order of operations.
+2. Right now the hook clones first and asks questions later.
+3. Instead, inspect the existing value for the incoming tag, decide whether the write is real, and only clone when the next count differs from the current one.
+
 :::stackblitz{file="step2-exercise2-problem.ts" step=2 total=3 solution="step2-exercise2-solution.ts"}
 
 #### **Exercise 3**
 
 The hook replaces selection with a brand-new array every time, even when the next IDs match the current IDs exactly. A downstream effect counts sync runs and should stay quiet on equal-content replacements. Fix the hook so equal arrays reuse the previous reference while actual selection changes still trigger the effect.
+
+**How to think about it:**
+1. This exercise already gives you the comparison primitive: `sameIds`.
+2. The real question is where to use it.
+3. Put the equality decision inside the state update itself, where you can choose between reusing `current` and publishing `nextIds`.
 
 :::stackblitz{file="step2-exercise3-problem.ts" step=2 total=3 solution="step2-exercise3-solution.ts"}
 
@@ -206,17 +236,32 @@ This level starts with `pick<T, K>` because it makes the `extends` rule explicit
 
 Write `pick<T, K extends keyof T>` by hand so the selected keys stay linked to the original object shape. This is the smallest useful example of "add a type parameter because two parts of the API depend on each other."
 
+**How to think about it:**
+1. Start by naming the whole object shape with one generic.
+2. Then ask what the keys generic is allowed to contain.
+3. It should not be arbitrary strings, it should be keys drawn from that first generic, so the return type can reuse that same relationship.
+
 :::stackblitz{file="step3-exercise1-problem.ts" step=3 total=3 solution="step3-exercise1-solution.ts"}
 
 #### **Exercise 2**
 
 Write `toIdSet<TItem extends { id: PropertyKey }>` so the returned `Set` preserves the item's actual ID type. The helper should constrain the item shape enough to be safe, then let inference carry the specific ID type from the input array.
 
+**How to think about it:**
+1. Work backward from the two hover expectations.
+2. `alarmIds` should stay `Set<number>` and `deviceIds` should stay `Set<string>`, so the return type cannot collapse to one broad key type.
+3. Constrain the item enough to make `item.id` safe, then derive the `Set` element type from that field.
+
 :::stackblitz{file="step3-exercise2-problem.ts" step=3 total=3 solution="step3-exercise2-solution.ts"}
 
 #### **Exercise 3**
 
 Type a generic `useMapState<K, V>` hook so its `entries`, `get`, `set`, and `remove` APIs all stay linked to the inferred key and value types. This is the full "generic hook return shape" version of the same idea you started with in `pick<T, K>`.
+
+**How to think about it:**
+1. Do not debug the runtime logic first, it is already fine.
+2. Focus on the hook signature and ask which two shapes must stay linked everywhere.
+3. Once key type and value type both live on the hook as generics, thread them through the parameter and the returned API so the whole surface area stays in sync.
 
 :::stackblitz{file="step3-exercise3-problem.ts" step=3 total=3 solution="step3-exercise3-solution.ts"}
 

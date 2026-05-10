@@ -98,7 +98,11 @@ export function getPrecedingSection(
 ): FrontendJourneySection | null {
   for (const phase of JOURNEY) {
     for (let index = 0; index < phase.sections.length; index += 1) {
-      if (phase.sections[index].fundamentalsSlug === slug) {
+      const section = phase.sections[index];
+      if (
+        section.fundamentalsSlug === slug ||
+        section.additionalFundamentals?.some((fundamentals) => fundamentals.slug === slug)
+      ) {
         for (let cursor = index - 1; cursor >= 0; cursor -= 1) {
           if (phase.sections[cursor].fundamentalsSlug) return phase.sections[cursor];
         }

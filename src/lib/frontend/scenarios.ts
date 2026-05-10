@@ -1,6 +1,5 @@
 import fs from 'fs';
 import path from 'path';
-import { JOURNEY } from './journey';
 import type { FrontendJourneySection } from './types';
 
 const SCENARIOS_DIR = path.join(
@@ -52,21 +51,12 @@ export function getAllScenarioSlugs(): string[] {
     .map((entry) => entry.name);
 }
 
-export function getSectionForScenario(slug: string): FrontendJourneySection | null {
-  for (const phase of JOURNEY) {
-    for (const section of phase.sections) {
-      if (section.scenarios?.some((s) => s.slug === slug)) return section;
-    }
-  }
+export function getSectionForScenario(_slug: string): FrontendJourneySection | null {
   return null;
 }
 
-export function getScenarioRef(slug: string) {
-  for (const phase of JOURNEY) {
-    for (const section of phase.sections) {
-      const ref = section.scenarios?.find((s) => s.slug === slug);
-      if (ref) return ref;
-    }
-  }
+export function getScenarioRef(
+  _slug: string,
+): { slug: string; label: string; blurb: string } | null {
   return null;
 }

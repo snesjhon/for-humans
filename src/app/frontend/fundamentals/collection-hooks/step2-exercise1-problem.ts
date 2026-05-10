@@ -5,8 +5,6 @@ import { renderHook, act } from '@testing-library/react';
 import { useEffect, useState } from 'react';
 
 // Goal: renameTask should reuse the current array when the requested rename is a true no-op.
-// Hint: there are two no-op cases to notice before you build a replacement array: the task might be missing, or the label might already match.
-// Only publish a new array when one task actually changes, because the effect below is using array identity as its signal.
 interface Task {
   id: string;
   label: string;

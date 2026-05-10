@@ -39,6 +39,7 @@ import {
   ChevronsDownUp,
   ChevronsUpDown,
 } from 'lucide-react';
+import type { ItemType } from '@/lib/progress/actions';
 import { pColor } from '../pathUtils';
 import { ProgressMark } from '../ProgressMark/ProgressMark';
 
@@ -91,6 +92,7 @@ export interface JourneyPanelProps {
   getFundamentalsHref: (slug: string) => string;
   getPracticeHref: (slug: string) => string;
   getConceptHref: (slug: string) => string;
+  progressItemType?: ItemType;
   progressItemIdPrefix?: string;
   progressFundamentalsIdPrefix?: string;
   compact?: boolean;
@@ -237,6 +239,7 @@ export function JourneyPanel({
   getFundamentalsHref,
   getPracticeHref,
   getConceptHref,
+  progressItemType = 'problem',
   progressItemIdPrefix = 'dsa-',
   progressFundamentalsIdPrefix = 'dsa-fundamentals-',
   compact = false,
@@ -245,7 +248,7 @@ export function JourneyPanel({
 
   // Problem progress
   const problemIds = Array.from(availableItemKeys).sort();
-  const progressParams = new URLSearchParams({ itemType: 'problem' });
+  const progressParams = new URLSearchParams({ itemType: progressItemType });
   problemIds.forEach((id) =>
     progressParams.append('itemId', `${progressItemIdPrefix}${id}`),
   );

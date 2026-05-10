@@ -3,12 +3,12 @@ import fs from 'fs';
 import path from 'path';
 import { hashFileMtimes, parseFilesFromPrompt } from '@/lib/frontend/checkWork';
 
-const SCENARIOS_DIR = path.join(
+const BUILDING_DIR = path.join(
   process.cwd(),
   'src',
   'app',
   'frontend',
-  'scenarios',
+  'building',
 );
 
 export async function POST(req: NextRequest) {
@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const promptPath = path.join(SCENARIOS_DIR, slug, 'prompt.md');
+  const promptPath = path.join(BUILDING_DIR, slug, 'prompt.md');
   if (!fs.existsSync(promptPath)) {
     return NextResponse.json({ hash: '' });
   }

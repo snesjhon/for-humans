@@ -12,8 +12,6 @@ interface DeviceRow {
 }
 
 // Goal: accept any item shape with an ID, but preserve the exact ID type in the returned Set.
-// Hint: the constraint belongs on the item type's id field, not on the final Set itself.
-// You want enough structure to guarantee the IDs are valid keys, while still letting number IDs stay numbers and string IDs stay strings.
 // TODO: constrain TItem so it must have an `id` that can live in a Set,
 // then return a Set of exactly that inferred ID type.
 function toIdSet<TItem extends { id: unknown }>(items: readonly TItem[]) {

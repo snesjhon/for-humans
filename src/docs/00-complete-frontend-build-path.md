@@ -4,10 +4,10 @@ Complete Frontend Build Path
 
 ## Generating Content
 
-Run in the `thinkdeep-agents` working directory. Always generate scenarios in step order — each walkthrough reads the ones before it.
+Run in the `thinkdeep-agents` working directory. Always generate builds in step order — each walkthrough reads the ones before it.
 
 - **Learn:** `/fe-fundamentals state-driven-ui`
-- **Build:** `/fe-scenario app-shell`
+- **Build:** `/fe-building app-shell`
 - **Reinforce:** `/fe-problem 024`
 
 ---
@@ -20,7 +20,7 @@ Every step (except Step 0) follows the same three-phase sequence:
 
 **1. Learn** — A fundamentals guide with embedded exercises and tests. The exercises live inside the guide and test the concept in the abstract before any real code is written. No project, no application context — just the mental model made concrete through progressive exercises.
 
-**2. Build** — A scenario that applies what you just learned to the Plant Floor Monitor. This is a thinking guide, not an exercise guide. The brief tells you what to produce. The walkthrough directs your reasoning. The evaluator checks your real local directory. You write production code in a real project — no `step1-exercise1` files.
+**2. Build** — A build package that applies what you just learned to the Plant Floor Monitor. The brief tells you what to produce. The walkthrough directs your reasoning. The evaluator checks your real local directory. You write production code in a real project, no `step1-exercise1` files.
 
 **3. Reinforce** — Isolated problems in a completely unrelated context. Each problem is self-contained with its own steps and exercises. The Like Button is not a device dashboard — it just forces the same mental model from a different angle. These exist because one application of a concept is not enough to own it under pressure.
 
@@ -49,7 +49,7 @@ A typed React dashboard that reads device and tag status from a mock REST API. E
 | 13         | Accessibility — ARIA roles, keyboard nav, focus management          | Accessibility             |
 | 14         | Polish and walkthrough — final pass, then narrate the full project  | Full-Feature Applications |
 
-Data Fetching has two Build steps (2 and 3). `FrontendJourneySection` supports `scenarios?: ScenarioRef[]` to accommodate both.
+Data Fetching has two Build steps (2 and 3). `FrontendJourneySection` supports `builds?: BuildingRef[]` to accommodate both.
 
 ---
 
@@ -442,4 +442,3 @@ Problems:
 
 - Name: Wordle
   Description: Build Wordle. Six guesses, per-position letter state, keyboard input, win condition. Every pattern from this path applied simultaneously under a tight state budget.
-

@@ -5,8 +5,6 @@ import { renderHook, act } from '@testing-library/react';
 import { useState } from 'react';
 
 // Goal: stock changes should happen on a fresh Map so every real update publishes a new state page.
-// Hint: addUnits and removeSku can keep their current behavior, but the Map methods should run against a copied Map, not the current one.
-// If you mutate the existing Map directly, the values look right but the reference stays wrong for React.
 function useStockBySku(initial: Array<[string, number]>) {
   const [stockBySku, setStockBySku] = useState(() => new Map(initial));
 

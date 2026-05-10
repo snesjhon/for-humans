@@ -12,8 +12,6 @@ type UseMapStateResult<K extends PropertyKey, V> = {
 };
 
 // Goal: make this hook infer its key and value types from the initial entries and carry those types through the whole API.
-// Hint: the weak spot is the function signature, not the runtime Map logic.
-// Once the generics are attached to the hook itself, entries, get, set, and remove should all stay in sync without callers spelling the types out manually.
 // TODO: keep K and V inferred from the initial entries,
 // and make the returned API use those same types everywhere.
 function useMapState(
