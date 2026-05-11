@@ -2,18 +2,21 @@
  * @jest-environment jsdom
  */
 import { renderHook, act } from '@testing-library/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-// Stale Closures, Level 1: fix with functional updater
-// Goal: the counter never goes above 1 because setCount(count + 1) reads the frozen snapshot —
-// count is always 0 inside the interval. Fix it using the functional updater form so each
-// increment reads from React's current state instead of the photograph.
-function useIncrementor(delay: number) {
+// Stale Closures, Level 1: fix with useRef
+// Goal: useCounterWithStep already uses the functional updater for count, but step is a prop that
+// can change and is still a stale read inside the interval. The functional updater from Exercise 1
+// only supplies the previous value of the state being updated — it cannot read the latest step.
+// Add a ref that tracks the latest step and read from it inside the interval.
+function useCounterWithStep(step: number, delay: number) {
   const [count, setCount] = useState(0);
+  const stepRef = useRef(step);
+  stepRef.current = step;
 
   useEffect(() => {
     const id = setInterval(() => {
-      setCount((prev) => prev + 1); // functional updater reads from React's current state
+      setCount((prev) => prev + stepRef.current); // reads the latest step through the stable ref
     }, delay);
     return () => clearInterval(id);
   }, [delay]);
@@ -22,16 +25,27 @@ function useIncrementor(delay: number) {
 }
 
 // ---Tests
-test('count increments correctly across five ticks', () => {
+test('useCounterWithStep uses the latest step after it changes', () => {
   jest.useFakeTimers();
 
-  const { result } = renderHook(() => useIncrementor(1000));
+  const { result, rerender } = renderHook(
+    ({ step, delay }: { step: number; delay: number }) => useCounterWithStep(step, delay),
+    { initialProps: { step: 1, delay: 1000 } },
+  );
 
   act(() => {
-    jest.advanceTimersByTime(5000);
+    jest.advanceTimersByTime(2000);
   });
 
-  expect(result.current).toBe(5);
+  expect(result.current).toBe(2);
+
+  rerender({ step: 5, delay: 1000 });
+
+  act(() => {
+    jest.advanceTimersByTime(1000);
+  });
+
+  expect(result.current).toBe(7);
 
   jest.useRealTimers();
 });

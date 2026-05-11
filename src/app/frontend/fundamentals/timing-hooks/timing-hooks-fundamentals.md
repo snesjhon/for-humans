@@ -107,19 +107,17 @@ The clearest way to tell them apart: debounce never fires while the user is acti
 
 The stale closure is not a React quirk — it is how closures work in JavaScript. React makes it easy to trigger because state updates cause re-renders, but existing intervals were created during an earlier render and never receive the update.
 
-This level has three exercises. The first asks you to reproduce the bug and observe it clearly before fixing anything. The second shows when the functional updater is the right fix. The third introduces `useRef` for the cases where the functional updater is not enough.
+This level has three exercises. The first shows the stale closure in its simplest form and asks you to predict the broken behavior before fixing it with the functional updater. The second shows where the functional updater falls short — when a prop, not the state being updated, is the stale read. The third introduces `useInterval`, the generalized ref pattern.
 
 #### **Exercise 1**
 
-Read `useTickSnapshot`. The interval increments `count` correctly using the functional updater, then reads `count` directly into `snapshot` — that second line is the stale read. Before running the test, predict: after 3 ticks, what value will `snapshot` hold? The interval took a photograph of `count` when it was created. Run the test and confirm your prediction.
-
-Do not fix anything. Observing the symptom is the exercise.
+`useIncrementor` calls `setCount(count + 1)` inside an interval, but `count` is the frozen snapshot from the first render — the expression always evaluates to `0 + 1 = 1`. Before touching any code, predict what `result.current` will be after 5 ticks. Then fix it: switch to the functional updater form so each increment reads from React's current state instead of the photograph.
 
 :::stackblitz{file="step1-exercise1-problem.ts" step=1 total=3 solution="step1-exercise1-solution.ts"}
 
 #### **Exercise 2**
 
-Fix a `useIncrementor` hook where `setCount(count + 1)` has been written with a direct reference to `count`. Because the interval closes over the initial value, this always evaluates to `0 + 1 = 1` — the counter never goes above 1. Switch to the functional updater form `setCount(prev => prev + 1)` so each increment reads from React's current state, not the frozen snapshot.
+`useCounterWithStep` already uses the functional updater for `count` — `setCount(prev => prev + step)` — so the counter itself increments correctly. But `step` is a prop that can change, and it is still a stale read: the interval closed over the initial `step` and never receives updates. The functional updater from Exercise 1 cannot help here; it only supplies the previous value of the state being updated. Fix it: add a ref that tracks the latest `step`, then read from the ref inside the interval.
 
 :::stackblitz{file="step1-exercise2-problem.ts" step=1 total=3 solution="step1-exercise2-solution.ts"}
 
