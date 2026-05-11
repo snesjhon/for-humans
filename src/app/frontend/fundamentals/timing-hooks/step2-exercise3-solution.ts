@@ -29,6 +29,7 @@ function useDebouncedCallback<T extends (...args: Parameters<T>) => void>(
   );
 }
 
+// ---Tests
 test('useDebouncedCallback only calls through after silence', () => {
   jest.useFakeTimers();
 
@@ -60,3 +61,4 @@ test('useDebouncedCallback only calls through after silence', () => {
 
   jest.useRealTimers();
 });
+// ---End Tests

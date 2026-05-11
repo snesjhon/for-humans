@@ -10,6 +10,12 @@ export interface BuildingRef {
   blurb: string;
 }
 
+export interface ConceptRef {
+  slug: string;
+  label: string;
+  blurb: string;
+}
+
 export interface FrontendJourneySection {
   id: string;
   label: string;
@@ -20,6 +26,7 @@ export interface FrontendJourneySection {
   practice: FrontendJourneyProblem[];
   explorations: FrontendJourneyProblem[];
   builds?: BuildingRef[];
+  concepts?: ConceptRef[];
 }
 
 export interface Phase {

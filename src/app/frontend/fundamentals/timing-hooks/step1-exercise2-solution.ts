@@ -21,6 +21,7 @@ function useIncrementor(delay: number) {
   return count;
 }
 
+// ---Tests
 test('count increments correctly across five ticks', () => {
   jest.useFakeTimers();
 
@@ -34,3 +35,4 @@ test('count increments correctly across five ticks', () => {
 
   jest.useRealTimers();
 });
+// ---End Tests

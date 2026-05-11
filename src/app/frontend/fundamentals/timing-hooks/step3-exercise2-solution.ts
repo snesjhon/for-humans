@@ -24,6 +24,7 @@ function useThrottle<T>(value: T, limit: number): T {
   return throttledValue;
 }
 
+// ---Tests
 test('useThrottle limits updates to once per limit window', () => {
   jest.useFakeTimers();
 
@@ -55,3 +56,4 @@ test('useThrottle limits updates to once per limit window', () => {
 
   jest.useRealTimers();
 });
+// ---End Tests

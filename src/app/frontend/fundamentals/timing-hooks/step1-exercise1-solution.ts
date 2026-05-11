@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 
 // Stale Closures, Level 1: reproduce the bug
 // Goal: read the hook below and predict what snapshot will hold after 3 ticks — the interval
-// took a photograph of count when it was created. Then change test.skip to test and confirm.
+// took a photograph of count when it was created. Run the test and confirm your prediction.
 function useTickSnapshot(delay: number) {
   const [count, setCount] = useState(0);
   const [snapshot, setSnapshot] = useState(-1);
@@ -22,6 +22,7 @@ function useTickSnapshot(delay: number) {
   return { count, snapshot };
 }
 
+// ---Tests
 test('snapshot reads the stale count from when the interval was created', () => {
   jest.useFakeTimers();
 
@@ -37,3 +38,4 @@ test('snapshot reads the stale count from when the interval was created', () => 
 
   jest.useRealTimers();
 });
+// ---End Tests

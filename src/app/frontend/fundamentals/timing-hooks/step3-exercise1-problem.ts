@@ -14,7 +14,8 @@ function throttle<T extends (...args: Parameters<T>) => void>(
   return (..._args: Parameters<T>) => {};
 }
 
-test.skip('throttle fires immediately and then enforces the cooldown', () => {
+// ---Tests
+test('throttle fires immediately and then enforces the cooldown', () => {
   jest.useFakeTimers();
 
   const fn = jest.fn();
@@ -36,3 +37,4 @@ test.skip('throttle fires immediately and then enforces the cooldown', () => {
 
   jest.useRealTimers();
 });
+// ---End Tests

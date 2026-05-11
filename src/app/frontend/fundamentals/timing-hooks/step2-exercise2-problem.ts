@@ -21,7 +21,8 @@ function useDebounce<T>(value: T, delay: number): T {
   return debouncedValue;
 }
 
-test.skip('useDebounce returns the updated value only after the delay', () => {
+// ---Tests
+test('useDebounce returns the updated value only after the delay', () => {
   jest.useFakeTimers();
 
   const { result, rerender } = renderHook(
@@ -49,3 +50,4 @@ test.skip('useDebounce returns the updated value only after the delay', () => {
 
   jest.useRealTimers();
 });
+// ---End Tests

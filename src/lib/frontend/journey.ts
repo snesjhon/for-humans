@@ -114,6 +114,14 @@ export const JOURNEY: Phase[] = [
               'Implement typed fetch functions that read from the static JSON mocks and expose the data to the rest of the application.',
           },
         ],
+        concepts: [
+          {
+            slug: 'api-layer-boundaries',
+            label: 'API Layer Boundaries',
+            blurb:
+              'Draw the request, query lifecycle, mapping, and presentation boundaries, then defend where polling belongs.',
+          },
+        ],
       },
       {
         id: 'effects-timers-cleanup',

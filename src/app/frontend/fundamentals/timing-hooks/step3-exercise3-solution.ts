@@ -29,6 +29,7 @@ function useThrottledCallback<T extends (...args: Parameters<T>) => void>(
   );
 }
 
+// ---Tests
 test('useThrottledCallback enforces a cooldown between invocations', () => {
   jest.useFakeTimers();
 
@@ -58,3 +59,4 @@ test('useThrottledCallback enforces a cooldown between invocations', () => {
 
   jest.useRealTimers();
 });
+// ---End Tests

@@ -1,6 +1,9 @@
 import fs from 'fs';
 import path from 'path';
+import { JOURNEY } from './journey';
 import type { FrontendJourneySection } from './types';
+import type { Phase } from './types';
+import type { ConceptRef as ScenarioRef } from './types';
 
 const SCENARIOS_DIR = path.join(
   process.cwd(),
@@ -51,12 +54,64 @@ export function getAllScenarioSlugs(): string[] {
     .map((entry) => entry.name);
 }
 
-export function getSectionForScenario(_slug: string): FrontendJourneySection | null {
+function getSectionById(
+  sectionId: FrontendJourneySection['id'],
+): { phase: Phase; section: FrontendJourneySection } | null {
+  for (const phase of JOURNEY) {
+    const section = phase.sections.find((entry) => entry.id === sectionId);
+    if (section) return { phase, section };
+  }
+
   return null;
 }
 
+function getScenarioEntries(): Array<
+  ScenarioRef & { sectionId: FrontendJourneySection['id']; phase: Phase }
+> {
+  const entries: Array<
+    ScenarioRef & { sectionId: FrontendJourneySection['id']; phase: Phase }
+  > = [];
+
+  for (const phase of JOURNEY) {
+    for (const section of phase.sections) {
+      for (const scenario of section.concepts ?? []) {
+        entries.push({ ...scenario, sectionId: section.id, phase });
+      }
+    }
+  }
+
+  return entries;
+}
+
 export function getScenarioRef(
-  _slug: string,
-): { slug: string; label: string; blurb: string } | null {
-  return null;
+  slug: string,
+): (ScenarioRef & { sectionId: FrontendJourneySection['id'] }) | null {
+  const entry = getScenarioEntries().find((scenario) => scenario.slug === slug);
+  if (!entry) return null;
+
+  const { phase: _phase, ...ref } = entry;
+  return ref;
+}
+
+export function getSectionForScenario(slug: string): FrontendJourneySection | null {
+  const ref = getScenarioRef(slug);
+  if (!ref) return null;
+
+  return getSectionById(ref.sectionId)?.section ?? null;
+}
+
+export function getScenarioMatch(
+  slug: string,
+): {
+  ref: ScenarioRef & { sectionId: FrontendJourneySection['id'] };
+  phase: Phase;
+  section: FrontendJourneySection;
+} | null {
+  const ref = getScenarioRef(slug);
+  if (!ref) return null;
+
+  const match = getSectionById(ref.sectionId);
+  if (!match) return null;
+
+  return { ref, ...match };
 }

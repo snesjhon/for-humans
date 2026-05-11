@@ -21,7 +21,8 @@ function useIncrementor(delay: number) {
   return count;
 }
 
-test.skip('count increments correctly across five ticks', () => {
+// ---Tests
+test('count increments correctly across five ticks', () => {
   jest.useFakeTimers();
 
   const { result } = renderHook(() => useIncrementor(1000));
@@ -34,3 +35,4 @@ test.skip('count increments correctly across five ticks', () => {
 
   jest.useRealTimers();
 });
+// ---End Tests

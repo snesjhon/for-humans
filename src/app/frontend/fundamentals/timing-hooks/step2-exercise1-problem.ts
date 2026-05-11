@@ -14,7 +14,8 @@ function debounce<T extends (...args: Parameters<T>) => void>(
   return (..._args: Parameters<T>) => {};
 }
 
-test.skip('debounce invokes fn once after a burst of calls', () => {
+// ---Tests
+test('debounce invokes fn once after a burst of calls', () => {
   jest.useFakeTimers();
 
   const fn = jest.fn();
@@ -33,3 +34,4 @@ test.skip('debounce invokes fn once after a burst of calls', () => {
 
   jest.useRealTimers();
 });
+// ---End Tests

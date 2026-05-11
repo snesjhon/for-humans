@@ -29,6 +29,7 @@ interface LayoutShellProps {
   availableDsaProblemIds: string[];
   availableFrontendProblemIds: string[];
   availableFrontendBuildingSlugs: string[];
+  availableFrontendConceptSlugs: string[];
   availableDsaFundamentalsSlugs: string[];
   availableFrontendFundamentalsSlugs: string[];
   availableSystemDesignScenarioSlugs: string[];
@@ -43,6 +44,7 @@ export function LayoutShell({
   availableDsaProblemIds,
   availableFrontendProblemIds,
   availableFrontendBuildingSlugs,
+  availableFrontendConceptSlugs,
   availableDsaFundamentalsSlugs,
   availableFrontendFundamentalsSlugs,
   availableSystemDesignScenarioSlugs,
@@ -177,6 +179,7 @@ export function LayoutShell({
         availableDsaProblemIds={availableDsaProblemIds}
         availableFrontendProblemIds={availableFrontendProblemIds}
         availableFrontendBuildingSlugs={availableFrontendBuildingSlugs}
+        availableFrontendConceptSlugs={availableFrontendConceptSlugs}
         availableDsaFundamentalsSlugs={availableDsaFundamentalsSlugs}
         availableFrontendFundamentalsSlugs={availableFrontendFundamentalsSlugs}
         availableSystemDesignScenarioSlugs={availableSystemDesignScenarioSlugs}

@@ -18,6 +18,7 @@ function debounce<T extends (...args: Parameters<T>) => void>(
   };
 }
 
+// ---Tests
 test('debounce invokes fn once after a burst of calls', () => {
   jest.useFakeTimers();
 
@@ -37,3 +38,4 @@ test('debounce invokes fn once after a burst of calls', () => {
 
   jest.useRealTimers();
 });
+// ---End Tests

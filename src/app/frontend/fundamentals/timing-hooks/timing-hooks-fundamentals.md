@@ -111,7 +111,7 @@ This level has three exercises. The first asks you to reproduce the bug and obse
 
 #### **Exercise 1**
 
-Read `useTickSnapshot`. The interval increments `count` correctly using the functional updater, then reads `count` directly into `snapshot` — that second line is the stale read. Before running the test, predict: after 3 ticks, what value will `snapshot` hold? The interval took a photograph of `count` when it was created. Then change `test.skip` to `test` and confirm.
+Read `useTickSnapshot`. The interval increments `count` correctly using the functional updater, then reads `count` directly into `snapshot` — that second line is the stale read. Before running the test, predict: after 3 ticks, what value will `snapshot` hold? The interval took a photograph of `count` when it was created. Run the test and confirm your prediction.
 
 Do not fix anything. Observing the symptom is the exercise.
 

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { JOURNEY } from '@/lib/frontend/journey';
 import { getAllFundamentalsSlugs } from '@/lib/frontend/fundamentals';
 import { getAllBuildingSlugs } from '@/lib/frontend/building';
+import { getAllConceptSlugs } from '@/lib/frontend/concepts';
 import { createClient } from '@/lib/supabase/server';
 import type { FrontendJourneySection, Phase } from '@/lib/frontend/types';
 import {
@@ -58,6 +59,7 @@ function buildPhaseGroups(): PhaseGroup[] {
 export default async function PathPage() {
   const availableFundamentalsSlugs = new Set(getAllFundamentalsSlugs());
   const availableBuildingSlugs = new Set(getAllBuildingSlugs());
+  const availableConceptSlugs = new Set(getAllConceptSlugs());
   const totalSections = JOURNEY.reduce(
     (count, phase) => count + phase.sections.length,
     0,
@@ -209,8 +211,37 @@ export default async function PathPage() {
                           </div>
                         )}
 
-                        {section.practice.length > 0 && (
+                        {section.concepts && section.concepts.length > 0 && (
                           <div className={section.builds && section.builds.length > 0 ? 'mt-5' : ''}>
+                            <p className="mb-2 font-mono text-[0.6rem] font-bold uppercase tracking-[0.09em] text-[var(--ms-text-faint)]">
+                              Concepts
+                            </p>
+                            <div className="space-y-3">
+                              {section.concepts.map((concept) => (
+                                <div key={concept.slug}>
+                                  <p className="mb-1 m-0 max-w-[460px] text-[0.875rem] leading-[1.75] text-[var(--ms-text-subtle)]">
+                                    {concept.blurb}
+                                  </p>
+                                  {availableConceptSlugs.has(concept.slug) ? (
+                                    <Link
+                                      href={`/frontend/concepts/${concept.slug}`}
+                                      className="text-sm text-[var(--ms-blue)] no-underline transition-opacity hover:opacity-80"
+                                    >
+                                      {concept.label} →
+                                    </Link>
+                                  ) : (
+                                    <p className="m-0 font-display text-sm italic text-[var(--ms-text-faint)]">
+                                      Concept coming soon.
+                                    </p>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {section.practice.length > 0 && (
+                          <div className={section.builds && section.builds.length > 0 || section.concepts && section.concepts.length > 0 ? 'mt-5' : ''}>
                             <p className="mb-2 font-mono text-[0.6rem] font-bold uppercase tracking-[0.09em] text-[var(--ms-text-faint)]">
                               Problems
                             </p>

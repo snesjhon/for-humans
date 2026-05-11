@@ -24,7 +24,8 @@ function useThrottle<T>(value: T, limit: number): T {
   return throttledValue;
 }
 
-test.skip('useThrottle limits updates to once per limit window', () => {
+// ---Tests
+test('useThrottle limits updates to once per limit window', () => {
   jest.useFakeTimers();
 
   const { result, rerender } = renderHook(
@@ -55,3 +56,4 @@ test.skip('useThrottle limits updates to once per limit window', () => {
 
   jest.useRealTimers();
 });
+// ---End Tests

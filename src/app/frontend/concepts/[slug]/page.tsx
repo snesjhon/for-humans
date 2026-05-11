@@ -1,12 +1,11 @@
-import { notFound, redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import {
-  getAllScenarioSlugs,
-  getScenarioContent,
-  getScenarioMatch,
-  getScenarioRef,
-} from '@/lib/frontend/scenarios';
-import { getBuildingContent } from '@/lib/frontend/building';
+  getAllConceptSlugs,
+  getConceptContent,
+  getConceptMatch,
+  getConceptRef,
+} from '@/lib/frontend/concepts';
 import { extractHeadings } from '@/lib/frontend/headings';
 import MarkdownRenderer from '@/components/frontend/MarkdownRenderer/MarkdownRenderer';
 import TableOfContents from '@/components/ui/TableOfContents/TableOfContents';
@@ -21,34 +20,27 @@ interface Props {
 }
 
 export function generateStaticParams() {
-  return getAllScenarioSlugs().map((slug) => ({ slug }));
+  return getAllConceptSlugs().map((slug) => ({ slug }));
 }
 
-export default function FrontendScenarioPage({ params }: Props) {
-  const scenario = getScenarioContent(params.slug);
+export default function FrontendConceptPage({ params }: Props) {
+  const concept = getConceptContent(params.slug);
 
-  if (!scenario) {
-    const building = getBuildingContent(params.slug);
-    if (building) redirect(`/frontend/building/${params.slug}`);
-    notFound();
-  }
+  if (!concept) notFound();
 
-  const match = getScenarioMatch(params.slug);
-  const scenarioRef = getScenarioRef(params.slug);
+  const match = getConceptMatch(params.slug);
+  const conceptRef = getConceptRef(params.slug);
 
-  if (!match || !scenarioRef) notFound();
+  if (!match || !conceptRef) notFound();
 
   const { phase, section } = match;
-  const strippedBrief = scenario.brief.replace(/^#[^#].*\n+/, '').trimStart();
-  const strippedWalkthrough = scenario.walkthrough
-    ? scenario.walkthrough.replace(/^#[^#].*\n+/, '').trimStart()
-    : null;
-  const headings = extractHeadings(strippedWalkthrough ?? strippedBrief);
-  const loginHref = `/login?next=${encodeURIComponent(`/frontend/scenarios/${params.slug}`)}`;
+  const strippedConcept = concept.concept.replace(/^#[^#].*\n+/, '').trimStart();
+  const headings = extractHeadings(strippedConcept);
+  const loginHref = `/login?next=${encodeURIComponent(`/frontend/concepts/${params.slug}`)}`;
 
   return (
     <ProgressProvider
-      items={[{ itemType: 'scenario' as const, itemId: `fe-scenario-${params.slug}` }]}
+      items={[{ itemType: 'scenario' as const, itemId: `fe-concept-${params.slug}` }]}
     >
       <TDPageLayout
         progress={
@@ -57,8 +49,8 @@ export default function FrontendScenarioPage({ params }: Props) {
             items={[
               {
                 itemType: 'scenario' as const,
-                itemId: `fe-scenario-${params.slug}`,
-                label: 'Scenario complete',
+                itemId: `fe-concept-${params.slug}`,
+                label: 'Concept complete',
               },
             ]}
           />
@@ -66,7 +58,7 @@ export default function FrontendScenarioPage({ params }: Props) {
         hero={
           <PageHero>
             <h1 className="mb-0 font-display text-5xl leading-tight text-[var(--ms-text-body)]">
-              {scenarioRef.label}
+              {conceptRef.label}
             </h1>
             <p className="mb-6 text-lg italic leading-snug text-[var(--ms-primary)]">
               &ldquo;{section.mentalModelHook}&rdquo;
@@ -77,7 +69,7 @@ export default function FrontendScenarioPage({ params }: Props) {
                 {phase.emoji} {phase.label}
               </mark>
               <mark className="rounded border border-[var(--ms-surface)] bg-transparent text-xs text-[var(--ms-text-muted)]">
-                Frontend Scenario
+                Frontend Concept
               </mark>
             </div>
           </PageHero>
@@ -99,26 +91,12 @@ export default function FrontendScenarioPage({ params }: Props) {
             </Link>
           </div>
 
-          <div className="rounded-xl border border-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)] p-6">
-            <p className="mb-4 font-[ui-monospace,monospace] text-xs font-semibold uppercase tracking-[0.08em] text-[var(--ms-text-faint)]">
-              Your task
-            </p>
-            <MarkdownRenderer
-              content={strippedBrief}
-              prompts={scenario.promptContent ?? ''}
-              phase={phase.number}
-              storageKeyPrefix={`chat:${params.slug}`}
-            />
-          </div>
-
-          {strippedWalkthrough && (
-            <MarkdownRenderer
-              content={strippedWalkthrough}
-              prompts={scenario.promptContent ?? ''}
-              phase={phase.number}
-              storageKeyPrefix={`chat:${params.slug}`}
-            />
-          )}
+          <MarkdownRenderer
+            content={strippedConcept}
+            prompts={concept.promptContent ?? ''}
+            phase={phase.number}
+            storageKeyPrefix={`chat:${params.slug}`}
+          />
 
           <div className="flex items-center justify-between border-t border-t-[var(--ms-surface)] pt-8">
             <Link
@@ -129,9 +107,9 @@ export default function FrontendScenarioPage({ params }: Props) {
             </Link>
             <TDCompletionCTA
               itemType="scenario"
-              itemId={`fe-scenario-${params.slug}`}
-              label="Complete Scenario"
-              completedLabel="Scenario Completed"
+              itemId={`fe-concept-${params.slug}`}
+              label="Complete Concept"
+              completedLabel="Concept Completed"
               loginHref={loginHref}
             />
             <div />

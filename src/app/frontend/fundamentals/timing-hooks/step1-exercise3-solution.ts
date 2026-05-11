@@ -20,6 +20,7 @@ function useInterval(callback: () => void, delay: number) {
   }, [delay]);
 }
 
+// ---Tests
 test('useInterval always calls the latest callback', () => {
   jest.useFakeTimers();
 
@@ -48,3 +49,4 @@ test('useInterval always calls the latest callback', () => {
 
   jest.useRealTimers();
 });
+// ---End Tests

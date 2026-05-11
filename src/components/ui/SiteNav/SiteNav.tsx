@@ -61,6 +61,7 @@ const DSA_PHASES: JourneyPanelPhase[] = DSA_JOURNEY.map((phase) => ({
 const FRONTEND_FUNDAMENTALS_TO_SECTION: Record<string, string> = {};
 const FRONTEND_PROBLEM_TO_SECTION: Record<string, string> = {};
 const FRONTEND_BUILDING_TO_SECTION: Record<string, string> = {};
+const FRONTEND_CONCEPT_TO_SECTION: Record<string, string> = {};
 for (const phase of FRONTEND_JOURNEY) {
   for (const section of phase.sections) {
     FRONTEND_FUNDAMENTALS_TO_SECTION[section.fundamentalsSlug] = section.id;
@@ -69,6 +70,9 @@ for (const phase of FRONTEND_JOURNEY) {
     }
     for (const building of section.builds ?? []) {
       FRONTEND_BUILDING_TO_SECTION[building.slug] = section.id;
+    }
+    for (const concept of section.concepts ?? []) {
+      FRONTEND_CONCEPT_TO_SECTION[concept.slug] = section.id;
     }
     for (const problem of section.practice) {
       FRONTEND_PROBLEM_TO_SECTION[problem.id] = section.id;
@@ -97,10 +101,16 @@ const FRONTEND_PHASES: JourneyPanelPhase[] = FRONTEND_JOURNEY.map((phase) => ({
         return slug;
       }) ?? []),
     ],
-    items: (section.builds ?? []).map((building) => ({
-      key: building.slug,
-      label: building.label,
-    })),
+    items: [
+      ...(section.builds ?? []).map((building) => ({
+        key: building.slug,
+        label: building.label,
+      })),
+      ...(section.concepts ?? []).map((concept) => ({
+        key: concept.slug,
+        label: concept.label,
+      })),
+    ],
     revisitItems: [
       ...section.practice.map((problem) => ({
         key: problem.id,
@@ -201,6 +211,8 @@ function frontendActiveSection(path: string): string | null {
   if (problem) return FRONTEND_PROBLEM_TO_SECTION[problem] ?? null;
   const building = path.match(/^\/frontend\/building\/([^/]+)/)?.[1];
   if (building) return FRONTEND_BUILDING_TO_SECTION[building] ?? null;
+  const concept = path.match(/^\/frontend\/concepts\/([^/]+)/)?.[1];
+  if (concept) return FRONTEND_CONCEPT_TO_SECTION[concept] ?? null;
   return null;
 }
 
@@ -210,6 +222,7 @@ interface SiteNavProps {
   availableDsaProblemIds: string[];
   availableFrontendProblemIds: string[];
   availableFrontendBuildingSlugs: string[];
+  availableFrontendConceptSlugs: string[];
   availableDsaFundamentalsSlugs: string[];
   availableFrontendFundamentalsSlugs: string[];
   availableSystemDesignScenarioSlugs: string[];
@@ -224,6 +237,7 @@ export function SiteNav({
   availableDsaProblemIds: availableDsaProblemIdsArr,
   availableFrontendProblemIds: availableFrontendProblemIdsArr,
   availableFrontendBuildingSlugs: availableFrontendBuildingSlugsArr,
+  availableFrontendConceptSlugs: availableFrontendConceptSlugsArr,
   availableDsaFundamentalsSlugs: availableDsaFundamentalsArr,
   availableFrontendFundamentalsSlugs: availableFrontendFundamentalsArr,
   availableSystemDesignScenarioSlugs: availableSystemDesignScenarioSlugsArr,
@@ -236,8 +250,10 @@ export function SiteNav({
 }: SiteNavProps) {
   const availableDsaProblemIds = new Set(availableDsaProblemIdsArr);
   const availableFrontendBuildingSlugs = new Set(availableFrontendBuildingSlugsArr);
+  const availableFrontendConceptSlugs = new Set(availableFrontendConceptSlugsArr);
   const availableFrontendItemKeys = new Set([
     ...availableFrontendBuildingSlugsArr,
+    ...availableFrontendConceptSlugsArr,
     ...availableFrontendProblemIdsArr,
   ]);
   const availableDsaFundamentals = new Set(availableDsaFundamentalsArr);
@@ -362,6 +378,7 @@ export function SiteNav({
                       null
                     : isFrontendPage
                       ? pathname.match(/^\/frontend\/building\/([^/]+)/)?.[1] ??
+                        pathname.match(/^\/frontend\/concepts\/([^/]+)/)?.[1] ??
                         null
                     : pathname.match(/^\/dsa\/problems\/([^/]+)/)?.[1] ?? null
                 }
@@ -416,6 +433,8 @@ export function SiteNav({
                     : isFrontendPage
                       ? availableFrontendBuildingSlugs.has(key)
                         ? `/frontend/building/${key}`
+                        : availableFrontendConceptSlugs.has(key)
+                          ? `/frontend/concepts/${key}`
                         : `/frontend/problems/${key}`
                     : `/dsa/problems/${key}`
                 }
