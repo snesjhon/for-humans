@@ -275,6 +275,15 @@ const FRONTEND_PROBLEM_METADATA: Record<
     kind: 'typescript',
     difficulty: 'medium',
   },
+  '051': {
+    title: 'Search and Filter Bar',
+    prompt:
+      'Given a list of items, implement a search input and a filter control that update the visible results in real time. The core question is which values belong in state and which should be derived from the current query and selected filter.',
+    sectionId: 'collection-hooks',
+    tier: 'practice',
+    kind: 'react',
+    difficulty: 'medium',
+  },
 };
 
 let _problems: FrontendProblem[] | null = null;

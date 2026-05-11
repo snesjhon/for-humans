@@ -242,6 +242,11 @@ export const JOURNEY: Phase[] = [
             slug: '037-use-map',
             label: 'useMap',
           },
+          {
+            id: '051',
+            slug: '051-search-and-filter-bar',
+            label: 'Search and Filter Bar',
+          },
         ],
         explorations: [],
         builds: [
