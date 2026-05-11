@@ -4,11 +4,10 @@
 import { renderHook, act } from '@testing-library/react';
 import { useCallback, useRef } from 'react';
 
-// Throttle, Level 3: throttled callback hook
-// Goal: implement useThrottledCallback so it returns a stable function that throttles calls to fn.
-// Use useRef to hold the latest fn and the last-invocation timestamp. The returned callback must
-// not change when fn changes between renders — a new fn should be read through the ref, not cause
-// the callback to be recreated.
+// Interview-style mistake, Level 3: stable throttle wrapper with a fresh callback
+// Goal: this hook should enforce one cooldown across calls, but parent renders may still replace
+// fn. Finish the throttle logic so the wrapper stays stable, the cooldown state persists, and the
+// eventual invocation uses the latest fn through the ref instead of recreating the wrapper.
 function useThrottledCallback<T extends (...args: Parameters<T>) => void>(
   fn: T,
   limit: number,

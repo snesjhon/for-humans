@@ -2,57 +2,67 @@
  * @jest-environment jsdom
  */
 import { renderHook, act } from '@testing-library/react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
-// Throttle, Level 3: throttled value hook
-// Goal: implement useThrottle so the returned value updates at most once per limit ms —
-// the hook shape for scroll position or window size, where the raw value changes continuously
-// but downstream work should run at a controlled rate. Use useRef to store the last-invocation
-// timestamp without triggering a re-render.
-function useThrottle<T>(value: T, limit: number): T {
-  const [throttledValue, setThrottledValue] = useState(value);
-  const lastCalledRef = useRef(0);
+// Interview-style mistake, Level 3: autosave without cleanup
+// Goal: this hook should autosave the latest draft only after delay ms of silence. Right now old
+// timers are left running, so earlier drafts can still save after the user keeps typing, and the
+// timer can fire after unmount. Fix it by cleaning up the pending timeout. The saveDraft callback
+// may change between renders, so the timeout should call the latest version through the ref.
+function useAutoSaveDraft(
+  draft: string,
+  saveDraft: (value: string) => void,
+  delay: number,
+) {
+  const saveRef = useRef(saveDraft);
+  saveRef.current = saveDraft;
 
   useEffect(() => {
-    const now = Date.now();
-    if (now - lastCalledRef.current >= limit) {
-      lastCalledRef.current = now;
-      // TODO: update throttledValue with the current value
-    }
-  }, [value, limit]);
+    const id = setTimeout(() => {
+      saveRef.current(draft);
+    }, delay);
 
-  return throttledValue;
+    // TODO: clear the pending timeout when draft or delay changes, and on unmount
+    void id;
+  }, [draft, delay]);
 }
 
 // ---Tests
-test('useThrottle limits updates to once per limit window', () => {
+test('autosave only persists the latest draft after the quiet period', () => {
   jest.useFakeTimers();
 
-  const { result, rerender } = renderHook(
-    ({ value }: { value: number }) => useThrottle(value, 300),
-    { initialProps: { value: 0 } },
+  const saveDraft = jest.fn();
+  const { rerender } = renderHook(
+    ({ draft }: { draft: string }) => useAutoSaveDraft(draft, saveDraft, 300),
+    { initialProps: { draft: 'r' } },
   );
 
-  expect(result.current).toBe(0);
-
-  act(() => {
-    rerender({ value: 1 });
-  });
-  expect(result.current).toBe(0);
+  rerender({ draft: 're' });
+  rerender({ draft: 'rea' });
 
   act(() => {
     jest.advanceTimersByTime(300);
   });
 
-  act(() => {
-    rerender({ value: 2 });
-  });
-  expect(result.current).toBe(2);
+  expect(saveDraft).toHaveBeenCalledTimes(1);
+  expect(saveDraft).toHaveBeenCalledWith('rea');
+
+  jest.useRealTimers();
+});
+
+test('autosave does not fire after unmount', () => {
+  jest.useFakeTimers();
+
+  const saveDraft = jest.fn();
+  const { unmount } = renderHook(() => useAutoSaveDraft('draft', saveDraft, 300));
+
+  unmount();
 
   act(() => {
-    rerender({ value: 3 });
+    jest.advanceTimersByTime(300);
   });
-  expect(result.current).toBe(2);
+
+  expect(saveDraft).not.toHaveBeenCalled();
 
   jest.useRealTimers();
 });

@@ -5,9 +5,9 @@ import { renderHook, act } from '@testing-library/react';
 import { useCallback, useRef } from 'react';
 
 // Debounce, Level 2: debounced callback hook
-// Goal: implement useDebouncedCallback so it returns a stable function that debounces calls to fn.
-// Use useRef to hold the latest fn and the pending timer handle. The returned callback must not
-// change when fn changes between renders — updating the caller's fn should not recreate the wrapper.
+// Goal: complete the debounced side-effect shape. The returned function should stay stable across
+// renders, but when the timeout finally fires it must call the latest fn, not an old render's
+// version. Use the pending timer handle to debounce repeated calls during a typing burst.
 function useDebouncedCallback<T extends (...args: Parameters<T>) => void>(
   fn: T,
   delay: number,

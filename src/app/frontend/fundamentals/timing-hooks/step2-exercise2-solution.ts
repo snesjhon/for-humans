@@ -4,47 +4,53 @@
 import { renderHook, act } from '@testing-library/react';
 import { useEffect, useState } from 'react';
 
-// Debounce, Level 2: debounced value hook
-// Goal: implement useDebounce so the returned value only updates after delay ms of input silence —
-// the hook shape for a search input where onChange fires on every keystroke but the filter only
-// runs after the user pauses. Schedule the update and cancel it if value changes first.
-function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState(value);
+// Debounce, Level 2: keep typing immediate, debounce the query
+// Goal: this hook currently debounces the visible input state itself, so typing feels delayed.
+// Fix it so inputValue updates immediately on every keystroke, while debouncedQuery only updates
+// after delay ms of silence. This is the hook shape for a search box where the UI must stay
+// responsive but the fetch query should wait until the user pauses.
+function useDebouncedSearchBox(initialValue: string, delay: number) {
+  const [inputValue, setInputValue] = useState(initialValue);
+  const [debouncedQuery, setDebouncedQuery] = useState(initialValue);
 
   useEffect(() => {
-    const id = setTimeout(() => setDebouncedValue(value), delay);
-    return () => clearTimeout(id);
-  }, [value, delay]);
+    const id = setTimeout(() => {
+      setDebouncedQuery(inputValue);
+    }, delay);
 
-  return debouncedValue;
+    return () => clearTimeout(id);
+  }, [inputValue, delay]);
+
+  const onChange = (nextValue: string) => {
+    setInputValue(nextValue);
+  };
+
+  return { inputValue, debouncedQuery, onChange };
 }
 
 // ---Tests
-test('useDebounce returns the updated value only after the delay', () => {
+test('typing updates the visible value immediately but delays the query', () => {
   jest.useFakeTimers();
 
-  const { result, rerender } = renderHook(
-    ({ value, delay }: { value: string; delay: number }) => useDebounce(value, delay),
-    { initialProps: { value: 'a', delay: 300 } },
-  );
-
-  expect(result.current).toBe('a');
-
-  rerender({ value: 'ab', delay: 300 });
+  const { result } = renderHook(() => useDebouncedSearchBox('', 300));
 
   act(() => {
+    result.current.onChange('r');
+  });
+  expect(result.current.inputValue).toBe('r');
+  expect(result.current.debouncedQuery).toBe('');
+
+  act(() => {
+    result.current.onChange('re');
     jest.advanceTimersByTime(100);
   });
-
-  expect(result.current).toBe('a');
-
-  rerender({ value: 'abc', delay: 300 });
+  expect(result.current.inputValue).toBe('re');
+  expect(result.current.debouncedQuery).toBe('');
 
   act(() => {
     jest.advanceTimersByTime(300);
   });
-
-  expect(result.current).toBe('abc');
+  expect(result.current.debouncedQuery).toBe('re');
 
   jest.useRealTimers();
 });

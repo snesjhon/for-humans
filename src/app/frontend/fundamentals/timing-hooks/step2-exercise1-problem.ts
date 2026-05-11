@@ -1,36 +1,53 @@
-// Debounce, Level 2: plain function
-// Goal: implement debounce(fn, delay) so it invokes fn at most once after delay ms of silence.
-// Each new call resets the timer. Only the last call in a burst fires.
-export {};
+/**
+ * @jest-environment jsdom
+ */
+import { renderHook, act } from '@testing-library/react';
+import { useEffect, useState } from 'react';
 
-function debounce<T extends (...args: Parameters<T>) => void>(
-  fn: T,
-  delay: number,
-): (...args: Parameters<T>) => void {
-  // TODO: track a pending timer handle
-  // TODO: on each call, cancel the pending timer and schedule fn(...args) after delay ms
-  void fn;
-  void delay;
-  return (..._args: Parameters<T>) => {};
+// Debounce, Level 2: debounced value hook
+// Goal: implement useDebounce so the returned value only updates after delay ms of input silence.
+// This is the hook shape where raw input state changes immediately, but the expensive work reads a
+// debounced value that only updates after the user pauses.
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const id = setTimeout(() => {
+      // TODO: commit the latest value after the quiet period
+    }, delay);
+
+    return () => clearTimeout(id);
+  }, [value, delay]);
+
+  return debouncedValue;
 }
 
 // ---Tests
-test('debounce invokes fn once after a burst of calls', () => {
+test('useDebounce returns the updated value only after the delay', () => {
   jest.useFakeTimers();
 
-  const fn = jest.fn();
-  const debounced = debounce(fn, 300);
+  const { result, rerender } = renderHook(
+    ({ value, delay }: { value: string; delay: number }) => useDebounce(value, delay),
+    { initialProps: { value: 'a', delay: 300 } },
+  );
 
-  debounced('a');
-  debounced('b');
-  debounced('c');
+  expect(result.current).toBe('a');
 
-  expect(fn).not.toHaveBeenCalled();
+  rerender({ value: 'ab', delay: 300 });
 
-  jest.advanceTimersByTime(300);
+  act(() => {
+    jest.advanceTimersByTime(100);
+  });
 
-  expect(fn).toHaveBeenCalledTimes(1);
-  expect(fn).toHaveBeenCalledWith('c');
+  expect(result.current).toBe('a');
+
+  rerender({ value: 'abc', delay: 300 });
+
+  act(() => {
+    jest.advanceTimersByTime(300);
+  });
+
+  expect(result.current).toBe('abc');
 
   jest.useRealTimers();
 });

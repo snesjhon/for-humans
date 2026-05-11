@@ -1,0 +1,132 @@
+/* ── Node hover & state ── */
+.cpf-node { position: absolute; transform: translate(-50%,-50%); z-index: 2; }
+.cpf-node:hover .cpf-dot { transform: scale(1.25); }
+.cpf-dot { display: block; border-radius: 50%; transition: transform .15s, box-shadow .15s; }
+.cpf-node-done .cpf-dot {
+  background: var(--ms-green);
+  box-shadow: 0 0 0 4px var(--ms-bg-pane-secondary),
+              0 0 0 5px color-mix(in srgb, var(--ms-green) 40%, transparent);
+}
+.cpf-node-core .cpf-dot {
+  background: var(--ms-peach);
+  box-shadow: 0 0 0 5px var(--ms-bg-pane-secondary),
+              0 0 0 6px color-mix(in srgb, var(--ms-peach) 55%, transparent),
+              0 0 0 12px color-mix(in srgb, var(--ms-peach) 22%, transparent);
+  animation: cpfCoreRing 3.5s ease-out infinite;
+}
+.cpf-node-upcoming .cpf-dot {
+  background: var(--ms-text-subtle);
+  box-shadow: 0 0 0 4px var(--ms-bg-pane-secondary);
+}
+@keyframes cpfCoreRing {
+  0%,100% {
+    box-shadow: 0 0 0 5px var(--ms-bg-pane-secondary),
+                0 0 0 6px color-mix(in srgb, var(--ms-peach) 55%, transparent),
+                0 0 0 12px color-mix(in srgb, var(--ms-peach) 22%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 5px var(--ms-bg-pane-secondary),
+                0 0 0 6px color-mix(in srgb, var(--ms-peach) 55%, transparent),
+                0 0 0 18px color-mix(in srgb, var(--ms-peach) 8%, transparent);
+  }
+}
+
+/* ── Label layout ── */
+.cpf-label {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  display: flex; flex-direction: column; gap: 10px;
+  padding: 10px 14px; width: 320px;
+}
+.cpf-label-r { left: 24px; text-align: left; align-items: flex-start; }
+.cpf-label-l { right: 24px; text-align: right; align-items: flex-end; }
+
+/* ── Fundamentals link block ── */
+.cpf-fund-link {
+  display: flex; flex-direction: column; gap: 6px;
+  text-decoration: none; color: inherit; cursor: pointer;
+}
+.cpf-label-l .cpf-fund-link { align-items: flex-end; }
+.cpf-label-r .cpf-fund-link { align-items: flex-start; }
+
+/* ── Title ── */
+.cpf-title {
+  font-family: var(--font-display); font-weight: 400;
+  line-height: 1.15; letter-spacing: -0.01em; color: var(--ms-text);
+  transition: color .15s;
+}
+.cpf-node-core .cpf-title { color: var(--ms-peach); font-style: italic; }
+.cpf-fund-link:hover .cpf-title { color: var(--ms-blue); }
+.cpf-node-core .cpf-fund-link:hover .cpf-title { color: var(--ms-peach); }
+.cpf-node-done .cpf-fund-link:hover .cpf-title { color: var(--ms-blue); }
+
+/* ── CTA ── */
+.cpf-fund-cta {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: .08em;
+  color: var(--ms-text-faint); opacity: 0; max-height: 0;
+  overflow: hidden; transition: opacity .15s, max-height .15s;
+}
+.cpf-node-core .cpf-fund-cta { color: var(--ms-peach); opacity: .9; max-height: 20px; }
+.cpf-fund-link:hover .cpf-fund-cta { opacity: .9; max-height: 20px; }
+
+/* ── Hook ── */
+.cpf-hook {
+  font-family: var(--font-body); font-size: 13px;
+  line-height: 1.45; color: var(--ms-text-subtle);
+}
+
+/* ── Step head ── */
+.cpf-head {
+  display: flex; gap: 10px; align-items: baseline;
+  font-family: var(--font-mono); font-size: 10px;
+  letter-spacing: .12em; color: var(--ms-text-faint);
+}
+.cpf-num { color: var(--ms-text-subtle); }
+.cpf-state { opacity: .8; }
+.cpf-node-core .cpf-state { color: var(--ms-peach); opacity: 1; }
+.cpf-node-done .cpf-state { color: var(--ms-green); opacity: 1; }
+
+/* ── Problem chips ── */
+.cpf-probs { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; align-items: flex-start; }
+.cpf-label-l .cpf-probs { align-items: flex-end; }
+.cpf-prob-row { display: flex; align-items: center; gap: 8px; }
+.cpf-prob-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 10px;
+  border-width: 1px; border-style: solid; border-color: var(--ms-surface1);
+  border-radius: 999px; background: var(--ms-bg-pane);
+  font-family: var(--font-mono); font-size: 10px;
+  color: var(--ms-text-body); text-decoration: none; outline: none;
+  transition: border-color .15s, background .15s, transform .15s;
+}
+.cpf-prob-chip:hover {
+  border-color: var(--ms-blue);
+  background: color-mix(in srgb, var(--ms-blue) 6%, var(--ms-bg-pane));
+  transform: translateY(-1px);
+}
+.cpf-prob-id { color: var(--ms-text-faint); font-size: 10px; }
+.cpf-prob-title {
+  font-family: var(--font-body); font-size: 11px; color: var(--ms-text-muted);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px;
+}
+.cpf-diff {
+  font-size: 9px; letter-spacing: .06em; padding: 2px 5px;
+  border-radius: 3px; border: none; flex-shrink: 0;
+}
+.diff-easy { background: color-mix(in srgb, var(--ms-green) 14%, transparent); color: var(--ms-green); }
+.diff-medium { background: color-mix(in srgb, var(--ms-peach) 14%, transparent); color: var(--ms-peach); }
+.diff-hard { background: color-mix(in srgb, var(--ms-red) 14%, transparent); color: var(--ms-red); }
+.cpf-more {
+  font-family: var(--font-mono); font-size: 10px;
+  color: var(--ms-text-faint); padding: 3px 4px; text-decoration: none; white-space: nowrap;
+}
+.cpf-more:hover { color: var(--ms-blue); }
+
+/* ── Sidebar phase card hover ── */
+.cpf-phase-card { text-decoration: none; transition: border-color .15s, background .15s, transform .15s; }
+.cpf-phase-card:hover { transform: translateY(-1px); }
+
+@media (max-width: 900px) {
+  #cpf-root { grid-template-columns: 1fr !important; }
+  .cpf-side { position: static !important; padding: 16px !important; }
+  .cpf-canvas { margin: 0 16px 40px !important; }
+}
