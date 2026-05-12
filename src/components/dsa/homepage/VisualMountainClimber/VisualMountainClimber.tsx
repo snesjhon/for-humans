@@ -1,8 +1,8 @@
 export function VisualMountainClimber() {
   return (
-    <div className="pt-[14px] px-[16px] pb-[10px] font-[ui-monospace,monospace] text-[0.72rem]">
+    <div className="pt-3.5 px-4 pb-2.5 font-[ui-monospace,monospace] text-[0.72rem]">
       <div className="flex flex-col gap-1">
-        <div className="flex items-center gap-[6px]">
+        <div className="flex items-center gap-1.5">
           <span className="text-[var(--ms-text-faint)] text-[0.6rem]">
             start
           </span>
@@ -11,7 +11,7 @@ export function VisualMountainClimber() {
             open=2, close=2
           </span>
         </div>
-        <div className="flex flex-col gap-[3px] pl-[12px]">
+        <div className="flex flex-col gap-[3px] pl-3">
           <div className="flex items-center gap-[5px]">
             <span className="text-[var(--ms-text-faint)] text-[0.55rem]">
               ╰─
@@ -21,7 +21,7 @@ export function VisualMountainClimber() {
               open=1
             </span>
           </div>
-          <div className="flex flex-col gap-[3px] pl-[16px]">
+          <div className="flex flex-col gap-[3px] pl-4">
             <div className="flex items-center gap-[5px]">
               <span className="text-[var(--ms-text-faint)] text-[0.52rem]">
                 ├─

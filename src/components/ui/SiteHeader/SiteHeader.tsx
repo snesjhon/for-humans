@@ -48,7 +48,7 @@ export function SiteHeader({
         <nav className="w-full flex items-center gap-6 h-[68px] px-10">
           <Link
             href={homeHref}
-            className="no-underline flex items-center gap-[10px] shrink-0 focus:outline-none"
+            className="no-underline flex items-center gap-2.5 shrink-0 focus:outline-none"
           >
             {icon}
             <span className="italic font-normal text-[1.125rem] text-[var(--ms-text-body)] tracking-[-0.01em] [font-family:var(--font-display)]">

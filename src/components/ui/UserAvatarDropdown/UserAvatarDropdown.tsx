@@ -94,14 +94,14 @@ export function UserAvatarDropdown({
                 </div>
                 <Link
                   href="/settings"
-                  className="block px-3 py-2 text-[0.75rem] text-[var(--ms-text-subtle)] transition-colors no-underline hover:bg-[var(--ms-bg-pane-secondary)] hover:text-[var(--ms-text-body)]"
+                  className="block px-3 py-2 text-xs text-[var(--ms-text-subtle)] transition-colors no-underline hover:bg-[var(--ms-bg-pane-secondary)] hover:text-[var(--ms-text-body)]"
                   onClick={() => setOpen(false)}
                 >
                   Settings
                 </Link>
                 <button
                   onClick={handleSignOut}
-                  className="flex w-full cursor-pointer items-center border-none bg-transparent px-3 py-2 text-left text-[0.75rem] text-[var(--ms-text-subtle)] transition-colors hover:bg-[var(--ms-bg-pane-secondary)] hover:text-[var(--ms-text-body)] focus:outline-none"
+                  className="flex w-full cursor-pointer items-center border-none bg-transparent px-3 py-2 text-left text-xs text-[var(--ms-text-subtle)] transition-colors hover:bg-[var(--ms-bg-pane-secondary)] hover:text-[var(--ms-text-body)] focus:outline-none"
                 >
                   Sign out
                 </button>
@@ -109,7 +109,7 @@ export function UserAvatarDropdown({
             ) : (
               <Link
                 href="/login"
-                className="block px-3 py-2 text-[0.75rem] text-[var(--ms-text-subtle)] transition-colors no-underline hover:bg-[var(--ms-bg-pane-secondary)] hover:text-[var(--ms-text-body)]"
+                className="block px-3 py-2 text-xs text-[var(--ms-text-subtle)] transition-colors no-underline hover:bg-[var(--ms-bg-pane-secondary)] hover:text-[var(--ms-text-body)]"
                 onClick={() => setOpen(false)}
               >
                 Log in
@@ -126,7 +126,7 @@ export function UserAvatarDropdown({
       <div className="flex items-center border-b border-b-[var(--ms-surface)] px-3 py-2.5">
         <Link
           href="/login"
-          className="text-[0.75rem] text-[var(--ms-text-subtle)] transition-colors no-underline hover:text-[var(--ms-text-body)]"
+          className="text-xs text-[var(--ms-text-subtle)] transition-colors no-underline hover:text-[var(--ms-text-body)]"
         >
           Sign in to track progress →
         </Link>
@@ -164,14 +164,14 @@ export function UserAvatarDropdown({
         <div className="absolute left-0 right-0 top-full z-50 border border-[var(--ms-surface)] bg-[var(--ms-bg-pane)] shadow-md">
           <Link
             href="/settings"
-            className="block px-3 py-2 text-[0.75rem] text-[var(--ms-text-subtle)] transition-colors no-underline hover:bg-[var(--ms-bg-pane-secondary)] hover:text-[var(--ms-text-body)]"
+            className="block px-3 py-2 text-xs text-[var(--ms-text-subtle)] transition-colors no-underline hover:bg-[var(--ms-bg-pane-secondary)] hover:text-[var(--ms-text-body)]"
             onClick={() => setOpen(false)}
           >
             Settings
           </Link>
           <button
             onClick={handleSignOut}
-            className="flex w-full cursor-pointer items-center border-none bg-transparent px-3 py-2 text-left text-[0.75rem] text-[var(--ms-text-subtle)] transition-colors hover:bg-[var(--ms-bg-pane-secondary)] hover:text-[var(--ms-text-body)] focus:outline-none"
+            className="flex w-full cursor-pointer items-center border-none bg-transparent px-3 py-2 text-left text-xs text-[var(--ms-text-subtle)] transition-colors hover:bg-[var(--ms-bg-pane-secondary)] hover:text-[var(--ms-text-body)] focus:outline-none"
           >
             Sign out
           </button>

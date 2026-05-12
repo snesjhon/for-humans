@@ -3,7 +3,7 @@ export function VisualTwoInspectors() {
   const L = 2,
     R = 4;
   return (
-    <div className="pt-[18px] px-[16px] pb-[12px]">
+    <div className="pt-[18px] px-4 pb-3">
       <div
         className="flex justify-center gap-[3px] mb-[5px]"
       >
@@ -33,7 +33,7 @@ export function VisualTwoInspectors() {
         ))}
       </div>
       <div
-        className="flex justify-center gap-[3px] mb-[8px]"
+        className="flex justify-center gap-[3px] mb-2"
       >
         {chars.map((_, i) => (
           <div

@@ -8,7 +8,7 @@ export function VisualERTriage() {
   const sizes = [44, 36, 28];
   const fontSizes = ['1rem', '0.82rem', '0.68rem'];
   return (
-    <div className="pt-[22px] px-[14px] pb-[14px] flex flex-col items-center gap-[7px] w-full">
+    <div className="pt-[22px] px-3.5 pb-3.5 flex flex-col items-center gap-[7px] w-full">
       <div className="font-[ui-monospace,monospace] text-[0.52rem] text-[var(--ms-text-faint)] self-start tracking-[0.06em] uppercase mb-[4px]">
         ER triage
       </div>

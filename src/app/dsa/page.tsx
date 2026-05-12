@@ -49,62 +49,32 @@ export default async function PathPage() {
   return (
     <>
       {/* ── Page head ── */}
-      <section style={{
-        borderBottom: '1px solid var(--ms-surface)',
-        background: 'var(--ms-bg-pane)',
-        padding: '34px 0 28px',
-      }}>
-        <div style={{
-          maxWidth: 1280, margin: '0 auto', padding: '0 24px',
-          display: 'grid', gridTemplateColumns: '1fr auto',
-          gap: 40, alignItems: 'end',
-        }}>
+      <section className="border-b border-b-[var(--ms-surface)] bg-[var(--ms-bg-pane)] pt-[34px] pb-7">
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-[1fr_auto] gap-10 items-end">
           <div>
-            <p style={{
-              margin: '0 0 12px',
-              fontFamily: 'var(--font-mono)', fontSize: 10,
-              letterSpacing: '0.14em', color: 'var(--ms-text-faint)',
-              textTransform: 'uppercase',
-            }}>
+            <p className="mb-3 font-mono text-[10px] tracking-[0.14em] text-[var(--ms-text-faint)] uppercase">
               DSA &nbsp;·&nbsp;{' '}
-              <strong style={{ color: 'var(--ms-blue)', fontWeight: 500 }}>THE PATH</strong>
+              <strong className="text-[var(--ms-blue)] font-medium">THE PATH</strong>
             </p>
-            <h1 style={{
-              margin: '0 0 4px',
-              fontFamily: 'var(--font-display)', fontWeight: 400,
-              fontSize: 40, lineHeight: 1.05,
-              letterSpacing: '-0.02em', color: 'var(--ms-text-body)',
-            }}>
+            <h1 className="mb-1 font-display font-normal text-[40px] leading-[1.05] tracking-[-0.02em] text-[var(--ms-text-body)]">
               The Path
             </h1>
-            <p style={{
-              margin: 0, color: 'var(--ms-text-faint)', fontSize: 13,
-              fontFamily: 'var(--font-mono)', letterSpacing: '0.02em',
-            }}>
+            <p className="m-0 text-[var(--ms-text-faint)] text-[13px] font-mono tracking-[0.02em]">
               Novice → Studied → Expert · the {totalSections} mental models behind senior DSA reasoning
             </p>
           </div>
 
-          <div style={{
-            display: 'flex', gap: 28,
-            fontFamily: 'var(--font-mono)', fontSize: 11,
-            color: 'var(--ms-text-subtle)', letterSpacing: '0.04em',
-          }}>
+          <div className="flex gap-7 font-mono text-[11px] text-[var(--ms-text-subtle)] tracking-[0.04em]">
             {[
               { value: totalSections, label: 'mental models' },
               { value: totalProblems, label: 'problems' },
               { value: completedSectionCount, sub: `/${totalSections}`, label: 'complete' },
             ].map(s => (
-              <div key={s.label} style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                <b style={{
-                  display: 'block',
-                  fontFamily: 'var(--font-display)', fontStyle: 'italic',
-                  fontWeight: 400, fontSize: 22, color: 'var(--ms-text-body)',
-                  letterSpacing: 0, lineHeight: 1,
-                }}>
+              <div key={s.label} className="flex flex-col gap-0.5">
+                <b className="block font-display italic font-normal text-[22px] text-[var(--ms-text-body)] tracking-normal leading-none">
                   {s.value}
                   {s.sub && (
-                    <span style={{ fontSize: 12, color: 'var(--ms-text-faint)', fontStyle: 'normal', letterSpacing: '0.04em' }}>
+                    <span className="text-xs text-[var(--ms-text-faint)] not-italic tracking-[0.04em]">
                       {s.sub}
                     </span>
                   )}

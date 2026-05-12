@@ -287,12 +287,12 @@ export function SiteNav({
     <nav className="sticky left-0 top-0 z-50 flex h-screen w-full flex-col border-r border-r-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)]">
       <div
         data-left-sidebar-brand
-        className={`shrink-0 pb-[14px] pt-[18px] ${collapsed ? 'px-3' : 'px-4'}`}
+        className={`shrink-0 pb-3.5 pt-[18px] ${collapsed ? 'px-3' : 'px-4'}`}
       >
         <Link
           href="/"
           data-left-sidebar-brand-link
-          className={`no-underline flex items-center focus:outline-none ${collapsed ? 'justify-center' : 'gap-[10px]'}`}
+          className={`no-underline flex items-center focus:outline-none ${collapsed ? 'justify-center' : 'gap-2.5'}`}
         >
           <span className="text-[var(--ms-text-body)]">
             <TDIcon size={26} />

@@ -20,10 +20,10 @@ export default function DsaHomePage() {
   return (
     <>
       <section className="bg-[var(--ms-bg-pane-secondary)] pb-28">
-        <div className="max-w-[1152px] mx-auto pt-[72px] px-6">
+        <div className="max-w-6xl mx-auto pt-[72px] px-6">
           <div className="mb-8">
             <span
-              className="font-mono text-[0.68rem] font-bold tracking-[0.12em] uppercase inline-block py-[5px] px-[14px] rounded-full text-[var(--ms-blue)] bg-[var(--ms-bg-pane)] border border-[var(--ms-blue)]"
+              className="font-mono text-[0.68rem] font-bold tracking-[0.12em] uppercase inline-block py-[5px] px-3.5 rounded-full text-[var(--ms-blue)] bg-[var(--ms-bg-pane)] border border-[var(--ms-blue)]"
             >
               A structured learning path
             </span>
@@ -70,7 +70,7 @@ export default function DsaHomePage() {
                   color: 'var(--ms-blue)',
                 },
               ].map(({ value, label, color }) => (
-                <div key={label} className="flex items-baseline gap-[6px]">
+                <div key={label} className="flex items-baseline gap-1.5">
                   <span className="font-display italic font-normal text-[3.25rem] leading-none tracking-[-0.04em] text-[var(--ms-blue)]">
                     {value}
                   </span>
@@ -94,12 +94,12 @@ export default function DsaHomePage() {
 
       {/* ── THE PROBLEM / CONTRAST ──────────────────────────────────────────── */}
       <section className="border-y border-y-[var(--ms-surface)] bg-[var(--ms-bg-pane)]">
-        <div className="max-w-[1152px] mx-auto px-6 grid grid-cols-2">
+        <div className="max-w-6xl mx-auto px-6 grid grid-cols-2">
           <div className="py-10 pr-10 border-r border-r-[var(--ms-surface)]">
             <div className="font-mono text-[0.62rem] font-bold tracking-[0.1em] uppercase mb-4 text-[var(--ms-text-faint)]">
               The usual approach
             </div>
-            <h2 className="font-display italic font-normal text-[1.625rem] leading-[1.2] tracking-[-0.02em] mb-[14px] text-[var(--ms-text-body)]">
+            <h2 className="font-display italic font-normal text-[1.625rem] leading-[1.2] tracking-[-0.02em] mb-3.5 text-[var(--ms-text-body)]">
               Grinding leaves too much to chance.
             </h2>
             <p className="text-[0.9375rem] leading-[1.8] m-0 text-[var(--ms-text-subtle)]">
@@ -113,7 +113,7 @@ export default function DsaHomePage() {
             <div className="font-mono text-[0.62rem] font-bold tracking-[0.1em] uppercase mb-4 text-[var(--ms-blue)]">
               This path
             </div>
-            <h2 className="font-display italic font-normal text-[1.625rem] leading-[1.2] tracking-[-0.02em] mb-[14px] text-[var(--ms-text-body)]">
+            <h2 className="font-display italic font-normal text-[1.625rem] leading-[1.2] tracking-[-0.02em] mb-3.5 text-[var(--ms-text-body)]">
               Real pattern recognition is built deliberately.
             </h2>
             <p className="text-[0.9375rem] leading-[1.8] m-0 text-[var(--ms-text-subtle)]">
@@ -128,10 +128,10 @@ export default function DsaHomePage() {
 
       {/* ── FUNDAMENTALS GALLERY ────────────────────────────────────────────── */}
       <section className="bg-[var(--ms-bg-pane)] border-t border-t-[var(--ms-surface)]">
-        <div className="max-w-[1152px] mx-auto px-6 pt-[72px] pb-[80px]">
+        <div className="max-w-6xl mx-auto px-6 pt-[72px] pb-20">
           <div className="mb-12 flex items-end justify-between gap-8 flex-wrap">
             <div>
-              <div className="flex items-center gap-[10px] mb-3">
+              <div className="flex items-center gap-2.5 mb-3">
                 <span className="font-mono text-[0.62rem] font-bold tracking-[0.1em] uppercase text-[var(--ms-text-faint)]">
                   Step 1
                 </span>
@@ -140,7 +140,7 @@ export default function DsaHomePage() {
                   Build the foundation
                 </span>
               </div>
-              <h2 className="font-display italic font-normal text-[2.25rem] leading-[1.1] tracking-[-0.03em] mb-[14px] max-w-[580px] text-[var(--ms-text-body)]">
+              <h2 className="font-display italic font-normal text-[2.25rem] leading-[1.1] tracking-[-0.03em] mb-3.5 max-w-[580px] text-[var(--ms-text-body)]">
                 Every data structure gets its own mental model.
               </h2>
               <p className="text-[0.9375rem] leading-[1.75] m-0 max-w-[520px] text-[var(--ms-text-subtle)]">
@@ -174,17 +174,17 @@ export default function DsaHomePage() {
                       <div className="font-mono text-[0.58rem] font-bold tracking-[0.08em] uppercase mb-2 text-[var(--ms-text-faint)]">
                         Fundamentals
                       </div>
-                      <div className="text-[1.0625rem] font-bold mb-[6px] leading-[1.25] text-[var(--ms-text-body)]">
+                      <div className="text-[1.0625rem] font-bold mb-1.5 leading-[1.25] text-[var(--ms-text-body)]">
                         {name}
                       </div>
-                      <div className="mb-[14px] font-display text-[1.25rem] italic font-normal leading-[1.15] tracking-[-0.02em] text-[var(--ms-blue)]">
+                      <div className="mb-3.5 font-display text-[1.25rem] italic font-normal leading-[1.15] tracking-[-0.02em] text-[var(--ms-blue)]">
                         {analogy}
                       </div>
                       <p className="text-[0.9rem] leading-[1.75] m-0 text-[var(--ms-text-subtle)]">
                         {excerpt}
                       </p>
                     </div>
-                    <div className="flex gap-[6px] flex-wrap mt-5">
+                    <div className="flex gap-1.5 flex-wrap mt-5">
                       {tags.map((tag) => (
                         <span
                           key={tag}
@@ -204,10 +204,10 @@ export default function DsaHomePage() {
 
       {/* ── MENTAL MODELS GALLERY ───────────────────────────────────────────── */}
       <section className="bg-[var(--ms-bg-pane-secondary)] border-t border-t-[var(--ms-surface)]">
-        <div className="max-w-[1152px] mx-auto px-6 pt-[72px] pb-[80px]">
+        <div className="max-w-6xl mx-auto px-6 pt-[72px] pb-20">
           <div className="mb-[52px] flex items-end justify-between gap-8 flex-wrap">
             <div>
-              <div className="flex items-center gap-[10px] mb-3">
+              <div className="flex items-center gap-2.5 mb-3">
                 <span className="font-mono text-[0.62rem] font-bold tracking-[0.1em] uppercase text-[var(--ms-text-faint)]">
                   Step 2
                 </span>
@@ -216,7 +216,7 @@ export default function DsaHomePage() {
                   Apply the foundation
                 </span>
               </div>
-              <h2 className="font-display italic font-normal text-[2.25rem] leading-[1.1] tracking-[-0.03em] mb-[14px] max-w-[560px] text-[var(--ms-text-body)]">
+              <h2 className="font-display italic font-normal text-[2.25rem] leading-[1.1] tracking-[-0.03em] mb-3.5 max-w-[560px] text-[var(--ms-text-body)]">
                 Then tackle real algorithms — with a story for each.
               </h2>
               <p className="text-[0.9375rem] leading-[1.75] m-0 max-w-[520px] text-[var(--ms-text-subtle)]">
@@ -253,17 +253,17 @@ export default function DsaHomePage() {
                   <div className="min-h-[128px] border-b border-b-[var(--ms-surface)] bg-[var(--ms-blue-surface)]">
                     <Visual />
                   </div>
-                  <div className="pt-[14px] px-4 pb-4 flex-1 flex flex-col">
+                  <div className="pt-3.5 px-4 pb-4 flex-1 flex flex-col">
                     <div className="flex items-center gap-[7px] mb-[9px]">
                       <span className="font-mono text-[0.55rem] font-bold tracking-[0.04em] text-[var(--ms-text-faint)]">
                         {id}
                       </span>
                       <span className="w-px h-2 inline-block bg-[var(--ms-surface)]" />
-                      <span className="text-[0.75rem] font-semibold text-[var(--ms-text-body)]">
+                      <span className="text-xs font-semibold text-[var(--ms-text-body)]">
                         {name}
                       </span>
                       <span
-                        className={`font-mono ml-auto shrink-0 rounded-[3px] px-[6px] py-[2px] text-[0.5rem] font-bold uppercase tracking-[0.08em] ${
+                        className={`font-mono ml-auto shrink-0 rounded-[3px] px-1.5 py-0.5 text-[0.5rem] font-bold uppercase tracking-[0.08em] ${
                           difficulty === 'Easy'
                             ? 'bg-[var(--ms-green-surface)] text-[var(--ms-green)]'
                             : difficulty === 'Medium'
@@ -300,7 +300,7 @@ export default function DsaHomePage() {
 
       {/* ── VISUAL SHOWCASE ─────────────────────────────────────────────────── */}
       <section className="bg-[var(--ms-bg-pane)]">
-        <div className="max-w-[1152px] mx-auto px-6 pt-[72px] pb-[80px]">
+        <div className="max-w-6xl mx-auto px-6 pt-[72px] pb-20">
           <div className="mb-[52px]">
             <div className="font-mono text-[0.62rem] font-bold tracking-[0.1em] uppercase mb-3 text-[var(--ms-text-faint)]">
               Inside a lesson
@@ -316,7 +316,7 @@ export default function DsaHomePage() {
               <div className="font-mono text-[0.6rem] font-bold tracking-[0.1em] uppercase mb-3 text-[var(--ms-blue)]">
                 Visual Tracers
               </div>
-              <h3 className="font-display italic font-normal text-[1.75rem] leading-[1.15] tracking-[-0.025em] mb-[14px] text-[var(--ms-text-body)]">
+              <h3 className="font-display italic font-normal text-[1.75rem] leading-[1.15] tracking-[-0.025em] mb-3.5 text-[var(--ms-text-body)]">
                 See the algorithm run before you write a line.
               </h3>
               <p className="text-[0.9375rem] leading-[1.8] mb-5 text-[var(--ms-text-subtle)]">
@@ -338,7 +338,7 @@ export default function DsaHomePage() {
                 <div className="font-mono text-[0.6rem] font-bold tracking-[0.1em] uppercase mb-2 text-[var(--ms-blue)]">
                   Step-by-Step Building
                 </div>
-                <h3 className="font-display italic font-normal text-[1.375rem] leading-[1.2] tracking-[-0.02em] mb-[10px] text-[var(--ms-text-body)]">
+                <h3 className="font-display italic font-normal text-[1.375rem] leading-[1.2] tracking-[-0.02em] mb-2.5 text-[var(--ms-text-body)]">
                   Build the algorithm yourself.
                 </h3>
                 <p className="text-[0.875rem] leading-[1.75] m-0 text-[var(--ms-text-subtle)]">
@@ -355,7 +355,7 @@ export default function DsaHomePage() {
                 <div className="font-mono text-[0.6rem] font-bold tracking-[0.1em] uppercase mb-2 text-[var(--ms-blue)]">
                   Mental Models
                 </div>
-                <h3 className="font-display italic font-normal text-[1.375rem] leading-[1.2] tracking-[-0.02em] mb-[10px] text-[var(--ms-text-body)]">
+                <h3 className="font-display italic font-normal text-[1.375rem] leading-[1.2] tracking-[-0.02em] mb-2.5 text-[var(--ms-text-body)]">
                   Every pattern has an unforgettable analogy.
                 </h3>
                 <p className="text-[0.875rem] leading-[1.75] m-0 text-[var(--ms-text-subtle)]">
@@ -371,7 +371,7 @@ export default function DsaHomePage() {
 
       {/* ── HOW IT WORKS ────────────────────────────────────────────────────── */}
       <section className="border-t border-t-[var(--ms-surface)]">
-        <div className="max-w-[1152px] mx-auto px-6">
+        <div className="max-w-6xl mx-auto px-6">
           <div className="pt-12 pb-8 border-b border-b-[var(--ms-surface)]">
             <div className="font-mono text-[0.62rem] font-bold tracking-[0.1em] uppercase mb-2 text-[var(--ms-text-faint)]">
               The loop
@@ -394,7 +394,7 @@ export default function DsaHomePage() {
                 <div className="font-bold text-[1.0625rem] leading-[1.25] mb-3 text-[var(--ms-text-body)]">
                   {heading}
                 </div>
-                <div className="mb-[14px] h-[3px] w-9 rounded-[2px] bg-[var(--ms-blue)]" />
+                <div className="mb-3.5 h-[3px] w-9 rounded-[2px] bg-[var(--ms-blue)]" />
                 <p className="text-[0.9375rem] leading-[1.75] m-0 text-[var(--ms-text-muted)]">
                   {body}
                 </p>
@@ -406,7 +406,7 @@ export default function DsaHomePage() {
 
       {/* ── BOTTOM CTA ──────────────────────────────────────────────────────── */}
       <section className="border-t border-t-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)]">
-        <div className="max-w-[1152px] mx-auto px-6 pt-[72px] pb-[80px] flex items-end justify-between gap-10 flex-wrap">
+        <div className="max-w-6xl mx-auto px-6 pt-[72px] pb-20 flex items-end justify-between gap-10 flex-wrap">
           <div>
             <h2 className="font-display italic font-normal text-[2.5rem] leading-[1.1] tracking-[-0.03em] mb-3 max-w-[520px] text-[var(--ms-text-body)]">
               Ready to build real intuition?

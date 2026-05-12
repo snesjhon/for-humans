@@ -36,18 +36,18 @@ export function PhaseBannerContent({
         {chapterLabel}
       </div>
 
-      <div className="inline-flex items-center gap-2 mb-[14px]">
+      <div className="inline-flex items-center gap-2 mb-3.5">
         <span className="text-base leading-none">{phase.emoji}</span>
         <span className="font-mono text-[0.68rem] font-bold tracking-[0.12em] uppercase text-[var(--accent)]">
           Phase {phase.number}
         </span>
       </div>
 
-      <h3 className="mb-[14px] text-[2.75rem] leading-[1.05] tracking-[-0.03em] text-[var(--ms-text-body)] italic font-normal [font-family:var(--font-display)]">
+      <h3 className="mb-3.5 text-[2.75rem] leading-[1.05] tracking-[-0.03em] text-[var(--ms-text-body)] italic font-normal [font-family:var(--font-display)]">
         {phase.label}
       </h3>
 
-      <div className="mb-[14px] h-[3px] w-10 rounded-[2px] bg-[var(--accent)]" />
+      <div className="mb-3.5 h-[3px] w-10 rounded-[2px] bg-[var(--accent)]" />
 
       <p className="text-[0.9375rem] leading-[1.65] m-0 max-w-[560px] text-[var(--ms-text-subtle)]">
         {phase.goal}
@@ -79,7 +79,7 @@ export function StepGuideCard({
       className="flex h-full flex-col box-border rounded-[0.875rem] border bg-transparent px-[22px] py-5 shadow-[0_1px_4px_rgba(0,0,0,0.08)] backdrop-blur-[12px] [--accent:var(--ms-blue)] border-[var(--accent)]"
       style={{ '--accent': color } as React.CSSProperties}
     >
-      <div className="flex items-center gap-2 mb-[14px]">
+      <div className="flex items-center gap-2 mb-3.5">
         <span className="font-mono text-[0.58rem] font-bold tracking-[0.1em] uppercase text-[var(--ms-text-faint)]">
           Step {stepNum}
         </span>
@@ -99,7 +99,7 @@ export function StepGuideCard({
           <Link
             key={link.href}
             href={link.href}
-            className={`${styles.guideButton} inline-block rounded-[6px] bg-[var(--accent)] px-4 py-[7px] text-[0.8rem] font-semibold tracking-[0.01em] text-white no-underline`}
+            className={`${styles.guideButton} inline-block rounded-md bg-[var(--accent)] px-4 py-[7px] text-[0.8rem] font-semibold tracking-[0.01em] text-white no-underline`}
           >
             {link.label} →
           </Link>
@@ -122,7 +122,7 @@ export function PlaceholderGuideCard({
 }) {
   return (
     <div className="flex h-full flex-col box-border rounded-[0.875rem] border border-dashed border-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)] px-[22px] py-5">
-      <div className="flex items-center gap-2 mb-[14px]">
+      <div className="flex items-center gap-2 mb-3.5">
         <span className="font-mono text-[0.58rem] font-bold tracking-[0.1em] uppercase text-[var(--ms-text-faint)]">
           Step {stepNum}
         </span>
@@ -137,7 +137,7 @@ export function PlaceholderGuideCard({
       <p className="mb-5 flex-1 text-[0.9rem] leading-[1.65] text-[var(--ms-text-faint)] italic [font-family:var(--font-display)]">
         {hook}
       </p>
-      <div className="self-start py-[7px] px-4 rounded-[6px] text-[0.8rem] font-semibold select-none bg-[var(--ms-bg-pane-tertiary)] border border-[var(--ms-surface)] text-[var(--ms-text-faint)]">
+      <div className="self-start py-[7px] px-4 rounded-md text-[0.8rem] font-semibold select-none bg-[var(--ms-bg-pane-tertiary)] border border-[var(--ms-surface)] text-[var(--ms-text-faint)]">
         Coming soon
       </div>
     </div>
@@ -153,7 +153,7 @@ export function AdvSection({ children }: { children: React.ReactNode }) {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="appearance-none flex items-center gap-2 rounded-md border-none bg-transparent px-0 py-[6px] text-left outline-none hover:opacity-80 focus:outline-none focus:ring-0 focus-visible:outline-none"
+        className="appearance-none flex items-center gap-2 rounded-md border-none bg-transparent px-0 py-1.5 text-left outline-none hover:opacity-80 focus:outline-none focus:ring-0 focus-visible:outline-none"
       >
         <CircleChevronRight
           aria-hidden="true"

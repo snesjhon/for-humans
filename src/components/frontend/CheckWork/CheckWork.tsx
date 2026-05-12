@@ -35,7 +35,7 @@ export default function CheckWork({ slug }: Props) {
       <div className="mt-6">
         <button
           onClick={() => setIsOpen(true)}
-          className="w-full cursor-pointer rounded-[6px] border-0 bg-[var(--ms-blue)] px-[20px] py-[8px] text-sm font-semibold text-white"
+          className="w-full cursor-pointer rounded-md border-0 bg-[var(--ms-blue)] px-5 py-[8px] text-sm font-semibold text-white"
         >
           Check my work
         </button>

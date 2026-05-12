@@ -129,7 +129,7 @@ export default async function PathPage() {
               id={`phase-zone-${phase.number}`}
               className="bg-[var(--ms-bg-pane-secondary)]"
             >
-              <div className="max-w-[1152px] mx-auto px-6">
+              <div className="max-w-6xl mx-auto px-6">
                 <PhaseBannerContent
                   phase={phase}
                   color={color}
@@ -267,7 +267,7 @@ export default async function PathPage() {
           );
         })}
 
-        <div className="max-w-[1152px] mx-auto px-6 py-4">
+        <div className="max-w-6xl mx-auto px-6 py-4">
           <PhaseTracker phaseCount={phaseGroups.length} />
         </div>
       </div>

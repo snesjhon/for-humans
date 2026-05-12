@@ -108,7 +108,7 @@ export default async function PathPage() {
               id={`phase-zone-${phase.number}`}
               className="bg-[var(--ms-bg-pane-secondary)]"
             >
-              <div className="mx-auto max-w-[1152px] px-6">
+              <div className="mx-auto max-w-6xl px-6">
                 <PhaseBannerContent
                   phase={phase}
                   color={color}

@@ -1,7 +1,7 @@
 export function VisualStampAlbum() {
   return (
-    <div className="pt-[18px] px-[20px] pb-[12px] flex flex-col gap-[10px]">
-      <div className="flex gap-[6px] items-center">
+    <div className="pt-[18px] px-5 pb-3 flex flex-col gap-2.5">
+      <div className="flex gap-1.5 items-center">
         {[1, 2, 3, 1].map((n, i) => {
           const isDup = i === 3;
           const isMounted = i < 3;
@@ -50,7 +50,7 @@ export function VisualStampAlbum() {
             </div>
           );
         })}
-        <div className="ml-[4px] font-[ui-monospace,monospace] text-[0.58rem] text-[#d94f4f] leading-[1.5]">
+        <div className="ml-1 font-[ui-monospace,monospace] text-[0.58rem] text-[#d94f4f] leading-[1.5]">
           already
           <br />
           in album!

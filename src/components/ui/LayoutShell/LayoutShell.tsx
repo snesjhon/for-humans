@@ -125,11 +125,11 @@ export function LayoutShell({
             backdropFilter: isHome && !scrolled ? 'none' : 'blur(8px)',
           }}
         >
-          <div className="max-w-[1152px] mx-auto px-6 min-h-14 py-3 flex items-center justify-between gap-6">
+          <div className="max-w-6xl mx-auto px-6 min-h-14 py-3 flex items-center justify-between gap-6">
             <div className="flex items-center gap-6">
               <Link
                 href="/"
-                className="no-underline flex items-center gap-[10px] focus:outline-none"
+                className="no-underline flex items-center gap-2.5 focus:outline-none"
               >
                 <span className="text-[var(--ms-text-body)]">
                   <TDIcon size={22} />

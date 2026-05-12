@@ -24,14 +24,14 @@ export function CodeEditorMockup() {
       <div className="flex py-[18px]">
         {/* line numbers */}
         <div
-          className="border-r border-white/[0.06] select-none text-right min-w-[36px] py-0 px-[14px] text-[rgba(255,255,255,0.18)]"
+          className="border-r border-white/[0.06] select-none text-right min-w-9 py-0 px-3.5 text-[rgba(255,255,255,0.18)]"
         >
           {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
             <div key={n}>{n}</div>
           ))}
         </div>
         {/* code */}
-        <div className="flex-1 overflow-x-auto py-0 px-[20px]">
+        <div className="flex-1 overflow-x-auto py-0 px-5">
           <div>
             <Kw>function</Kw> <Fn>containsDuplicate</Fn>
             <Px>(nums: </Px>
@@ -94,7 +94,7 @@ export function CodeEditorMockup() {
       <div
         className="flex items-center justify-between px-4 py-2 border-t border-t-[rgba(255,255,255,0.06)] bg-[rgba(0,0,0,0.2)]"
       >
-        <div className="flex flex-col gap-[2px]">
+        <div className="flex flex-col gap-0.5">
           {[
             'PASS has duplicate at end',
             'PASS no duplicates',
@@ -105,9 +105,9 @@ export function CodeEditorMockup() {
             </span>
           ))}
         </div>
-        <button className="py-[6px] px-[14px] rounded-[5px] bg-[var(--ms-blue)] text-white border-0 text-[0.72rem] font-semibold cursor-pointer flex items-center gap-[6px] font-[ui-monospace,monospace]">
+        <button className="py-1.5 px-3.5 rounded-[5px] bg-[var(--ms-blue)] text-white border-0 text-[0.72rem] font-semibold cursor-pointer flex items-center gap-1.5 font-[ui-monospace,monospace]">
           Run{' '}
-          <kbd className="bg-[rgba(255,255,255,0.15)] py-[1px] px-[5px] rounded-[3px] text-[0.68rem]">
+          <kbd className="bg-[rgba(255,255,255,0.15)] py-px px-[5px] rounded-[3px] text-[0.68rem]">
             ⌘↵
           </kbd>
         </button>

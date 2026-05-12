@@ -3,7 +3,7 @@ export function VisualAssemblyLine() {
   const W = 2,
     R = 3;
   return (
-    <div className="py-[24px] px-[18px] flex flex-col gap-2 w-full">
+    <div className="py-6 px-[18px] flex flex-col gap-2 w-full">
       <div className="font-[ui-monospace,monospace] text-[0.52rem] text-[var(--ms-text-faint)] mb-[2px] tracking-[0.06em] uppercase">
         conveyor belt
       </div>

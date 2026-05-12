@@ -37,9 +37,9 @@ export default function FrontendSettingsPage() {
   const scaffoldCmd = `curl -fsSL ${origin}/scaffolds/plant-floor-monitor.sh | bash`;
 
   return (
-    <main className="mx-auto mt-[80px] max-w-[600px] space-y-[3rem] px-6">
+    <main className="mx-auto mt-20 max-w-[600px] space-y-12 px-6">
       <div>
-        <h1 className="mb-[0.5rem] text-[1.5rem] font-extrabold">
+        <h1 className="mb-2 text-2xl font-extrabold">
           Frontend Settings
         </h1>
         <p className="text-[0.9375rem] text-[var(--ms-text-subtle)]">
@@ -48,19 +48,19 @@ export default function FrontendSettingsPage() {
       </div>
 
       <section>
-        <h2 className="mb-[0.5rem] text-[1rem] font-bold">Get Started</h2>
+        <h2 className="mb-2 text-base font-bold">Get Started</h2>
         <p className="mb-[1rem] text-[0.875rem] text-[var(--ms-text-subtle)]">
           Run this command to scaffold the Plant Floor Monitor project on your
           machine. It creates the directory, writes the starter files, and runs{' '}
           <code className="font-[ui-monospace,monospace]">pnpm install</code>.
         </p>
-        <div className="flex items-center gap-[8px] rounded-[6px] border border-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)] px-[12px] py-[10px]">
+        <div className="flex items-center gap-2 rounded-md border border-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)] px-[12px] py-[10px]">
           <code className="flex-1 font-[ui-monospace,monospace] text-[0.8rem] text-[var(--ms-text-body)]">
             {scaffoldCmd}
           </code>
           <button
             onClick={() => handleCopy(scaffoldCmd)}
-            className="cursor-pointer rounded border-none bg-transparent px-[8px] py-[4px] text-[0.75rem] text-[var(--ms-text-faint)] transition-colors hover:text-[var(--ms-text-body)]"
+            className="cursor-pointer rounded border-none bg-transparent px-[8px] py-1 text-xs text-[var(--ms-text-faint)] transition-colors hover:text-[var(--ms-text-body)]"
           >
             {copied ? 'Copied!' : 'Copy'}
           </button>
@@ -74,7 +74,7 @@ export default function FrontendSettingsPage() {
       </section>
 
       <section>
-        <h2 className="mb-[0.5rem] text-[1rem] font-bold">
+        <h2 className="mb-2 text-base font-bold">
           Plant Floor Monitor Path
         </h2>
         <p className="mb-[1rem] text-[0.875rem] text-[var(--ms-text-subtle)]">
@@ -82,7 +82,7 @@ export default function FrontendSettingsPage() {
           read your code when checking work.
         </p>
         {storedPath && (
-          <div className="mb-[1rem] flex items-center justify-between rounded-[6px] border border-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)] px-[16px] py-[12px]">
+          <div className="mb-[1rem] flex items-center justify-between rounded-md border border-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)] px-4 py-[12px]">
             <span className="font-[ui-monospace,monospace] text-[0.875rem] text-[var(--ms-text-body)]">
               {storedPath}
             </span>
@@ -97,18 +97,18 @@ export default function FrontendSettingsPage() {
             </button>
           </div>
         )}
-        <div className="flex gap-[8px]">
+        <div className="flex gap-2">
           <input
             type="text"
             value={pathInput}
             onChange={(e) => setPathInput(e.target.value)}
             placeholder="/Users/you/plant-floor-monitor"
-            className="flex-1 rounded-[6px] border border-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)] px-[12px] py-[8px] font-[ui-monospace,monospace] text-[0.875rem] text-[var(--ms-text-body)]"
+            className="flex-1 rounded-md border border-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)] px-[12px] py-[8px] font-[ui-monospace,monospace] text-[0.875rem] text-[var(--ms-text-body)]"
             onKeyDown={(e) => e.key === 'Enter' && handleSavePath()}
           />
           <button
             onClick={handleSavePath}
-            className="cursor-pointer rounded-[6px] border-none bg-[var(--ms-blue)] px-[20px] py-[8px] text-[0.875rem] font-semibold text-white"
+            className="cursor-pointer rounded-md border-none bg-[var(--ms-blue)] px-5 py-[8px] text-[0.875rem] font-semibold text-white"
           >
             {pathSaved ? 'Saved!' : 'Save'}
           </button>
@@ -116,7 +116,7 @@ export default function FrontendSettingsPage() {
       </section>
 
       <section>
-        <h2 className="mb-[0.5rem] text-[1rem] font-bold">User Settings</h2>
+        <h2 className="mb-2 text-base font-bold">User Settings</h2>
         <p className="text-[0.875rem] text-[var(--ms-text-subtle)]">
           Claude API key and theme live in{' '}
           <a href="/settings" className="text-[var(--ms-blue)]">

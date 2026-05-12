@@ -15,7 +15,7 @@ export function VisualCityMap() {
     ['D', 'E'],
   ];
   return (
-    <div className="pt-[22px] px-[14px] pb-[14px] w-full flex flex-col gap-2">
+    <div className="pt-[22px] px-3.5 pb-3.5 w-full flex flex-col gap-2">
       <div className="font-[ui-monospace,monospace] text-[0.52rem] text-[var(--ms-text-faint)] tracking-[0.06em] uppercase">
         city road map
       </div>

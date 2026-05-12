@@ -36,7 +36,7 @@ export default function Evaluator({
 
       <button
         onClick={() => setIsOpen(true)}
-        className="py-[8px] px-[20px] rounded-[6px] bg-[var(--ms-blue)] text-white text-sm font-semibold border-0 cursor-pointer"
+        className="py-[8px] px-5 rounded-md bg-[var(--ms-blue)] text-white text-sm font-semibold border-0 cursor-pointer"
       >
         Discuss it →
       </button>

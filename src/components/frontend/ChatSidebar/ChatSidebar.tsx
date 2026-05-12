@@ -16,7 +16,7 @@ const ExcalidrawDynamic = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ms-text-subtle)', fontSize: '0.875rem', fontStyle: 'italic' }}>
+      <div className="flex flex-1 items-center justify-center text-sm italic text-[var(--ms-text-subtle)]">
         Loading canvas…
       </div>
     ),
@@ -386,10 +386,7 @@ Shape:
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={handleClose}
-            className="fixed inset-0 z-[49]"
-            style={{
-              background: 'var(--ms-bg-pane-tertiary)',
-            }}
+            className="fixed inset-0 z-[49] bg-[var(--ms-bg-pane-tertiary)]"
           />
 
           {/* Panel */}
@@ -429,33 +426,21 @@ Shape:
                     return !prev
                   })
                 }}
-                className="flex items-center gap-1 px-3 py-[5px] rounded-[5px] border text-[0.75rem] font-medium transition-colors"
-                style={{
-                  background: drawOpen ? 'var(--ms-text-body)' : 'var(--ms-bg-pane-secondary)',
-                  color: drawOpen ? 'var(--ms-bg-pane)' : 'var(--ms-text-muted)',
-                  borderColor: drawOpen ? 'var(--ms-text-body)' : 'var(--ms-surface)',
-                  cursor: 'pointer',
-                }}
+                className={`flex items-center gap-1 px-3 py-[5px] rounded-[5px] border text-xs font-medium transition-colors cursor-pointer ${drawOpen ? 'bg-[var(--ms-text-body)] text-[var(--ms-bg-pane)] border-[var(--ms-text-body)]' : 'bg-[var(--ms-bg-pane-secondary)] text-[var(--ms-text-muted)] border-[var(--ms-surface)]'}`}
               >
                 ✏️ {drawOpen ? 'Drawing…' : 'Draw'}
               </button>
               <button
                 onClick={handleWrapUp}
                 disabled={busy}
-                className="flex items-center gap-1 px-3 py-[5px] rounded-[5px] border text-[0.75rem] font-medium"
-                style={{
-                  background: 'var(--ms-bg-pane-secondary)',
-                  color: busy ? 'var(--ms-text-faint)' : 'var(--ms-text-muted)',
-                  borderColor: 'var(--ms-surface)',
-                  cursor: busy ? 'not-allowed' : 'pointer',
-                }}
+                className={`flex items-center gap-1 px-3 py-[5px] rounded-[5px] border border-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)] text-xs font-medium ${busy ? 'text-[var(--ms-text-faint)] cursor-not-allowed' : 'text-[var(--ms-text-muted)] cursor-pointer'}`}
               >
                 <CircleCheck className="h-3.5 w-3.5 stroke-[2.2]" />
                 Wrap Up
               </button>
               <button
                 onClick={handleClose}
-                className="bg-transparent border-0 cursor-pointer text-[var(--ms-text-subtle)] text-[1.25rem] leading-none p-[4px] rounded-[4px] flex items-center justify-center ml-1"
+                className="bg-transparent border-0 cursor-pointer text-[var(--ms-text-subtle)] text-[1.25rem] leading-none p-[4px] rounded flex items-center justify-center ml-1"
                 aria-label="Close"
               >
                 ✕
@@ -463,11 +448,11 @@ Shape:
             </div>
 
             {/* Content area */}
-            <div className="flex-1 flex overflow-hidden relative" style={{ minHeight: 0 }}>
+            <div className="flex-1 flex overflow-hidden relative min-h-0">
               {drawOpen && (
-                <div className="flex flex-col border-r border-r-[var(--ms-surface)]" style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ flex: 1, minHeight: 0, position: 'relative', overflow: 'hidden' }}>
-                    <div style={{ position: 'absolute', inset: 0 }}>
+                <div className="flex flex-col border-r border-r-[var(--ms-surface)] flex-1 min-w-0">
+                  <div className="flex-1 min-h-0 relative overflow-hidden">
+                    <div className="absolute inset-0">
                       <ExcalidrawDynamic
                         excalidrawAPI={(api: unknown) => {
                           excalidrawAPIRef.current = api as typeof excalidrawAPIRef.current
@@ -483,12 +468,7 @@ Shape:
                     <button
                       onClick={handleSubmitDrawing}
                       disabled={busy || !canvasReady}
-                      className="px-4 py-[7px] rounded-[6px] border-0 text-[0.8125rem] font-semibold"
-                      style={{
-                        background: busy ? 'var(--ms-bg-pane-tertiary)' : 'var(--ms-blue)',
-                        color: busy ? 'var(--ms-text-faint)' : 'white',
-                        cursor: busy ? 'not-allowed' : 'pointer',
-                      }}
+                      className={`px-4 py-[7px] rounded-md border-0 text-[0.8125rem] font-semibold ${busy ? 'bg-[var(--ms-bg-pane-tertiary)] text-[var(--ms-text-faint)] cursor-not-allowed' : 'bg-[var(--ms-blue)] text-white cursor-pointer'}`}
                     >
                       {streaming ? 'Submitting…' : 'Submit drawing →'}
                     </button>
@@ -497,13 +477,12 @@ Shape:
               )}
 
               <div
-                className="flex flex-col overflow-hidden"
-                style={{ width: drawOpen ? '380px' : '100%', flexShrink: 0 }}
+                className="flex flex-col overflow-hidden shrink-0"
+                style={{ width: drawOpen ? '380px' : '100%' }}
               >
                 {summarizing && (
                   <div
-                    className="absolute inset-0 flex items-center justify-center z-10"
-                    style={{ background: 'var(--ms-bg-pane)' }}
+                    className="absolute inset-0 flex items-center justify-center z-10 bg-[var(--ms-bg-pane)]"
                   >
                     <p className="text-[var(--ms-text-subtle)] text-sm italic">Generating summary…</p>
                   </div>
@@ -537,8 +516,7 @@ Shape:
                     )}
                     {summary.lookUp && (
                       <div
-                        className="px-[14px] py-[10px] rounded-[6px] bg-[var(--ms-blue-surface)]"
-                        style={{ border: '1px solid var(--ms-blue)' }}
+                        className="px-3.5 py-[10px] rounded-md bg-[var(--ms-blue-surface)] border border-[var(--ms-blue)]"
                       >
                         <p className="font-[ui-monospace,monospace] text-[0.65rem] font-bold tracking-[0.09em] uppercase text-[var(--ms-blue)] mb-[0.375rem]">
                           One thing to look up
@@ -548,7 +526,7 @@ Shape:
                     )}
                     <button
                       onClick={handleReset}
-                      className="self-start px-4 py-[7px] rounded-[6px] border border-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)] text-[var(--ms-text-muted)] text-[0.8125rem] cursor-pointer"
+                      className="self-start px-4 py-[7px] rounded-md border border-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)] text-[var(--ms-text-muted)] text-[0.8125rem] cursor-pointer"
                     >
                       ↩ Start over
                     </button>
@@ -566,7 +544,7 @@ Shape:
                                 <img
                                   src={`data:image/png;base64,${msg.imageData}`}
                                   alt="Submitted diagram"
-                                  style={{ maxWidth: '100%', borderRadius: 6, marginBottom: 6, display: 'block' }}
+                                  className="block max-w-full rounded mb-1.5"
                                 />
                               )}
                               {msg.content}
@@ -584,7 +562,7 @@ Shape:
 
                     {error && (
                       <div className="px-3 py-2 border-t border-t-[var(--ms-surface)] flex items-center gap-3 flex-wrap bg-[var(--ms-bg-pane-secondary)]">
-                        <p className="m-0 text-[0.8125rem]" style={{ color: 'var(--red, #e06c75)' }}>
+                        <p className="m-0 text-[0.8125rem] text-[var(--red,#e06c75)]">
                           {error}{' '}
                           {error.includes('API key') && (
                             <a href="/settings" className="text-[var(--ms-blue)]">Go to Settings →</a>
@@ -594,8 +572,7 @@ Shape:
                           <button
                             onClick={handleWrapUp}
                             disabled={busy}
-                            className="px-3 py-[4px] rounded-[5px] border border-[var(--ms-surface)] bg-[var(--ms-bg-pane)] text-[var(--ms-text-muted)] text-[0.8125rem]"
-                            style={{ cursor: busy ? 'not-allowed' : 'pointer' }}
+                            className={`px-3 py-1 rounded-[5px] border border-[var(--ms-surface)] bg-[var(--ms-bg-pane)] text-[var(--ms-text-muted)] text-[0.8125rem] ${busy ? 'cursor-not-allowed' : 'cursor-pointer'}`}
                           >
                             Retry summary
                           </button>
@@ -612,8 +589,7 @@ Shape:
                           <button
                             onClick={handleWrapUp}
                             disabled={busy}
-                            className="px-3 py-[5px] rounded-[5px] border-0 bg-[var(--ms-blue)] text-white text-[0.8125rem] font-semibold"
-                            style={{ cursor: busy ? 'not-allowed' : 'pointer' }}
+                            className={`px-3 py-[5px] rounded-[5px] border-0 bg-[var(--ms-blue)] text-white text-[0.8125rem] font-semibold ${busy ? 'cursor-not-allowed' : 'cursor-pointer'}`}
                           >
                             Yes, wrap up
                           </button>
@@ -644,18 +620,12 @@ Shape:
                           e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px'
                         }}
                         disabled={busy}
-                        className="flex-1 text-sm px-[10px] py-[8px] rounded-[6px] border border-[var(--ms-surface)] text-[var(--ms-text-body)] resize-none outline-none overflow-hidden min-h-[38px] max-h-[120px]"
-                        style={{ fontFamily: 'inherit', background: busy ? 'var(--ms-bg-pane-tertiary)' : 'var(--ms-bg-pane)' }}
+                        className={`flex-1 text-sm px-2.5 py-[8px] rounded-md border border-[var(--ms-surface)] text-[var(--ms-text-body)] resize-none outline-none overflow-hidden min-h-[38px] max-h-[120px] font-[inherit] ${busy ? 'bg-[var(--ms-bg-pane-tertiary)]' : 'bg-[var(--ms-bg-pane)]'}`}
                       />
                       <button
                         onClick={() => handleSend()}
                         disabled={busy || !input.trim()}
-                        className="px-4 py-[7px] rounded-[6px] border-0 text-[0.8125rem] font-semibold whitespace-nowrap"
-                        style={{
-                          background: busy || !input.trim() ? 'var(--ms-bg-pane-tertiary)' : 'var(--ms-blue)',
-                          color: busy || !input.trim() ? 'var(--ms-text-faint)' : 'white',
-                          cursor: busy || !input.trim() ? 'not-allowed' : 'pointer',
-                        }}
+                        className={`px-4 py-[7px] rounded-md border-0 text-[0.8125rem] font-semibold whitespace-nowrap ${(busy || !input.trim()) ? 'bg-[var(--ms-bg-pane-tertiary)] text-[var(--ms-text-faint)] cursor-not-allowed' : 'bg-[var(--ms-blue)] text-white cursor-pointer'}`}
                       >
                         {streaming ? 'Sending…' : 'Send'}
                       </button>

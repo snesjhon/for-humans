@@ -1,20 +1,20 @@
 export function VisualFileSystem() {
   return (
-    <div className="py-[22px] px-[16px] flex flex-col items-center gap-2 w-full">
+    <div className="py-[22px] px-4 flex flex-col items-center gap-2 w-full">
       <div className="font-[ui-monospace,monospace] text-[0.52rem] text-[var(--ms-text-faint)] mb-[4px] self-start tracking-[0.06em] uppercase">
         binary tree
       </div>
       {/* Root */}
       <div className="flex justify-center">
         <div
-          className="w-[44px] h-[36px] flex items-center justify-center border-2 border-[var(--ms-blue)] rounded-[6px] font-[ui-monospace,monospace] text-[0.85rem] font-bold text-[var(--ms-blue)]"
+          className="w-[44px] h-[36px] flex items-center justify-center border-2 border-[var(--ms-blue)] rounded-md font-[ui-monospace,monospace] text-[0.85rem] font-bold text-[var(--ms-blue)]"
           style={{ background: 'var(--ms-blue-surface)' }}
         >
           15
         </div>
       </div>
       {/* Connectors */}
-      <div className="relative w-full h-[12px]">
+      <div className="relative w-full h-3">
         <div className="absolute top-0 left-[50%] w-[28%] h-[1px] bg-[var(--ms-surface)] -translate-x-full" />
         <div className="absolute top-0 left-[50%] w-[28%] h-[1px] bg-[var(--ms-surface)]" />
       </div>
@@ -23,7 +23,7 @@ export function VisualFileSystem() {
         {[10, 20].map((n) => (
           <div
             key={n}
-            className="w-[40px] h-[32px] flex items-center justify-center rounded-[5px] font-[ui-monospace,monospace] text-[0.75rem] font-semibold text-[var(--ms-blue)]"
+            className="w-[40px] h-[32px] flex items-center justify-center rounded-[5px] font-[ui-monospace,monospace] text-xs font-semibold text-[var(--ms-blue)]"
             style={{
               border: '1.5px solid var(--ms-blue)',
               background: 'var(--ms-blue-surface)',
@@ -34,11 +34,11 @@ export function VisualFileSystem() {
         ))}
       </div>
       {/* Level 3 */}
-      <div className="flex gap-[6px]">
+      <div className="flex gap-1.5">
         {[8, 12, 17, 25].map((n) => (
           <div
             key={n}
-            className="w-[32px] h-[26px] flex items-center justify-center border border-[var(--ms-surface)] rounded-[4px] font-[ui-monospace,monospace] text-[0.65rem] text-[var(--ms-text-faint)] bg-[var(--ms-bg-pane)]"
+            className="w-8 h-[26px] flex items-center justify-center border border-[var(--ms-surface)] rounded font-[ui-monospace,monospace] text-[0.65rem] text-[var(--ms-text-faint)] bg-[var(--ms-bg-pane)]"
           >
             {n}
           </div>

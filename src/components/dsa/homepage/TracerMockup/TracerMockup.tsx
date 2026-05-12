@@ -24,9 +24,9 @@ export function TracerMockup() {
 
       {/* grid */}
       <div className="px-5 pt-5 pb-4">
-        <div className="flex items-start gap-[10px]">
+        <div className="flex items-start gap-2.5">
           {/* row labels */}
-          <div className="flex flex-col gap-1.5 pt-[12px]">
+          <div className="flex flex-col gap-1.5 pt-3">
             {['nums', 'result'].map((lbl) => (
               <span
                 key={lbl}
@@ -115,7 +115,7 @@ export function TracerMockup() {
             </span>
           ))}
         </div>
-        <div className="flex items-center gap-[8px]">
+        <div className="flex items-center gap-2">
           {['← Prev', '5 / 6', 'Next →'].map((t, i) =>
             i === 1 ? (
               <span
@@ -127,7 +127,7 @@ export function TracerMockup() {
             ) : (
               <button
                 key={t}
-                className="border border-[var(--ms-surface)] bg-[var(--ms-bg-pane)] font-[ui-monospace,monospace] text-[0.68rem] text-[var(--ms-text-muted)] px-[10px] py-1 rounded cursor-pointer"
+                className="border border-[var(--ms-surface)] bg-[var(--ms-bg-pane)] font-[ui-monospace,monospace] text-[0.68rem] text-[var(--ms-text-muted)] px-2.5 py-1 rounded cursor-pointer"
               >
                 {t}
               </button>

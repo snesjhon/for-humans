@@ -6,8 +6,8 @@ export function VisualOdometer() {
     { l: 'C', m: 30 },
   ];
   return (
-    <div className="pt-[20px] px-[20px] pb-[10px]">
-      <div className="relative mb-[6px]">
+    <div className="pt-5 px-5 pb-2.5">
+      <div className="relative mb-1.5">
         <div className="h-[2px] bg-[var(--ms-surface)] my-[10px]" />
         <div className="flex justify-between absolute top-0 left-0 right-0">
           {pts.map((p, i) => (
@@ -29,11 +29,11 @@ export function VisualOdometer() {
           ))}
         </div>
       </div>
-      <div className="flex justify-between mb-[10px]">
+      <div className="flex justify-between mb-2.5">
         {pts.map((p, i) => (
           <div
             key={i}
-            className="flex flex-col items-center gap-[1px]"
+            className="flex flex-col items-center gap-px"
           >
             <span
               style={{

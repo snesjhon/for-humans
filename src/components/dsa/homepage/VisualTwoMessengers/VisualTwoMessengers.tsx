@@ -1,7 +1,7 @@
 export function VisualTwoMessengers() {
   return (
     <div
-      className="pt-[14px] px-[14px] pb-[10px] flex flex-col gap-[5px]"
+      className="pt-3.5 px-3.5 pb-2.5 flex flex-col gap-[5px]"
     >
       {[
         {
@@ -35,10 +35,10 @@ export function VisualTwoMessengers() {
       ].map(({ label, vals, color, bg, border }) => (
         <div
           key={label}
-          className="flex items-center gap-[4px]"
+          className="flex items-center gap-1"
         >
           <span
-            className="font-[ui-monospace,monospace] text-[0.52rem] w-[32px] text-right shrink-0"
+            className="font-[ui-monospace,monospace] text-[0.52rem] w-8 text-right shrink-0"
             style={{ color }}
           >
             {label}

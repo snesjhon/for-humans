@@ -35,7 +35,7 @@ export function UserSettingsPanel({ email }: UserSettingsPanelProps) {
   }
 
   return (
-    <main className="mx-auto mt-[80px] max-w-[720px] space-y-[2.25rem] px-6 pb-16">
+    <main className="mx-auto mt-20 max-w-[720px] space-y-9 px-6 pb-16">
       <section className="space-y-2">
         <p className="font-mono text-[0.68rem] font-bold uppercase tracking-[0.14em] text-[var(--ms-text-faint)]">
           User Settings
@@ -53,7 +53,7 @@ export function UserSettingsPanel({ email }: UserSettingsPanelProps) {
           Account
         </p>
         <div className="mt-4 rounded-[12px] border border-[var(--ms-surface)] bg-[var(--ms-bg-pane)] px-4 py-3">
-          <p className="text-[0.75rem] font-semibold uppercase tracking-[0.08em] text-[var(--ms-text-faint)]">
+          <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[var(--ms-text-faint)]">
             Signed in as
           </p>
           <p className="mt-1 text-[0.95rem] text-[var(--ms-text-body)]">{email}</p>
@@ -84,7 +84,7 @@ export function UserSettingsPanel({ email }: UserSettingsPanelProps) {
           </div>
         )}
 
-        <div className="mt-4 flex gap-[8px]">
+        <div className="mt-4 flex gap-2">
           <input
             type="password"
             value={input}
@@ -95,7 +95,7 @@ export function UserSettingsPanel({ email }: UserSettingsPanelProps) {
           />
           <button
             onClick={handleSave}
-            className="cursor-pointer rounded-[10px] border-none bg-[var(--ms-blue)] px-[20px] py-[10px] text-[0.875rem] font-semibold text-white"
+            className="cursor-pointer rounded-[10px] border-none bg-[var(--ms-blue)] px-5 py-[10px] text-[0.875rem] font-semibold text-white"
           >
             {saved ? 'Saved!' : 'Save'}
           </button>

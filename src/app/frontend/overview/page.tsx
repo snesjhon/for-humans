@@ -13,9 +13,9 @@ export default function FrontendHomePage() {
   return (
     <>
       <section className="bg-[var(--ms-bg-pane-secondary)] pb-24">
-        <div className="mx-auto max-w-[1152px] px-6 pt-[72px]">
+        <div className="mx-auto max-w-6xl px-6 pt-[72px]">
           <div className="mb-8">
-            <span className="inline-block rounded-full border border-[var(--ms-blue)] bg-[var(--ms-bg-pane)] px-[14px] py-[5px] font-mono text-[0.68rem] font-bold uppercase tracking-[0.12em] text-[var(--ms-blue)]">
+            <span className="inline-block rounded-full border border-[var(--ms-blue)] bg-[var(--ms-bg-pane)] px-3.5 py-[5px] font-mono text-[0.68rem] font-bold uppercase tracking-[0.12em] text-[var(--ms-blue)]">
               TypeScript + React
             </span>
           </div>
@@ -45,7 +45,7 @@ export default function FrontendHomePage() {
                 { value: String(totalSections), label: 'mental models' },
                 { value: String(availableGuides), label: 'guides live' },
               ].map(({ value, label }) => (
-                <div key={label} className="flex items-baseline gap-[6px]">
+                <div key={label} className="flex items-baseline gap-1.5">
                   <span className="font-display text-[3.25rem] font-normal italic leading-none tracking-[-0.04em] text-[var(--ms-blue)]">
                     {value}
                   </span>
@@ -69,12 +69,12 @@ export default function FrontendHomePage() {
       </section>
 
       <section className="border-y border-y-[var(--ms-surface)] bg-[var(--ms-bg-pane)]">
-        <div className="mx-auto grid max-w-[1152px] grid-cols-2 px-6">
+        <div className="mx-auto grid max-w-6xl grid-cols-2 px-6">
           <div className="border-r border-r-[var(--ms-surface)] py-10 pr-10">
             <div className="mb-4 font-mono text-[0.62rem] font-bold uppercase tracking-[0.1em] text-[var(--ms-text-faint)]">
               Most prep
             </div>
-            <h2 className="mb-[14px] font-display text-[1.625rem] font-normal italic leading-[1.2] tracking-[-0.02em] text-[var(--ms-text-body)]">
+            <h2 className="mb-3.5 font-display text-[1.625rem] font-normal italic leading-[1.2] tracking-[-0.02em] text-[var(--ms-text-body)]">
               Memorizes APIs and misses the model.
             </h2>
             <p className="m-0 text-[0.9375rem] leading-[1.8] text-[var(--ms-text-subtle)]">
@@ -88,7 +88,7 @@ export default function FrontendHomePage() {
             <div className="mb-4 font-mono text-[0.62rem] font-bold uppercase tracking-[0.1em] text-[var(--ms-blue)]">
               This path
             </div>
-            <h2 className="mb-[14px] font-display text-[1.625rem] font-normal italic leading-[1.2] tracking-[-0.02em] text-[var(--ms-text-body)]">
+            <h2 className="mb-3.5 font-display text-[1.625rem] font-normal italic leading-[1.2] tracking-[-0.02em] text-[var(--ms-text-body)]">
               Builds the explanation before the fix.
             </h2>
             <p className="m-0 text-[0.9375rem] leading-[1.8] text-[var(--ms-text-subtle)]">

@@ -15,7 +15,7 @@ export function MentalModelMockup() {
           Contains Duplicate
         </span>
         <span className="ml-auto">
-          <span className="font-[ui-monospace,monospace] text-[0.55rem] font-bold tracking-[0.1em] uppercase text-[var(--ms-green)] bg-[var(--ms-green-surface)] px-[7px] py-[2px] rounded-[3px]">
+          <span className="font-[ui-monospace,monospace] text-[0.55rem] font-bold tracking-[0.1em] uppercase text-[var(--ms-green)] bg-[var(--ms-green-surface)] px-[7px] py-0.5 rounded-[3px]">
             Easy
           </span>
         </span>
@@ -23,12 +23,12 @@ export function MentalModelMockup() {
 
       {/* analogy section */}
       <div className="pt-[18px] px-[18px] pb-0 flex-1">
-        <div className="flex items-center gap-1.5 mb-[14px]">
+        <div className="flex items-center gap-1.5 mb-3.5">
           <span className="font-[ui-monospace,monospace] text-[0.58rem] font-bold tracking-[0.1em] uppercase text-[var(--ms-blue)]">
             📖 The Stamp Collector&apos;s Album
           </span>
         </div>
-        <p className="font-display italic text-[0.9rem] leading-[1.65] text-[var(--ms-text-subtle)] m-0 mb-[14px]">
+        <p className="font-display italic text-[0.9rem] leading-[1.65] text-[var(--ms-text-subtle)] m-0 mb-3.5">
           A collector scans a pile of stamps, checking their album before
           mounting each one. If the design is already mounted — a duplicate is
           found. Stop immediately.
@@ -40,7 +40,7 @@ export function MentalModelMockup() {
           ].map(([lbl, color, bg]) => (
             <span
               key={lbl}
-              className="px-[10px] py-[4px] rounded-[4px] text-[0.65rem] font-[ui-monospace,monospace] font-semibold"
+              className="px-2.5 py-1 rounded text-[0.65rem] font-[ui-monospace,monospace] font-semibold"
               style={{ color, background: bg }}
             >
               {lbl}

@@ -206,7 +206,7 @@ function NavItem({
       <Link
         ref={itemRef}
         href={href}
-        className={`flex items-center gap-2 rounded-md px-[10px] py-[6px] text-xs no-underline transition-[color,background] duration-150 focus:outline-none hover:bg-[var(--ms-primary-surface)] ${
+        className={`flex items-center gap-2 rounded-md px-2.5 py-1.5 text-xs no-underline transition-[color,background] duration-150 focus:outline-none hover:bg-[var(--ms-primary-surface)] ${
           isActive
             ? 'font-semibold text-[var(--ms-primary)]'
             : 'font-normal text-[var(--ms-text-subtle)]'
@@ -572,7 +572,7 @@ export function JourneyPanel({
                     >
                       <button
                         onClick={() => toggleRevisit(section.id)}
-                        className="appearance-none flex w-full items-center gap-2 rounded-md border-none bg-transparent px-[10px] py-[6px] text-left outline-none hover:bg-[var(--ms-primary-surface)] focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
+                        className="appearance-none flex w-full items-center gap-2 rounded-md border-none bg-transparent px-2.5 py-1.5 text-left outline-none hover:bg-[var(--ms-primary-surface)] focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
                       >
                         <CircleChevronRight
                           aria-hidden="true"

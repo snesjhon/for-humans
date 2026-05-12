@@ -7,7 +7,7 @@ export function VisualParkRanger() {
   ];
   const flagged = new Set(['0,0', '0,1', '1,0', '1,3', '2,3']);
   return (
-    <div className="pt-[14px] px-[16px] pb-[10px] flex flex-col items-center gap-2">
+    <div className="pt-3.5 px-4 pb-2.5 flex flex-col items-center gap-2">
       <div className="flex flex-col gap-[3px]">
         {grid.map((row, r) => (
           <div key={r} className="flex gap-[3px]">
@@ -17,7 +17,7 @@ export function VisualParkRanger() {
               return (
                 <div
                   key={c}
-                  className="w-[28px] h-[28px] flex items-center justify-center rounded-[3px] text-[0.62rem]"
+                  className="w-7 h-7 flex items-center justify-center rounded-[3px] text-[0.62rem]"
                   style={{
                     border: `1px solid ${cell === 1 ? (isFlag ? 'var(--ms-peach)' : '#52b87a') : 'var(--ms-blue)'}`,
                     background:

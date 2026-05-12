@@ -210,8 +210,7 @@ export default function CheckWorkSidebar({ isOpen, onClose, slug, projectPath }:
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={handleClose}
-            className="fixed inset-0 z-[49]"
-            style={{ background: 'var(--ms-bg-pane-tertiary)' }}
+            className="fixed inset-0 z-[49] bg-[var(--ms-bg-pane-tertiary)]"
           />
 
           <motion.div
@@ -232,15 +231,14 @@ export default function CheckWorkSidebar({ isOpen, onClose, slug, projectPath }:
                 <button
                   onClick={runEvaluation}
                   disabled={streaming}
-                  className="rounded-[5px] border border-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)] px-3 py-[5px] text-[0.75rem] font-medium text-[var(--ms-text-muted)]"
-                  style={{ cursor: streaming ? 'not-allowed' : 'pointer' }}
+                  className={`rounded-[5px] border border-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)] px-3 py-[5px] text-xs font-medium text-[var(--ms-text-muted)] ${streaming ? 'cursor-not-allowed' : 'cursor-pointer'}`}
                 >
                   Re-check
                 </button>
               )}
               <button
                 onClick={handleClose}
-                className="ml-1 flex cursor-pointer items-center justify-center rounded-[4px] border-0 bg-transparent p-[4px] text-[1.25rem] leading-none text-[var(--ms-text-subtle)]"
+                className="ml-1 flex cursor-pointer items-center justify-center rounded border-0 bg-transparent p-[4px] text-[1.25rem] leading-none text-[var(--ms-text-subtle)]"
                 aria-label="Close"
               >
                 ✕
@@ -265,7 +263,7 @@ export default function CheckWorkSidebar({ isOpen, onClose, slug, projectPath }:
                 ) : (
                   <button
                     onClick={runEvaluation}
-                    className="cursor-pointer rounded-[6px] border border-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)] px-4 py-[7px] text-sm text-[var(--ms-text-muted)]"
+                    className="cursor-pointer rounded-md border border-[var(--ms-surface)] bg-[var(--ms-bg-pane-secondary)] px-4 py-[7px] text-sm text-[var(--ms-text-muted)]"
                   >
                     Try again
                   </button>
@@ -275,9 +273,9 @@ export default function CheckWorkSidebar({ isOpen, onClose, slug, projectPath }:
 
             {/* Results + Chat */}
             {phase === 'ready' && evalResult && (
-              <div className="flex flex-1 flex-col overflow-hidden" style={{ minHeight: 0 }}>
+              <div className="flex flex-1 flex-col overflow-hidden min-h-0">
                 {/* Evaluation results — 50% */}
-                <div className="flex-1 overflow-y-auto space-y-3 border-b border-b-[var(--ms-surface)] p-4" style={{ minHeight: 0 }}>
+                <div className="flex-1 overflow-y-auto space-y-3 border-b border-b-[var(--ms-surface)] p-4 min-h-0">
                   {evalResult.covered.length > 0 && (
                     <div>
                       <p className="mb-2 font-[ui-monospace,monospace] text-[0.6rem] font-bold uppercase tracking-[0.09em] text-[var(--ms-green)]">
@@ -313,7 +311,7 @@ export default function CheckWorkSidebar({ isOpen, onClose, slug, projectPath }:
 
                 {/* Chat (followUp + conversation) — 50% */}
                 {messages.length > 0 && (
-                  <div className="flex flex-1 flex-col overflow-hidden" style={{ minHeight: 0 }}>
+                  <div className="flex flex-1 flex-col overflow-hidden min-h-0">
                     <div ref={scrollRef} className="flex flex-1 flex-col gap-3 overflow-y-auto p-4">
                       {messages.map((msg, i) => (
                         <div key={i} style={msg.role === 'assistant' ? aiBubbleStyle : userBubbleStyle}>
@@ -359,21 +357,12 @@ export default function CheckWorkSidebar({ isOpen, onClose, slug, projectPath }:
                           e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px';
                         }}
                         disabled={streaming}
-                        className="min-h-[38px] max-h-[120px] flex-1 resize-none overflow-hidden rounded-[6px] border border-[var(--ms-surface)] px-[10px] py-[8px] text-sm text-[var(--ms-text-body)] outline-none"
-                        style={{
-                          fontFamily: 'inherit',
-                          background: streaming ? 'var(--ms-bg-pane-tertiary)' : 'var(--ms-bg-pane)',
-                        }}
+                        className={`min-h-[38px] max-h-[120px] flex-1 resize-none overflow-hidden rounded-md border border-[var(--ms-surface)] px-2.5 py-[8px] text-sm text-[var(--ms-text-body)] outline-none font-[inherit] ${streaming ? 'bg-[var(--ms-bg-pane-tertiary)]' : 'bg-[var(--ms-bg-pane)]'}`}
                       />
                       <button
                         onClick={handleSend}
                         disabled={streaming || !input.trim()}
-                        className="whitespace-nowrap rounded-[6px] border-0 px-4 py-[7px] text-[0.8125rem] font-semibold"
-                        style={{
-                          background: streaming || !input.trim() ? 'var(--ms-bg-pane-tertiary)' : 'var(--ms-blue)',
-                          color: streaming || !input.trim() ? 'var(--ms-text-faint)' : 'white',
-                          cursor: streaming || !input.trim() ? 'not-allowed' : 'pointer',
-                        }}
+                        className={`whitespace-nowrap rounded-md border-0 px-4 py-[7px] text-[0.8125rem] font-semibold ${(streaming || !input.trim()) ? 'bg-[var(--ms-bg-pane-tertiary)] text-[var(--ms-text-faint)] cursor-not-allowed' : 'bg-[var(--ms-blue)] text-white cursor-pointer'}`}
                       >
                         {streaming ? 'Sending…' : 'Send'}
                       </button>
