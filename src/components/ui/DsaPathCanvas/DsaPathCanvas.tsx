@@ -114,26 +114,16 @@ export function DsaPathCanvas({ curriculum, completedProblems, completedSections
   const solvedCount = completedProblems.size;
 
   return (
-    <div style={{ background: 'var(--ms-bg-pane)' }}>
+    <div className="bg-[var(--ms-bg-pane)]">
       <div
         id="cpf-root"
-        style={{ display: 'grid', gridTemplateColumns: '220px 1fr', position: 'relative', maxWidth: 1280, margin: '0 auto' }}
+        className="grid relative max-w-[1280px] mx-auto"
+        style={{ gridTemplateColumns: '220px 1fr' }}
       >
 
         {/* ── Sticky sidebar ── */}
-        <aside
-          className="cpf-side"
-          style={{
-            position: 'sticky', top: 20, alignSelf: 'start',
-            padding: '28px 18px 28px 28px',
-            display: 'flex', flexDirection: 'column', gap: 14,
-            zIndex: 3,
-          }}
-        >
-          <div style={{
-            fontFamily: 'var(--font-mono)', fontSize: 10,
-            letterSpacing: '0.32em', color: 'var(--ms-text-faint)', marginBottom: 4,
-          }}>
+        <aside className="cpf-side sticky top-5 self-start pt-7 pb-7 pl-7 pr-4 flex flex-col gap-3.5 z-[3]">
+          <div className="font-mono text-xs tracking-[0.32em] text-[var(--ms-text-faint)] mb-1">
             THE PATH
           </div>
 
@@ -147,62 +137,51 @@ export function DsaPathCanvas({ curriculum, completedProblems, completedSections
               <a
                 key={ph}
                 href={`#cpf-phase-${ph}`}
-                className="cpf-phase-card"
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'auto 1fr',
-                  gap: '14px',
-                  padding: '14px 14px 12px',
-                  border: '1px solid var(--ms-surface)',
-                  borderRadius: 12,
-                  background: 'var(--ms-bg-pane)',
-                }}
-                // inline hover via CSS class defined above + custom color
+                className="cpf-phase-card grid gap-3.5 pt-3.5 px-3.5 pb-3 border border-[var(--ms-surface)] rounded-xl bg-[var(--ms-bg-pane)]"
+                style={{ gridTemplateColumns: 'auto 1fr' }}
                 onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = color; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--ms-surface)'; }}
               >
-                <span style={{
-                  fontFamily: 'var(--font-display)', fontStyle: 'italic',
-                  fontSize: 34, lineHeight: '0.9', color,
-                  alignSelf: 'center',
-                }}>
+                <span
+                  className="font-display italic text-4xl leading-[0.9] self-center"
+                  style={{ color }}
+                >
                   {ROMANS[ph - 1]}
                 </span>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6, minWidth: 0 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 8 }}>
-                    <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 500, color: 'var(--ms-text-body)' }}>
+                <div className="flex flex-col gap-1.5 min-w-0">
+                  <div className="flex justify-between items-baseline gap-2">
+                    <span className="font-body text-sm font-medium text-[var(--ms-text-body)]">
                       {PHASE_NAMES[ph - 1]}
                     </span>
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--ms-text-faint)', letterSpacing: '0.04em' }}>
+                    <span className="font-mono text-xs text-[var(--ms-text-faint)] tracking-[0.04em]">
                       {phDone}/{phTotal}
                     </span>
                   </div>
-                  <span style={{ display: 'block', height: 3, borderRadius: 2, background: 'var(--ms-surface0)', overflow: 'hidden' }}>
-                    <span style={{ display: 'block', height: '100%', background: color, borderRadius: 2, width: `${pct}%`, transition: 'width .3s' }} />
+                  <span className="block h-1 rounded-sm bg-[var(--ms-surface0)] overflow-hidden">
+                    <span
+                      className="block h-full rounded-sm transition-[width] duration-300"
+                      style={{ background: color, width: `${pct}%` }}
+                    />
                   </span>
                 </div>
               </a>
             );
           })}
 
-          <div style={{
-            display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10,
-            marginTop: 6, paddingTop: 14,
-            borderTop: '1px dashed var(--ms-surface)',
-          }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '0 4px' }}>
-              <b style={{ fontFamily: 'var(--font-display)', fontSize: 24, lineHeight: 1, color: 'var(--ms-text)', fontWeight: 400 }}>
+          <div className="grid grid-cols-2 gap-2.5 mt-1.5 pt-3.5 border-t border-dashed border-[var(--ms-surface)]">
+            <div className="flex flex-col gap-0.5 px-1">
+              <b className="font-display text-2xl leading-none text-[var(--ms-text)] font-normal">
                 {solvedCount}
               </b>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: '0.12em', color: 'var(--ms-text-faint)' }}>
+              <span className="font-mono text-xs tracking-[0.12em] text-[var(--ms-text-faint)]">
                 solved
               </span>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '0 4px' }}>
-              <b style={{ fontFamily: 'var(--font-display)', fontSize: 24, lineHeight: 1, color: 'var(--ms-text)', fontWeight: 400 }}>
+            <div className="flex flex-col gap-0.5 px-1">
+              <b className="font-display text-2xl leading-none text-[var(--ms-text)] font-normal">
                 {currentStep}
               </b>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: '0.12em', color: 'var(--ms-text-faint)' }}>
+              <span className="font-mono text-xs tracking-[0.12em] text-[var(--ms-text-faint)]">
                 current ch.
               </span>
             </div>
@@ -211,23 +190,15 @@ export function DsaPathCanvas({ curriculum, completedProblems, completedSections
 
         {/* ── Canvas ── */}
         <div
-          className="cpf-canvas"
-          style={{
-            position: 'relative',
-            margin: '20px 24px 60px 0',
-            border: '1px solid var(--ms-surface)',
-            borderRadius: 16,
-            background: 'var(--ms-bg-pane-secondary)',
-            overflow: 'hidden',
-            height: TOTAL_H,
-          }}
+          className="cpf-canvas relative mt-5 mr-6 mb-16 ml-0 border border-[var(--ms-surface)] rounded-2xl bg-[var(--ms-bg-pane-secondary)] overflow-hidden"
+          style={{ height: TOTAL_H }}
         >
           {/* SVG edges */}
           <svg
             viewBox={`0 0 ${VBW} ${TOTAL_H}`}
             preserveAspectRatio="none"
             aria-hidden="true"
-            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}
+            className="absolute inset-0 w-full h-full pointer-events-none"
           >
             <g stroke="var(--ms-surface1)" strokeWidth="0.8" fill="none" opacity="0.55">
               {chords.map(([a, b], i) => (
@@ -261,37 +232,26 @@ export function DsaPathCanvas({ curriculum, completedProblems, completedSections
               <div
                 key={ph}
                 id={`cpf-phase-${ph}`}
-                style={{
-                  position: 'absolute',
-                  top: centerY,
-                  ...(side === 'left' ? { left: '4%' } : { right: '4%' }),
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 18,
-                  flexDirection: side === 'right' ? 'row-reverse' : 'row',
-                  pointerEvents: 'none',
-                  zIndex: 0,
-                  transform: 'translateY(-50%)',
-                }}
+                className={`absolute flex items-center gap-4 pointer-events-none z-0 -translate-y-1/2 ${side === 'right' ? 'flex-row-reverse right-[4%]' : 'left-[4%]'}`}
+                style={{ top: centerY }}
               >
-                <span style={{
-                  fontFamily: 'var(--font-display)', fontStyle: 'italic', fontWeight: 300,
-                  fontSize: 200, lineHeight: '0.85',
-                  color: PHASE_COLORS[ph], opacity: 0.08,
-                }}>
+                <span
+                  className="font-display italic font-light text-[200px] leading-[0.85] opacity-10"
+                  style={{ color: PHASE_COLORS[ph] }}
+                >
                   {ROMANS[ph - 1]}
                 </span>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                  <span style={{
-                    fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.32em',
-                    color: PHASE_COLORS[ph], opacity: 0.5,
-                  }}>
+                <div className="flex flex-col gap-1">
+                  <span
+                    className="font-mono text-xs tracking-[0.32em] opacity-50"
+                    style={{ color: PHASE_COLORS[ph] }}
+                  >
                     {PHASE_NAMES[ph - 1].toUpperCase()}
                   </span>
-                  <span style={{
-                    fontFamily: 'var(--font-display)', fontStyle: 'italic', fontSize: 18,
-                    color: PHASE_COLORS[ph], opacity: 0.4,
-                  }}>
+                  <span
+                    className="font-display italic text-lg opacity-40"
+                    style={{ color: PHASE_COLORS[ph] }}
+                  >
                     {PHASE_SUBS[ph - 1]}
                   </span>
                 </div>
@@ -303,20 +263,16 @@ export function DsaPathCanvas({ curriculum, completedProblems, completedSections
           {[1, 2, 3].map(ph => (
             <div
               key={ph}
-              style={{
-                position: 'absolute', left: '6%', right: '6%',
-                top: phaseStarts[ph] - 56,
-                display: 'flex', alignItems: 'center', gap: 12,
-                zIndex: 1, pointerEvents: 'none',
-              }}
+              className="absolute left-[6%] right-[6%] flex items-center gap-3 z-[1] pointer-events-none"
+              style={{ top: phaseStarts[ph] - 56 }}
             >
-              <span style={{
-                fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.32em',
-                color: PHASE_COLORS[ph], opacity: 0.85, whiteSpace: 'nowrap',
-              }}>
+              <span
+                className="font-mono text-xs tracking-[0.32em] opacity-85 whitespace-nowrap"
+                style={{ color: PHASE_COLORS[ph] }}
+              >
                 PHASE {ph}
               </span>
-              <span style={{ flex: 1, height: 1, background: PHASE_COLORS[ph], opacity: 0.2 }} />
+              <span className="flex-1 h-px opacity-20" style={{ background: PHASE_COLORS[ph] }} />
             </div>
           ))}
 
@@ -344,7 +300,7 @@ export function DsaPathCanvas({ curriculum, completedProblems, completedSections
                 </span>
 
                 {/* Title */}
-                <span className="cpf-title" style={{ fontSize: isCore ? 26 : 22 }}>
+                <span className={`cpf-title ${isCore ? 'text-2xl' : 'text-xl'}`}>
                   {n.section.label}{check}
                 </span>
 
@@ -388,16 +344,9 @@ export function DsaPathCanvas({ curriculum, completedProblems, completedSections
                             <Link
                               href={`/dsa/problems/${prob.id}`}
                               className="cpf-prob-chip"
-                              style={{
-                                borderWidth: 1,
-                                borderStyle: 'solid',
-                                borderColor: 'var(--ms-surface1)',
-                                borderRadius: 999,
-                                fontSize: 10,
-                              }}
                             >
-                              <span className="cpf-prob-id" style={{ fontSize: 10 }}>{prob.id}</span>
-                              <span className="cpf-prob-title" style={{ fontSize: 11 }}>{problemTitles[prob.id] ?? prob.id}</span>
+                              <span className="cpf-prob-id">{prob.id}</span>
+                              <span className="cpf-prob-title">{problemTitles[prob.id] ?? prob.id}</span>
                             </Link>
                             {isLast && moreCount > 0 && fundamentalsHref && (
                               <Link href={fundamentalsHref} className="cpf-more">+{moreCount} more</Link>
