@@ -1,89 +1,61 @@
-import Link from 'next/link';
 import { JOURNEY } from '@/lib/frontend/journey';
-import { getAllFundamentalsSlugs } from '@/lib/frontend/fundamentals';
-import { getAllBuildSlugs } from '@/lib/frontend/build';
-import { getAllConceptSlugs } from '@/lib/frontend/concepts';
 import { createClient } from '@/lib/supabase/server';
-import type { FrontendJourneySection, Phase } from '@/lib/frontend/types';
-import {
-  PhaseBannerContent,
-  StepGuideCard,
-  PlaceholderGuideCard,
-} from '@/components/ui/PathComponents/PathComponents';
-import { SectionProgress } from '@/components/ui/SectionProgress/SectionProgress';
-import { PhaseTracker } from '@/components/ui/PhaseTracker/PhaseTracker';
-import { pColor } from '@/components/ui/pathUtils';
+import { PathCanvas } from '@/components/ui/PathCanvas/PathCanvas';
+import type { CurriculumEntry } from '@/components/ui/PathCanvas/PathCanvas';
 import { PageHero } from '@/components/ui/PageHero/PageHero';
 
-type SectionEntry = {
-  section: FrontendJourneySection;
-  phase: Phase;
-  stepNum: number;
-};
-
-type PhaseGroup = {
-  phase: Phase;
-  entries: SectionEntry[];
-};
-
-function buildCurriculum(): SectionEntry[] {
-  const entries: SectionEntry[] = [];
+function buildCurriculum(): CurriculumEntry[] {
+  const entries: CurriculumEntry[] = [];
   let stepNum = 0;
+  const phaseSubs = ['fundamentals', 'patterns', 'mastery'];
 
-  JOURNEY.forEach((phase) => {
-    phase.sections.forEach((section) => {
-      stepNum += 1;
-      entries.push({ section, phase, stepNum });
+  JOURNEY.forEach(phase => {
+    phase.sections.forEach(section => {
+      stepNum++;
+      entries.push({
+        section: {
+          id: section.id,
+          sectionKey: `fe-section-${section.id}`,
+          label: section.label,
+          mentalModelHook: section.mentalModelHook,
+          fundamentalsHref: `/frontend/fundamentals/${section.fundamentalsSlug}`,
+          chips: section.practice.map(p => ({
+            href: `/frontend/problems/${p.id}`,
+            label: p.label,
+            id: p.id,
+          })),
+        },
+        phase: {
+          number: phase.number,
+          label: phase.label,
+          sub: phaseSubs[phase.number - 1],
+        },
+        stepNum,
+      });
     });
   });
 
   return entries;
 }
 
-function buildPhaseGroups(): PhaseGroup[] {
-  const curriculum = buildCurriculum();
-  const groups: PhaseGroup[] = [];
-
-  for (const entry of curriculum) {
-    const last = groups[groups.length - 1];
-    if (!last || last.phase.number !== entry.phase.number) {
-      groups.push({ phase: entry.phase, entries: [entry] });
-    } else {
-      last.entries.push(entry);
-    }
-  }
-
-  return groups;
-}
-
 export default async function PathPage() {
-  const availableFundamentalsSlugs = new Set(getAllFundamentalsSlugs());
-  const availableBuildSlugs = new Set(getAllBuildSlugs());
-  const availableConceptSlugs = new Set(getAllConceptSlugs());
-  const totalSections = JOURNEY.reduce(
-    (count, phase) => count + phase.sections.length,
-    0,
-  );
-  const phaseGroups = buildPhaseGroups();
+  const totalSections = JOURNEY.reduce((acc, p) => acc + p.sections.length, 0);
+  const curriculum = buildCurriculum();
 
   const supabase = createClient();
   const { data: progressRows } = await supabase
     .from('progress')
     .select('item_type, item_id');
 
-  const completedSections = new Set(
+  const completedProblems = new Set<string>(
     progressRows
-      ?.filter(
-        (row: { item_type: string; item_id: string }) => row.item_type === 'section',
-      )
-      .map((row: { item_type: string; item_id: string }) => row.item_id) ?? [],
+      ?.filter((r: { item_type: string; item_id: string }) => r.item_type === 'problem')
+      .map((r: { item_type: string; item_id: string }) => r.item_id) ?? [],
   );
-  const completedProblems = new Set(
+  const completedSections = new Set<string>(
     progressRows
-      ?.filter(
-        (row: { item_type: string; item_id: string }) => row.item_type === 'problem',
-      )
-      .map((row: { item_type: string; item_id: string }) => row.item_id) ?? [],
+      ?.filter((r: { item_type: string; item_id: string }) => r.item_type === 'section')
+      .map((r: { item_type: string; item_id: string }) => r.item_id) ?? [],
   );
 
   return (
@@ -97,197 +69,11 @@ export default async function PathPage() {
         </p>
       </PageHero>
 
-      <div>
-        {phaseGroups.map(({ phase, entries }) => {
-          const color = pColor(phase.number);
-          const chapterLabel = String(phase.number).padStart(2, '0');
-
-          return (
-            <div
-              key={phase.number}
-              id={`phase-zone-${phase.number}`}
-              className="bg-[var(--ms-bg-pane-secondary)]"
-            >
-              <div className="mx-auto max-w-6xl px-6">
-                <PhaseBannerContent
-                  phase={phase}
-                  color={color}
-                  chapterLabel={chapterLabel}
-                />
-
-                {entries.map((entry, index) => {
-                  const { section, stepNum } = entry;
-                  const isLast = index === entries.length - 1;
-                  const stepLabel = String(stepNum).padStart(2, '0');
-                  const hasGuide = availableFundamentalsSlugs.has(
-                    section.fundamentalsSlug,
-                  );
-                  const additionalGuides = (section.additionalFundamentals ?? []).filter(
-                    (f) => availableFundamentalsSlugs.has(f.slug),
-                  );
-
-                  return (
-                    <div
-                      key={section.id}
-                      className={`grid grid-cols-2 items-start gap-7 ${
-                        isLast ? 'pb-6' : 'pb-12'
-                      }`}
-                    >
-                      <div>
-                        {hasGuide ? (
-                          <StepGuideCard
-                            href={`/frontend/fundamentals/${section.fundamentalsSlug}`}
-                            label={section.label}
-                            hook={section.mentalModelHook}
-                            stepNum={stepLabel}
-                            color={color}
-                          />
-                        ) : (
-                          <PlaceholderGuideCard
-                            label={section.label}
-                            hook={section.mentalModelHook}
-                            stepNum={stepLabel}
-                          />
-                        )}
-                        {additionalGuides.map((f) => (
-                          <div key={f.slug} className="mt-4">
-                            <StepGuideCard
-                              href={`/frontend/fundamentals/${f.slug}`}
-                              label={f.slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
-                              hook={f.blurb}
-                              stepNum={stepLabel}
-                              color={color}
-                            />
-                          </div>
-                        ))}
-
-                        <SectionProgress
-                          sectionItemId={`fe-section-${section.id}`}
-                          problemItemIds={[
-                            ...section.practice.map((problem) => `fe-problem-${problem.id}`),
-                            ...section.explorations.map((problem) => `fe-problem-${problem.id}`),
-                          ]}
-                          initialCompletedProblemIds={[
-                            ...section.practice
-                              .map((problem) => `fe-problem-${problem.id}`)
-                              .filter((itemId) => completedProblems.has(itemId)),
-                            ...section.explorations
-                              .map((problem) => `fe-problem-${problem.id}`)
-                              .filter((itemId) => completedProblems.has(itemId)),
-                          ]}
-                          initialSectionCompleted={completedSections.has(
-                            `fe-section-${section.id}`,
-                          )}
-                        />
-                      </div>
-
-                      <div className="pt-1">
-                        {section.builds && section.builds.length > 0 && (
-                          <div>
-                            <p className="mb-2 font-mono text-[0.6rem] font-bold uppercase tracking-[0.09em] text-[var(--ms-text-faint)]">
-                              Build
-                            </p>
-                            <div className="space-y-3">
-                              {section.builds.map((building) => (
-                                <div key={building.slug}>
-                                  <p className="mb-1 m-0 max-w-[460px] text-[0.875rem] leading-[1.75] text-[var(--ms-text-subtle)]">
-                                    {building.blurb}
-                                  </p>
-                                  {availableBuildSlugs.has(building.slug) ? (
-                                    <Link
-                                      href={`/frontend/build/${building.slug}`}
-                                      className="text-sm text-[var(--ms-blue)] no-underline transition-opacity hover:opacity-80"
-                                    >
-                                      {building.label} →
-                                    </Link>
-                                  ) : (
-                                    <p className="m-0 font-display text-sm italic text-[var(--ms-text-faint)]">
-                                      Build coming soon.
-                                    </p>
-                                  )}
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-
-                        {section.concepts && section.concepts.length > 0 && (
-                          <div className={section.builds && section.builds.length > 0 ? 'mt-5' : ''}>
-                            <p className="mb-2 font-mono text-[0.6rem] font-bold uppercase tracking-[0.09em] text-[var(--ms-text-faint)]">
-                              Concepts
-                            </p>
-                            <div className="space-y-3">
-                              {section.concepts.map((concept) => (
-                                <div key={concept.slug}>
-                                  <p className="mb-1 m-0 max-w-[460px] text-[0.875rem] leading-[1.75] text-[var(--ms-text-subtle)]">
-                                    {concept.blurb}
-                                  </p>
-                                  {availableConceptSlugs.has(concept.slug) ? (
-                                    <Link
-                                      href={`/frontend/concepts/${concept.slug}`}
-                                      className="text-sm text-[var(--ms-blue)] no-underline transition-opacity hover:opacity-80"
-                                    >
-                                      {concept.label} →
-                                    </Link>
-                                  ) : (
-                                    <p className="m-0 font-display text-sm italic text-[var(--ms-text-faint)]">
-                                      Concept coming soon.
-                                    </p>
-                                  )}
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-
-                        {section.practice.length > 0 && (
-                          <div className={section.builds && section.builds.length > 0 || section.concepts && section.concepts.length > 0 ? 'mt-5' : ''}>
-                            <p className="mb-2 font-mono text-[0.6rem] font-bold uppercase tracking-[0.09em] text-[var(--ms-text-faint)]">
-                              Problems
-                            </p>
-                            <div className="space-y-2">
-                              {section.practice.map((problem) => (
-                                <Link
-                                  key={problem.id}
-                                  href={`/frontend/problems/${problem.id}`}
-                                  className="block text-sm text-[var(--ms-blue)] no-underline transition-opacity hover:opacity-80"
-                                >
-                                  {problem.id}. {problem.label} →
-                                </Link>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-
-                        {section.explorations.length > 0 && (
-                          <div className="mt-5">
-                            <p className="mb-2 font-mono text-[0.6rem] font-bold uppercase tracking-[0.09em] text-[var(--ms-text-faint)]">
-                              Other Explorations
-                            </p>
-                            <div className="space-y-2">
-                              {section.explorations.map((problem) => (
-                                <Link
-                                  key={problem.id}
-                                  href={`/frontend/problems/${problem.id}`}
-                                  className="block text-sm text-[var(--ms-blue)] no-underline transition-opacity hover:opacity-80"
-                                >
-                                  {problem.id}. {problem.label} →
-                                </Link>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      <PhaseTracker phaseCount={phaseGroups.length} />
+      <PathCanvas
+        curriculum={curriculum}
+        completedSections={completedSections}
+        solvedCount={completedProblems.size}
+      />
     </>
   );
 }

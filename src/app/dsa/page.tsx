@@ -1,18 +1,43 @@
 import { JOURNEY } from '@/lib/dsa/journey';
 import { getAllProblems } from '@/lib/dsa/content';
 import { createClient } from '@/lib/supabase/server';
-import { DsaPathCanvas } from '@/components/ui/DsaPathCanvas/DsaPathCanvas';
-import type { CurriculumEntry } from '@/components/ui/DsaPathCanvas/DsaPathCanvas';
+import { PathCanvas } from '@/components/ui/PathCanvas/PathCanvas';
+import type { CurriculumEntry } from '@/components/ui/PathCanvas/PathCanvas';
+import type { Phase, JourneySection } from '@/lib/dsa/journey';
 
-function buildCurriculum(): CurriculumEntry[] {
+function buildCurriculum(problemTitles: Record<string, string>): CurriculumEntry[] {
   const entries: CurriculumEntry[] = [];
   let stepNum = 0;
-  JOURNEY.forEach(phase => {
-    phase.sections.forEach(section => {
+  const phaseSubs = ['foundations', 'patterns', 'mastery'];
+
+  JOURNEY.forEach((phase: Phase) => {
+    phase.sections.forEach((section: JourneySection) => {
       stepNum++;
-      entries.push({ section, phase, stepNum });
+      entries.push({
+        section: {
+          id: section.id,
+          sectionKey: `dsa-section-${section.id}`,
+          label: section.label,
+          mentalModelHook: section.mentalModelHook,
+          fundamentalsHref: section.fundamentalsSlugs?.[0]
+            ? `/dsa/fundamentals/${section.fundamentalsSlugs[0]}`
+            : null,
+          chips: section.firstPass.map(p => ({
+            href: `/dsa/problems/${p.id}`,
+            label: problemTitles[p.id] ?? p.id,
+            id: p.id,
+          })),
+        },
+        phase: {
+          number: phase.number,
+          label: phase.label,
+          sub: phaseSubs[phase.number - 1],
+        },
+        stepNum,
+      });
     });
   });
+
   return entries;
 }
 
@@ -20,11 +45,11 @@ export default async function PathPage() {
   const allProblems = getAllProblems();
   const totalProblems = allProblems.length;
   const problemTitles: Record<string, string> = Object.fromEntries(
-    allProblems.map(p => [p.id, p.title])
+    allProblems.map(p => [p.id, p.title]),
   );
 
   const totalSections = JOURNEY.reduce((acc, p) => acc + p.sections.length, 0);
-  const curriculum = buildCurriculum();
+  const curriculum = buildCurriculum(problemTitles);
 
   const supabase = createClient();
   const { data: progressRows } = await supabase
@@ -43,7 +68,7 @@ export default async function PathPage() {
   );
 
   const completedSectionCount = curriculum.filter(e =>
-    completedSections.has(`dsa-section-${e.section.id}`)
+    completedSections.has(e.section.sectionKey),
   ).length;
 
   return (
@@ -86,12 +111,10 @@ export default async function PathPage() {
         </div>
       </section>
 
-      <DsaPathCanvas
+      <PathCanvas
         curriculum={curriculum}
-        completedProblems={completedProblems}
         completedSections={completedSections}
-        totalProblems={totalProblems}
-        problemTitles={problemTitles}
+        solvedCount={completedProblems.size}
       />
     </>
   );

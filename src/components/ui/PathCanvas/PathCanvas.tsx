@@ -1,71 +1,95 @@
 'use client';
 
 import Link from 'next/link';
-import type { JourneySection, Phase } from '@/lib/dsa/journey';
-import './DsaPathCanvas.css';
+import './PathCanvas.css';
+
+export interface CanvasChip {
+  href: string;
+  label: string;
+  id?: string;
+}
+
+export interface CanvasSection {
+  id: string;
+  sectionKey: string;
+  label: string;
+  mentalModelHook: string;
+  fundamentalsHref: string | null;
+  chips: CanvasChip[];
+}
+
+export interface CanvasPhase {
+  number: number;
+  label: string;
+  sub?: string;
+}
 
 export interface CurriculumEntry {
-  section: JourneySection;
-  phase: Phase;
+  section: CanvasSection;
+  phase: CanvasPhase;
   stepNum: number;
 }
 
 interface Props {
   curriculum: CurriculumEntry[];
-  completedProblems: Set<string>;
   completedSections: Set<string>;
-  totalProblems: number;
-  problemTitles: Record<string, string>;
+  solvedCount: number;
 }
 
-// 22 entries: Phase1=0-7 (8), Phase2=8-16 (9), Phase3=17-21 (5)
-const LAYOUT: { row: number; x: number; alt: 'L' | 'R' }[] = [
-  { row: -0.05,  x: 56, alt: 'R' },
-  { row: 1.2,  x: 44, alt: 'L' },
-  { row: 2.0,  x: 58, alt: 'R' },
-  { row: 2.9,  x: 41, alt: 'L' },
-  { row: 3.7,  x: 55, alt: 'R' },
-  { row: 4.6,  x: 43, alt: 'L' },
-  { row: 5.5,  x: 57, alt: 'R' },
-  { row: 6.3,  x: 46, alt: 'L' },
-  { row: 7.6,  x: 54, alt: 'R' },
-  { row: 8.5,  x: 42, alt: 'L' },
-  { row: 9.3,  x: 58, alt: 'R' },
-  { row: 10.2, x: 44, alt: 'L' },
-  { row: 11.1, x: 56, alt: 'R' },
-  { row: 11.9, x: 41, alt: 'L' },
-  { row: 12.8, x: 59, alt: 'R' },
-  { row: 13.7, x: 45, alt: 'L' },
-  { row: 14.6, x: 55, alt: 'R' },
-  { row: 15.9, x: 57, alt: 'R' },
-  { row: 16.8, x: 43, alt: 'L' },
-  { row: 17.7, x: 56, alt: 'R' },
-  { row: 18.6, x: 44, alt: 'L' },
-  { row: 19.4, x: 55, alt: 'R' },
-];
+const ROMANS = ['I', 'II', 'III', 'IV', 'V'];
+const PHASE_COLORS: Record<number, string> = {
+  1: 'var(--ms-green)',
+  2: 'var(--ms-blue)',
+  3: 'var(--ms-mauve)',
+  4: 'var(--ms-peach)',
+  5: 'var(--ms-red)',
+};
 
 const ROW_H   = 190;
 const TOP_PAD = 180;
 const BOT_PAD = 200;
 const VBW     = 1000;
 
-const ROMANS = ['I', 'II', 'III'];
-const PHASE_NAMES  = ['Novice', 'Studied', 'Expert'];
-const PHASE_SUBS   = ['foundations', 'patterns', 'mastery'];
-const PHASE_COLORS: Record<number, string> = {
-  1: 'var(--ms-green)',
-  2: 'var(--ms-blue)',
-  3: 'var(--ms-mauve)',
-};
+function generateLayout(
+  curriculum: CurriculumEntry[],
+): { row: number; x: number; alt: 'L' | 'R' }[] {
+  const layout: { row: number; x: number; alt: 'L' | 'R' }[] = [];
+  let row = -0.05;
+  for (let i = 0; i < curriculum.length; i++) {
+    const alt: 'L' | 'R' = i % 2 === 0 ? 'R' : 'L';
+    const baseX = alt === 'R' ? 56 : 43;
+    const variation = ((i * 7 + 3) % 9) - 4;
+    const x = Math.max(39, Math.min(62, baseX + variation));
+    layout.push({ row, x, alt });
+    const next = curriculum[i + 1];
+    const isPhaseEnd = next != null && next.phase.number !== curriculum[i].phase.number;
+    row += isPhaseEnd ? 1.3 : 0.9;
+  }
+  return layout;
+}
 
-export function DsaPathCanvas({ curriculum, completedProblems, completedSections, problemTitles }: Props) {
-  const MAX_ROW = Math.max(...LAYOUT.map(l => l.row));
+function generateChords(
+  nodes: Array<{ phase: { number: number } }>,
+): [number, number][] {
+  const chords: [number, number][] = [];
+  for (let i = 0; i < nodes.length; i++) {
+    const j = i + 2;
+    if (j < nodes.length && nodes[j].phase.number === nodes[i].phase.number) {
+      chords.push([i, j]);
+    }
+  }
+  return chords;
+}
+
+export function PathCanvas({ curriculum, completedSections, solvedCount }: Props) {
+  const layout = generateLayout(curriculum);
+  const MAX_ROW = Math.max(...layout.map(l => l.row));
   const TOTAL_H = TOP_PAD + MAX_ROW * ROW_H + BOT_PAD;
 
   const completedSteps = new Set(
     curriculum
-      .filter(e => completedSections.has(`dsa-section-${e.section.id}`))
-      .map(e => e.stepNum)
+      .filter(e => completedSections.has(e.section.sectionKey))
+      .map(e => e.stepNum),
   );
   const firstIncomplete = curriculum.find(e => !completedSteps.has(e.stepNum));
   const currentStep = firstIncomplete?.stepNum ?? 1;
@@ -75,9 +99,9 @@ export function DsaPathCanvas({ curriculum, completedProblems, completedSections
 
   const nodes = curriculum.map((e, i) => ({
     ...e,
-    x: LAYOUT[i].x,
-    y: TOP_PAD + LAYOUT[i].row * ROW_H,
-    alt: LAYOUT[i].alt,
+    x: layout[i].x,
+    y: TOP_PAD + layout[i].row * ROW_H,
+    alt: layout[i].alt,
     state: nodeState(e.stepNum),
   }));
 
@@ -91,11 +115,7 @@ export function DsaPathCanvas({ curriculum, completedProblems, completedSections
   for (let i = 0; i < nodes.length - 1; i++) {
     if (nodes[i].phase.number !== nodes[i + 1].phase.number) bridgeEdges.push([i, i + 1]);
   }
-  const chords: [number, number][] = [
-    [0,2],[1,4],[3,6],[5,7],
-    [8,10],[9,12],[11,13],[12,15],[14,16],
-    [17,19],[18,21],[20,21],
-  ];
+  const chords = generateChords(nodes);
 
   const pathFor = (a: typeof nodes[0], b: typeof nodes[0]) =>
     `M ${xPx(a.x)} ${a.y} L ${xPx(b.x)} ${b.y}`;
@@ -111,7 +131,9 @@ export function DsaPathCanvas({ curriculum, completedProblems, completedSections
     phaseEnds[ph] = n.y;
   });
 
-  const solvedCount = completedProblems.size;
+  const phases = Array.from(
+    new Map(curriculum.map(e => [e.phase.number, e.phase])).values(),
+  ).sort((a, b) => a.number - b.number);
 
   return (
     <div className="bg-[var(--ms-bg-pane)]">
@@ -120,23 +142,22 @@ export function DsaPathCanvas({ curriculum, completedProblems, completedSections
         className="grid relative max-w-[1280px] mx-auto"
         style={{ gridTemplateColumns: '220px 1fr' }}
       >
-
         {/* ── Sticky sidebar ── */}
         <aside className="cpf-side sticky top-5 self-start pt-7 pb-7 pl-7 pr-4 flex flex-col gap-3.5 z-[3]">
           <div className="font-mono text-xs tracking-[0.32em] text-[var(--ms-text-faint)] mb-1">
             THE PATH
           </div>
 
-          {[1, 2, 3].map(ph => {
-            const phNodes  = nodes.filter(n => n.phase.number === ph);
-            const phDone   = phNodes.filter(n => n.state === 'done').length;
-            const phTotal  = phNodes.length;
-            const pct      = phTotal > 0 ? (phDone / phTotal) * 100 : 0;
-            const color    = PHASE_COLORS[ph];
+          {phases.map(ph => {
+            const phNodes = nodes.filter(n => n.phase.number === ph.number);
+            const phDone  = phNodes.filter(n => n.state === 'done').length;
+            const phTotal = phNodes.length;
+            const pct     = phTotal > 0 ? (phDone / phTotal) * 100 : 0;
+            const color   = PHASE_COLORS[ph.number] ?? 'var(--ms-text-faint)';
             return (
               <a
-                key={ph}
-                href={`#cpf-phase-${ph}`}
+                key={ph.number}
+                href={`#cpf-phase-${ph.number}`}
                 className="cpf-phase-card grid gap-3.5 pt-3.5 px-3.5 pb-3 border border-[var(--ms-surface)] rounded-xl bg-[var(--ms-bg-pane)]"
                 style={{ gridTemplateColumns: 'auto 1fr' }}
                 onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = color; }}
@@ -146,12 +167,12 @@ export function DsaPathCanvas({ curriculum, completedProblems, completedSections
                   className="font-display italic text-4xl leading-[0.9] self-center"
                   style={{ color }}
                 >
-                  {ROMANS[ph - 1]}
+                  {ROMANS[ph.number - 1]}
                 </span>
                 <div className="flex flex-col gap-1.5 min-w-0">
                   <div className="flex justify-between items-baseline gap-2">
                     <span className="font-body text-sm font-medium text-[var(--ms-text-body)]">
-                      {PHASE_NAMES[ph - 1]}
+                      {ph.label}
                     </span>
                     <span className="font-mono text-xs text-[var(--ms-text-faint)] tracking-[0.04em]">
                       {phDone}/{phTotal}
@@ -223,56 +244,62 @@ export function DsaPathCanvas({ curriculum, completedProblems, completedSections
           </svg>
 
           {/* Phase watermarks */}
-          {[1, 2, 3].map(ph => {
-            const startY  = phaseStarts[ph];
-            const endY    = phaseEnds[ph];
+          {phases.map(ph => {
+            const startY  = phaseStarts[ph.number];
+            const endY    = phaseEnds[ph.number];
             const centerY = (startY + endY) / 2;
-            const side    = ph === 2 ? 'right' : 'left';
+            const side    = ph.number === 2 ? 'right' : 'left';
+            const color   = PHASE_COLORS[ph.number] ?? 'var(--ms-text-faint)';
             return (
               <div
-                key={ph}
-                id={`cpf-phase-${ph}`}
+                key={ph.number}
+                id={`cpf-phase-${ph.number}`}
                 className={`absolute flex items-center gap-4 pointer-events-none z-0 -translate-y-1/2 ${side === 'right' ? 'flex-row-reverse right-[4%]' : 'left-[4%]'}`}
                 style={{ top: centerY }}
               >
                 <span
                   className="font-display italic font-light text-[200px] leading-[0.85] opacity-10"
-                  style={{ color: PHASE_COLORS[ph] }}
+                  style={{ color }}
                 >
-                  {ROMANS[ph - 1]}
+                  {ROMANS[ph.number - 1]}
                 </span>
                 <div className="flex flex-col gap-1">
                   <span
                     className="font-mono text-xs tracking-[0.32em] opacity-50"
-                    style={{ color: PHASE_COLORS[ph] }}
+                    style={{ color }}
                   >
-                    {PHASE_NAMES[ph - 1].toUpperCase()}
+                    {ph.label.toUpperCase()}
                   </span>
-                  <span
-                    className="font-display italic text-lg opacity-40"
-                    style={{ color: PHASE_COLORS[ph] }}
-                  >
-                    {PHASE_SUBS[ph - 1]}
-                  </span>
+                  {ph.sub && (
+                    <span
+                      className="font-display italic text-lg opacity-40"
+                      style={{ color }}
+                    >
+                      {ph.sub}
+                    </span>
+                  )}
                 </div>
               </div>
             );
           })}
 
           {/* Phase header rules */}
-          {[1, 2, 3].map(ph => (
+          {phases.map(ph => (
             <div
-              key={ph}
+              key={ph.number}
               className="absolute left-[6%] right-[6%] flex items-center gap-3 z-[1] pointer-events-none"
-              style={{ top: phaseStarts[ph] - 56 }}
+              style={{ top: phaseStarts[ph.number] - 56 }}
             >
               <span
                 className="font-mono text-xs tracking-[0.32em] opacity-85 whitespace-nowrap"
-                style={{ color: PHASE_COLORS[ph] }}
+                style={{ color: PHASE_COLORS[ph.number] ?? 'var(--ms-text-faint)' }}
               >
-                PHASE {ph}
+                PHASE {ph.number}
               </span>
-              <span className="flex-1 h-px opacity-20" style={{ background: PHASE_COLORS[ph] }} />
+              <span
+                className="flex-1 h-px opacity-20"
+                style={{ background: PHASE_COLORS[ph.number] ?? 'var(--ms-text-faint)' }}
+              />
             </div>
           ))}
 
@@ -283,31 +310,20 @@ export function DsaPathCanvas({ curriculum, completedProblems, completedSections
             const idLbl  = String(n.stepNum).padStart(2, '0');
             const check  = isDone ? ' ✓' : '';
             const stateLine = isCore ? 'currently studying' : isDone ? 'complete' : 'upcoming';
-            const sample = n.section.firstPass.slice(0, 3);
-            const moreCount = n.section.firstPass.length - sample.length;
-            const fundamentalsHref = n.section.fundamentalsSlugs?.[0]
-              ? `/dsa/fundamentals/${n.section.fundamentalsSlugs[0]}`
-              : null;
-
+            const sample = n.section.chips.slice(0, 3);
+            const moreCount = n.section.chips.length - sample.length;
             const dotSize = isCore ? 14 : 10;
 
             const labelContent = (
               <>
-                {/* Step + state */}
                 <span className="cpf-head">
                   <span className="cpf-num">{idLbl}</span>
                   <span className="cpf-state">{stateLine}</span>
                 </span>
-
-                {/* Title */}
                 <span className={`cpf-title ${isCore ? 'text-2xl' : 'text-xl'}`}>
                   {n.section.label}{check}
                 </span>
-
-                {/* Hook */}
                 <span className="cpf-hook">{n.section.mentalModelHook}</span>
-
-                {/* CTA */}
                 <span className="cpf-fund-cta">Read the fundamentals →</span>
               </>
             );
@@ -318,38 +334,31 @@ export function DsaPathCanvas({ curriculum, completedProblems, completedSections
                 className={`cpf-node cpf-node-${n.state}`}
                 style={{ left: `${n.x}%`, top: n.y }}
               >
-                <span
-                  className="cpf-dot"
-                  style={{ width: dotSize, height: dotSize }}
-                />
+                <span className="cpf-dot" style={{ width: dotSize, height: dotSize }} />
 
                 <div className={`cpf-label cpf-label-${n.alt.toLowerCase()}`}>
-                  {fundamentalsHref ? (
-                    <Link href={fundamentalsHref} className="cpf-fund-link">
+                  {n.section.fundamentalsHref ? (
+                    <Link href={n.section.fundamentalsHref} className="cpf-fund-link">
                       {labelContent}
                     </Link>
                   ) : (
-                    <div className="cpf-fund-link">
-                      {labelContent}
-                    </div>
+                    <div className="cpf-fund-link">{labelContent}</div>
                   )}
 
-                  {/* Problem chips — stacked vertically, "+N more" inline on last row */}
                   {sample.length > 0 && (
                     <div className="cpf-probs">
-                      {sample.map((prob, idx) => {
+                      {sample.map((chip, idx) => {
                         const isLast = idx === sample.length - 1;
                         return (
-                          <div key={prob.id} className="cpf-prob-row">
-                            <Link
-                              href={`/dsa/problems/${prob.id}`}
-                              className="cpf-prob-chip"
-                            >
-                              <span className="cpf-prob-id">{prob.id}</span>
-                              <span className="cpf-prob-title">{problemTitles[prob.id] ?? prob.id}</span>
+                          <div key={chip.href} className="cpf-prob-row">
+                            <Link href={chip.href} className="cpf-prob-chip">
+                              {chip.id && <span className="cpf-prob-id">{chip.id}</span>}
+                              <span className="cpf-prob-title">{chip.label}</span>
                             </Link>
-                            {isLast && moreCount > 0 && fundamentalsHref && (
-                              <Link href={fundamentalsHref} className="cpf-more">+{moreCount} more</Link>
+                            {isLast && moreCount > 0 && n.section.fundamentalsHref && (
+                              <Link href={n.section.fundamentalsHref} className="cpf-more">
+                                +{moreCount} more
+                              </Link>
                             )}
                           </div>
                         );

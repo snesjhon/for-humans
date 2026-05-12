@@ -2,21 +2,20 @@
 
 ## Overview
 
-Plant Floor Monitor now has a typed device contract and a fetch layer, but React still has no boundary that turns that promise into screen-ready async state. An automations company wants to see whether you can build that boundary as a custom hook instead of scattering loading flags and ad hoc cleanup through components. Your job is to create `useDevices`, wire request cancellation through the existing fetch path, and be ready to explain what goes wrong when an effect outlives the component that started it.
+Plant Floor Monitor now has a typed API contract and a typed fetch layer, but React still has no lifecycle-aware boundary for requesting device data. An automations company wants to see whether you can build a `useDevices()` hook that models loading, error, and ready state honestly, cancels in-flight work during cleanup, and wires that hook into the app without falling back to `isMounted` guards or stale effect patterns.
 
 ## What You Should Build
 
-- [ ] Create `src/hooks/useDevices.ts` with a typed `useDevices()` hook that loads devices from the existing fetch layer and exposes loading, error, and device data state
-- [ ] Update the fetch path so `useDevices()` can pass an `AbortSignal` into the request instead of leaving the underlying `fetch()` uncancelled
-- [ ] Start the device request inside `useEffect`, create an `AbortController` for that effect run, and abort it in the cleanup function
-- [ ] Treat aborted requests as expected cleanup rather than as user-facing failures, while still surfacing real fetch errors
-- [ ] Keep the hook ready for a later rendering scenario by returning state that a component can branch on without re-implementing fetch logic
-- [ ] Be prepared to explain why cleanup belongs at the request boundary, what happens if the component unmounts mid-fetch without that cleanup, and how StrictMode exposes a missing teardown
+- [ ] Create `src/hooks/useDevices.ts` with a `useDevices()` hook that requests devices through the existing fetch layer and exposes the async screen state the app needs
+- [ ] Use `useEffect` plus `AbortController` so an in-flight request is cancelled in cleanup when the component unmounts or the effect is re-run
+- [ ] Thread the abort signal through the fetch boundary instead of leaving the network request running and merely guarding `setState`
+- [ ] Update the existing device fetch helpers as needed so the hook can pass an `AbortSignal` down to `fetch()`
+- [ ] Update `src/App.tsx` so it consumes `useDevices()` and renders loading, error, and ready branches from the hook result
 
 ## Constraints
 
-- Stay at the async-state and effect-cleanup boundary only, do not build the rendering components, CSS, reducer logic, or tag and alarm flows in this scenario
-- Do not replace cancellation with only an `isMounted` or `didCancel` state-write guard; the in-flight request itself should be cancellable
-- Keep the hook typed with the shared `Device` contract and the existing fetch layer instead of re-declaring the payload shape locally
-- Do not add polling, retries, schema-validation libraries, or backend code in this step
-- Scope this lesson to device loading only, with one request started by the hook and one cleanup path owned by the effect
+- Stay inside async device state only, do not extract presentational components, add CSS work, render tags or alarms, or introduce reducers in this scenario
+- Do not solve cleanup with an `isMounted` flag or a "skip `setState` after unmount" guard alone; the request itself should be cancellable
+- Treat an abort as expected cleanup, not as a user-facing error state
+- Reuse the existing `fetchDevices()` boundary instead of calling `fetch()` directly from `App.tsx`
+- Keep the hook focused on one request lifecycle for devices only; polling, retries, caching libraries, and derived filtering belong to later scenarios
