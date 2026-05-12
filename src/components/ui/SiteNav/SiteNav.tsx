@@ -324,10 +324,10 @@ export function SiteNav({
                   <Link
                     href={
                       isSystemDesignPage
-                        ? '/system-design/path'
+                        ? '/system-design'
                         : isFrontendPage
-                          ? '/frontend/path'
-                          : '/dsa/path'
+                          ? '/frontend'
+                          : '/dsa'
                     }
                     data-left-sidebar-back-link
                     className="flex min-w-0 items-center gap-2 text-[0.775rem] font-normal text-[var(--ms-text-body)] no-underline transition-colors visited:text-[var(--ms-text-body)] hover:text-[var(--ms-primary)] focus:outline-none focus-visible:outline-none active:outline-none"

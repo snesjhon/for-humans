@@ -13,6 +13,7 @@ import { getAllScenarioSlugsFromDisk } from '@/lib/system-design/content';
 import { getAllFundamentalsSlugs as getAllSystemDesignFundamentalsSlugs, getAllPracticeSlugs } from '@/lib/system-design/fundamentals';
 import { getAllConceptSlugs } from '@/lib/system-design/concepts';
 import { DEFAULT_THEME_FLAVOR, getThemeInitScript } from '@/lib/theme';
+import { createClient } from '@/lib/supabase/server';
 import '../styles/globals.css';
 
 const newsreader = Newsreader({
@@ -52,6 +53,10 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const isLoggedIn = !!user;
+
   const availableDsaProblemIds = getAllProblems().map((p) => p.id);
   const availableFrontendProblemIds = getAllFrontendProblems().map((p) => p.id);
   const availableFrontendBuildSlugs = getAllBuildSlugs();
@@ -77,6 +82,7 @@ export default async function RootLayout({
       </head>
       <body className="min-h-screen bg-[var(--ms-bg-pane)] text-[var(--ms-text-body)]">
         <LayoutShell
+          isLoggedIn={isLoggedIn}
           availableDsaProblemIds={availableDsaProblemIds}
           availableFrontendProblemIds={availableFrontendProblemIds}
           availableFrontendBuildSlugs={availableFrontendBuildSlugs}

@@ -16,16 +16,17 @@ import {
 const FULLWIDTH_ROUTES = new Set([
   '/',
   '/dsa',
-  '/dsa/path',
+  '/dsa/overview',
   '/frontend',
-  '/frontend/path',
+  '/frontend/overview',
   '/settings',
   '/system-design',
-  '/system-design/path',
+  '/system-design/overview',
 ]);
 
 interface LayoutShellProps {
   children: React.ReactNode;
+  isLoggedIn: boolean;
   availableDsaProblemIds: string[];
   availableFrontendProblemIds: string[];
   availableFrontendBuildSlugs: string[];
@@ -41,6 +42,7 @@ interface LayoutShellProps {
 
 export function LayoutShell({
   children,
+  isLoggedIn,
   availableDsaProblemIds,
   availableFrontendProblemIds,
   availableFrontendBuildSlugs,
@@ -61,14 +63,18 @@ export function LayoutShell({
   const isFullwidth = FULLWIDTH_ROUTES.has(pathname);
   const isHome = pathname === '/';
   const topLevelNavLinks = [
-    { href: '/dsa', label: 'DSA', active: pathname.startsWith('/dsa') },
     {
-      href: '/system-design',
+      href: isLoggedIn ? '/dsa' : '/dsa/overview',
+      label: 'DSA',
+      active: pathname.startsWith('/dsa'),
+    },
+    {
+      href: isLoggedIn ? '/system-design' : '/system-design/overview',
       label: 'System Design',
       active: pathname.startsWith('/system-design'),
     },
     {
-      href: '/frontend',
+      href: isLoggedIn ? '/frontend' : '/frontend/overview',
       label: 'Frontend',
       active: pathname.startsWith('/frontend'),
     },

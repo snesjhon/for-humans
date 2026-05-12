@@ -1,104 +1,293 @@
 import Link from 'next/link';
 import { JOURNEY } from '@/lib/frontend/journey';
 import { getAllFundamentalsSlugs } from '@/lib/frontend/fundamentals';
+import { getAllBuildSlugs } from '@/lib/frontend/build';
+import { getAllConceptSlugs } from '@/lib/frontend/concepts';
+import { createClient } from '@/lib/supabase/server';
+import type { FrontendJourneySection, Phase } from '@/lib/frontend/types';
+import {
+  PhaseBannerContent,
+  StepGuideCard,
+  PlaceholderGuideCard,
+} from '@/components/ui/PathComponents/PathComponents';
+import { SectionProgress } from '@/components/ui/SectionProgress/SectionProgress';
+import { PhaseTracker } from '@/components/ui/PhaseTracker/PhaseTracker';
+import { pColor } from '@/components/ui/pathUtils';
+import { PageHero } from '@/components/ui/PageHero/PageHero';
 
-export default function FrontendHomePage() {
-  const totalPhases = JOURNEY.length;
+type SectionEntry = {
+  section: FrontendJourneySection;
+  phase: Phase;
+  stepNum: number;
+};
+
+type PhaseGroup = {
+  phase: Phase;
+  entries: SectionEntry[];
+};
+
+function buildCurriculum(): SectionEntry[] {
+  const entries: SectionEntry[] = [];
+  let stepNum = 0;
+
+  JOURNEY.forEach((phase) => {
+    phase.sections.forEach((section) => {
+      stepNum += 1;
+      entries.push({ section, phase, stepNum });
+    });
+  });
+
+  return entries;
+}
+
+function buildPhaseGroups(): PhaseGroup[] {
+  const curriculum = buildCurriculum();
+  const groups: PhaseGroup[] = [];
+
+  for (const entry of curriculum) {
+    const last = groups[groups.length - 1];
+    if (!last || last.phase.number !== entry.phase.number) {
+      groups.push({ phase: entry.phase, entries: [entry] });
+    } else {
+      last.entries.push(entry);
+    }
+  }
+
+  return groups;
+}
+
+export default async function PathPage() {
+  const availableFundamentalsSlugs = new Set(getAllFundamentalsSlugs());
+  const availableBuildSlugs = new Set(getAllBuildSlugs());
+  const availableConceptSlugs = new Set(getAllConceptSlugs());
   const totalSections = JOURNEY.reduce(
     (count, phase) => count + phase.sections.length,
     0,
   );
-  const availableGuides = getAllFundamentalsSlugs().length;
+  const phaseGroups = buildPhaseGroups();
+
+  const supabase = createClient();
+  const { data: progressRows } = await supabase
+    .from('progress')
+    .select('item_type, item_id');
+
+  const completedSections = new Set(
+    progressRows
+      ?.filter(
+        (row: { item_type: string; item_id: string }) => row.item_type === 'section',
+      )
+      .map((row: { item_type: string; item_id: string }) => row.item_id) ?? [],
+  );
+  const completedProblems = new Set(
+    progressRows
+      ?.filter(
+        (row: { item_type: string; item_id: string }) => row.item_type === 'problem',
+      )
+      .map((row: { item_type: string; item_id: string }) => row.item_id) ?? [],
+  );
 
   return (
     <>
-      <section className="bg-[var(--ms-bg-pane-secondary)] pb-24">
-        <div className="mx-auto max-w-[1152px] px-6 pt-[72px]">
-          <div className="mb-8">
-            <span className="inline-block rounded-full border border-[var(--ms-blue)] bg-[var(--ms-bg-pane)] px-[14px] py-[5px] font-mono text-[0.68rem] font-bold uppercase tracking-[0.12em] text-[var(--ms-blue)]">
-              TypeScript + React
-            </span>
-          </div>
+      <PageHero>
+        <h1 className="font-display text-5xl text-[var(--ms-text-body)]">
+          The Frontend Path
+        </h1>
+        <p className="mb-0 text-sm text-[var(--ms-text-faint)]">
+          {totalSections} mental models across TypeScript and React
+        </p>
+      </PageHero>
 
-          <h1 className="mb-8 max-w-[860px] font-display text-[clamp(3.4rem,7vw,4rem)] font-normal italic leading-none tracking-[-0.03em] text-[var(--ms-text-body)]">
-            Learn frontend
-            <br />
-            at the mental-model layer.
-          </h1>
+      <div>
+        {phaseGroups.map(({ phase, entries }) => {
+          const color = pColor(phase.number);
+          const chapterLabel = String(phase.number).padStart(2, '0');
 
-          <div className="mb-12 grid max-w-[920px] grid-cols-2 gap-x-12 gap-y-6">
-            <p className="m-0 text-md leading-[1.75] text-[var(--ms-text-muted)]">
-              This track focuses on the bugs and edge cases that catch senior
-              engineers off guard: generic inference, stale closures, cleanup
-              semantics, dependency churn, and rendering guarantees.
-            </p>
-            <p className="m-0 text-base leading-[1.75] text-[var(--ms-text-subtle)]">
-              It teaches TypeScript and React together, the same way they
-              collide in real interviews and real code reviews.
-            </p>
-          </div>
+          return (
+            <div
+              key={phase.number}
+              id={`phase-zone-${phase.number}`}
+              className="bg-[var(--ms-bg-pane-secondary)]"
+            >
+              <div className="mx-auto max-w-[1152px] px-6">
+                <PhaseBannerContent
+                  phase={phase}
+                  color={color}
+                  chapterLabel={chapterLabel}
+                />
 
-          <div className="flex flex-wrap items-center gap-12">
-            <div className="flex gap-10">
-              {[
-                { value: String(totalPhases), label: 'phases' },
-                { value: String(totalSections), label: 'mental models' },
-                { value: String(availableGuides), label: 'guides live' },
-              ].map(({ value, label }) => (
-                <div key={label} className="flex items-baseline gap-[6px]">
-                  <span className="font-display text-[3.25rem] font-normal italic leading-none tracking-[-0.04em] text-[var(--ms-blue)]">
-                    {value}
-                  </span>
-                  <span className="text-[0.8125rem] font-medium text-[var(--ms-text-faint)]">
-                    {label}
-                  </span>
-                </div>
-              ))}
+                {entries.map((entry, index) => {
+                  const { section, stepNum } = entry;
+                  const isLast = index === entries.length - 1;
+                  const stepLabel = String(stepNum).padStart(2, '0');
+                  const hasGuide = availableFundamentalsSlugs.has(
+                    section.fundamentalsSlug,
+                  );
+                  const additionalGuides = (section.additionalFundamentals ?? []).filter(
+                    (f) => availableFundamentalsSlugs.has(f.slug),
+                  );
+
+                  return (
+                    <div
+                      key={section.id}
+                      className={`grid grid-cols-2 items-start gap-7 ${
+                        isLast ? 'pb-6' : 'pb-12'
+                      }`}
+                    >
+                      <div>
+                        {hasGuide ? (
+                          <StepGuideCard
+                            href={`/frontend/fundamentals/${section.fundamentalsSlug}`}
+                            label={section.label}
+                            hook={section.mentalModelHook}
+                            stepNum={stepLabel}
+                            color={color}
+                          />
+                        ) : (
+                          <PlaceholderGuideCard
+                            label={section.label}
+                            hook={section.mentalModelHook}
+                            stepNum={stepLabel}
+                          />
+                        )}
+                        {additionalGuides.map((f) => (
+                          <div key={f.slug} className="mt-4">
+                            <StepGuideCard
+                              href={`/frontend/fundamentals/${f.slug}`}
+                              label={f.slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
+                              hook={f.blurb}
+                              stepNum={stepLabel}
+                              color={color}
+                            />
+                          </div>
+                        ))}
+
+                        <SectionProgress
+                          sectionItemId={`fe-section-${section.id}`}
+                          problemItemIds={[
+                            ...section.practice.map((problem) => `fe-problem-${problem.id}`),
+                            ...section.explorations.map((problem) => `fe-problem-${problem.id}`),
+                          ]}
+                          initialCompletedProblemIds={[
+                            ...section.practice
+                              .map((problem) => `fe-problem-${problem.id}`)
+                              .filter((itemId) => completedProblems.has(itemId)),
+                            ...section.explorations
+                              .map((problem) => `fe-problem-${problem.id}`)
+                              .filter((itemId) => completedProblems.has(itemId)),
+                          ]}
+                          initialSectionCompleted={completedSections.has(
+                            `fe-section-${section.id}`,
+                          )}
+                        />
+                      </div>
+
+                      <div className="pt-1">
+                        {section.builds && section.builds.length > 0 && (
+                          <div>
+                            <p className="mb-2 font-mono text-[0.6rem] font-bold uppercase tracking-[0.09em] text-[var(--ms-text-faint)]">
+                              Build
+                            </p>
+                            <div className="space-y-3">
+                              {section.builds.map((building) => (
+                                <div key={building.slug}>
+                                  <p className="mb-1 m-0 max-w-[460px] text-[0.875rem] leading-[1.75] text-[var(--ms-text-subtle)]">
+                                    {building.blurb}
+                                  </p>
+                                  {availableBuildSlugs.has(building.slug) ? (
+                                    <Link
+                                      href={`/frontend/build/${building.slug}`}
+                                      className="text-sm text-[var(--ms-blue)] no-underline transition-opacity hover:opacity-80"
+                                    >
+                                      {building.label} →
+                                    </Link>
+                                  ) : (
+                                    <p className="m-0 font-display text-sm italic text-[var(--ms-text-faint)]">
+                                      Build coming soon.
+                                    </p>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {section.concepts && section.concepts.length > 0 && (
+                          <div className={section.builds && section.builds.length > 0 ? 'mt-5' : ''}>
+                            <p className="mb-2 font-mono text-[0.6rem] font-bold uppercase tracking-[0.09em] text-[var(--ms-text-faint)]">
+                              Concepts
+                            </p>
+                            <div className="space-y-3">
+                              {section.concepts.map((concept) => (
+                                <div key={concept.slug}>
+                                  <p className="mb-1 m-0 max-w-[460px] text-[0.875rem] leading-[1.75] text-[var(--ms-text-subtle)]">
+                                    {concept.blurb}
+                                  </p>
+                                  {availableConceptSlugs.has(concept.slug) ? (
+                                    <Link
+                                      href={`/frontend/concepts/${concept.slug}`}
+                                      className="text-sm text-[var(--ms-blue)] no-underline transition-opacity hover:opacity-80"
+                                    >
+                                      {concept.label} →
+                                    </Link>
+                                  ) : (
+                                    <p className="m-0 font-display text-sm italic text-[var(--ms-text-faint)]">
+                                      Concept coming soon.
+                                    </p>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {section.practice.length > 0 && (
+                          <div className={section.builds && section.builds.length > 0 || section.concepts && section.concepts.length > 0 ? 'mt-5' : ''}>
+                            <p className="mb-2 font-mono text-[0.6rem] font-bold uppercase tracking-[0.09em] text-[var(--ms-text-faint)]">
+                              Problems
+                            </p>
+                            <div className="space-y-2">
+                              {section.practice.map((problem) => (
+                                <Link
+                                  key={problem.id}
+                                  href={`/frontend/problems/${problem.id}`}
+                                  className="block text-sm text-[var(--ms-blue)] no-underline transition-opacity hover:opacity-80"
+                                >
+                                  {problem.id}. {problem.label} →
+                                </Link>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {section.explorations.length > 0 && (
+                          <div className="mt-5">
+                            <p className="mb-2 font-mono text-[0.6rem] font-bold uppercase tracking-[0.09em] text-[var(--ms-text-faint)]">
+                              Other Explorations
+                            </p>
+                            <div className="space-y-2">
+                              {section.explorations.map((problem) => (
+                                <Link
+                                  key={problem.id}
+                                  href={`/frontend/problems/${problem.id}`}
+                                  className="block text-sm text-[var(--ms-blue)] no-underline transition-opacity hover:opacity-80"
+                                >
+                                  {problem.id}. {problem.label} →
+                                </Link>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
+          );
+        })}
+      </div>
 
-            <div className="ml-auto">
-              <Link
-                href="/frontend/path"
-                className="rounded-[7px] bg-[var(--ms-blue)] px-7 py-[11px] text-[0.9375rem] font-semibold text-white no-underline"
-              >
-                Explore the frontend path →
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="border-y border-y-[var(--ms-surface)] bg-[var(--ms-bg-pane)]">
-        <div className="mx-auto grid max-w-[1152px] grid-cols-2 px-6">
-          <div className="border-r border-r-[var(--ms-surface)] py-10 pr-10">
-            <div className="mb-4 font-mono text-[0.62rem] font-bold uppercase tracking-[0.1em] text-[var(--ms-text-faint)]">
-              Most prep
-            </div>
-            <h2 className="mb-[14px] font-display text-[1.625rem] font-normal italic leading-[1.2] tracking-[-0.02em] text-[var(--ms-text-body)]">
-              Memorizes APIs and misses the model.
-            </h2>
-            <p className="m-0 text-[0.9375rem] leading-[1.8] text-[var(--ms-text-subtle)]">
-              That works until the interview shifts from syntax to semantics:
-              why the closure is stale, why the effect loops, why the generic
-              widened, or why the context update repaints everything.
-            </p>
-          </div>
-
-          <div className="py-10 pl-10">
-            <div className="mb-4 font-mono text-[0.62rem] font-bold uppercase tracking-[0.1em] text-[var(--ms-blue)]">
-              This path
-            </div>
-            <h2 className="mb-[14px] font-display text-[1.625rem] font-normal italic leading-[1.2] tracking-[-0.02em] text-[var(--ms-text-body)]">
-              Builds the explanation before the fix.
-            </h2>
-            <p className="m-0 text-[0.9375rem] leading-[1.8] text-[var(--ms-text-subtle)]">
-              Every section isolates a failure mode, then teaches the invariant
-              behind it so the right implementation becomes obvious instead of
-              memorized.
-            </p>
-          </div>
-        </div>
-      </section>
+      <PhaseTracker phaseCount={phaseGroups.length} />
     </>
   );
 }
