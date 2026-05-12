@@ -60,7 +60,7 @@ const DSA_PHASES: JourneyPanelPhase[] = DSA_JOURNEY.map((phase) => ({
 
 const FRONTEND_FUNDAMENTALS_TO_SECTION: Record<string, string> = {};
 const FRONTEND_PROBLEM_TO_SECTION: Record<string, string> = {};
-const FRONTEND_BUILDING_TO_SECTION: Record<string, string> = {};
+const FRONTEND_BUILD_TO_SECTION: Record<string, string> = {};
 const FRONTEND_CONCEPT_TO_SECTION: Record<string, string> = {};
 for (const phase of FRONTEND_JOURNEY) {
   for (const section of phase.sections) {
@@ -69,7 +69,7 @@ for (const phase of FRONTEND_JOURNEY) {
       FRONTEND_FUNDAMENTALS_TO_SECTION[f.slug] = section.id;
     }
     for (const building of section.builds ?? []) {
-      FRONTEND_BUILDING_TO_SECTION[building.slug] = section.id;
+      FRONTEND_BUILD_TO_SECTION[building.slug] = section.id;
     }
     for (const concept of section.concepts ?? []) {
       FRONTEND_CONCEPT_TO_SECTION[concept.slug] = section.id;
@@ -210,7 +210,7 @@ function frontendActiveSection(path: string): string | null {
   const problem = path.match(/^\/frontend\/problems\/([^/]+)/)?.[1];
   if (problem) return FRONTEND_PROBLEM_TO_SECTION[problem] ?? null;
   const building = path.match(/^\/frontend\/building\/([^/]+)/)?.[1];
-  if (building) return FRONTEND_BUILDING_TO_SECTION[building] ?? null;
+  if (building) return FRONTEND_BUILD_TO_SECTION[building] ?? null;
   const concept = path.match(/^\/frontend\/concepts\/([^/]+)/)?.[1];
   if (concept) return FRONTEND_CONCEPT_TO_SECTION[concept] ?? null;
   return null;
@@ -221,7 +221,7 @@ function frontendActiveSection(path: string): string | null {
 interface SiteNavProps {
   availableDsaProblemIds: string[];
   availableFrontendProblemIds: string[];
-  availableFrontendBuildingSlugs: string[];
+  availableFrontendBuildSlugs: string[];
   availableFrontendConceptSlugs: string[];
   availableDsaFundamentalsSlugs: string[];
   availableFrontendFundamentalsSlugs: string[];
@@ -236,7 +236,7 @@ interface SiteNavProps {
 export function SiteNav({
   availableDsaProblemIds: availableDsaProblemIdsArr,
   availableFrontendProblemIds: availableFrontendProblemIdsArr,
-  availableFrontendBuildingSlugs: availableFrontendBuildingSlugsArr,
+  availableFrontendBuildSlugs: availableFrontendBuildSlugsArr,
   availableFrontendConceptSlugs: availableFrontendConceptSlugsArr,
   availableDsaFundamentalsSlugs: availableDsaFundamentalsArr,
   availableFrontendFundamentalsSlugs: availableFrontendFundamentalsArr,
@@ -249,10 +249,10 @@ export function SiteNav({
   onToggleCollapsed,
 }: SiteNavProps) {
   const availableDsaProblemIds = new Set(availableDsaProblemIdsArr);
-  const availableFrontendBuildingSlugs = new Set(availableFrontendBuildingSlugsArr);
+  const availableFrontendBuildSlugs = new Set(availableFrontendBuildSlugsArr);
   const availableFrontendConceptSlugs = new Set(availableFrontendConceptSlugsArr);
   const availableFrontendItemKeys = new Set([
-    ...availableFrontendBuildingSlugsArr,
+    ...availableFrontendBuildSlugsArr,
     ...availableFrontendConceptSlugsArr,
     ...availableFrontendProblemIdsArr,
   ]);
@@ -431,8 +431,8 @@ export function SiteNav({
                   isSystemDesignPage
                     ? `/system-design/scenarios/${key}`
                     : isFrontendPage
-                      ? availableFrontendBuildingSlugs.has(key)
-                        ? `/frontend/building/${key}`
+                      ? availableFrontendBuildSlugs.has(key)
+                        ? `/frontend/build/${key}`
                         : availableFrontendConceptSlugs.has(key)
                           ? `/frontend/concepts/${key}`
                         : `/frontend/problems/${key}`

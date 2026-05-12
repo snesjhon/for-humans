@@ -6,7 +6,7 @@ import {
   getScenarioMatch,
   getScenarioRef,
 } from '@/lib/frontend/scenarios';
-import { getBuildingContent } from '@/lib/frontend/building';
+import { getBuildContent } from '@/lib/frontend/build';
 import { extractHeadings } from '@/lib/frontend/headings';
 import MarkdownRenderer from '@/components/frontend/MarkdownRenderer/MarkdownRenderer';
 import TableOfContents from '@/components/ui/TableOfContents/TableOfContents';
@@ -28,8 +28,8 @@ export default function FrontendScenarioPage({ params }: Props) {
   const scenario = getScenarioContent(params.slug);
 
   if (!scenario) {
-    const building = getBuildingContent(params.slug);
-    if (building) redirect(`/frontend/building/${params.slug}`);
+    const build = getBuildContent(params.slug);
+    if (build) redirect(`/frontend/build/${params.slug}`);
     notFound();
   }
 

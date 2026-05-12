@@ -115,7 +115,7 @@ export default function FundamentalsPage({ params }: Props) {
                 {section.builds.map((building) => (
                   <Link
                     key={building.slug}
-                    href={`/frontend/building/${building.slug}`}
+                    href={`/frontend/build/${building.slug}`}
                     className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--ms-blue)] bg-[var(--ms-blue-surface)] px-3 py-1.5 text-xs font-medium text-[var(--ms-blue)] no-underline transition-opacity hover:opacity-80"
                   >
                     {building.label} →

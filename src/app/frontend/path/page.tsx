@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { JOURNEY } from '@/lib/frontend/journey';
 import { getAllFundamentalsSlugs } from '@/lib/frontend/fundamentals';
-import { getAllBuildingSlugs } from '@/lib/frontend/building';
+import { getAllBuildSlugs } from '@/lib/frontend/build';
 import { getAllConceptSlugs } from '@/lib/frontend/concepts';
 import { createClient } from '@/lib/supabase/server';
 import type { FrontendJourneySection, Phase } from '@/lib/frontend/types';
@@ -58,7 +58,7 @@ function buildPhaseGroups(): PhaseGroup[] {
 
 export default async function PathPage() {
   const availableFundamentalsSlugs = new Set(getAllFundamentalsSlugs());
-  const availableBuildingSlugs = new Set(getAllBuildingSlugs());
+  const availableBuildSlugs = new Set(getAllBuildSlugs());
   const availableConceptSlugs = new Set(getAllConceptSlugs());
   const totalSections = JOURNEY.reduce(
     (count, phase) => count + phase.sections.length,
@@ -193,9 +193,9 @@ export default async function PathPage() {
                                   <p className="mb-1 m-0 max-w-[460px] text-[0.875rem] leading-[1.75] text-[var(--ms-text-subtle)]">
                                     {building.blurb}
                                   </p>
-                                  {availableBuildingSlugs.has(building.slug) ? (
+                                  {availableBuildSlugs.has(building.slug) ? (
                                     <Link
-                                      href={`/frontend/building/${building.slug}`}
+                                      href={`/frontend/build/${building.slug}`}
                                       className="text-sm text-[var(--ms-blue)] no-underline transition-opacity hover:opacity-80"
                                     >
                                       {building.label} →

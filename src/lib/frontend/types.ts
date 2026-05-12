@@ -4,7 +4,7 @@ export interface FrontendJourneyProblem {
   label: string;
 }
 
-export interface BuildingRef {
+export interface BuildRef {
   slug: string;
   label: string;
   blurb: string;
@@ -25,7 +25,7 @@ export interface FrontendJourneySection {
   additionalFundamentals?: { slug: string; blurb: string }[];
   practice: FrontendJourneyProblem[];
   explorations: FrontendJourneyProblem[];
-  builds?: BuildingRef[];
+  builds?: BuildRef[];
   concepts?: ConceptRef[];
 }
 

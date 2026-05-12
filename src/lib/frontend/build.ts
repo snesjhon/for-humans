@@ -3,25 +3,25 @@ import path from 'path';
 import { JOURNEY } from './journey';
 import type { FrontendJourneySection } from './types';
 
-const BUILDING_DIR = path.join(
+const BUILD_DIR = path.join(
   process.cwd(),
   'src',
   'app',
   'frontend',
-  'building',
+  'build',
 );
 
-export interface BuildingContent {
+export interface BuildContent {
   slug: string;
   brief: string;
   walkthrough: string | null;
   promptContent: string | null;
 }
 
-export function getBuildingContent(slug: string): BuildingContent | null {
-  const briefPath = path.join(BUILDING_DIR, slug, 'brief.md');
-  const walkthroughPath = path.join(BUILDING_DIR, slug, 'walkthrough.md');
-  const promptPath = path.join(BUILDING_DIR, slug, 'prompt.md');
+export function getBuildContent(slug: string): BuildContent | null {
+  const briefPath = path.join(BUILD_DIR, slug, 'brief.md');
+  const walkthroughPath = path.join(BUILD_DIR, slug, 'walkthrough.md');
+  const promptPath = path.join(BUILD_DIR, slug, 'prompt.md');
 
   const hasBrief = fs.existsSync(briefPath);
   const hasWalkthrough = fs.existsSync(walkthroughPath);
@@ -36,14 +36,14 @@ export function getBuildingContent(slug: string): BuildingContent | null {
   };
 }
 
-export function getAllBuildingSlugs(): string[] {
-  if (!fs.existsSync(BUILDING_DIR)) return [];
+export function getAllBuildSlugs(): string[] {
+  if (!fs.existsSync(BUILD_DIR)) return [];
 
   return fs
-    .readdirSync(BUILDING_DIR, { withFileTypes: true })
+    .readdirSync(BUILD_DIR, { withFileTypes: true })
     .filter((entry) => entry.isDirectory() && entry.name !== '[slug]')
     .filter((entry) => {
-      const dir = path.join(BUILDING_DIR, entry.name);
+      const dir = path.join(BUILD_DIR, entry.name);
       return (
         fs.existsSync(path.join(dir, 'brief.md')) ||
         fs.existsSync(path.join(dir, 'walkthrough.md'))
@@ -52,19 +52,19 @@ export function getAllBuildingSlugs(): string[] {
     .map((entry) => entry.name);
 }
 
-export function getSectionForBuilding(slug: string): FrontendJourneySection | null {
+export function getSectionForBuild(slug: string): FrontendJourneySection | null {
   for (const phase of JOURNEY) {
     for (const section of phase.sections) {
-      if (section.builds?.some((building) => building.slug === slug)) return section;
+      if (section.builds?.some((build) => build.slug === slug)) return section;
     }
   }
   return null;
 }
 
-export function getBuildingRef(slug: string) {
+export function getBuildRef(slug: string) {
   for (const phase of JOURNEY) {
     for (const section of phase.sections) {
-      const ref = section.builds?.find((building) => building.slug === slug);
+      const ref = section.builds?.find((build) => build.slug === slug);
       if (ref) return ref;
     }
   }

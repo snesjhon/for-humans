@@ -28,7 +28,7 @@ interface LayoutShellProps {
   children: React.ReactNode;
   availableDsaProblemIds: string[];
   availableFrontendProblemIds: string[];
-  availableFrontendBuildingSlugs: string[];
+  availableFrontendBuildSlugs: string[];
   availableFrontendConceptSlugs: string[];
   availableDsaFundamentalsSlugs: string[];
   availableFrontendFundamentalsSlugs: string[];
@@ -43,7 +43,7 @@ export function LayoutShell({
   children,
   availableDsaProblemIds,
   availableFrontendProblemIds,
-  availableFrontendBuildingSlugs,
+  availableFrontendBuildSlugs,
   availableFrontendConceptSlugs,
   availableDsaFundamentalsSlugs,
   availableFrontendFundamentalsSlugs,
@@ -178,7 +178,7 @@ export function LayoutShell({
       <SiteNav
         availableDsaProblemIds={availableDsaProblemIds}
         availableFrontendProblemIds={availableFrontendProblemIds}
-        availableFrontendBuildingSlugs={availableFrontendBuildingSlugs}
+        availableFrontendBuildSlugs={availableFrontendBuildSlugs}
         availableFrontendConceptSlugs={availableFrontendConceptSlugs}
         availableDsaFundamentalsSlugs={availableDsaFundamentalsSlugs}
         availableFrontendFundamentalsSlugs={availableFrontendFundamentalsSlugs}

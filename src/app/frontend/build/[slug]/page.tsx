@@ -1,11 +1,11 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import {
-  getBuildingContent,
-  getAllBuildingSlugs,
-  getSectionForBuilding,
-  getBuildingRef,
-} from '@/lib/frontend/building';
+  getBuildContent,
+  getAllBuildSlugs,
+  getSectionForBuild,
+  getBuildRef,
+} from '@/lib/frontend/build';
 import { extractHeadings } from '@/lib/frontend/headings';
 import MarkdownRenderer from '@/components/frontend/MarkdownRenderer/MarkdownRenderer';
 import CheckWork from '@/components/frontend/CheckWork/CheckWork';
@@ -21,25 +21,25 @@ interface Props {
 }
 
 export function generateStaticParams() {
-  return getAllBuildingSlugs().map((slug) => ({ slug }));
+  return getAllBuildSlugs().map((slug) => ({ slug }));
 }
 
-export default function FrontendBuildingPage({ params }: Props) {
-  const building = getBuildingContent(params.slug);
-  if (!building) notFound();
+export default function FrontendBuildPage({ params }: Props) {
+  const build = getBuildContent(params.slug);
+  if (!build) notFound();
 
-  const section = getSectionForBuilding(params.slug);
-  const buildingRef = getBuildingRef(params.slug);
-  const strippedBrief = building.brief.replace(/^#[^#].*\n+/, '').trimStart();
-  const strippedWalkthrough = building.walkthrough
-    ? building.walkthrough.replace(/^#[^#].*\n+/, '').trimStart()
+  const section = getSectionForBuild(params.slug);
+  const buildRef = getBuildRef(params.slug);
+  const strippedBrief = build.brief.replace(/^#[^#].*\n+/, '').trimStart();
+  const strippedWalkthrough = build.walkthrough
+    ? build.walkthrough.replace(/^#[^#].*\n+/, '').trimStart()
     : null;
   const headings = extractHeadings(strippedWalkthrough ?? strippedBrief);
-  const loginHref = `/login?next=${encodeURIComponent(`/frontend/building/${params.slug}`)}`;
+  const loginHref = `/login?next=${encodeURIComponent(`/frontend/build/${params.slug}`)}`;
 
   return (
     <ProgressProvider
-      items={[{ itemType: 'building' as const, itemId: `fe-building-${params.slug}` }]}
+      items={[{ itemType: 'build' as const, itemId: `fe-build-${params.slug}` }]}
     >
       <TDPageLayout
         progress={
@@ -47,8 +47,8 @@ export default function FrontendBuildingPage({ params }: Props) {
             loginHref={loginHref}
             items={[
               {
-                itemType: 'building' as const,
-                itemId: `fe-building-${params.slug}`,
+                itemType: 'build' as const,
+                itemId: `fe-build-${params.slug}`,
                 label: 'Build complete',
               },
             ]}
@@ -57,7 +57,7 @@ export default function FrontendBuildingPage({ params }: Props) {
         hero={
           <PageHero>
             <h1 className="mb-0 font-display text-5xl leading-tight text-[var(--ms-text-body)]">
-              {buildingRef?.label ?? params.slug.replace(/-/g, ' ')}
+              {buildRef?.label ?? params.slug.replace(/-/g, ' ')}
             </h1>
             {section && (
               <p className="mb-6 text-lg italic leading-snug text-[var(--ms-primary)]">
@@ -105,7 +105,7 @@ export default function FrontendBuildingPage({ params }: Props) {
             </p>
             <MarkdownRenderer
               content={strippedBrief}
-              prompts={building.promptContent ?? ''}
+              prompts={build.promptContent ?? ''}
               phase={1}
               storageKeyPrefix={`chat:${params.slug}`}
             />
@@ -114,7 +114,7 @@ export default function FrontendBuildingPage({ params }: Props) {
           {strippedWalkthrough && (
             <MarkdownRenderer
               content={strippedWalkthrough}
-              prompts={building.promptContent ?? ''}
+              prompts={build.promptContent ?? ''}
               phase={1}
               storageKeyPrefix={`chat:${params.slug}`}
             />
@@ -128,8 +128,8 @@ export default function FrontendBuildingPage({ params }: Props) {
               ← Back to Frontend Path
             </Link>
             <TDCompletionCTA
-              itemType="building"
-              itemId={`fe-building-${params.slug}`}
+              itemType="build"
+              itemId={`fe-build-${params.slug}`}
               label="Complete Build"
               completedLabel="Build Completed"
               loginHref={loginHref}
