@@ -1,345 +1,334 @@
 ## Overview
 
-React effects have a setup phase and a cleanup phase — both halves are the contract, not just the setup. Three related problems grow from the same root: the setup half of an effect ran, but the shutdown half never did.
+`useEffect` runs code after React finishes rendering. The dep array tells React when to re-run that code. Timers inside effects create a separate class of bug because `setInterval` captures values at the time it was created and never sees updates, even when state has changed.
 
-**The missing cleanup problem:** Effects without a return value leave intervals, listeners, and subscriptions running after a component unmounts or a dependency changes. Under React StrictMode, every effect runs twice on mount (setup → cleanup → setup), which turns a silent leak into immediately visible double behavior.
+Three things come up repeatedly in React interviews:
 
-**The interval drift problem:** A tick counter inside `setInterval` conflates "number of ticks" with "elapsed seconds." When the tick rate is faster than one per second, the counter overcounts. When scheduling delays accumulate over time, the counter falls behind. The fix is to read `Date.now()` from a reference captured at setup time, so the displayed value reflects actual elapsed time.
+**The dep array** — what belongs in it, what happens when something is missing, and what happens when a value is unstable.
 
-**The async cancellation problem:** `fetch` does not cancel itself. A response launched by one effect run can arrive and call `setState` after the component has moved on to a different dependency — or unmounted entirely. An `AbortController` is the mechanism: the setup passes a kill signal into the request, and the cleanup fires it.
+**When not to use useEffect** — React's own docs are explicit: don't use effects for derived state, event responses, or data that can be computed during render.
 
-**Level 1** teaches the cleanup contract: what to return from `useEffect`, when that return value runs, and what visibly breaks when it is absent.
+**Stale closure in timers** — `setInterval` and `setTimeout` capture the values present at setup time. Any state or prop that changes afterward is invisible to the callback.
 
-**Level 2** teaches the drift trap: why a tick counter overcounts when the interval fires faster than once per second, and how capturing `Date.now()` at setup time produces an accurate elapsed value regardless of tick rate.
+**Level 1** covers how the dep array controls when effects re-run and the most common case where `useEffect` is the wrong tool.
 
-**Level 3** teaches `AbortController`: how to pass a kill signal into `fetch`, when to fire it via cleanup, and why `AbortError` should never set the component's error state.
+**Level 2** covers the dep array gotchas that produce bugs: missing deps, unstable object deps, and the infinite-loop pattern.
+
+**Level 3** covers timers: the stale closure, the two fixes (functional update and `useRef`), and how to build a reusable `useInterval` hook.
 
 ## Core Concept & Mental Model
 
-### The Sensor-and-Shutdown Pair
+### How useEffect Runs
 
-A hardware sensor has two wires: power (setup) and kill (cleanup). Connecting power alone turns the sensor on. But decommissioning the sensor — replacing it, rewiring it, moving on — requires the kill wire too. Cutting only power often leaves residual state running.
+`useEffect` takes two arguments: a function that runs the side effect, and a dependency array that controls when it re-runs.
 
-React uses the same contract for effects. The setup function connects something: an interval, an event listener, a fetch request, a subscription. The cleanup function — the return value from the setup — disconnects it. React runs the setup after every paint. React runs the cleanup before the next setup fires and before the component leaves the tree.
+Three variants matter:
 
-Under StrictMode in development, React tests this contract deliberately: it runs setup → cleanup → setup for every effect on mount. If the second setup produces double the behavior, the cleanup wire was never connected. Production never double-mounts, but StrictMode surfaces the gap before it becomes a production incident.
-
-The three problems in this guide are three variants of a disconnected kill wire.
-
-**Missing cleanup (Level 1):** The kill wire does not exist. Every setup leaves a running interval, listener, or subscription behind. Under StrictMode, two setups run without a cleanup between them, making the doubling visible immediately.
-
-**Stale tick counter (Level 2):** The kill wire exists, but the sensor is counting oscillator ticks instead of reading the clock. An interval that fires every 200ms will call `setSeconds(s => s + 1)` five times per real second — the counter reads 5 when one second has elapsed. Replacing the counter with `Math.floor((Date.now() - start) / 1000)` anchors the reading to real clock time.
-
-**In-flight request (Level 3):** The setup launches an async operation. The kill wire must carry an abort signal to the in-flight work, not just stop future processing. An `AbortController` is the mechanism: the setup passes `controller.signal` to `fetch`, and the cleanup calls `controller.abort()`.
-
-### The Cleanup Timing Window
-
-The cleanup function runs in two situations:
-
-1. Before the next effect fires when a dependency changes
-2. On unmount
-
-This means cleanup is not "teardown when the component is done." It is "teardown whenever the current effect needs to be replaced." If a component has an effect that depends on a `deviceId` prop and the prop changes, React runs the cleanup for the old `deviceId` before running the setup for the new one. Two separate effect runs for the same dep must never coexist in a correctly written component.
-
-```ts
-useEffect(() => {
-  const id = setInterval(() => poll(deviceId), 1000);
-  return () => clearInterval(id); // runs when deviceId changes and on unmount
-}, [deviceId]);
+```tsx
+useEffect(() => { /* ... */ });            // no array: runs after every render
+useEffect(() => { /* ... */ }, []);        // empty array: runs once after mount
+useEffect(() => { /* ... */ }, [count]);   // array: runs when count changes
 ```
 
-Without the return, the old interval for the previous `deviceId` continues while a new one starts. After N dep changes, N intervals are running simultaneously.
+React compares each dep with its previous value using `Object.is`. If any dep changed, the effect re-runs. If none changed, it is skipped.
 
-### Why StrictMode Reveals the Missing Cleanup
+### The Dep Array Rules
 
-In development with `<React.StrictMode>`, React mounts, immediately simulates an unmount, and then remounts every component once. This verifies that setup and cleanup are a matched pair. A component whose effects double their behavior under StrictMode has a missing cleanup.
+The dep array is a correctness tool, not a performance tool. Every value used inside the effect that can change between renders belongs in the dep array. Missing a value means the effect runs with a stale version of it.
 
-This is not a bug introduced by StrictMode. StrictMode reveals a bug that already exists. The same accumulation happens in production whenever the component unmounts and remounts — during route changes, conditionally rendered branches, or list reconciliation. StrictMode makes the next occurrence happen immediately and predictably in dev.
+Three patterns that break in interviews:
+
+**Missing dep.** The effect uses `userId` but does not list it. React runs the effect once and skips it on every subsequent render. Inside the effect, `userId` is always the value from the first render.
+
+**Unstable dep.** An object or function is created inline in the component body. Each render produces a new reference. React sees a different dep on every render and re-runs the effect, including after state updates the effect triggered, which causes an infinite loop.
+
+**Derived state via effect.** Using an effect to compute a value from props or state and storing it in a separate state variable. This causes a double-render for every parent update and is always the wrong pattern.
+
+### When NOT to Use useEffect
+
+The most common interview signal is knowing when to reach for `useEffect` and when not to:
+
+- If a value can be computed during render from props or state, compute it during render. No effect needed.
+- If code runs in response to a user event, put it in the event handler. No effect needed.
+- If code must run after the DOM updates or syncs with an external system, that is a genuine effect.
+
+### The Timer Stale Closure
+
+`setInterval` creates a callback at setup time. That callback closes over every variable it references. If those variables change after setup, the callback sees the old values.
+
+```tsx
+const [count, setCount] = useState(0);
+
+useEffect(() => {
+  const id = setInterval(() => {
+    setCount(count + 1); // count is always 0 here — never updates
+  }, 1000);
+  return () => clearInterval(id);
+}, []);
+```
+
+The empty dep array means the effect runs once. The callback closes over `count = 0` at that moment. Two fixes exist:
+
+**Functional update** — when the callback only needs the current value of the state it is updating:
+
+```tsx
+setCount(c => c + 1);
+```
+
+React passes the current value as an argument at call time. No closure over `count` needed.
+
+**`useRef` pointer** — when the callback needs to read other state or props:
+
+```tsx
+const callbackRef = useRef(callback);
+useEffect(() => { callbackRef.current = callback; }); // syncs after every render
+
+useEffect(() => {
+  const id = setInterval(() => callbackRef.current(), delay);
+  return () => clearInterval(id);
+}, [delay]);
+```
+
+`callbackRef.current` is a mutable pointer. The second effect updates it after every render. The interval always calls the latest version of the callback without restarting.
 
 ---
 
 ## Building Blocks: Progressive Learning
 
-### Level 1: The Cleanup Contract
+### Level 1: The Dep Array and When Not to Use Effects
 
-Every effect that starts something must return a function that stops it. That return value is the kill wire. Without it, React has no way to decommission the current effect run before starting the next one.
-
-The fix is always the same shape: capture the resource ID inside the effect and return a one-liner that releases it.
-
-```ts
-useEffect(() => {
-  const id = setInterval(tick, 1000);
-  return () => clearInterval(id); // the kill wire
-}, []);
-```
-
-Before writing any cleanup, identify what the effect started. An interval needs `clearInterval`. An event listener needs `removeEventListener` with the same handler reference. A subscription needs its `unsubscribe`. The cleanup mirrors the setup exactly.
+The dep array controls exactly when an effect re-runs. Three variants produce three behaviors: run every render (no array), run once (empty array), run when a specific value changes (listed deps). The first exercise builds that intuition. The second and third cover the most common case where `useEffect` is the wrong tool entirely.
 
 #### **Exercise 1**
 
-`useCounter` increments every second using `setInterval`. The effect is missing its return value. Predict: with React StrictMode running setup → cleanup → setup on mount, and no cleanup to interrupt the sequence, how many intervals are running by the time the component settles? Then return a cleanup function that calls `clearInterval(id)` so the second setup replaces the first.
+A hook tracks how many times an effect has run and exposes that count via a ref. The test mounts the hook, triggers a re-render via unrelated state, and checks whether the effect ran again. Pick the dep array that makes it run exactly once.
 
 How to think about it:
 
-1. How many times does StrictMode call the effect setup before the component is fully mounted?
-2. Without a return value, what does React call between the first and second setup?
-3. How many active intervals does that leave behind?
+1. The effect calls `runCount.current++`. Should this run once or on every render?
+2. No dep array means "run after every render." An empty array means "run once." A list of deps means "run when those specific values change."
+3. Match the dep array to the test expectation: `runCount` should still be 1 after a re-render that changes unrelated state.
 
-:::stackblitz{file="step1-exercise1-problem.ts" step=1 total=3 solution="step1-exercise1-solution.ts"}
+:::stackblitz{file="step1-exercise1-problem.tsx" step=1 total=3 solution="step1-exercise1-solution.tsx"}
 
 #### **Exercise 2**
 
-`useResizeCount` tracks how many times the window resizes by adding an event listener in the effect. The effect returns nothing. Predict: after StrictMode runs setup → cleanup(none) → setup, how many resize handlers are attached? Then return a cleanup function that calls `window.removeEventListener('resize', handler)` using the same handler reference from the setup.
+A hook receives a list of items and a search string, then uses `useEffect` to compute a filtered list and stores it in state. The result renders correctly but every prop change causes two renders instead of one. Fix it by removing the effect entirely and computing the filtered list during render.
 
 How to think about it:
 
-1. `addEventListener` adds a new listener on each call — it does not replace an existing one with the same function unless the same reference is used in `removeEventListener`.
-2. Without a cleanup, what happens to the handler from the first setup when the second setup runs?
-3. What does "same handler reference" mean for the cleanup function's argument?
+1. The effect reads `items` and `query`, filters them, and calls `setFiltered`. That is derived state inside an effect — the classic anti-pattern.
+2. Every time `items` or `query` changes, the effect runs, then `setFiltered` triggers another render. Two renders per change.
+3. Move the filter computation directly into the hook body. No effect, no state, one render per change.
 
-:::stackblitz{file="step1-exercise2-problem.ts" step=1 total=3 solution="step1-exercise2-solution.ts"}
+:::stackblitz{file="step1-exercise2-problem.tsx" step=1 total=3 solution="step1-exercise2-solution.tsx"}
 
 #### **Exercise 3**
 
-`usePoller` fires a 500ms interval for a given `key`. This exercise moves the lesson from StrictMode's double-mount to a different trigger: a prop changing. When `key` changes, React runs the cleanup from the previous effect run before starting the new one — but only if there is a cleanup to run. Predict: without a return value, how many intervals are running after the `key` changes once? Then add the cleanup so the dep change shuts down the old interval before the new one takes over.
+A hook handles a form save: when the user calls `handleSave`, it sets a `submitted` state flag, which an effect watches to call `onSave`. Fix it by moving the `onSave` call directly into `handleSave` and removing the flag and the effect.
 
-:::stackblitz{file="step1-exercise3-problem.ts" step=1 total=3 solution="step1-exercise3-solution.ts"}
+How to think about it:
 
-> **Mental anchor**: "The kill wire exists for every effect that starts something. The cleanup runs before the next setup fires — on dep change and on unmount."
+1. An effect that fires in response to a state flag set by a user action is always a candidate for replacement with an event handler.
+2. Count the renders: the click sets `submitted`, React re-renders, then the effect runs. One extra render and a state variable that exists only to trigger the effect.
+3. Call `onSave(data)` directly in `handleSave`. No state flag, no effect, no extra render.
 
-**Bridge to Level 2**: Once cleanup is in place, the next question is what the interval is actually reading. A closure inside `setInterval` captures whatever was in scope when the effect ran. When the interval is fast, counting ticks does not match counting seconds.
+:::stackblitz{file="step1-exercise3-problem.tsx" step=1 total=3 solution="step1-exercise3-solution.tsx"}
 
-### Level 2: The Drift Trap
+> **Mental anchor**: Effects are for synchronizing with something outside React — a DOM API, a timer, an external system. When the work can happen during render or in a user event handler, adding an effect only creates extra renders and extra state for no gain.
 
-A function created inside `useEffect` closes over the values from that render. An interval callback that reads `count` will read the version from the render that created the interval. For state updates, the functional updater form (`setCount(c => c + 1)`) avoids the stale-read problem entirely — React supplies the current value at update time, not the captured snapshot.
+**Bridge to Level 2**: The dep array controls when effects re-run. When a dep is missing, the effect runs with stale data. When a dep is unstable, the effect runs too often. Level 2 shows both failure modes.
 
-But there is a second, separate problem: tick counting.
+### Level 2: Dep Array Gotchas
 
-A tick counter increments on every interval fire. When the interval fires at 200ms, a counter increment per tick gives 5 increments per real second. When you display `secondsElapsed`, the number shown is five times higher than the real elapsed time. The counter has no relationship to wall-clock seconds — it counts interval fires, not seconds.
-
-The fix is to compute elapsed time from a reference point:
-
-```ts
-const start = Date.now();
-const id = setInterval(() => {
-  setSeconds(Math.floor((Date.now() - start) / 1000));
-}, 200);
-```
-
-With `jest.useFakeTimers()`, `Date.now()` advances with the virtual clock, so the calculation works the same way in tests as it does in a browser. The interval can fire at any rate — 200ms, 100ms, 1000ms — and the returned value is always the floor of the real elapsed seconds.
+Every dep array bug produces one of two visible symptoms: the effect runs with stale data (missing dep) or the effect runs too many times (unstable dep, or writing to a value that is also listed as a dep). Recognizing which symptom you are looking at tells you which fix to apply.
 
 #### **Exercise 1**
 
-`useElapsedSeconds(tickMs)` should return the number of whole seconds elapsed since mount. The current implementation uses `setSeconds(s => s + 1)` on each interval fire. Predict: with `tickMs=200`, what does the hook return after 2 real seconds? Then replace the tick counter with a `Date.now()` calculation so the return value tracks actual elapsed time regardless of how fast the interval fires.
+A hook fetches user data when `userId` changes. The dep array is empty, so after `userId` changes, the hook keeps showing the old user's data. Add the missing dep and verify that the hook re-fetches when `userId` changes.
 
 How to think about it:
 
-1. With a 200ms interval, how many times does the callback fire in 2000ms?
-2. What does `setSeconds(s => s + 1)` produce after that many fires?
-3. What expression computes whole elapsed seconds from a `Date.now()` reference?
+1. The effect reads `userId` inside the fetch call. Is `userId` listed in the dep array? If not, the effect is frozen on the value from the first render.
+2. Adding `userId` to the dep array tells React to re-run the effect whenever it changes.
+3. The test changes `userId` and checks that the displayed name updates. Without the fix, it stays stale.
 
-:::stackblitz{file="step2-exercise1-problem.ts" step=2 total=3 solution="step2-exercise1-solution.ts"}
+:::stackblitz{file="step2-exercise1-problem.tsx" step=2 total=3 solution="step2-exercise1-solution.tsx"}
 
 #### **Exercise 2**
 
-`useCountdown(totalSeconds, tickMs)` should count down from `totalSeconds` to zero in whole real-clock seconds. The current implementation calls `setSecondsLeft(s => s - 1)` on each interval fire. With a fast tick rate, the countdown depletes before the real time has elapsed. Fix it: capture `Date.now()` at setup and compute the remaining seconds as `totalSeconds - elapsed`, clamped to zero.
+A hook accepts an `options` object `{ prefix: string; caseSensitive: boolean }` and lists the whole object as a dep. The effect re-runs on every render even when the values have not changed. Fix it by extracting the primitive fields as separate deps.
 
-:::stackblitz{file="step2-exercise2-problem.ts" step=2 total=3 solution="step2-exercise2-solution.ts"}
+How to think about it:
+
+1. `Object.is({ prefix: 'a' }, { prefix: 'a' })` is `false`. Two object literals are always different references even when their contents are identical.
+2. Every render creates a new object. React sees a changed dep and re-runs the effect.
+3. List `options.prefix` and `options.caseSensitive` as separate deps. Primitives compare by value.
+
+:::stackblitz{file="step2-exercise2-problem.tsx" step=2 total=3 solution="step2-exercise2-solution.tsx"}
 
 #### **Exercise 3**
 
-`useAccuratePoller(tickMs)` has both bugs from this level combined: no cleanup function and a tick counter instead of a clock calculation. Predict: with `tickMs=200` under StrictMode, what does the hook return after 2 real seconds? Then fix both problems — add a cleanup return and replace the counter with `Date.now()` math — so the hook returns exactly 2.
+A hook maintains a `tags` array in state and an effect that transforms it into `processed` state. Both `tags` and `processed` are listed as deps. Every update cycles back into another run. Remove `processed` from the dep array and explain why the effect does not need it.
 
-:::stackblitz{file="step2-exercise3-problem.ts" step=2 total=3 solution="step2-exercise3-solution.ts"}
+How to think about it:
 
-> **Mental anchor**: "Tick count and elapsed seconds are not the same thing. Anchor to Date.now() — not to how many times the interval fired."
+1. Ask of each dep: does the effect *read* this value, or only *write* to it? Writing to a value is not a dependency on it.
+2. `setProcessed` is stable. Setter references do not change between renders and do not belong in the dep array.
+3. Remove `processed`. The effect reads `tags` and writes `processed`. Only `tags` is a real dependency.
 
-**Bridge to Level 3**: Cleanup and accurate timing are fully solved. The remaining problem is async: `fetch` keeps running after the cleanup fires unless you explicitly connect the abort signal to the in-flight request.
+:::stackblitz{file="step2-exercise3-problem.tsx" step=2 total=3 solution="step2-exercise3-solution.tsx"}
 
-### Level 3: AbortController
+> **Mental anchor**: Dep array bugs show up as one of two symptoms — the effect ran with the wrong data, or it ran more times than it should have. These exercises teach you to read the effect body to identify which one is happening and trace it back to the dep array as the cause.
 
-`fetch` is not cancelled by the cleanup return. When `useEffect`'s cleanup function runs — because a dep changed or the component unmounted — any in-flight `fetch` call continues until the server responds. If that response arrives after the component has moved on, it calls `setData` on state that belongs to a now-irrelevant render.
+**Bridge to Level 3**: Dep array mistakes produce stale reads or unnecessary reruns in regular effects. Timers amplify both. A stale closure inside `setInterval` runs repeatedly and can never self-correct. Level 3 covers the two fixes.
 
-The `AbortController` API is the mechanism for connecting the cleanup to the in-flight work:
+### Level 3: Timers and the Stale Closure
 
-```ts
-useEffect(() => {
-  const controller = new AbortController();
-
-  fetch(`/api/devices/${deviceId}`, { signal: controller.signal })
-    .then(res => res.json())
-    .then(d => setData(d))
-    .catch(err => {
-      if (err instanceof DOMException && err.name === 'AbortError') return;
-      setError(err.message);
-    });
-
-  return () => controller.abort();
-}, [deviceId]);
-```
-
-Three things to notice. First, the `AbortController` is created inside the effect so each run has its own controller. Second, `controller.signal` is passed to `fetch` as the signal option — this is what connects the abort call to the in-flight request. Third, `AbortError` must be caught and ignored. When `controller.abort()` fires, the fetch promise rejects with a `DOMException` whose `name` is `'AbortError'`. That rejection is intentional, not a real failure, and must not reach the error state.
+`setInterval` callbacks are created once at setup time. Any state or props they reference are frozen at that snapshot. The callback runs repeatedly but never sees changes. There are exactly two fixes: functional update (when the callback only needs the current value it is updating) and `useRef` (when the callback needs any other value that changes).
 
 #### **Exercise 1**
 
-`useFetchDevice(deviceId)` fetches device data when `deviceId` changes. The current implementation has no cleanup — there is no `AbortController` and no return function. The test verifies that when `deviceId` changes, the previous fetch's signal becomes aborted. Add the full `AbortController` pattern: create the controller, pass `{ signal: controller.signal }` to `fetch`, and return `() => controller.abort()`.
+A hook runs a counter using `setInterval`. After 3 ticks the count should be 3. Instead, it is always 1. Predict why, then fix the callback using a functional update.
 
 How to think about it:
 
-1. Where in the effect should the `AbortController` be created — before `fetch` runs or after?
-2. What do you pass to `fetch` as the second argument to connect the signal?
-3. What does the cleanup function need to call to cancel the in-flight request?
+1. The callback calls `setCount(count + 1)`. What is `count` inside the callback? It is the value from the first render, when the interval was created. It never updates.
+2. `setCount(count + 1)` always evaluates to `setCount(0 + 1)`, which sets count to 1. The next tick sees `count = 0` again.
+3. Replace with `setCount(c => c + 1)`. React provides the current value as `c` at call time. No closure over `count` needed.
 
-:::stackblitz{file="step3-exercise1-problem.ts" step=3 total=3 solution="step3-exercise1-solution.ts"}
+:::stackblitz{file="step3-exercise1-problem.tsx" step=3 total=3 solution="step3-exercise1-solution.tsx"}
 
 #### **Exercise 2**
 
-This exercise shows where missing abort causes visible data corruption. Two `fetch` calls are in-flight: one for `device-1` (slow) and one for `device-2` (fast). The newer request resolves first and sets data to `device-2`. Then the older request resolves and overwrites it with `device-1`. The displayed data now belongs to a device the user is no longer looking at. Add the same `AbortController` pattern: the cleanup aborts the `device-1` fetch before `device-2`'s fetch starts, so its late response is silently discarded.
+A hook runs a polling interval that calls an `onTick` callback prop every 500ms. When the parent replaces `onTick` with a new function, the interval keeps calling the old one. Fix it using `useRef` to hold a pointer to the latest `onTick` without restarting the interval.
 
-:::stackblitz{file="step3-exercise2-problem.ts" step=3 total=3 solution="step3-exercise2-solution.ts"}
+How to think about it:
+
+1. The interval was set up with `() => onTick()`. `onTick` was captured at setup. When the prop changes, the interval still holds the original reference.
+2. Adding `onTick` to the interval dep array would restart the interval every time the parent re-renders with a new function reference.
+3. Store `onTick` in a ref. Update the ref after every render with a separate effect (no dep array). The interval calls `callbackRef.current()` — always current, no restart.
+
+:::stackblitz{file="step3-exercise2-problem.tsx" step=3 total=3 solution="step3-exercise2-solution.tsx"}
 
 #### **Exercise 3**
 
-This exercise has the `AbortController` wired correctly, but the `catch` handler is wrong. When `deviceId` changes, cleanup fires `controller.abort()`, which causes the in-flight fetch to reject with a `DOMException` named `'AbortError'`. The current catch handler treats this the same as a real network failure and calls `setError` — the component shows an error state for an intentional navigation. Add a guard before `setError`: if the thrown value is a `DOMException` with `name === 'AbortError'`, return early without setting any state.
+Build `useInterval(callback, delayMs)` — the complete reusable hook that combines both patterns. The interval restarts only when `delayMs` changes. The callback always reflects the latest version passed by the caller, without causing a restart.
 
-:::stackblitz{file="step3-exercise3-problem.ts" step=3 total=3 solution="step3-exercise3-solution.ts"}
+This hook appears in the React docs and is a direct senior-interview question. Implement it from scratch.
 
-> **Mental anchor**: "AbortController connects the kill wire to the in-flight request. AbortError is the expected result of firing it — not a failure."
+:::stackblitz{file="step3-exercise3-problem.tsx" step=3 total=3 solution="step3-exercise3-solution.tsx"}
+
+> **Mental anchor**: Timers live outside React's render cycle. `setInterval` creates a callback once and runs it repeatedly, but that callback never learns about state or props that changed after it was created. Every exercise at this level is a variation of that one fact.
 
 ## Key Patterns
 
-### Pattern 1: Return a Cleanup Function from Every Effect That Starts Something
+### Pattern 1: Dep Array Values Match What the Effect Uses
 
-**When to use:** any effect that calls `setInterval`, `setTimeout`, `addEventListener`, opens a WebSocket, or starts any persistent resource.
+Every value from the component scope that the effect reads must appear in the dep array. Missing a value means the effect is frozen on that value from the render when it last ran.
 
-**What it prevents:** accumulated timers and listeners that continue firing after the component has moved on. Under StrictMode, missing cleanup immediately doubles all side effects.
-
-```ts
+```tsx
+// Missing dep: userId is used but not listed
 useEffect(() => {
-  const id = setInterval(tick, 1000);
+  fetchUser(userId).then(setUser);
+}, []); // stale on every userId change
+
+// Correct
+useEffect(() => {
+  fetchUser(userId).then(setUser);
+}, [userId]);
+```
+
+### Pattern 2: Extract Primitives from Object Deps
+
+When a dep is derived from an object created inline, extract the specific primitive values the effect actually needs. Primitives compare by value. Objects compare by reference.
+
+```tsx
+// Every render creates a new options object — effect re-runs every render
+useEffect(() => {
+  search(query, options);
+}, [query, options]);
+
+// Extract the specific fields
+useEffect(() => {
+  search(query, { prefix, caseSensitive });
+}, [query, prefix, caseSensitive]);
+```
+
+### Pattern 3: Functional Update Removes the State Dep
+
+When a timer callback only needs to increment or transform the state value it is updating, the functional update form eliminates the closure over that value entirely.
+
+```tsx
+useEffect(() => {
+  const id = setInterval(() => setCount(c => c + 1), 1000);
   return () => clearInterval(id);
 }, []);
 ```
 
-### Pattern 2: Compute Elapsed Time from Date.now(), Not Tick Count
+### Pattern 4: useRef for Callbacks That Read Changing Values
 
-**When to use:** any hook that displays or measures elapsed seconds, countdowns, or any time-based value.
+When a timer callback needs to read any value that changes between renders, use a ref to hold the latest callback. The ref is mutable, so the interval does not restart when the callback changes.
 
-**What it prevents:** overcounting when the interval fires faster than once per second, and accumulated scheduling delay causing the displayed value to drift behind real time over long durations.
-
-```ts
-useEffect(() => {
-  const start = Date.now();
-  const id = setInterval(() => {
-    setSeconds(Math.floor((Date.now() - start) / 1000));
-  }, 200); // fast tick rate for responsiveness, clock for accuracy
-  return () => clearInterval(id);
-}, []);
-```
-
-### Pattern 3: AbortController for Fetch Cancellation
-
-**When to use:** any `useEffect` that issues a `fetch` call based on a prop, state value, or mount.
-
-**What it prevents:** stale responses updating state after the component has unmounted or moved to a different dependency. In fast dep-change scenarios, this prevents an older slower response from overwriting a newer faster one.
-
-```ts
-useEffect(() => {
-  const controller = new AbortController();
-
-  fetch(`/api/device/${id}`, { signal: controller.signal })
-    .then(res => res.json())
-    .then(data => setDevice(data))
-    .catch(err => {
-      if (err instanceof DOMException && err.name === 'AbortError') return;
-      setError(err.message);
-    });
-
-  return () => controller.abort();
-}, [id]);
-```
-
-### Pattern 4: Guard AbortError Before Setting Error State
-
-**When to use:** every catch handler in an effect that uses `AbortController`.
-
-**What it prevents:** the component showing an error screen after the user navigates away or changes a filter — situations where the abort was intentional and the error state would be incorrect.
-
-```ts
-.catch((err: unknown) => {
-  if (err instanceof DOMException && err.name === 'AbortError') return;
-  setError(err instanceof Error ? err.message : 'Request failed');
-});
+```tsx
+function useInterval(callback: () => void, delay: number) {
+  const savedCb = useRef(callback);
+  useEffect(() => { savedCb.current = callback; });
+  useEffect(() => {
+    const id = setInterval(() => savedCb.current(), delay);
+    return () => clearInterval(id);
+  }, [delay]);
+}
 ```
 
 ---
 
 ## Decision Framework
 
-When writing a `useEffect`, two questions determine what cleanup and timing strategy to use:
+```mermaid
+flowchart TD
+  A[Code I want to run] --> B{In response to a user event?}
+  B -->|Yes| C[Event handler — no effect needed]
+  B -->|No| D{Value derived from props or state?}
+  D -->|Yes| E[Compute during render or useMemo — no effect needed]
+  D -->|No| F[useEffect is appropriate]
+  F --> G{Does the effect read a value that can change?}
+  G -->|Yes| H[Add it to the dep array]
+  H --> I{Is it an object or function created inline?}
+  I -->|Yes| J[Extract primitives or stabilize with useMemo or useCallback]
+  F --> K{Is it a timer callback?}
+  K -->|Only needs its own state value| L[Functional update c => c + 1]
+  K -->|Needs other state or props| M[useRef callback pattern]
+```
 
-**Does this effect start anything persistent?**
-
-| Effect starts | Required cleanup | Common mistake |
+| Situation | Correct approach | Common interview mistake |
 |---|---|---|
-| `setInterval` | `return () => clearInterval(id)` | No return — interval accumulates per dep change and mount |
-| `setTimeout` | `return () => clearTimeout(id)` | No return — fires after unmount if dep changes first |
-| `addEventListener` | `return () => el.removeEventListener(type, handler)` | No return — duplicate handler stacks on each render |
-| `fetch` | `return () => controller.abort()` | No signal — stale response updates state after dep change |
-| Custom subscription | `return () => unsubscribe()` | No return — subscriber list grows indefinitely |
-
-**Does the interval callback need to display time-based values?**
-
-```
-displaying "seconds elapsed" or "seconds remaining"
-    │
-    ├── counting ticks: setSeconds(s => s + 1)
-    │       └── wrong when tick rate ≠ 1000ms
-    │       └── drift accumulates over long durations
-    │
-    └── reading the clock: Math.floor((Date.now() - start) / 1000)
-            └── correct at any tick rate
-            └── no accumulated drift
-```
+| Derived value from props | Compute during render | useEffect plus useState sync, double render |
+| Fetch on ID change | `useEffect` with `[id]` | Empty dep array, stale on every change |
+| Object or function in dep array | Extract primitive fields | Infinite loop or needless reruns |
+| setInterval counter | Functional update `c => c + 1` | Stale closure, count stuck at 1 |
+| Interval that reads a prop | useRef callback pattern | Listing prop as dep, interval restarts every render |
 
 ## Common Gotchas & Edge Cases
 
-**Gotcha 1: No cleanup return from an effect that starts an interval**
+**Gotcha 1: Treating the dep array as a performance optimization**
 
-Why it happens: the interval "works" on the first render, so the return feels optional.
+The dep array is a correctness signal. React documentation says to list every value the effect reads. Intentionally omitting a dep to "prevent too many re-runs" produces stale reads. The real fix is either to compute the value outside the effect or to stabilize the reference before listing it.
 
-Why it is wrong: on the second render with StrictMode active, two intervals run simultaneously. In production, any component unmount-and-remount cycle (route change, conditional render, list reconciliation) leaves an orphan interval. Over time, multiple intervals accumulate and fire in parallel.
+**Gotcha 2: Listing `someObject` when only `someObject.id` is needed**
 
-Fix: always return `() => clearInterval(id)` from any effect that calls `setInterval`.
+If the effect only reads `user.id`, listing `user` as a dep means any change to any field on `user` re-runs the effect, even when `id` did not change. List the specific fields the effect actually uses.
 
-**Gotcha 2: Treating dep-change cleanup as only an unmount concern**
+**Gotcha 3: Adding count to setInterval deps instead of using functional update**
 
-Why it happens: the mental model of cleanup is "run when the component is done," which sounds like unmount.
+When `count` is missing from the dep array, the callback is stale. The tempting fix is to add `count` to the dep array. This re-creates the interval on every state change, which resets the timer on every tick. The correct fix is the functional update form.
 
-Why it is wrong: cleanup also runs before the next effect fires when a dependency changes. An effect that depends on `deviceId` and polls via `setInterval` must clean up the old interval before the new one starts — otherwise the old poll keeps running for the old device while the new poll runs for the new one.
+**Gotcha 4: Reaching for useEffect to handle an event response**
 
-Fix: the cleanup return handles both cases automatically. The same `return () => clearInterval(id)` that handles unmount also handles dep-change replacement.
+A common pattern in older codebases: a click handler sets a flag in state, and an effect watches that flag and performs work. This adds a state variable whose only job is to trigger an effect, and it causes an extra render on every interaction. Move the logic into the click handler directly.
 
-**Gotcha 3: Using a tick counter to display elapsed or remaining seconds**
+**Gotcha 5: Using the same effect for multiple unrelated concerns**
 
-Why it happens: `setSeconds(s => s + 1)` looks correct for a 1-second interval, and it is correct — until the tick rate changes or scheduling delay accumulates.
-
-Why it is wrong: any tick rate faster than 1000ms (used for UI responsiveness) multiplies the counter by the tick frequency. A 200ms interval with `s + 1` reads 10 after 2 real seconds.
-
-Fix: capture `Date.now()` at effect setup. Compute `Math.floor((Date.now() - start) / 1000)` inside the callback. The tick rate controls how responsive the update feels; the clock reference controls what value is displayed.
-
-**Gotcha 4: Passing no signal to fetch**
-
-Why it happens: fetch without a second argument works in the happy path. The signal option is opt-in, so it is easy to omit.
-
-Why it is wrong: without a signal, `controller.abort()` has nothing to cancel. The in-flight request runs to completion and resolves its promise. If the cleanup fired because `deviceId` changed, the now-irrelevant response lands and calls `setData` with data for the previous device.
-
-Fix: always create an `AbortController` inside the effect and pass `{ signal: controller.signal }` as the second argument to `fetch`.
-
-**Gotcha 5: Setting error state on AbortError**
-
-Why it happens: every catch handler looks the same — catch the error, display the message. `AbortError` is thrown in the catch just like a network error.
-
-Why it is wrong: `AbortError` is thrown because the cleanup intentionally fired `controller.abort()`. The user navigated away, changed a filter, or the component unmounted. None of those are error conditions. Setting error state in response to them shows a false error screen.
-
-Fix: check `err instanceof DOMException && err.name === 'AbortError'` before calling `setError`. Return early if the condition is true. Only real network or parse failures should reach the error state.
+Combining two unrelated side effects into one effect couples their dep arrays and makes each concern harder to reason about. Two separate effects with separate dep arrays make each concern independent and easier to change.
+</parameter>
+</invoke>
