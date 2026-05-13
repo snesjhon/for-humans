@@ -284,6 +284,15 @@ const FRONTEND_PROBLEM_METADATA: Record<
     kind: 'react',
     difficulty: 'medium',
   },
+  '052': {
+    title: 'Debounced Search Hook',
+    prompt:
+      'Extend a search hook so the visible list only recomputes after the user pauses typing. The core question is how to separate the live query the input reads from the settled query the filter uses, and what timer cleanup must happen when a new value arrives mid-debounce.',
+    sectionId: 'timing-hooks',
+    tier: 'practice',
+    kind: 'react',
+    difficulty: 'medium',
+  },
 };
 
 let _problems: FrontendProblem[] | null = null;

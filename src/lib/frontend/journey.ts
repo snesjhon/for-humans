@@ -277,6 +277,11 @@ export const JOURNEY: Phase[] = [
             slug: '039-use-countdown',
             label: 'useCountdown',
           },
+          {
+            id: '052',
+            slug: '052-debounced-search-hook',
+            label: 'Debounced Search Hook',
+          },
         ],
         explorations: [],
         builds: [
