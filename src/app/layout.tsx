@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Newsreader, Plus_Jakarta_Sans, JetBrains_Mono, Caveat } from 'next/font/google';
+import { Analytics } from '@vercel/analytics/next';
 import { LayoutShell } from '@/components/ui/LayoutShell/LayoutShell';
 import { getAllProblems } from '@/lib/dsa/content';
 import { getAllFundamentalsSlugs } from '@/lib/dsa/fundamentals';
@@ -99,6 +100,7 @@ export default async function RootLayout({
         >
           {children}
         </LayoutShell>
+        <Analytics />
       </body>
     </html>
   );
