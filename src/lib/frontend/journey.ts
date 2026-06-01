@@ -94,6 +94,11 @@ export const JOURNEY: Phase[] = [
             label: 'Promise Adoption Traps',
           },
           {
+            id: '053',
+            slug: '053-promise-all',
+            label: 'Implement Promise.all',
+          },
+          {
             id: '034',
             slug: '034-use-query',
             label: 'useQuery',

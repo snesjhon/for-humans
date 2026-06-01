@@ -293,6 +293,15 @@ const FRONTEND_PROBLEM_METADATA: Record<
     kind: 'react',
     difficulty: 'medium',
   },
+  '053': {
+    title: 'Implement Promise.all',
+    prompt:
+      'Implement a promiseAll utility that preserves input order, waits for every branch to fulfill, resolves immediately for an empty array, and rejects on the first failure. The core question is why completion timing cannot decide output order, and how one shared remaining-count model controls batch settlement.',
+    sectionId: 'data-fetching',
+    tier: 'practice',
+    kind: 'typescript',
+    difficulty: 'medium',
+  },
 };
 
 let _problems: FrontendProblem[] | null = null;
